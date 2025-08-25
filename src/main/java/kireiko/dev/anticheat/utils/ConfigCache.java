@@ -19,6 +19,7 @@ public final class ConfigCache {
     public static boolean ROTATIONS_CONTAINER;
     public static boolean PREVENT_GHOST_BLOCK_ABUSE;
     public static int PREVENTION;
+    public static boolean ENABLE_ALERTS_ON_JOIN;
 
 
     public static void loadConfig() {
@@ -37,5 +38,6 @@ public final class ConfigCache {
         LOG_IN_FILES = MX.getInstance().getConfig().getBoolean("logInFiles", true);
         ROTATIONS_CONTAINER = MX.getInstance().getConfig().getBoolean("rotationsContainer", true);
         PREVENT_GHOST_BLOCK_ABUSE = MX.getInstance().getConfig().getBoolean("preventGhostBlockAbuse", false);
+        ENABLE_ALERTS_ON_JOIN = MX.getInstance().getConfig().getBoolean("enableAlertsOnJoin", true);
     }
 }

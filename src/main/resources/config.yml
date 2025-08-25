@@ -38,3 +38,6 @@ rotationsContainer: true
 
 # Does not allow players to climb walls using ghost blocks
 preventGhostBlockAbuse: false
+  
+# Whether to auto-enable alerts on join for players with mx.admin permission
+enableAlertsOnJoin: true
