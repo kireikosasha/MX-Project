@@ -56,7 +56,7 @@ public final class AimHeuristicCheck implements PacketCheckHandler {
 
     public AimHeuristicCheck(PlayerProfile profile) {
         this.profile = profile;
-        this.lastAttack = System.currentTimeMillis() + 3500;
+        this.lastAttack = 0L;
         this.components = new HashSet<>();
         { // components
             this.components.add(new AimBasicCheck(this));
