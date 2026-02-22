@@ -45,6 +45,7 @@ public class MX extends JavaPlugin {
         CheckManager.init();
         saveDefaultConfig();
         ConfigCache.loadConfig();
+        kireiko.dev.anticheat.managers.DatasetManager.init();
 
         getLogger().info("Loading listeners...");
         loadListeners();
@@ -64,7 +65,7 @@ public class MX extends JavaPlugin {
             for (int i : MX.bannedPerMinuteList) banCount += i;
             return banCount;
         }));
-        getLogger().info("Launching ML (Kireiko Millennium 4.5)...");
+        getLogger().info("Launching ML (Kireiko Millennium 5)...");
         ClientML.run();
         getLogger().info("Launched!\n"
                         + "        :::   :::       :::    :::\n" +

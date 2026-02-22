@@ -8,7 +8,6 @@ import kireiko.dev.anticheat.MX;
 import kireiko.dev.anticheat.api.data.PlayerContainer;
 import kireiko.dev.anticheat.api.events.UseEntityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
-import kireiko.dev.anticheat.core.AsyncEntityFetcher;
 import kireiko.dev.anticheat.utils.ConfigCache;
 import kireiko.dev.anticheat.utils.version.VersionUtil;
 import lombok.SneakyThrows;
@@ -24,7 +23,7 @@ public final class UseEntityListener extends PacketAdapter {
     private static final boolean modern = VersionUtil.is1_13orAbove();
 
     public UseEntityListener() {
-        super(MX.getInstance(), ListenerPriority.HIGHEST, Collections.singletonList(PacketType.Play.Client.USE_ENTITY), ListenerOptions.ASYNC);
+        super(MX.getInstance(), ListenerPriority.HIGHEST, Collections.singletonList(PacketType.Play.Client.USE_ENTITY));
     }
 
     @SneakyThrows
@@ -37,14 +36,18 @@ public final class UseEntityListener extends PacketAdapter {
         }
         PacketContainer packet = event.getPacket();
         boolean attack = !packet.getEntityUseActions().getValues().isEmpty() ?
-                packet.getEntityUseActions().read(0).toString().equals("ATTACK")
-                : packet.getEnumEntityUseActions().read(0).getAction().equals(
-                EnumWrappers.EntityUseAction.ATTACK);
+                        packet.getEntityUseActions().read(0).toString().equals("ATTACK")
+                        : packet.getEnumEntityUseActions().read(0).getAction().equals(
+                        EnumWrappers.EntityUseAction.ATTACK);
         if (packet.getIntegers().getValues().isEmpty()) return;
         int entityId = packet.getIntegers().read(0);
+        /*
         Entity entity = (modern) ? AsyncEntityFetcher.getEntityFromIDAsync(event.getPlayer().getWorld(), entityId).get()
-                : ProtocolLibrary.getProtocolManager().
-                getEntityFromID(event.getPlayer().getWorld(), entityId);
+                        : ProtocolLibrary.getProtocolManager().
+                        getEntityFromID(event.getPlayer().getWorld(), entityId);
+         */
+        Entity entity = ProtocolLibrary.getProtocolManager().
+                        getEntityFromID(event.getPlayer().getWorld(), entityId);
         if (profile.getAttackBlockToTime() > System.currentTimeMillis()) {
             if (ConfigCache.PREVENTION > 0) {
                 event.setCancelled(true);

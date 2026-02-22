@@ -6,9 +6,11 @@ import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.checks.aim.AimHeuristicCheck;
 import kireiko.dev.millennium.math.Euler;
 import kireiko.dev.millennium.math.Statistics;
+import kireiko.dev.millennium.ml.data.reasoning.MathML;
 import kireiko.dev.millennium.vectors.Vec2f;
 
 import java.util.*;
+import java.util.function.Function;
 
 public final class AimSmoothCheck implements HeuristicComponent {
     private final AimHeuristicCheck check;
@@ -42,7 +44,6 @@ public final class AimSmoothCheck implements HeuristicComponent {
             if (stack.size() >= 20) {
                 {
                     List<Float> jiff = Statistics.getJiffDelta(stack, 1);
-                    //profile.getPlayer().sendMessage("d: " + jiff);
                     float prev = 999;
                     float prePrev = 999;
                     for (float f : jiff) {

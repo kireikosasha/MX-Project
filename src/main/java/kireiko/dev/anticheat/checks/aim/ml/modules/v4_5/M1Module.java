@@ -1,10 +1,11 @@
-package kireiko.dev.anticheat.checks.aim.ml.modules;
+package kireiko.dev.anticheat.checks.aim.ml.modules.v4_5;
 
 import kireiko.dev.millennium.math.Simplification;
 import kireiko.dev.millennium.ml.data.ResultML;
 import kireiko.dev.millennium.ml.data.module.FlagType;
 import kireiko.dev.millennium.ml.data.module.ModuleML;
 import kireiko.dev.millennium.ml.data.module.ModuleResultML;
+import kireiko.dev.millennium.ml.logic.ModelVer;
 
 public class M1Module implements ModuleML {
 
@@ -43,5 +44,10 @@ public class M1Module implements ModuleML {
     @Override
     public int getParameterBuffer() {
         return 15;
+    }
+
+    @Override
+    public ModelVer getVersion() {
+        return ModelVer.VERSION_4_5;
     }
 }
