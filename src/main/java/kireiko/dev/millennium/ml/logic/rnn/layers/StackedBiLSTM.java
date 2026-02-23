@@ -103,7 +103,7 @@ public final class StackedBiLSTM {
         }
     }
 
-    public double[][] backward(Cache cache, double[][] dOut_time, Grad gAcc) {
+    public double[][] backward(Cache cache, double[][] dOut_time, Grad gAcc, double clip) {
         double[][] dCur = dOut_time;
 
         for (int l = numLayers - 1; l >= 0; l--) {
@@ -119,15 +119,15 @@ public final class StackedBiLSTM {
                     System.arraycopy(dCur[t], hiddenSize, dB[t], 0, hiddenSize);
                 }
 
-                double[][] dXF = fwd[l].backward(cache.fwdCache[l], dF, gAcc.fwd[l]);
-                double[][] dXB = bwd[l].backward(cache.bwdCache[l], dB, gAcc.bwd[l]);
+                double[][] dXF = fwd[l].backward(cache.fwdCache[l], dF, gAcc.fwd[l], clip);
+                double[][] dXB = bwd[l].backward(cache.bwdCache[l], dB, gAcc.bwd[l], clip);
 
                 int in = (l == 0) ? inputSize : hiddenSize * 2;
                 double[][] dNext = new double[dCur.length][in];
                 for (int t = 0; t < dCur.length; t++) for (int i = 0; i < in; i++) dNext[t][i] = dXF[t][i] + dXB[t][i];
                 dCur = dNext;
             } else {
-                dCur = fwd[l].backward(cache.fwdCache[l], dCur, gAcc.fwd[l]);
+                dCur = fwd[l].backward(cache.fwdCache[l], dCur, gAcc.fwd[l], clip);
             }
         }
 

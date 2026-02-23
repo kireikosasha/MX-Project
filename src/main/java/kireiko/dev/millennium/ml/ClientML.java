@@ -15,7 +15,7 @@ public class ClientML {
 
     public static final boolean DEV_MODE = false;
 
-    public static final String CLIENT_NAME = "quark-e-1.0-56k-public";
+    public static final String CLIENT_NAME = "quark-e-1.5-56k-public";
     private static final int TABLE_SIZE = 2;
 
     public static final List<ModuleML> MODEL_LIST = Arrays.asList(

@@ -28,12 +28,14 @@ public final class AimMLCheck implements PacketCheckHandler {
 
     private final PlayerProfile profile;
     private final List<Vec2f> rawRotations;
+    private final List<Vec2f> rnnRotations;
     private long lastAttack;
     private Map<String, Object> localCfg = new TreeMap<>();
 
     public AimMLCheck(PlayerProfile profile) {
         this.profile = profile;
         this.rawRotations = new CopyOnWriteArrayList<>();
+        this.rnnRotations = new CopyOnWriteArrayList<>();
         this.lastAttack = 0L;
         if (CheckManager.classCheck(this.getClass()))
             this.localCfg = CheckManager.getConfig(this.getClass());
@@ -64,18 +66,32 @@ public final class AimMLCheck implements PacketCheckHandler {
             if (profile.isCinematic()) return;
             if (!((boolean) getConfig().get("enabled"))) return;
             RotationEvent event = (RotationEvent) o;
-            if (System.currentTimeMillis() > this.lastAttack + 2500) return;
+
+            if (System.currentTimeMillis() > this.lastAttack + 3000) {
+                if (!this.rawRotations.isEmpty() && !RECORDING.containsKey(profile.getPlayer().getUniqueId())) {
+                    this.rawRotations.clear();
+                    this.rnnRotations.clear();
+                }
+                return;
+            }
 
             Vec2f delta = event.getDelta();
             this.rawRotations.add(delta);
+            this.rnnRotations.add(delta);
 
             if (TEST_MODE && !RECORDING.containsKey(profile.getPlayer().getUniqueId())) {
-                profile.getPlayer().sendActionBar("§aChecking: " + this.rawRotations.size() + "/600");
+                profile.getPlayer().sendActionBar("§aChecking: " + this.rawRotations.size() + "/600 | RNN: " + this.rnnRotations.size() + "/150");
             } else if (RECORDING.containsKey(profile.getPlayer().getUniqueId())) {
                 profile.getPlayer().sendActionBar("§cRECORDING: " + this.rawRotations.size() + "/600");
             }
 
-            if (this.rawRotations.size() >= 600) this.check();
+            if (this.rnnRotations.size() >= 150) {
+                this.checkRNN();
+            }
+
+            if (this.rawRotations.size() >= 600) {
+                this.checkLegacy();
+            }
         } else if (o instanceof UseEntityEvent) {
             UseEntityEvent event = (UseEntityEvent) o;
             if (event.isAttack()) {
@@ -84,36 +100,7 @@ public final class AimMLCheck implements PacketCheckHandler {
         }
     }
 
-    private void checkResult(List<ObjectML> objectML) {
-        ModuleResultML finalModuleResult = new ModuleResultML(0, FlagType.NORMAL, null);
-        final Set<String> modelsThatFlagged = new HashSet<>();
-
-        for (int i = 0; i < ClientML.MODEL_LIST.size(); i++) {
-            final ResultML resultML = FactoryML.getModel(i).checkData(objectML);
-            ModuleML moduleML = ClientML.MODEL_LIST.get(i);
-            final ModuleResultML moduleResultML = moduleML.getResult(resultML);
-
-            if (i == 7) {
-                profile.debug("&dRNN Prob: " + moduleResultML.getInfo() + " (" + moduleResultML.getType() + ")");
-            }
-
-            if (moduleResultML.getType() != FlagType.NORMAL) {
-                modelsThatFlagged.add(moduleML.getName());
-            }
-
-            if (finalModuleResult.getInfo() == null) {
-                finalModuleResult = moduleResultML;
-            } else {
-                final int finalLevel = finalModuleResult.getType().getLevel();
-                final int tempLevel = moduleResultML.getType().getLevel();
-                if (finalLevel < tempLevel || (finalLevel == tempLevel && finalModuleResult.getPriority() < moduleResultML.getPriority())) {
-                    finalModuleResult = moduleResultML;
-                }
-            }
-        }
-
-        profile.debug("&8ML Result: " + finalModuleResult.getType() + " " + finalModuleResult.getInfo());
-
+    private void handleFlag(ModuleResultML finalModuleResult, Set<String> modelsThatFlagged) {
         if (finalModuleResult.getType() != FlagType.NORMAL) {
             final FlagType type = finalModuleResult.getType();
             float vl = 0f;
@@ -139,7 +126,7 @@ public final class AimMLCheck implements PacketCheckHandler {
         }
     }
 
-    private void check() {
+    private void checkLegacy() {
         final List<ObjectML> objectMLStack = new ArrayList<>();
         ObjectML yaw = new ObjectML(new ArrayList<>());
         ObjectML pitch = new ObjectML(new ArrayList<>());
@@ -160,9 +147,73 @@ public final class AimMLCheck implements PacketCheckHandler {
                 profile.getPlayer().sendMessage("§a[ML] Saved sample! Total in dataset: " + DatasetManager.getCount());
             });
         } else {
-            AsyncScheduler.run(() -> checkResult(objectMLStack));
+            AsyncScheduler.run(() -> {
+                ModuleResultML finalModuleResult = new ModuleResultML(0, FlagType.NORMAL, null);
+                final Set<String> modelsThatFlagged = new HashSet<>();
+
+                for (int i = 0; i < 7; i++) {
+                    final ResultML resultML = FactoryML.getModel(i).checkData(objectMLStack);
+                    ModuleML moduleML = ClientML.MODEL_LIST.get(i);
+                    final ModuleResultML moduleResultML = moduleML.getResult(resultML);
+
+                    if (moduleResultML.getType() != FlagType.NORMAL) {
+                        modelsThatFlagged.add(moduleML.getName());
+                    }
+
+                    if (finalModuleResult.getInfo() == null) {
+                        finalModuleResult = moduleResultML;
+                    } else {
+                        final int finalLevel = finalModuleResult.getType().getLevel();
+                        final int tempLevel = moduleResultML.getType().getLevel();
+                        if (finalLevel < tempLevel || (finalLevel == tempLevel && finalModuleResult.getPriority() < moduleResultML.getPriority())) {
+                            finalModuleResult = moduleResultML;
+                        }
+                    }
+                }
+                handleFlag(finalModuleResult, modelsThatFlagged);
+            });
         }
 
         this.rawRotations.clear();
+    }
+
+    private void checkRNN() {
+        final List<ObjectML> objectMLStack = new ArrayList<>();
+        ObjectML yaw = new ObjectML(new ArrayList<>());
+        ObjectML pitch = new ObjectML(new ArrayList<>());
+
+        for(Vec2f rot : this.rnnRotations) {
+            yaw.getValues().add((double) rot.getX());
+            pitch.getValues().add((double) rot.getY());
+        }
+
+        objectMLStack.add(yaw);
+        objectMLStack.add(pitch);
+
+        if (!RECORDING.containsKey(profile.getPlayer().getUniqueId())) {
+            AsyncScheduler.run(() -> {
+                ModuleResultML finalModuleResult = new ModuleResultML(0, FlagType.NORMAL, null);
+                final Set<String> modelsThatFlagged = new HashSet<>();
+
+                int rnnIndex = 7;
+                if (ClientML.MODEL_LIST.size() > rnnIndex) {
+                    final ResultML resultML = FactoryML.getModel(rnnIndex).checkData(objectMLStack);
+                    ModuleML moduleML = ClientML.MODEL_LIST.get(rnnIndex);
+                    final ModuleResultML moduleResultML = moduleML.getResult(resultML);
+
+                    profile.debug("&dRNN Prob: " + moduleResultML.getInfo() + " (" + moduleResultML.getType() + ")");
+
+                    if (moduleResultML.getType() != FlagType.NORMAL) {
+                        modelsThatFlagged.add(moduleML.getName());
+                    }
+
+                    finalModuleResult = moduleResultML;
+                }
+
+                handleFlag(finalModuleResult, modelsThatFlagged);
+            });
+        }
+
+        this.rnnRotations.clear();
     }
 }

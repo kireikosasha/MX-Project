@@ -31,8 +31,8 @@ public final class RNNModelML implements Millennium {
     public enum InputMode { RAW_SEQUENCE, STATISTICAL_FEATURES, HYBRID }
     public enum PoolingMode { LAST_HIDDEN, MEAN_POOLING, MAX_POOLING, ATTENTION }
 
-    private static final int MAGIC = 0x524E4E35;
-    private static final int VERSION = 5;
+    private static final int MAGIC = 0x524E4E36;
+    private static final int VERSION = 6;
 
     private final RNNConfig cfg;
     private final Random rng;
@@ -53,7 +53,6 @@ public final class RNNModelML implements Millennium {
     private final BinaryHead head;
     private final AdamW opt;
 
-    private boolean training;
     private long step;
     private int batchSize = 16;
 
@@ -71,9 +70,13 @@ public final class RNNModelML implements Millennium {
     private final AdamW.DoubleRef mAttnB;
     private final AdamW.DoubleRef vAttnB;
 
-    private final double[] dEmbW;
-    private final double[] mEmbW;
-    private final double[] vEmbW;
+    private final double[] dEmbWy;
+    private final double[] mEmbWy;
+    private final double[] vEmbWy;
+
+    private final double[] dEmbWp;
+    private final double[] mEmbWp;
+    private final double[] vEmbWp;
 
     private final double[] dEmbB;
     private final double[] mEmbB;
@@ -83,6 +86,9 @@ public final class RNNModelML implements Millennium {
 
     private final LayerState[] fwdState;
     private final LayerState[] bwdState;
+
+    private double headBiasGrad;
+    private double attnBGrad;
 
     public RNNModelML(int inputSize, int hiddenSize) {
         this(RNNConfig.builder().inputSize(inputSize).hiddenSize(hiddenSize).build());
@@ -110,7 +116,6 @@ public final class RNNModelML implements Millennium {
         this.head = new BinaryHead(outSize, rng);
         this.opt = new AdamW();
 
-        this.training = false;
         this.step = 0L;
 
         this.dHeadV = new double[outSize];
@@ -127,9 +132,13 @@ public final class RNNModelML implements Millennium {
         this.mAttnB = new AdamW.DoubleRef(0.0);
         this.vAttnB = new AdamW.DoubleRef(0.0);
 
-        this.dEmbW = new double[cfg.inputSize];
-        this.mEmbW = new double[cfg.inputSize];
-        this.vEmbW = new double[cfg.inputSize];
+        this.dEmbWy = new double[cfg.inputSize];
+        this.mEmbWy = new double[cfg.inputSize];
+        this.vEmbWy = new double[cfg.inputSize];
+
+        this.dEmbWp = new double[cfg.inputSize];
+        this.mEmbWp = new double[cfg.inputSize];
+        this.vEmbWp = new double[cfg.inputSize];
 
         this.dEmbB = new double[cfg.inputSize];
         this.mEmbB = new double[cfg.inputSize];
@@ -178,38 +187,30 @@ public final class RNNModelML implements Millennium {
         activePooling = pickPool(mode);
     }
 
-    public double getLearningRate() { return cfg.learningRate; }
-    public double getDropoutRate() { return cfg.dropoutRate; }
-    public double getRecurrentDropoutRate() { return cfg.recurrentDropoutRate; }
-    public double getWeightDecay() { return cfg.weightDecay; }
-    public double getGradientClip() { return cfg.gradientClip; }
-    public double getLabelSmoothing() { return cfg.labelSmoothing; }
-
-    public InputMode getInputMode() { return cfg.inputMode; }
-    public PoolingMode getPoolingMode() { return cfg.poolingMode; }
+    private double[][] prepareVectors(List<ObjectML> o) {
+        if (o == null || o.isEmpty()) return new double[0][0];
+        List<Double> yaws = o.get(0).getValues();
+        List<Double> pitches = o.size() > 1 ? o.get(1).getValues() : yaws;
+        int len = Math.min(yaws.size(), pitches.size());
+        double[][] res = new double[len][2];
+        for (int i = 0; i < len; i++) {
+            res[i][0] = yaws.get(i) == null ? 0.0 : yaws.get(i);
+            res[i][1] = pitches.get(i) == null ? 0.0 : pitches.get(i);
+        }
+        return res;
+    }
 
     @Override
     public ResultML checkData(List<ObjectML> o) {
         ResultML r = new ResultML();
         if (o == null || o.isEmpty()) return r;
 
-        boolean prev = training;
-        training = false;
+        double[][] vecs = prepareVectors(o);
+        if (vecs.length < 2) return r;
 
-        double sum = 0.0;
-        int n = 0;
+        double prob = forwardProbability(vecs);
 
-        for (ObjectML obj : o) {
-            if (obj == null || obj.getValues() == null || obj.getValues().size() < 2) continue;
-            sum += forwardProbability(obj.getValues());
-            n++;
-        }
-
-        training = prev;
-
-        double avg = n == 0 ? 0.0 : sum / n;
-
-        r.statisticsResult.UNUSUAL = (float) avg;
+        r.statisticsResult.UNUSUAL = prob;
         r.statisticsResult.STRANGE = 0;
         r.statisticsResult.SUSPECTED = 0;
         r.statisticsResult.SUSPICIOUSLY = 0;
@@ -221,70 +222,75 @@ public final class RNNModelML implements Millennium {
     public void learnByData(List<ObjectML> o, boolean isMustBeBlocked) {
         if (o == null || o.isEmpty()) return;
 
-        training = true;
-
         double y = isMustBeBlocked ? 1.0 : 0.0;
         if (cfg.labelSmoothing > 0.0) y = y * (1.0 - cfg.labelSmoothing) + 0.5 * cfg.labelSmoothing;
 
+        double[][] vecs = prepareVectors(o);
+        if (vecs.length < 2) return;
+
         List<Sample> samples = new ArrayList<>();
-        for (ObjectML obj : o) {
-            if (obj == null || obj.getValues() == null || obj.getValues().size() < 2) continue;
-            samples.add(new Sample(obj.getValues(), y));
-        }
-        if (samples.isEmpty()) {
-            training = false;
-            return;
-        }
+        samples.add(new Sample(vecs, y));
 
-        int bs = Math.max(1, batchSize);
-        for (int i = 0; i < samples.size(); i += bs) {
-            int end = Math.min(samples.size(), i + bs);
-            trainBatch(samples.subList(i, end));
-        }
-
-        training = false;
+        trainBatch(samples);
     }
 
-    private void trainBatch(List<Sample> batch) {
+    private double[] trainBatch(List<Sample> batch) {
         zeroBatchGrads();
 
         int used = 0;
+        double batchLoss = 0.0;
+        double correct = 0.0;
 
         for (Sample s : batch) {
-            ForwardCache fc = forwardCache(s.values);
+            ForwardCache fc = forwardCache(s.vecs, true);
             if (fc == null) continue;
 
             double p = fc.prob;
+
+            boolean predictedCheat = p >= 0.5;
+            boolean actualCheat = s.label >= 0.5;
+            if (predictedCheat == actualCheat) {
+                correct += 1.0;
+            }
+
+            p = Math.max(1e-15, Math.min(1.0 - 1e-15, p));
+            double loss = - (s.label * Math.log(p) + (1.0 - s.label) * Math.log(1.0 - p));
+            batchLoss += loss;
+
             double dLogit = (p - s.label);
 
             BinaryHead.Grad hg = new BinaryHead.Grad(head.in);
             double[] dPooled = head.backward(fc.headCache, dLogit, hg);
             add(dHeadV, hg.dV);
-            fc.dHeadBias += hg.dBias;
+            headBiasGrad += hg.dBias;
 
             PoolingGrad pg = new PoolingGrad();
             pg.dAttentionW = dAttnW;
             pg.dAttentionB = 0.0;
 
             double[][] dH = activePooling.backward(fc.hTime, fc.seq.mask, dPooled, fc.poolCache, pg);
-            fc.dAttnB += pg.dAttentionB;
+            attnBGrad += pg.dAttentionB;
 
-            double[][] dX = encoder.backward(fc.encCache, dH, encGradAcc);
+            double[][] dX = encoder.backward(fc.encCache, dH, encGradAcc, cfg.gradientClip);
 
-            if (activePre == rawPre) {
-                accumulateEmbeddingGrad(s.values, dX);
+            if (activePre == rawPre || activePre == hybridPre) {
+                accumulateEmbeddingGrad(s.vecs, dX);
             }
 
             used++;
         }
 
-        if (used <= 0) return;
+        if (used > 0) {
+            opt.incrementStep();
+            applyUpdate(used);
+            step++;
+            return new double[] { batchLoss / used, correct, used };
+        }
 
-        applyUpdate(used);
-        step++;
+        return new double[] { 0.0, 0.0, 0.0 };
     }
 
-    private ForwardCache forwardCache(List<Double> raw) {
+    private ForwardCache forwardCache(double[][] raw, boolean training) {
         SequenceData seq = activePre.prepare(raw);
         if (seq == null || seq.length() < 2) return null;
 
@@ -307,7 +313,7 @@ public final class RNNModelML implements Millennium {
         return fc;
     }
 
-    private double forwardProbability(List<Double> raw) {
+    private double forwardProbability(double[][] raw) {
         SequenceData seq = activePre.prepare(raw);
         if (seq == null || seq.length() < 2) return 0.5;
 
@@ -316,24 +322,24 @@ public final class RNNModelML implements Millennium {
         return head.forward(pooled, null);
     }
 
-    private void accumulateEmbeddingGrad(List<Double> raw, double[][] dX) {
-        double[] embW = rawPre.getEmbeddingW();
+    private void accumulateEmbeddingGrad(double[][] raw, double[][] dX) {
+        double[] embWy = rawPre.getEmbeddingWy();
+        double[] embWp = rawPre.getEmbeddingWp();
         double[] embB = rawPre.getEmbeddingB();
 
-        int T = Math.min(raw.size(), dX.length);
+        int T = Math.min(raw.length, dX.length);
         for (int t = 0; t < T; t++) {
-            double v = Math.tanh(raw.get(t) / 100.0);
+            double vY = Math.tanh(raw[t][0] / 100.0);
+            double vP = Math.tanh(raw[t][1] / 100.0);
             for (int i = 0; i < cfg.inputSize; i++) {
-                dEmbW[i] += dX[t][i] * v;
-                dEmbB[i] += dX[t][i];
-            }
-        }
+                double g = dX[t][i];
+                if(g > cfg.gradientClip) g = cfg.gradientClip;
+                else if(g < -cfg.gradientClip) g = -cfg.gradientClip;
 
-        for (int i = 0; i < cfg.inputSize; i++) {
-            if (Double.isNaN(dEmbW[i]) || Double.isInfinite(dEmbW[i])) dEmbW[i] = 0.0;
-            if (Double.isNaN(dEmbB[i]) || Double.isInfinite(dEmbB[i])) dEmbB[i] = 0.0;
-            if (Double.isNaN(embW[i]) || Double.isInfinite(embW[i])) embW[i] = 0.0;
-            if (Double.isNaN(embB[i]) || Double.isInfinite(embB[i])) embB[i] = 0.0;
+                dEmbWy[i] += g * vY;
+                dEmbWp[i] += g * vP;
+                dEmbB[i] += g;
+            }
         }
     }
 
@@ -352,10 +358,12 @@ public final class RNNModelML implements Millennium {
         opt.stepScalar(attnB, attnBGrad * inv, mAttnB, vAttnB, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
         attnPooling.b = attnB.value;
 
-        if (activePre == rawPre) {
-            scaleInPlace(dEmbW, inv);
+        if (activePre == rawPre || activePre == hybridPre) {
+            scaleInPlace(dEmbWy, inv);
+            scaleInPlace(dEmbWp, inv);
             scaleInPlace(dEmbB, inv);
-            opt.step(rawPre.getEmbeddingW(), dEmbW, mEmbW, vEmbW, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+            opt.step(rawPre.getEmbeddingWy(), dEmbWy, mEmbWy, vEmbWy, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+            opt.step(rawPre.getEmbeddingWp(), dEmbWp, mEmbWp, vEmbWp, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
             opt.step(rawPre.getEmbeddingB(), dEmbB, mEmbB, vEmbB, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
         }
 
@@ -397,24 +405,14 @@ public final class RNNModelML implements Millennium {
         zero(dAttnW);
         attnBGrad = 0.0;
 
-        zero(dEmbW);
+        zero(dEmbWy);
+        zero(dEmbWp);
         zero(dEmbB);
 
-        zeroGrad(encGradAcc);
-    }
-
-    private void zeroGrad(StackedBiLSTM.Grad g) {
-        for (int l = 0; l < g.fwd.length; l++) {
-            zeroLstmGrad(g.fwd[l]);
-            if (cfg.bidirectional) zeroLstmGrad(g.bwd[l]);
+        for (int l = 0; l < encGradAcc.fwd.length; l++) {
+            encGradAcc.fwd[l].zero();
+            if (cfg.bidirectional) encGradAcc.bwd[l].zero();
         }
-    }
-
-    private void zeroLstmGrad(LSTMLayer.Grad g) {
-        zero(g.dWf); zero(g.dWi); zero(g.dWc); zero(g.dWo);
-        zero(g.dUf); zero(g.dUi); zero(g.dUc); zero(g.dUo);
-        zero(g.dbf); zero(g.dbi); zero(g.dbc); zero(g.dbo);
-        zero(g.dLnGamma); zero(g.dLnBeta);
     }
 
     private static void zero(double[] a) { for (int i = 0; i < a.length; i++) a[i] = 0.0; }
@@ -426,9 +424,6 @@ public final class RNNModelML implements Millennium {
     private static void scaleInPlace(double[] a, double s) {
         for (int i = 0; i < a.length; i++) a[i] *= s;
     }
-
-    private double headBiasGrad;
-    private double attnBGrad;
 
     @Override
     public void saveToFile(String fileName) {
@@ -455,7 +450,8 @@ public final class RNNModelML implements Millennium {
             out.writeLong(step);
             out.writeLong(opt.t);
 
-            ModelIO.writeArr(out, rawPre.getEmbeddingW());
+            ModelIO.writeArr(out, rawPre.getEmbeddingWy());
+            ModelIO.writeArr(out, rawPre.getEmbeddingWp());
             ModelIO.writeArr(out, rawPre.getEmbeddingB());
 
             writeEncoder(out);
@@ -471,7 +467,7 @@ public final class RNNModelML implements Millennium {
         try (DataInputStream dis = new DataInputStream(new BufferedInputStream(in))) {
             int magic = dis.readInt();
             int ver = dis.readInt();
-            if (magic != MAGIC || ver != VERSION) throw new IllegalStateException("bad model");
+            if (magic != MAGIC || ver != VERSION) throw new IllegalStateException("bad model version");
 
             int inSize = dis.readInt();
             int hid = dis.readInt();
@@ -500,7 +496,8 @@ public final class RNNModelML implements Millennium {
             step = dis.readLong();
             opt.t = dis.readLong();
 
-            readInto(dis, rawPre.getEmbeddingW());
+            readInto(dis, rawPre.getEmbeddingWy());
+            readInto(dis, rawPre.getEmbeddingWp());
             readInto(dis, rawPre.getEmbeddingB());
 
             readEncoder(dis);
@@ -565,7 +562,8 @@ public final class RNNModelML implements Millennium {
     public int parameters() {
         long p = 0;
 
-        p += rawPre.getEmbeddingW().length;
+        p += rawPre.getEmbeddingWy().length;
+        p += rawPre.getEmbeddingWp().length;
         p += rawPre.getEmbeddingB().length;
 
         for (int l = 0; l < cfg.numLayers; l++) {
@@ -590,10 +588,10 @@ public final class RNNModelML implements Millennium {
     }
 
     private static final class Sample {
-        final List<Double> values;
+        final double[][] vecs;
         final double label;
-        Sample(List<Double> values, double label) {
-            this.values = values;
+        Sample(double[][] vecs, double label) {
+            this.vecs = vecs;
             this.label = label;
         }
     }
@@ -605,8 +603,6 @@ public final class RNNModelML implements Millennium {
         PoolingCache poolCache;
         BinaryHead.Cache headCache;
         double prob;
-        double dHeadBias;
-        double dAttnB;
     }
 
     private static final class LayerState {
@@ -644,10 +640,10 @@ public final class RNNModelML implements Millennium {
             this.stat = stat;
         }
         @Override
-        public SequenceData prepare(List<Double> r) {
-            if (r == null) return null;
-            if (r.size() >= 40) return stat.prepare(r);
-            return raw.prepare(r);
+        public SequenceData prepare(double[][] rawVecs) {
+            if (rawVecs == null) return null;
+            if (rawVecs.length >= 40) return stat.prepare(rawVecs);
+            return raw.prepare(rawVecs);
         }
     }
 
@@ -683,28 +679,56 @@ public final class RNNModelML implements Millennium {
     public void trainEpochs(List<Pair<List<ObjectML>, Boolean>> dataset, int epochs) {
         if (dataset == null || dataset.isEmpty()) return;
         int bs = Math.max(1, batchSize);
+
         for (int e = 0; e < epochs; e++) {
             java.util.Collections.shuffle(dataset, rng);
-            training = true;
             List<Sample> currentBatch = new ArrayList<>();
+            double epochLoss = 0.0;
+            double epochCorrect = 0.0;
+            double epochTotal = 0.0;
+            int batches = 0;
+
             for (Pair<List<ObjectML>, Boolean> dataPair : dataset) {
                 double y = dataPair.getY() ? 1.0 : 0.0;
                 if (cfg.labelSmoothing > 0.0) {
                     y = y * (1.0 - cfg.labelSmoothing) + 0.5 * cfg.labelSmoothing;
                 }
-                for (ObjectML obj : dataPair.getX()) {
-                    if (obj == null || obj.getValues() == null || obj.getValues().size() < 2) continue;
-                    currentBatch.add(new Sample(obj.getValues(), y));
-                }
-                if (currentBatch.size() >= bs) {
-                    trainBatch(currentBatch);
-                    currentBatch.clear();
+
+                double[][] vecs = prepareVectors(dataPair.getX());
+                if (vecs.length < 2) continue;
+
+                int chunkSize = 150;
+                for (int i = 0; i < vecs.length; i += chunkSize) {
+                    int end = Math.min(vecs.length, i + chunkSize);
+                    if (end - i < 2) continue;
+                    double[][] chunk = new double[end - i][2];
+                    System.arraycopy(vecs, i, chunk, 0, end - i);
+
+                    currentBatch.add(new Sample(chunk, y));
+
+                    if (currentBatch.size() >= bs) {
+                        double[] res = trainBatch(currentBatch);
+                        epochLoss += res[0];
+                        epochCorrect += res[1];
+                        epochTotal += res[2];
+                        batches++;
+                        currentBatch.clear();
+                    }
                 }
             }
             if (!currentBatch.isEmpty()) {
-                trainBatch(currentBatch);
+                double[] res = trainBatch(currentBatch);
+                epochLoss += res[0];
+                epochCorrect += res[1];
+                epochTotal += res[2];
+                batches++;
             }
+
+            double finalLoss = batches > 0 ? epochLoss / batches : 0.0;
+            double accuracy = epochTotal > 0 ? (epochCorrect / epochTotal) * 100.0 : 0.0;
+            String accStr = String.format("%.1f%%", accuracy);
+
+            Logger.info("Epoch " + (e + 1) + "/" + epochs + " completed. Avg Loss: " + finalLoss + " | Accuracy: " + accStr);
         }
-        training = false;
     }
 }

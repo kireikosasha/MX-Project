@@ -7,8 +7,11 @@ public final class AdamW {
 
     public long t = 0;
 
-    public void step(double[] w, double[] g, double[] m, double[] v, double lr, double wd, double clip) {
+    public void incrementStep() {
         t++;
+    }
+
+    public void step(double[] w, double[] g, double[] m, double[] v, double lr, double wd, double clip) {
         double bc1 = 1.0 - Math.pow(B1, t);
         double bc2 = 1.0 - Math.pow(B2, t);
 
@@ -31,7 +34,6 @@ public final class AdamW {
     }
 
     public void stepScalar(DoubleRef w, double g, DoubleRef m, DoubleRef v, double lr, double wd, double clip) {
-        t++;
         double bc1 = 1.0 - Math.pow(B1, t);
         double bc2 = 1.0 - Math.pow(B2, t);
 

@@ -94,50 +94,54 @@ public final class LSTMLayer {
             System.arraycopy(cPrev, 0, c[0], 0, hiddenSize);
         }
 
+        double[] hInBuf = new double[hiddenSize];
+        double[] ftBuf = new double[hiddenSize];
+        double[] iiBuf = new double[hiddenSize];
+        double[] ggBuf = new double[hiddenSize];
+        double[] ooBuf = new double[hiddenSize];
+        double[] cNowBuf = new double[hiddenSize];
+        double[] tanhNowBuf = new double[hiddenSize];
+        double[] preBuf = new double[hiddenSize];
+
         for (int s = 0; s < T; s++) {
             int t = stepToTime[s];
             double[] x = xTime[t];
 
-            double[] hIn = hPrev;
             if (training && recMask != null) {
-                double[] tmp = new double[hiddenSize];
-                for (int i = 0; i < hiddenSize; i++) tmp[i] = hPrev[i] * recMask[i];
-                hIn = tmp;
+                for (int i = 0; i < hiddenSize; i++) hInBuf[i] = hPrev[i] * recMask[i];
+            } else {
+                System.arraycopy(hPrev, 0, hInBuf, 0, hiddenSize);
             }
 
-            double[] ft = gateSigmoid(x, hIn, Wf, Uf, bf);
-            double[] ii = gateSigmoid(x, hIn, Wi, Ui, bi);
-            double[] gg = gateTanh(x, hIn, Wc, Uc, bc);
-            double[] oo = gateSigmoid(x, hIn, Wo, Uo, bo);
-
-            double[] cNow = new double[hiddenSize];
-            double[] tanhNow = new double[hiddenSize];
-            double[] pre = new double[hiddenSize];
+            gateSigmoid(x, hInBuf, Wf, Uf, bf, ftBuf);
+            gateSigmoid(x, hInBuf, Wi, Ui, bi, iiBuf);
+            gateTanh(x, hInBuf, Wc, Uc, bc, ggBuf);
+            gateSigmoid(x, hInBuf, Wo, Uo, bo, ooBuf);
 
             for (int k = 0; k < hiddenSize; k++) {
-                cNow[k] = ft[k] * cPrev[k] + ii[k] * gg[k];
-                tanhNow[k] = Math.tanh(cNow[k]);
-                pre[k] = oo[k] * tanhNow[k];
+                cNowBuf[k] = ftBuf[k] * cPrev[k] + iiBuf[k] * ggBuf[k];
+                tanhNowBuf[k] = Math.tanh(cNowBuf[k]);
+                preBuf[k] = ooBuf[k] * tanhNowBuf[k];
             }
 
             LayerNorm.Cache lnc = cache != null ? (lnCache[s] = new LayerNorm.Cache()) : null;
-            double[] hNow = LayerNorm.forward(pre, lnGamma, lnBeta, 0, lnc);
+            double[] hNow = LayerNorm.forward(preBuf, lnGamma, lnBeta, 0, lnc);
 
-            out[t] = hNow;
+            System.arraycopy(hNow, 0, out[t], 0, hiddenSize);
 
-            hPrev = hNow;
-            cPrev = cNow;
+            System.arraycopy(hNow, 0, hPrev, 0, hiddenSize);
+            System.arraycopy(cNowBuf, 0, cPrev, 0, hiddenSize);
 
             if (cache != null) {
                 System.arraycopy(hNow, 0, h[s + 1], 0, hiddenSize);
-                System.arraycopy(cNow, 0, c[s + 1], 0, hiddenSize);
-                f[s] = ft;
-                it[s] = ii;
-                g[s] = gg;
-                o[s] = oo;
-                tanhC[s] = tanhNow;
-                preLN[s] = pre;
-                System.arraycopy(x, 0, xByStep[s], 0, inputSize);
+                System.arraycopy(cNowBuf, 0, c[s + 1], 0, hiddenSize);
+                System.arraycopy(ftBuf, 0, f[s] = new double[hiddenSize], 0, hiddenSize);
+                System.arraycopy(iiBuf, 0, it[s] = new double[hiddenSize], 0, hiddenSize);
+                System.arraycopy(ggBuf, 0, g[s] = new double[hiddenSize], 0, hiddenSize);
+                System.arraycopy(ooBuf, 0, o[s] = new double[hiddenSize], 0, hiddenSize);
+                System.arraycopy(tanhNowBuf, 0, tanhC[s] = new double[hiddenSize], 0, hiddenSize);
+                System.arraycopy(preBuf, 0, preLN[s] = new double[hiddenSize], 0, hiddenSize);
+                System.arraycopy(x, 0, xByStep[s] = new double[inputSize], 0, inputSize);
             }
         }
 
@@ -174,20 +178,38 @@ public final class LSTMLayer {
             dbf = new double[hiddenSize]; dbi = new double[hiddenSize]; dbc = new double[hiddenSize]; dbo = new double[hiddenSize];
             dLnGamma = new double[hiddenSize]; dLnBeta = new double[hiddenSize];
         }
+
+        public void zero() {
+            java.util.Arrays.fill(dWf, 0.0); java.util.Arrays.fill(dWi, 0.0); java.util.Arrays.fill(dWc, 0.0); java.util.Arrays.fill(dWo, 0.0);
+            java.util.Arrays.fill(dUf, 0.0); java.util.Arrays.fill(dUi, 0.0); java.util.Arrays.fill(dUc, 0.0); java.util.Arrays.fill(dUo, 0.0);
+            java.util.Arrays.fill(dbf, 0.0); java.util.Arrays.fill(dbi, 0.0); java.util.Arrays.fill(dbc, 0.0); java.util.Arrays.fill(dbo, 0.0);
+            java.util.Arrays.fill(dLnGamma, 0.0); java.util.Arrays.fill(dLnBeta, 0.0);
+        }
     }
 
-    public double[][] backward(Cache cch, double[][] dH_time, Grad gAcc) {
+    public double[][] backward(Cache cch, double[][] dH_time, Grad gAcc, double clip) {
         int T = cch.T;
         double[][] dX_time = new double[T][inputSize];
 
         double[] dhNext = new double[hiddenSize];
         double[] dcNext = new double[hiddenSize];
 
+        double[] dOo = new double[hiddenSize];
+        double[] dFt = new double[hiddenSize];
+        double[] dIt = new double[hiddenSize];
+        double[] dGg = new double[hiddenSize];
+        double[] dc = new double[hiddenSize];
+        double[] dhPrev = new double[hiddenSize];
+        double[] dh = new double[hiddenSize];
+
         for (int s = T - 1; s >= 0; s--) {
             int t = cch.stepToTime[s];
 
-            double[] dh = new double[hiddenSize];
-            for (int k = 0; k < hiddenSize; k++) dh[k] = dH_time[t][k] + dhNext[k];
+            for (int k = 0; k < hiddenSize; k++) {
+                dh[k] = dH_time[t][k] + dhNext[k];
+                if(dh[k] > clip) dh[k] = clip;
+                else if(dh[k] < -clip) dh[k] = -clip;
+            }
 
             double[] dPre = LayerNorm.backward(dh, lnGamma, 0, cch.lnCache[s], gAcc.dLnGamma, gAcc.dLnBeta);
 
@@ -196,15 +218,8 @@ public final class LSTMLayer {
             double[] gg = cch.g[s];
             double[] oo = cch.o[s];
             double[] tanhC = cch.tanhC[s];
-
             double[] cPrev = cch.c[s];
             double[] hPrev = cch.h[s];
-
-            double[] dOo = new double[hiddenSize];
-            double[] dFt = new double[hiddenSize];
-            double[] dIt = new double[hiddenSize];
-            double[] dGg = new double[hiddenSize];
-            double[] dc = new double[hiddenSize];
 
             for (int k = 0; k < hiddenSize; k++) {
                 dOo[k] = dPre[k] * tanhC[k];
@@ -257,10 +272,11 @@ public final class LSTMLayer {
                     sdx += Wc[wOff] * dGg[n];
                     sdx += Wo[wOff] * dOo[n];
                 }
+                if(sdx > clip) sdx = clip;
+                else if(sdx < -clip) sdx = -clip;
                 dX_time[t][k] += sdx;
             }
 
-            double[] dhPrev = new double[hiddenSize];
             for (int j = 0; j < hiddenSize; j++) {
                 double sdh = 0.0;
                 for (int n = 0; n < hiddenSize; n++) {
@@ -283,31 +299,29 @@ public final class LSTMLayer {
         return dX_time;
     }
 
-    private double[] gateSigmoid(double[] x, double[] h, double[] W, double[] U, double[] b) {
-        double[] r = new double[hiddenSize];
+    private void gateSigmoid(double[] x, double[] h, double[] W, double[] U, double[] b, double[] out) {
         for (int n = 0; n < hiddenSize; n++) {
             double sum = b[n];
             int wOff = n * inputSize;
             for (int k = 0; k < inputSize; k++) sum += W[wOff + k] * x[k];
             int uOff = n * hiddenSize;
             for (int k = 0; k < hiddenSize; k++) sum += U[uOff + k] * h[k];
-            sum = MathOps.clamp(sum, -50.0, 50.0);
-            r[n] = MathOps.sigmoid(sum);
+            if (sum > 50.0) sum = 50.0;
+            else if (sum < -50.0) sum = -50.0;
+            out[n] = 1.0 / (1.0 + Math.exp(-sum));
         }
-        return r;
     }
 
-    private double[] gateTanh(double[] x, double[] h, double[] W, double[] U, double[] b) {
-        double[] r = new double[hiddenSize];
+    private void gateTanh(double[] x, double[] h, double[] W, double[] U, double[] b, double[] out) {
         for (int n = 0; n < hiddenSize; n++) {
             double sum = b[n];
             int wOff = n * inputSize;
             for (int k = 0; k < inputSize; k++) sum += W[wOff + k] * x[k];
             int uOff = n * hiddenSize;
             for (int k = 0; k < hiddenSize; k++) sum += U[uOff + k] * h[k];
-            sum = MathOps.clamp(sum, -50.0, 50.0);
-            r[n] = Math.tanh(sum);
+            if (sum > 50.0) sum = 50.0;
+            else if (sum < -50.0) sum = -50.0;
+            out[n] = Math.tanh(sum);
         }
-        return r;
     }
 }

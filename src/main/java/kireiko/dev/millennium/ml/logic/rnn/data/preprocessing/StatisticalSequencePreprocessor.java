@@ -4,6 +4,7 @@ import kireiko.dev.millennium.math.Statistics;
 import kireiko.dev.millennium.ml.data.reasoning.MathML;
 import kireiko.dev.millennium.ml.logic.rnn.data.SequenceData;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -11,7 +12,7 @@ public final class StatisticalSequencePreprocessor implements SequencePreprocess
     private final int inputSize;
 
     private static final double[] SCALERS = {
-            5.0, 0.5, 10.0, 20.0, 3.0, 10.0, 20.0, 0.5, 1.0, 15.0, 5.0, 2.0, 2.0, 2.0, 2.0, 1.0
+                    5.0, 0.5, 10.0, 20.0, 3.0, 10.0, 20.0, 0.5, 1.0, 15.0, 5.0, 2.0, 2.0, 2.0, 2.0, 1.0
     };
 
     public StatisticalSequencePreprocessor(int inputSize) {
@@ -19,10 +20,12 @@ public final class StatisticalSequencePreprocessor implements SequencePreprocess
     }
 
     @Override
-    public SequenceData prepare(List<Double> raw) {
-        int totalLen = raw.size();
-        int numWindows = Math.max(2, Math.min(20, totalLen / 5));
-        int windowSize = Math.max(1, totalLen / numWindows);
+    public SequenceData prepare(double[][] rawVecs) {
+        int totalLen = rawVecs.length;
+        int targetWindowSize = 20;
+        int numWindows = Math.max(2, totalLen / targetWindowSize);
+        numWindows = Math.min(15, numWindows);
+        int windowSize = Math.max(15, totalLen / numWindows);
 
         double[][] x = new double[numWindows][inputSize];
         int used = 0;
@@ -31,23 +34,33 @@ public final class StatisticalSequencePreprocessor implements SequencePreprocess
             int start = w * windowSize;
             if (start >= totalLen) break;
             int end = (w == numWindows - 1) ? totalLen : Math.min(totalLen, start + windowSize);
-            List<Double> window = raw.subList(start, end);
-            if (window.size() < 3) continue;
-            x[used++] = extract(window);
+
+            List<Double> magnitudes = new ArrayList<>(end - start);
+            for(int i = start; i < end; i++) {
+                magnitudes.add(Math.hypot(rawVecs[i][0], rawVecs[i][1]));
+            }
+
+            if (magnitudes.size() < 3) continue;
+            x[used++] = extract(magnitudes);
         }
 
+        double[] mask;
+        double[][] out;
         if (used < 2) {
-            double[][] xx = new double[Math.max(2, used)][inputSize];
-            if (used >= 0) System.arraycopy(x, 0, xx, 0, used);
-            x = xx;
-            used = x.length;
+            int targetLen = Math.max(2, used);
+            out = new double[targetLen][inputSize];
+            mask = new double[targetLen];
+            if (used > 0) {
+                System.arraycopy(x, 0, out, 0, used);
+            }
+            for(int i = 0; i < used; i++) mask[i] = 1.0;
+        } else {
+            out = new double[used][inputSize];
+            System.arraycopy(x, 0, out, 0, used);
+            mask = new double[used];
+            for (int i = 0; i < used; i++) mask[i] = 1.0;
         }
 
-        double[] mask = new double[used];
-        for (int i = 0; i < used; i++) mask[i] = 1.0;
-
-        double[][] out = new double[used][inputSize];
-        System.arraycopy(x, 0, out, 0, used);
         return new SequenceData(out, mask);
     }
 

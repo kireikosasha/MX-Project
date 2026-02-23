@@ -2,8 +2,6 @@ package kireiko.dev.millennium.ml.logic.rnn.data.preprocessing;
 
 import kireiko.dev.millennium.ml.logic.rnn.data.SequenceData;
 
-import java.util.List;
-
 public final class HybridSequencePreprocessor implements SequencePreprocessor {
     private final int inputSize;
     private final StatisticalSequencePreprocessor stat;
@@ -14,10 +12,12 @@ public final class HybridSequencePreprocessor implements SequencePreprocessor {
     }
 
     @Override
-    public SequenceData prepare(List<Double> raw) {
-        int totalLen = raw.size();
-        int numWindows = Math.max(2, Math.min(15, totalLen / 5));
-        int windowSize = Math.max(1, totalLen / numWindows);
+    public SequenceData prepare(double[][] rawVecs) {
+        int totalLen = rawVecs.length;
+        int targetWindowSize = 20;
+        int numWindows = Math.max(2, totalLen / targetWindowSize);
+        numWindows = Math.min(15, numWindows);
+        int windowSize = Math.max(15, totalLen / numWindows);
 
         double[][] x = new double[numWindows][inputSize];
         int used = 0;
@@ -26,33 +26,46 @@ public final class HybridSequencePreprocessor implements SequencePreprocessor {
             int start = w * windowSize;
             if (start >= totalLen) break;
             int end = (w == numWindows - 1) ? totalLen : Math.min(totalLen, start + windowSize);
-            List<Double> window = raw.subList(start, end);
-            if (window.size() < 3) continue;
+
+            int winLen = end - start;
+            if (winLen < 3) continue;
+
+            double[][] window = new double[winLen][2];
+            System.arraycopy(rawVecs, start, window, 0, winLen);
 
             double[] s = stat.prepare(window).x[0];
             double[] r = rawFeatures(window);
             x[used++] = combine(s, r);
         }
 
+        double[] mask;
+        double[][] out;
         if (used < 2) {
-            double[][] xx = new double[Math.max(2, used)][inputSize];
-            if (used >= 0) System.arraycopy(x, 0, xx, 0, used);
-            x = xx;
-            used = x.length;
+            int targetLen = Math.max(2, used);
+            out = new double[targetLen][inputSize];
+            mask = new double[targetLen];
+            if (used > 0) {
+                System.arraycopy(x, 0, out, 0, used);
+            }
+            for(int i = 0; i < used; i++) mask[i] = 1.0;
+        } else {
+            out = new double[used][inputSize];
+            System.arraycopy(x, 0, out, 0, used);
+            mask = new double[used];
+            for (int i = 0; i < used; i++) mask[i] = 1.0;
         }
 
-        double[] mask = new double[used];
-        for (int i = 0; i < used; i++) mask[i] = 1.0;
-
-        double[][] out = new double[used][inputSize];
-        System.arraycopy(x, 0, out, 0, used);
         return new SequenceData(out, mask);
     }
 
-    private double[] rawFeatures(List<Double> w) {
+    private double[] rawFeatures(double[][] w) {
         double[] f = new double[inputSize];
-        int step = Math.max(1, w.size() / inputSize);
-        for (int i = 0; i < inputSize && i * step < w.size(); i++) f[i] = Math.tanh(w.get(i * step) / 100.0);
+        int step = Math.max(1, w.length / (inputSize / 2));
+        int idx = 0;
+        for (int i = 0; i < inputSize / 2 && i * step < w.length; i++) {
+            f[idx++] = Math.tanh(w[i * step][0] / 100.0);
+            f[idx++] = Math.tanh(w[i * step][1] / 100.0);
+        }
         return f;
     }
 
