@@ -108,7 +108,6 @@ public class MX extends JavaPlugin {
         protocolManager.addPacketListener(new UseEntityListener());
         protocolManager.addPacketListener(new LatencyHandler());
         protocolManager.addPacketListener(new VelocityListener());
-        protocolManager.addPacketListener(new EntityActionListener());
         protocolManager.addPacketListener(new VehicleTeleportListener());
         { // omni listener
             final Set<PacketType> listeners = new HashSet<>();

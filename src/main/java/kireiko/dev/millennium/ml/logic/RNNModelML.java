@@ -4,7 +4,6 @@ import kireiko.dev.millennium.ml.data.ObjectML;
 import kireiko.dev.millennium.ml.data.ResultML;
 import kireiko.dev.millennium.ml.logic.rnn.*;
 import kireiko.dev.millennium.ml.logic.rnn.data.SequenceData;
-import kireiko.dev.millennium.ml.logic.rnn.data.preprocessing.HybridSequencePreprocessor;
 import kireiko.dev.millennium.ml.logic.rnn.data.preprocessing.RawSequencePreprocessor;
 import kireiko.dev.millennium.ml.logic.rnn.data.preprocessing.SequencePreprocessor;
 import kireiko.dev.millennium.ml.logic.rnn.data.preprocessing.StatisticalSequencePreprocessor;
@@ -24,12 +23,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public final class RNNModelML implements Millennium {
 
@@ -37,36 +32,11 @@ public final class RNNModelML implements Millennium {
     public enum PoolingMode { LAST_HIDDEN, MEAN_POOLING, MAX_POOLING, ATTENTION }
 
     private static final int MAGIC = 0x524E4E36;
-    private static final int VERSION = 7;
-    private static final int LEGACY_VERSION = 6;
-    private static final double MIN_LEARNING_RATE = 1e-8;
-    private static final double MAX_LEARNING_RATE = 1.0;
-    private static final double MAX_DROPOUT = 0.95;
-    private static final double MAX_WEIGHT_DECAY = 1.0;
-    private static final double MAX_GRAD_CLIP = 1_000_000.0;
-    private static final double MAX_LABEL_SMOOTHING = 0.5;
-    private static final double DEFAULT_LEARNING_RATE = 0.0003;
-    private static final double DEFAULT_DROPOUT = 0.1;
-    private static final double DEFAULT_RECURRENT_DROPOUT = 0.2;
-    private static final double DEFAULT_WEIGHT_DECAY = 1e-3;
-    private static final double DEFAULT_GRAD_CLIP = 5.0;
-    private static final double DEFAULT_LABEL_SMOOTHING = 0.1;
-    private static final int DEFAULT_INPUT_SIZE = 16;
-    private static final int DEFAULT_HIDDEN_SIZE = 64;
-    private static final int DEFAULT_NUM_LAYERS = 2;
-    private static final int MIN_INPUT_SIZE = 2;
-    private static final int MAX_INPUT_SIZE = 1024;
-    private static final int MIN_HIDDEN_SIZE = 4;
-    private static final int MAX_HIDDEN_SIZE = 1024;
-    private static final int MIN_NUM_LAYERS = 1;
-    private static final int MAX_NUM_LAYERS = 8;
-    private static final int DEFAULT_CHUNK_SIZE = 150;
+    private static final int VERSION = 6;
+    private static final double CHECKPOINT_DECISION_THRESHOLD = 0.60;
 
     private final RNNConfig cfg;
     private final Random rng;
-    private final ReadWriteLock modelLock;
-    private final Lock readLock;
-    private final Lock writeLock;
 
     private final RawSequencePreprocessor rawPre;
     private final StatisticalSequencePreprocessor statPre;
@@ -126,20 +96,15 @@ public final class RNNModelML implements Millennium {
     }
 
     public RNNModelML(RNNConfig cfg) {
-        this.cfg = copyConfig(cfg);
-        sanitizeConfig();
-        RNNConfig c = this.cfg;
-        this.rng = new Random(c.seed);
-        this.modelLock = new ReentrantReadWriteLock();
-        this.readLock = modelLock.readLock();
-        this.writeLock = modelLock.writeLock();
+        this.cfg = cfg;
+        this.rng = new Random(cfg.seed);
 
-        this.rawPre = new RawSequencePreprocessor(c.inputSize, rng);
-        this.statPre = new StatisticalSequencePreprocessor(c.inputSize);
-        this.hybridPre = new HybridSequencePreprocessor(c.inputSize);
-        this.activePre = pickPre(c.inputMode);
+        this.rawPre = new RawSequencePreprocessor(cfg.inputSize, rng);
+        this.statPre = new StatisticalSequencePreprocessor(cfg.inputSize);
+        this.hybridPre = new HybridPre(rawPre, statPre);
+        this.activePre = pickPre(cfg.inputMode);
 
-        this.encoder = new StackedBiLSTM(c.inputSize, c.hiddenSize, c.numLayers, c.bidirectional, rng);
+        this.encoder = new StackedBiLSTM(cfg.inputSize, cfg.hiddenSize, cfg.numLayers, cfg.bidirectional, rng);
 
         int outSize = encoder.outputSize();
 
@@ -147,7 +112,7 @@ public final class RNNModelML implements Millennium {
         this.lastPooling = new LastHiddenPooling(outSize);
         this.meanPooling = new MeanPooling(outSize);
         this.maxPooling = new MaxPooling(outSize);
-        this.activePooling = pickPool(c.poolingMode);
+        this.activePooling = pickPool(cfg.poolingMode);
 
         this.head = new BinaryHead(outSize, rng);
         this.opt = new AdamW();
@@ -168,47 +133,28 @@ public final class RNNModelML implements Millennium {
         this.mAttnB = new AdamW.DoubleRef(0.0);
         this.vAttnB = new AdamW.DoubleRef(0.0);
 
-        this.dEmbWy = new double[c.inputSize];
-        this.mEmbWy = new double[c.inputSize];
-        this.vEmbWy = new double[c.inputSize];
+        this.dEmbWy = new double[cfg.inputSize];
+        this.mEmbWy = new double[cfg.inputSize];
+        this.vEmbWy = new double[cfg.inputSize];
 
-        this.dEmbWp = new double[c.inputSize];
-        this.mEmbWp = new double[c.inputSize];
-        this.vEmbWp = new double[c.inputSize];
+        this.dEmbWp = new double[cfg.inputSize];
+        this.mEmbWp = new double[cfg.inputSize];
+        this.vEmbWp = new double[cfg.inputSize];
 
-        this.dEmbB = new double[c.inputSize];
-        this.mEmbB = new double[c.inputSize];
-        this.vEmbB = new double[c.inputSize];
+        this.dEmbB = new double[cfg.inputSize];
+        this.mEmbB = new double[cfg.inputSize];
+        this.vEmbB = new double[cfg.inputSize];
 
         this.encGradAcc = new StackedBiLSTM.Grad(encoder);
 
-        int L = c.numLayers;
+        int L = cfg.numLayers;
         this.fwdState = new LayerState[L];
-        this.bwdState = c.bidirectional ? new LayerState[L] : null;
+        this.bwdState = cfg.bidirectional ? new LayerState[L] : null;
 
         for (int l = 0; l < L; l++) {
             fwdState[l] = new LayerState(encoder.fwd[l]);
-            if (c.bidirectional) bwdState[l] = new LayerState(encoder.bwd[l]);
+            if (cfg.bidirectional) bwdState[l] = new LayerState(encoder.bwd[l]);
         }
-    }
-
-    private static RNNConfig copyConfig(RNNConfig src) {
-        RNNConfig in = src == null ? new RNNConfig() : src;
-        RNNConfig out = new RNNConfig();
-        out.inputSize = in.inputSize;
-        out.hiddenSize = in.hiddenSize;
-        out.numLayers = in.numLayers;
-        out.bidirectional = in.bidirectional;
-        out.inputMode = in.inputMode;
-        out.poolingMode = in.poolingMode;
-        out.learningRate = in.learningRate;
-        out.dropoutRate = in.dropoutRate;
-        out.recurrentDropoutRate = in.recurrentDropoutRate;
-        out.weightDecay = in.weightDecay;
-        out.gradientClip = in.gradientClip;
-        out.labelSmoothing = in.labelSmoothing;
-        out.seed = in.seed;
-        return out;
     }
 
     private SequencePreprocessor pickPre(InputMode m) {
@@ -224,225 +170,83 @@ public final class RNNModelML implements Millennium {
         return lastPooling;
     }
 
-    public void setLearningRate(double v) {
-        writeLock.lock();
-        try {
-            cfg.learningRate = clampFinite(v, MIN_LEARNING_RATE, MAX_LEARNING_RATE, cfg.learningRate);
-        } finally {
-            writeLock.unlock();
-        }
-    }
-    public void setDropoutRate(double v) {
-        writeLock.lock();
-        try {
-            cfg.dropoutRate = clampFinite(v, 0.0, MAX_DROPOUT, cfg.dropoutRate);
-        } finally {
-            writeLock.unlock();
-        }
-    }
-    public void setRecurrentDropoutRate(double v) {
-        writeLock.lock();
-        try {
-            cfg.recurrentDropoutRate = clampFinite(v, 0.0, MAX_DROPOUT, cfg.recurrentDropoutRate);
-        } finally {
-            writeLock.unlock();
-        }
-    }
-    public void setWeightDecay(double v) {
-        writeLock.lock();
-        try {
-            cfg.weightDecay = clampFinite(v, 0.0, MAX_WEIGHT_DECAY, cfg.weightDecay);
-        } finally {
-            writeLock.unlock();
-        }
-    }
-    public void setGradientClip(double v) {
-        writeLock.lock();
-        try {
-            cfg.gradientClip = clampFinite(v, 0.0, MAX_GRAD_CLIP, cfg.gradientClip);
-        } finally {
-            writeLock.unlock();
-        }
-    }
-    public void setLabelSmoothing(double v) {
-        writeLock.lock();
-        try {
-            cfg.labelSmoothing = clampFinite(v, 0.0, MAX_LABEL_SMOOTHING, cfg.labelSmoothing);
-        } finally {
-            writeLock.unlock();
-        }
-    }
-    public void setBatchSize(int v) {
-        writeLock.lock();
-        try {
-            this.batchSize = Math.max(1, v);
-        } finally {
-            writeLock.unlock();
-        }
-    }
+    public void setLearningRate(double v) { cfg.learningRate = v; }
+    public void setDropoutRate(double v) { cfg.dropoutRate = v; }
+    public void setRecurrentDropoutRate(double v) { cfg.recurrentDropoutRate = v; }
+    public void setWeightDecay(double v) { cfg.weightDecay = v; }
+    public void setGradientClip(double v) { cfg.gradientClip = v; }
+    public void setLabelSmoothing(double v) { cfg.labelSmoothing = v; }
+    public void setBatchSize(int v) { this.batchSize = Math.max(1, v); }
 
     public void setInputMode(InputMode mode) {
-        writeLock.lock();
-        try {
-            if (mode == null) mode = InputMode.HYBRID;
-            cfg.inputMode = mode;
-            activePre = pickPre(mode);
-        } finally {
-            writeLock.unlock();
-        }
+        cfg.inputMode = mode;
+        activePre = pickPre(mode);
     }
 
     public void setPoolingMode(PoolingMode mode) {
-        writeLock.lock();
-        try {
-            if (mode == null) mode = PoolingMode.ATTENTION;
-            cfg.poolingMode = mode;
-            activePooling = pickPool(mode);
-        } finally {
-            writeLock.unlock();
-        }
+        cfg.poolingMode = mode;
+        activePooling = pickPool(mode);
     }
 
     private double[][] prepareVectors(List<ObjectML> o) {
-        if (o == null || o.size() < 2) return new double[0][0];
-        ObjectML yawObj = o.get(0);
-        ObjectML pitchObj = o.get(1);
-        if (yawObj == null || pitchObj == null) return new double[0][0];
-
-        List<Double> yaws = yawObj.getValues();
-        List<Double> pitches = pitchObj.getValues();
-        if (yaws == null || pitches == null) return new double[0][0];
-
+        if (o == null || o.isEmpty()) return new double[0][0];
+        List<Double> yaws = o.get(0).getValues();
+        List<Double> pitches = o.size() > 1 ? o.get(1).getValues() : yaws;
         int len = Math.min(yaws.size(), pitches.size());
-        if (len <= 0) return new double[0][0];
-
         double[][] res = new double[len][2];
         for (int i = 0; i < len; i++) {
-            res[i][0] = safeFinite(yaws.get(i));
-            res[i][1] = safeFinite(pitches.get(i));
+            res[i][0] = yaws.get(i) == null ? 0.0 : yaws.get(i);
+            res[i][1] = pitches.get(i) == null ? 0.0 : pitches.get(i);
         }
         return res;
     }
 
-    private static double safeFinite(Double v) {
-        if (v == null) return 0.0;
-        double x = v;
-        return Double.isFinite(x) ? x : 0.0;
-    }
-
-    private void appendChunks(double[][] vecs, double label, List<Sample> out) {
-        for (int i = 0; i < vecs.length; i += DEFAULT_CHUNK_SIZE) {
-            int end = Math.min(vecs.length, i + DEFAULT_CHUNK_SIZE);
-            if (end - i < 2) continue;
-            double[][] chunk = new double[end - i][2];
-            System.arraycopy(vecs, i, chunk, 0, end - i);
-            out.add(new Sample(chunk, label));
-        }
-    }
-
     @Override
     public ResultML checkData(List<ObjectML> o) {
-        readLock.lock();
-        try {
-            ResultML r = new ResultML();
-            double prob = 0.5;
-            if (o == null || o.isEmpty()) {
-                Logger.warn("checkData received empty input; returning neutral probability 0.5");
-            } else {
-                double[][] vecs = prepareVectors(o);
-                if (vecs.length >= 2) {
-                    prob = forwardProbabilityOrNaN(vecs);
-                    if (!Double.isFinite(prob)) {
-                        Logger.warn("checkData produced non-finite probability; returning neutral probability 0.5");
-                        prob = 0.5;
-                    }
-                } else {
-                    Logger.warn("checkData received sequence with less than 2 valid points; returning neutral probability 0.5");
-                }
-            }
-            if (!Double.isFinite(prob)) {
-                Logger.warn("checkData returned non-finite probability after sanitization; forcing 0.5");
-                prob = 0.5;
-            }
-            prob = Math.max(0.0, Math.min(1.0, prob));
+        ResultML r = new ResultML();
+        if (o == null || o.isEmpty()) return r;
 
-            r.statisticsResult.UNUSUAL = prob;
-            r.statisticsResult.STRANGE = 0;
-            r.statisticsResult.SUSPECTED = 0;
-            r.statisticsResult.SUSPICIOUSLY = 0;
+        double[][] vecs = prepareVectors(o);
+        if (vecs.length < 2) return r;
 
-            return r;
-        } finally {
-            readLock.unlock();
-        }
+        double prob = forwardProbability(vecs);
+
+        r.statisticsResult.UNUSUAL = prob;
+        r.statisticsResult.STRANGE = 0;
+        r.statisticsResult.SUSPECTED = 0;
+        r.statisticsResult.SUSPICIOUSLY = 0;
+
+        return r;
     }
 
     @Override
     public void learnByData(List<ObjectML> o, boolean isMustBeBlocked) {
-        writeLock.lock();
-        try {
-            if (o == null || o.isEmpty()) return;
+        if (o == null || o.isEmpty()) return;
 
-            double y = isMustBeBlocked ? 1.0 : 0.0;
-            if (cfg.labelSmoothing > 0.0) y = y * (1.0 - cfg.labelSmoothing) + 0.5 * cfg.labelSmoothing;
+        double y = isMustBeBlocked ? 1.0 : 0.0;
+        if (cfg.labelSmoothing > 0.0) y = y * (1.0 - cfg.labelSmoothing) + 0.5 * cfg.labelSmoothing;
 
-            double[][] vecs = prepareVectors(o);
-            if (vecs.length < 2) return;
+        double[][] vecs = prepareVectors(o);
+        if (vecs.length < 2) return;
 
-            List<Sample> samples = new ArrayList<>();
-            appendChunks(vecs, y, samples);
-            if (samples.isEmpty()) return;
+        List<Sample> samples = new ArrayList<>();
+        samples.add(new Sample(vecs, y));
 
-            int bs = Math.max(1, batchSize);
-            int skippedInvalid = 0;
-            int skippedNonFiniteProb = 0;
-            List<Sample> currentBatch = new ArrayList<>(bs);
-            for (Sample s : samples) {
-                currentBatch.add(s);
-                if (currentBatch.size() >= bs) {
-                    TrainBatchResult res = trainBatch(currentBatch);
-                    skippedInvalid += res.skippedInvalidSequence;
-                    skippedNonFiniteProb += res.skippedNonFiniteProb;
-                    currentBatch.clear();
-                }
-            }
-            if (!currentBatch.isEmpty()) {
-                TrainBatchResult res = trainBatch(currentBatch);
-                skippedInvalid += res.skippedInvalidSequence;
-                skippedNonFiniteProb += res.skippedNonFiniteProb;
-            }
-            if (skippedInvalid > 0 || skippedNonFiniteProb > 0) {
-                Logger.warn(String.format(
-                                "learnByData skipped samples -> invalid sequence: %d, non-finite probability: %d",
-                                skippedInvalid, skippedNonFiniteProb));
-            }
-        } finally {
-            writeLock.unlock();
-        }
+        trainBatch(samples);
     }
 
-    private TrainBatchResult trainBatch(List<Sample> batch) {
-        TrainBatchResult res = new TrainBatchResult();
+    private double[] trainBatch(List<Sample> batch) {
         zeroBatchGrads();
 
         int used = 0;
-        int embeddingUsed = 0;
         double batchLoss = 0.0;
         double correct = 0.0;
-        boolean attentionActive = activePooling == attnPooling;
 
         for (Sample s : batch) {
-            ForwardCache fc = forwardCache(s.vecs);
-            if (fc == null) {
-                res.skippedInvalidSequence++;
-                continue;
-            }
+            ForwardCache fc = forwardCache(s.vecs, true);
+            if (fc == null) continue;
 
             double p = fc.prob;
-            if (!Double.isFinite(p)) {
-                res.skippedNonFiniteProb++;
-                continue;
-            }
 
             boolean predictedCheat = p >= 0.5;
             boolean actualCheat = s.label >= 0.5;
@@ -461,21 +265,17 @@ public final class RNNModelML implements Millennium {
             add(dHeadV, hg.dV);
             headBiasGrad += hg.dBias;
 
-            PoolingGrad pg = attentionActive ? new PoolingGrad() : null;
-            if (attentionActive) {
-                pg.dAttentionW = dAttnW;
-                pg.dAttentionB = 0.0;
-            }
+            PoolingGrad pg = new PoolingGrad();
+            pg.dAttentionW = dAttnW;
+            pg.dAttentionB = 0.0;
+
             double[][] dH = activePooling.backward(fc.hTime, fc.seq.mask, dPooled, fc.poolCache, pg);
-            if (attentionActive) {
-                attnBGrad += pg.dAttentionB;
-            }
+            attnBGrad += pg.dAttentionB;
 
-            double[][] dX = encoder.backward(fc.encCache, dH, encGradAcc);
+            double[][] dX = encoder.backward(fc.encCache, dH, encGradAcc, cfg.gradientClip);
 
-            if (fc.usesRawEmbedding) {
+            if (activePre == rawPre || activePre == hybridPre) {
                 accumulateEmbeddingGrad(s.vecs, dX);
-                embeddingUsed++;
             }
 
             used++;
@@ -483,41 +283,20 @@ public final class RNNModelML implements Millennium {
 
         if (used > 0) {
             opt.incrementStep();
-            applyUpdate(used, embeddingUsed, attentionActive);
+            applyUpdate(used);
             step++;
-            res.loss = batchLoss;
-            res.correct = correct;
-            res.used = used;
-            return res;
+            return new double[] { batchLoss / used, correct, used };
         }
 
-        return res;
+        return new double[] { 0.0, 0.0, 0.0 };
     }
 
-    private ValidationResult validateBatch(List<Sample> batch) {
-        ValidationResult res = new ValidationResult();
-        for (Sample s : batch) {
-            double p = forwardProbabilityOrNaN(s.vecs);
-            if (!Double.isFinite(p)) {
-                res.skippedInvalidOrNonFinite++;
-                continue;
-            }
-            p = Math.max(1e-15, Math.min(1.0 - 1e-15, p));
-            double loss = - (s.label * Math.log(p) + (1.0 - s.label) * Math.log(1.0 - p));
-
-            res.loss += loss;
-            res.pairs.add(new PredictionPair(p, s.label));
-            res.used++;
-        }
-        return res;
-    }
-
-    private ForwardCache forwardCache(double[][] raw) {
+    private ForwardCache forwardCache(double[][] raw, boolean training) {
         SequenceData seq = activePre.prepare(raw);
-        if (!hasEnoughValidSteps(seq, 2)) return null;
+        if (seq == null || seq.length() < 2) return null;
 
         StackedBiLSTM.Cache encCache = new StackedBiLSTM.Cache();
-        double[][] hTime = encoder.forward(seq.x, true, cfg.dropoutRate, cfg.recurrentDropoutRate, rng, encCache);
+        double[][] hTime = encoder.forward(seq.x, training, cfg.dropoutRate, cfg.recurrentDropoutRate, rng, encCache);
 
         PoolingCache pc = new PoolingCache();
         double[] pooled = activePooling.forward(hTime, seq.mask, pc);
@@ -532,58 +311,32 @@ public final class RNNModelML implements Millennium {
         fc.poolCache = pc;
         fc.headCache = hc;
         fc.prob = prob;
-        fc.usesRawEmbedding = usesRawEmbedding();
         return fc;
     }
 
     private double forwardProbability(double[][] raw) {
-        return forwardProbability(raw, 0.5);
-    }
-
-    private double forwardProbabilityOrNaN(double[][] raw) {
-        return forwardProbability(raw, Double.NaN);
-    }
-
-    private double forwardProbability(double[][] raw, double fallback) {
-        if (raw == null || raw.length < 2) return fallback;
-        double sum = 0.0;
-        int used = 0;
-
-        for (int i = 0; i < raw.length; i += DEFAULT_CHUNK_SIZE) {
-            int end = Math.min(raw.length, i + DEFAULT_CHUNK_SIZE);
-            if (end - i < 2) continue;
-            double[][] chunk = new double[end - i][2];
-            System.arraycopy(raw, i, chunk, 0, end - i);
-            double p = forwardProbabilitySingleChunk(chunk, Double.NaN);
-            if (!Double.isFinite(p)) continue;
-            sum += p;
-            used++;
-        }
-
-        if (used <= 0) return fallback;
-        double p = sum / used;
-        if (!Double.isFinite(p)) return fallback;
-        return Math.max(0.0, Math.min(1.0, p));
-    }
-
-    private double forwardProbabilitySingleChunk(double[][] raw, double fallback) {
         SequenceData seq = activePre.prepare(raw);
-        if (!hasEnoughValidSteps(seq, 2)) return fallback;
+        if (seq == null || seq.length() < 2) return 0.5;
 
         double[][] hTime = encoder.forward(seq.x, false, 0.0, 0.0, rng, null);
         double[] pooled = activePooling.forward(hTime, seq.mask, null);
-        double p = head.forward(pooled, null);
-        if (!Double.isFinite(p)) return fallback;
-        return Math.max(0.0, Math.min(1.0, p));
+        return head.forward(pooled, null);
     }
 
     private void accumulateEmbeddingGrad(double[][] raw, double[][] dX) {
+        double[] embWy = rawPre.getEmbeddingWy();
+        double[] embWp = rawPre.getEmbeddingWp();
+        double[] embB = rawPre.getEmbeddingB();
+
         int T = Math.min(raw.length, dX.length);
         for (int t = 0; t < T; t++) {
             double vY = Math.tanh(raw[t][0] / 100.0);
             double vP = Math.tanh(raw[t][1] / 100.0);
             for (int i = 0; i < cfg.inputSize; i++) {
                 double g = dX[t][i];
+                if(g > cfg.gradientClip) g = cfg.gradientClip;
+                else if(g < -cfg.gradientClip) g = -cfg.gradientClip;
+
                 dEmbWy[i] += g * vY;
                 dEmbWp[i] += g * vP;
                 dEmbB[i] += g;
@@ -591,113 +344,59 @@ public final class RNNModelML implements Millennium {
         }
     }
 
-    private void applyUpdate(int used, int embeddingUsed, boolean updateAttention) {
+    private void applyUpdate(int used) {
         double inv = 1.0 / used;
-        boolean updateEmbedding = embeddingUsed > 0;
-        double embInv = updateEmbedding ? (1.0 / embeddingUsed) : 0.0;
 
         scaleInPlace(dHeadV, inv);
-        headBiasGrad *= inv;
-
-        if (updateAttention) {
-            scaleInPlace(dAttnW, inv);
-            attnBGrad *= inv;
-        }
-
-        if (updateEmbedding) {
-            scaleInPlace(dEmbWy, embInv);
-            scaleInPlace(dEmbWp, embInv);
-            scaleInPlace(dEmbB, embInv);
-        }
-
-        for (int l = 0; l < cfg.numLayers; l++) {
-            scaleLayerGrad(encGradAcc.fwd[l], inv);
-            if (cfg.bidirectional) scaleLayerGrad(encGradAcc.bwd[l], inv);
-        }
-
-        if (cfg.gradientClip > 0.0 && Double.isFinite(cfg.gradientClip)) {
-            double sq = 0.0;
-            sq += squareNorm(dHeadV) + headBiasGrad * headBiasGrad;
-            if (updateAttention) {
-                sq += squareNorm(dAttnW) + attnBGrad * attnBGrad;
-            }
-            if (updateEmbedding) {
-                sq += squareNorm(dEmbWy);
-                sq += squareNorm(dEmbWp);
-                sq += squareNorm(dEmbB);
-            }
-            for (int l = 0; l < cfg.numLayers; l++) {
-                sq += squareNorm(encGradAcc.fwd[l]);
-                if (cfg.bidirectional) sq += squareNorm(encGradAcc.bwd[l]);
-            }
-
-            double norm = Math.sqrt(sq);
-            if (norm > cfg.gradientClip) {
-                double s = cfg.gradientClip / (norm + 1e-12);
-                scaleInPlace(dHeadV, s);
-                headBiasGrad *= s;
-                if (updateAttention) {
-                    scaleInPlace(dAttnW, s);
-                    attnBGrad *= s;
-                }
-                if (updateEmbedding) {
-                    scaleInPlace(dEmbWy, s);
-                    scaleInPlace(dEmbWp, s);
-                    scaleInPlace(dEmbB, s);
-                }
-                for (int l = 0; l < cfg.numLayers; l++) {
-                    scaleLayerGrad(encGradAcc.fwd[l], s);
-                    if (cfg.bidirectional) scaleLayerGrad(encGradAcc.bwd[l], s);
-                }
-            }
-        }
-
         headBias.value = head.bias;
-        opt.step(head.V, dHeadV, mHeadV, vHeadV, cfg.learningRate, cfg.weightDecay, 0.0);
-        opt.stepScalar(headBias, headBiasGrad, mHeadBias, vHeadBias, cfg.learningRate, 0.0, 0.0);
+        opt.step(head.V, dHeadV, mHeadV, vHeadV, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.stepScalar(headBias, headBiasGrad * inv, mHeadBias, vHeadBias, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
         head.bias = headBias.value;
 
-        if (updateAttention) {
-            attnB.value = attnPooling.b;
-            opt.step(attnPooling.W, dAttnW, mAttnW, vAttnW, cfg.learningRate, cfg.weightDecay, 0.0);
-            opt.stepScalar(attnB, attnBGrad, mAttnB, vAttnB, cfg.learningRate, 0.0, 0.0);
-            attnPooling.b = attnB.value;
-        }
+        scaleInPlace(dAttnW, inv);
+        attnB.value = attnPooling.b;
+        opt.step(attnPooling.W, dAttnW, mAttnW, vAttnW, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.stepScalar(attnB, attnBGrad * inv, mAttnB, vAttnB, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        attnPooling.b = attnB.value;
 
-        if (updateEmbedding) {
-            opt.step(rawPre.getEmbeddingWy(), dEmbWy, mEmbWy, vEmbWy, cfg.learningRate, cfg.weightDecay, 0.0);
-            opt.step(rawPre.getEmbeddingWp(), dEmbWp, mEmbWp, vEmbWp, cfg.learningRate, cfg.weightDecay, 0.0);
-            opt.step(rawPre.getEmbeddingB(), dEmbB, mEmbB, vEmbB, cfg.learningRate, cfg.weightDecay, 0.0);
+        if (activePre == rawPre || activePre == hybridPre) {
+            scaleInPlace(dEmbWy, inv);
+            scaleInPlace(dEmbWp, inv);
+            scaleInPlace(dEmbB, inv);
+            opt.step(rawPre.getEmbeddingWy(), dEmbWy, mEmbWy, vEmbWy, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+            opt.step(rawPre.getEmbeddingWp(), dEmbWp, mEmbWp, vEmbWp, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+            opt.step(rawPre.getEmbeddingB(), dEmbB, mEmbB, vEmbB, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
         }
 
         for (int l = 0; l < cfg.numLayers; l++) {
-            updateLayer(encoder.fwd[l], encGradAcc.fwd[l], fwdState[l]);
-            if (cfg.bidirectional) updateLayer(encoder.bwd[l], encGradAcc.bwd[l], bwdState[l]);
+            updateLayer(encoder.fwd[l], encGradAcc.fwd[l], fwdState[l], inv);
+            if (cfg.bidirectional) updateLayer(encoder.bwd[l], encGradAcc.bwd[l], bwdState[l], inv);
         }
     }
 
-    private boolean usesRawEmbedding() {
-        return activePre == rawPre;
-    }
+    private void updateLayer(LSTMLayer layer, LSTMLayer.Grad g, LayerState s, double inv) {
+        scaleInPlace(g.dWf, inv); scaleInPlace(g.dWi, inv); scaleInPlace(g.dWc, inv); scaleInPlace(g.dWo, inv);
+        scaleInPlace(g.dUf, inv); scaleInPlace(g.dUi, inv); scaleInPlace(g.dUc, inv); scaleInPlace(g.dUo, inv);
+        scaleInPlace(g.dbf, inv); scaleInPlace(g.dbi, inv); scaleInPlace(g.dbc, inv); scaleInPlace(g.dbo, inv);
+        scaleInPlace(g.dLnGamma, inv); scaleInPlace(g.dLnBeta, inv);
 
-    private void updateLayer(LSTMLayer layer, LSTMLayer.Grad g, LayerState s) {
-        opt.step(layer.Wf, g.dWf, s.mWf, s.vWf, cfg.learningRate, cfg.weightDecay, 0.0);
-        opt.step(layer.Wi, g.dWi, s.mWi, s.vWi, cfg.learningRate, cfg.weightDecay, 0.0);
-        opt.step(layer.Wc, g.dWc, s.mWc, s.vWc, cfg.learningRate, cfg.weightDecay, 0.0);
-        opt.step(layer.Wo, g.dWo, s.mWo, s.vWo, cfg.learningRate, cfg.weightDecay, 0.0);
+        opt.step(layer.Wf, g.dWf, s.mWf, s.vWf, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.step(layer.Wi, g.dWi, s.mWi, s.vWi, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.step(layer.Wc, g.dWc, s.mWc, s.vWc, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.step(layer.Wo, g.dWo, s.mWo, s.vWo, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
 
-        opt.step(layer.Uf, g.dUf, s.mUf, s.vUf, cfg.learningRate, cfg.weightDecay, 0.0);
-        opt.step(layer.Ui, g.dUi, s.mUi, s.vUi, cfg.learningRate, cfg.weightDecay, 0.0);
-        opt.step(layer.Uc, g.dUc, s.mUc, s.vUc, cfg.learningRate, cfg.weightDecay, 0.0);
-        opt.step(layer.Uo, g.dUo, s.mUo, s.vUo, cfg.learningRate, cfg.weightDecay, 0.0);
+        opt.step(layer.Uf, g.dUf, s.mUf, s.vUf, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.step(layer.Ui, g.dUi, s.mUi, s.vUi, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.step(layer.Uc, g.dUc, s.mUc, s.vUc, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.step(layer.Uo, g.dUo, s.mUo, s.vUo, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
 
-        opt.step(layer.bf, g.dbf, s.mbf, s.vbf, cfg.learningRate, 0.0, 0.0);
-        opt.step(layer.bi, g.dbi, s.mbi, s.vbi, cfg.learningRate, 0.0, 0.0);
-        opt.step(layer.bc, g.dbc, s.mbc, s.vbc, cfg.learningRate, 0.0, 0.0);
-        opt.step(layer.bo, g.dbo, s.mbo, s.vbo, cfg.learningRate, 0.0, 0.0);
+        opt.step(layer.bf, g.dbf, s.mbf, s.vbf, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.step(layer.bi, g.dbi, s.mbi, s.vbi, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.step(layer.bc, g.dbc, s.mbc, s.vbc, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.step(layer.bo, g.dbo, s.mbo, s.vbo, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
 
-        opt.step(layer.lnGamma, g.dLnGamma, s.mLnG, s.vLnG, cfg.learningRate, 0.0, 0.0);
-        opt.step(layer.lnBeta, g.dLnBeta, s.mLnB, s.vLnB, cfg.learningRate, 0.0, 0.0);
+        opt.step(layer.lnGamma, g.dLnGamma, s.mLnG, s.vLnG, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
+        opt.step(layer.lnBeta, g.dLnBeta, s.mLnB, s.vLnB, cfg.learningRate, cfg.weightDecay, cfg.gradientClip);
     }
 
     private void zeroBatchGrads() {
@@ -727,74 +426,8 @@ public final class RNNModelML implements Millennium {
         for (int i = 0; i < a.length; i++) a[i] *= s;
     }
 
-    private static void scaleLayerGrad(LSTMLayer.Grad g, double s) {
-        scaleInPlace(g.dWf, s); scaleInPlace(g.dWi, s); scaleInPlace(g.dWc, s); scaleInPlace(g.dWo, s);
-        scaleInPlace(g.dUf, s); scaleInPlace(g.dUi, s); scaleInPlace(g.dUc, s); scaleInPlace(g.dUo, s);
-        scaleInPlace(g.dbf, s); scaleInPlace(g.dbi, s); scaleInPlace(g.dbc, s); scaleInPlace(g.dbo, s);
-        scaleInPlace(g.dLnGamma, s); scaleInPlace(g.dLnBeta, s);
-    }
-
-    private static double squareNorm(double[] a) {
-        double s = 0.0;
-        for (int i = 0; i < a.length; i++) s += a[i] * a[i];
-        return s;
-    }
-
-    private static double squareNorm(LSTMLayer.Grad g) {
-        double s = 0.0;
-        s += squareNorm(g.dWf); s += squareNorm(g.dWi); s += squareNorm(g.dWc); s += squareNorm(g.dWo);
-        s += squareNorm(g.dUf); s += squareNorm(g.dUi); s += squareNorm(g.dUc); s += squareNorm(g.dUo);
-        s += squareNorm(g.dbf); s += squareNorm(g.dbi); s += squareNorm(g.dbc); s += squareNorm(g.dbo);
-        s += squareNorm(g.dLnGamma); s += squareNorm(g.dLnBeta);
-        return s;
-    }
-
-    private static boolean hasEnoughValidSteps(SequenceData seq, int minSteps) {
-        if (seq == null || seq.x == null || seq.mask == null || minSteps <= 0) return false;
-        int len = Math.min(seq.x.length, seq.mask.length);
-        if (len < minSteps) return false;
-        int valid = 0;
-        for (int i = 0; i < len; i++) {
-            if (seq.mask[i] > 0.5 && seq.x[i] != null) {
-                valid++;
-                if (valid >= minSteps) return true;
-            }
-        }
-        return false;
-    }
-
-    private static double clampFinite(double v, double min, double max, double fallback) {
-        if (!Double.isFinite(v)) return fallback;
-        if (v < min) return min;
-        if (v > max) return max;
-        return v;
-    }
-
-    private static int clampInt(int v, int min, int max) {
-        if (v < min) return min;
-        if (v > max) return max;
-        return v;
-    }
-
-    private void sanitizeConfig() {
-        cfg.inputSize = clampInt(cfg.inputSize, MIN_INPUT_SIZE, MAX_INPUT_SIZE);
-        cfg.hiddenSize = clampInt(cfg.hiddenSize, MIN_HIDDEN_SIZE, MAX_HIDDEN_SIZE);
-        cfg.numLayers = clampInt(cfg.numLayers, MIN_NUM_LAYERS, MAX_NUM_LAYERS);
-
-        if (cfg.inputMode == null) cfg.inputMode = InputMode.HYBRID;
-        if (cfg.poolingMode == null) cfg.poolingMode = PoolingMode.ATTENTION;
-
-        cfg.learningRate = clampFinite(cfg.learningRate, MIN_LEARNING_RATE, MAX_LEARNING_RATE, DEFAULT_LEARNING_RATE);
-        cfg.dropoutRate = clampFinite(cfg.dropoutRate, 0.0, MAX_DROPOUT, DEFAULT_DROPOUT);
-        cfg.recurrentDropoutRate = clampFinite(cfg.recurrentDropoutRate, 0.0, MAX_DROPOUT, DEFAULT_RECURRENT_DROPOUT);
-        cfg.weightDecay = clampFinite(cfg.weightDecay, 0.0, MAX_WEIGHT_DECAY, DEFAULT_WEIGHT_DECAY);
-        cfg.gradientClip = clampFinite(cfg.gradientClip, 0.0, MAX_GRAD_CLIP, DEFAULT_GRAD_CLIP);
-        cfg.labelSmoothing = clampFinite(cfg.labelSmoothing, 0.0, MAX_LABEL_SMOOTHING, DEFAULT_LABEL_SMOOTHING);
-    }
-
     @Override
     public void saveToFile(String fileName) {
-        readLock.lock();
         try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(Paths.get(fileName))))) {
             out.writeInt(MAGIC);
             out.writeInt(VERSION);
@@ -828,23 +461,14 @@ public final class RNNModelML implements Millennium {
 
             ModelIO.writeArr(out, head.V);
             out.writeDouble(head.bias);
-
-            writeOptimizerState(out);
-        } catch (Exception e) {
-            Logger.error("Failed to save RNN model to " + fileName + ": " + e.getMessage());
-            throw new IllegalStateException("Failed to save RNN model to " + fileName, e);
-        } finally {
-            readLock.unlock();
-        }
+        } catch (Exception ignored) {}
     }
 
     public void load(InputStream in) {
-        writeLock.lock();
         try (DataInputStream dis = new DataInputStream(new BufferedInputStream(in))) {
             int magic = dis.readInt();
             int ver = dis.readInt();
-            if (magic != MAGIC) throw new IllegalStateException("bad model magic");
-            if (ver != VERSION && ver != LEGACY_VERSION) throw new IllegalStateException("bad model version: " + ver);
+            if (magic != MAGIC || ver != VERSION) throw new IllegalStateException("bad model version");
 
             int inSize = dis.readInt();
             int hid = dis.readInt();
@@ -868,7 +492,6 @@ public final class RNNModelML implements Millennium {
             cfg.weightDecay = dis.readDouble();
             cfg.gradientClip = dis.readDouble();
             cfg.labelSmoothing = dis.readDouble();
-            sanitizeConfig();
 
             batchSize = Math.max(1, dis.readInt());
             step = dis.readLong();
@@ -885,18 +508,7 @@ public final class RNNModelML implements Millennium {
 
             readInto(dis, head.V);
             head.bias = dis.readDouble();
-
-            if (ver >= VERSION) {
-                readOptimizerState(dis);
-            } else {
-                resetOptimizerState();
-            }
-        } catch (Exception e) {
-            Logger.error("Failed to load RNN model: " + e.getMessage());
-            throw new IllegalStateException("Failed to load RNN model", e);
-        } finally {
-            writeLock.unlock();
-        }
+        } catch (Exception ignored) {}
     }
 
     private static int clamp(int v, int n) {
@@ -943,156 +555,28 @@ public final class RNNModelML implements Millennium {
 
     private static void readInto(DataInputStream in, double[] dst) throws Exception {
         double[] a = ModelIO.readArr(in);
-        if (a == null) {
-            throw new IllegalStateException("missing array in model file");
-        }
-        if (a.length != dst.length) {
-            throw new IllegalStateException("array length mismatch: expected " + dst.length + ", got " + a.length);
-        }
-        for (double v : a) {
-            if (!Double.isFinite(v)) {
-                throw new IllegalStateException("model file contains non-finite weight");
-            }
-        }
-        System.arraycopy(a, 0, dst, 0, dst.length);
-    }
-
-    private void writeOptimizerState(DataOutputStream out) throws Exception {
-        ModelIO.writeArr(out, mHeadV);
-        ModelIO.writeArr(out, vHeadV);
-        out.writeDouble(mHeadBias.value);
-        out.writeDouble(vHeadBias.value);
-
-        ModelIO.writeArr(out, mAttnW);
-        ModelIO.writeArr(out, vAttnW);
-        out.writeDouble(mAttnB.value);
-        out.writeDouble(vAttnB.value);
-
-        ModelIO.writeArr(out, mEmbWy);
-        ModelIO.writeArr(out, vEmbWy);
-        ModelIO.writeArr(out, mEmbWp);
-        ModelIO.writeArr(out, vEmbWp);
-        ModelIO.writeArr(out, mEmbB);
-        ModelIO.writeArr(out, vEmbB);
-
-        for (int l = 0; l < cfg.numLayers; l++) {
-            writeLayerState(out, fwdState[l]);
-            if (cfg.bidirectional) writeLayerState(out, bwdState[l]);
-        }
-    }
-
-    private void readOptimizerState(DataInputStream in) throws Exception {
-        readInto(in, mHeadV);
-        readInto(in, vHeadV);
-        mHeadBias.value = in.readDouble();
-        vHeadBias.value = in.readDouble();
-
-        readInto(in, mAttnW);
-        readInto(in, vAttnW);
-        mAttnB.value = in.readDouble();
-        vAttnB.value = in.readDouble();
-
-        readInto(in, mEmbWy);
-        readInto(in, vEmbWy);
-        readInto(in, mEmbWp);
-        readInto(in, vEmbWp);
-        readInto(in, mEmbB);
-        readInto(in, vEmbB);
-
-        for (int l = 0; l < cfg.numLayers; l++) {
-            readLayerState(in, fwdState[l]);
-            if (cfg.bidirectional) readLayerState(in, bwdState[l]);
-        }
-    }
-
-    private void writeLayerState(DataOutputStream out, LayerState s) throws Exception {
-        ModelIO.writeArr(out, s.mWf); ModelIO.writeArr(out, s.vWf);
-        ModelIO.writeArr(out, s.mWi); ModelIO.writeArr(out, s.vWi);
-        ModelIO.writeArr(out, s.mWc); ModelIO.writeArr(out, s.vWc);
-        ModelIO.writeArr(out, s.mWo); ModelIO.writeArr(out, s.vWo);
-
-        ModelIO.writeArr(out, s.mUf); ModelIO.writeArr(out, s.vUf);
-        ModelIO.writeArr(out, s.mUi); ModelIO.writeArr(out, s.vUi);
-        ModelIO.writeArr(out, s.mUc); ModelIO.writeArr(out, s.vUc);
-        ModelIO.writeArr(out, s.mUo); ModelIO.writeArr(out, s.vUo);
-
-        ModelIO.writeArr(out, s.mbf); ModelIO.writeArr(out, s.vbf);
-        ModelIO.writeArr(out, s.mbi); ModelIO.writeArr(out, s.vbi);
-        ModelIO.writeArr(out, s.mbc); ModelIO.writeArr(out, s.vbc);
-        ModelIO.writeArr(out, s.mbo); ModelIO.writeArr(out, s.vbo);
-
-        ModelIO.writeArr(out, s.mLnG); ModelIO.writeArr(out, s.vLnG);
-        ModelIO.writeArr(out, s.mLnB); ModelIO.writeArr(out, s.vLnB);
-    }
-
-    private void readLayerState(DataInputStream in, LayerState s) throws Exception {
-        readInto(in, s.mWf); readInto(in, s.vWf);
-        readInto(in, s.mWi); readInto(in, s.vWi);
-        readInto(in, s.mWc); readInto(in, s.vWc);
-        readInto(in, s.mWo); readInto(in, s.vWo);
-
-        readInto(in, s.mUf); readInto(in, s.vUf);
-        readInto(in, s.mUi); readInto(in, s.vUi);
-        readInto(in, s.mUc); readInto(in, s.vUc);
-        readInto(in, s.mUo); readInto(in, s.vUo);
-
-        readInto(in, s.mbf); readInto(in, s.vbf);
-        readInto(in, s.mbi); readInto(in, s.vbi);
-        readInto(in, s.mbc); readInto(in, s.vbc);
-        readInto(in, s.mbo); readInto(in, s.vbo);
-
-        readInto(in, s.mLnG); readInto(in, s.vLnG);
-        readInto(in, s.mLnB); readInto(in, s.vLnB);
-    }
-
-    private void resetOptimizerState() {
-        zero(mHeadV); zero(vHeadV);
-        mHeadBias.value = 0.0; vHeadBias.value = 0.0;
-
-        zero(mAttnW); zero(vAttnW);
-        mAttnB.value = 0.0; vAttnB.value = 0.0;
-
-        zero(mEmbWy); zero(vEmbWy);
-        zero(mEmbWp); zero(vEmbWp);
-        zero(mEmbB); zero(vEmbB);
-
-        for (int l = 0; l < cfg.numLayers; l++) {
-            zeroLayerState(fwdState[l]);
-            if (cfg.bidirectional) zeroLayerState(bwdState[l]);
-        }
-        opt.t = 0L;
-    }
-
-    private static void zeroLayerState(LayerState s) {
-        zero(s.mWf); zero(s.vWf); zero(s.mWi); zero(s.vWi); zero(s.mWc); zero(s.vWc); zero(s.mWo); zero(s.vWo);
-        zero(s.mUf); zero(s.vUf); zero(s.mUi); zero(s.vUi); zero(s.mUc); zero(s.vUc); zero(s.mUo); zero(s.vUo);
-        zero(s.mbf); zero(s.vbf); zero(s.mbi); zero(s.vbi); zero(s.mbc); zero(s.vbc); zero(s.mbo); zero(s.vbo);
-        zero(s.mLnG); zero(s.vLnG); zero(s.mLnB); zero(s.vLnB);
+        if (a == null) return;
+        System.arraycopy(a, 0, dst, 0, Math.min(a.length, dst.length));
     }
 
     @Override
     public int parameters() {
-        readLock.lock();
-        try {
-            long p = 0;
+        long p = 0;
 
-            p += rawPre.getEmbeddingWy().length;
-            p += rawPre.getEmbeddingWp().length;
-            p += rawPre.getEmbeddingB().length;
+        p += rawPre.getEmbeddingWy().length;
+        p += rawPre.getEmbeddingWp().length;
+        p += rawPre.getEmbeddingB().length;
 
-            for (int l = 0; l < cfg.numLayers; l++) {
-                p += countLayer(encoder.fwd[l]);
-                if (cfg.bidirectional) p += countLayer(encoder.bwd[l]);
-            }
-
-            p += attnPooling.W.length + 1;
-            p += head.V.length + 1;
-
-            if (p > Integer.MAX_VALUE) return Integer.MAX_VALUE;
-            return (int) p;
-        } finally {
-            readLock.unlock();
+        for (int l = 0; l < cfg.numLayers; l++) {
+            p += countLayer(encoder.fwd[l]);
+            if (cfg.bidirectional) p += countLayer(encoder.bwd[l]);
         }
+
+        p += attnPooling.W.length + 1;
+        p += head.V.length + 1;
+
+        if (p > Integer.MAX_VALUE) return Integer.MAX_VALUE;
+        return (int) p;
     }
 
     private static long countLayer(LSTMLayer l) {
@@ -1113,47 +597,6 @@ public final class RNNModelML implements Millennium {
         }
     }
 
-    private static final class PredictionPair implements Comparable<PredictionPair> {
-        final double prob;
-        final double label;
-        PredictionPair(double prob, double label) {
-            this.prob = prob;
-            this.label = label;
-        }
-        @Override
-        public int compareTo(PredictionPair o) {
-            return Double.compare(o.prob, this.prob);
-        }
-    }
-
-    private static final class ValidationResult {
-        double loss;
-        int used;
-        int skippedInvalidOrNonFinite;
-        final List<PredictionPair> pairs = new ArrayList<>();
-    }
-
-    private static final class DatasetMetrics {
-        double lossSum;
-        double avgLoss;
-        double acc;
-        int used;
-        int skippedInvalidOrNonFinite;
-        int tp;
-        int tn;
-        int fp;
-        int fn;
-        final List<PredictionPair> pairs = new ArrayList<>();
-    }
-
-    private static final class TrainBatchResult {
-        double loss;
-        double correct;
-        int used;
-        int skippedInvalidSequence;
-        int skippedNonFiniteProb;
-    }
-
     private static final class ForwardCache {
         SequenceData seq;
         double[][] hTime;
@@ -1161,7 +604,6 @@ public final class RNNModelML implements Millennium {
         PoolingCache poolCache;
         BinaryHead.Cache headCache;
         double prob;
-        boolean usesRawEmbedding;
     }
 
     private static final class LayerState {
@@ -1189,6 +631,244 @@ public final class RNNModelML implements Millennium {
             mLnG = new double[l.lnGamma.length]; vLnG = new double[l.lnGamma.length];
             mLnB = new double[l.lnBeta.length]; vLnB = new double[l.lnBeta.length];
         }
+    }
+
+    private static final class HybridPre implements SequencePreprocessor {
+        private final SequencePreprocessor raw;
+        private final SequencePreprocessor stat;
+        HybridPre(SequencePreprocessor raw, SequencePreprocessor stat) {
+            this.raw = raw;
+            this.stat = stat;
+        }
+        @Override
+        public SequenceData prepare(double[][] rawVecs) {
+            if (rawVecs == null) return null;
+            if (rawVecs.length >= 40) return stat.prepare(rawVecs);
+            return raw.prepare(rawVecs);
+        }
+    }
+
+    private static final class LastHiddenPooling implements PoolingStrategy {
+        private final int outSize;
+        LastHiddenPooling(int outSize) { this.outSize = outSize; }
+        @Override public int outputSize() { return outSize; }
+        @Override
+        public double[] forward(double[][] hTime, double[] mask, PoolingCache cache) {
+            int last = -1;
+            for (int t = hTime.length - 1; t >= 0; t--) {
+                if (mask[t] > 0.5) { last = t; break; }
+            }
+            if (last < 0) last = hTime.length - 1;
+            double[] pooled = new double[outSize];
+            System.arraycopy(hTime[last], 0, pooled, 0, outSize);
+            return pooled;
+        }
+        @Override
+        public double[][] backward(double[][] hTime, double[] mask, double[] dPooled, PoolingCache cache, PoolingGrad gAcc) {
+            double[][] dH = new double[hTime.length][outSize];
+            int last = -1;
+            for (int t = hTime.length - 1; t >= 0; t--) {
+                if (mask[t] > 0.5) { last = t; break; }
+            }
+            if (last < 0) last = hTime.length - 1;
+            System.arraycopy(dPooled, 0, dH[last], 0, outSize);
+            return dH;
+        }
+    }
+
+    private static final class LayerWeightsSnapshot {
+        final double[] Wf, Wi, Wc, Wo;
+        final double[] Uf, Ui, Uc, Uo;
+        final double[] bf, bi, bc, bo;
+        final double[] lnGamma, lnBeta;
+
+        LayerWeightsSnapshot(LSTMLayer l) {
+            Wf = l.Wf.clone(); Wi = l.Wi.clone(); Wc = l.Wc.clone(); Wo = l.Wo.clone();
+            Uf = l.Uf.clone(); Ui = l.Ui.clone(); Uc = l.Uc.clone(); Uo = l.Uo.clone();
+            bf = l.bf.clone(); bi = l.bi.clone(); bc = l.bc.clone(); bo = l.bo.clone();
+            lnGamma = l.lnGamma.clone(); lnBeta = l.lnBeta.clone();
+        }
+    }
+
+    private static final class LayerStateSnapshot {
+        final double[] mWf, vWf, mWi, vWi, mWc, vWc, mWo, vWo;
+        final double[] mUf, vUf, mUi, vUi, mUc, vUc, mUo, vUo;
+        final double[] mbf, vbf, mbi, vbi, mbc, vbc, mbo, vbo;
+        final double[] mLnG, vLnG, mLnB, vLnB;
+
+        LayerStateSnapshot(LayerState s) {
+            mWf = s.mWf.clone(); vWf = s.vWf.clone(); mWi = s.mWi.clone(); vWi = s.vWi.clone();
+            mWc = s.mWc.clone(); vWc = s.vWc.clone(); mWo = s.mWo.clone(); vWo = s.vWo.clone();
+            mUf = s.mUf.clone(); vUf = s.vUf.clone(); mUi = s.mUi.clone(); vUi = s.vUi.clone();
+            mUc = s.mUc.clone(); vUc = s.vUc.clone(); mUo = s.mUo.clone(); vUo = s.vUo.clone();
+            mbf = s.mbf.clone(); vbf = s.vbf.clone(); mbi = s.mbi.clone(); vbi = s.vbi.clone();
+            mbc = s.mbc.clone(); vbc = s.vbc.clone(); mbo = s.mbo.clone(); vbo = s.vbo.clone();
+            mLnG = s.mLnG.clone(); vLnG = s.vLnG.clone(); mLnB = s.mLnB.clone(); vLnB = s.vLnB.clone();
+        }
+    }
+
+    private static final class TrainingSnapshot {
+        long step;
+        long optT;
+
+        double[] embWy, embWp, embB;
+        double[] attnW;
+        double attnB;
+        double[] headV;
+        double headBias;
+
+        double[] mHeadV, vHeadV;
+        double mHeadBias, vHeadBias;
+        double[] mAttnW, vAttnW;
+        double mAttnB, vAttnB;
+        double[] mEmbWy, vEmbWy, mEmbWp, vEmbWp, mEmbB, vEmbB;
+
+        LayerWeightsSnapshot[] fwdWeights;
+        LayerWeightsSnapshot[] bwdWeights;
+        LayerStateSnapshot[] fwdStates;
+        LayerStateSnapshot[] bwdStates;
+    }
+
+    private static void copyArray(double[] src, double[] dst) {
+        if (src == null || dst == null) return;
+        System.arraycopy(src, 0, dst, 0, Math.min(src.length, dst.length));
+    }
+
+    private static void restoreLayerWeights(LayerWeightsSnapshot s, LSTMLayer l) {
+        if (s == null || l == null) return;
+        copyArray(s.Wf, l.Wf); copyArray(s.Wi, l.Wi); copyArray(s.Wc, l.Wc); copyArray(s.Wo, l.Wo);
+        copyArray(s.Uf, l.Uf); copyArray(s.Ui, l.Ui); copyArray(s.Uc, l.Uc); copyArray(s.Uo, l.Uo);
+        copyArray(s.bf, l.bf); copyArray(s.bi, l.bi); copyArray(s.bc, l.bc); copyArray(s.bo, l.bo);
+        copyArray(s.lnGamma, l.lnGamma); copyArray(s.lnBeta, l.lnBeta);
+    }
+
+    private static void restoreLayerState(LayerStateSnapshot s, LayerState d) {
+        if (s == null || d == null) return;
+        copyArray(s.mWf, d.mWf); copyArray(s.vWf, d.vWf); copyArray(s.mWi, d.mWi); copyArray(s.vWi, d.vWi);
+        copyArray(s.mWc, d.mWc); copyArray(s.vWc, d.vWc); copyArray(s.mWo, d.mWo); copyArray(s.vWo, d.vWo);
+        copyArray(s.mUf, d.mUf); copyArray(s.vUf, d.vUf); copyArray(s.mUi, d.mUi); copyArray(s.vUi, d.vUi);
+        copyArray(s.mUc, d.mUc); copyArray(s.vUc, d.vUc); copyArray(s.mUo, d.mUo); copyArray(s.vUo, d.vUo);
+        copyArray(s.mbf, d.mbf); copyArray(s.vbf, d.vbf); copyArray(s.mbi, d.mbi); copyArray(s.vbi, d.vbi);
+        copyArray(s.mbc, d.mbc); copyArray(s.vbc, d.vbc); copyArray(s.mbo, d.mbo); copyArray(s.vbo, d.vbo);
+        copyArray(s.mLnG, d.mLnG); copyArray(s.vLnG, d.vLnG); copyArray(s.mLnB, d.mLnB); copyArray(s.vLnB, d.vLnB);
+    }
+
+    private TrainingSnapshot captureTrainingSnapshot() {
+        TrainingSnapshot s = new TrainingSnapshot();
+        s.step = step;
+        s.optT = opt.t;
+
+        s.embWy = rawPre.getEmbeddingWy().clone();
+        s.embWp = rawPre.getEmbeddingWp().clone();
+        s.embB = rawPre.getEmbeddingB().clone();
+
+        s.attnW = attnPooling.W.clone();
+        s.attnB = attnPooling.b;
+        s.headV = head.V.clone();
+        s.headBias = head.bias;
+
+        s.mHeadV = mHeadV.clone();
+        s.vHeadV = vHeadV.clone();
+        s.mHeadBias = mHeadBias.value;
+        s.vHeadBias = vHeadBias.value;
+        s.mAttnW = mAttnW.clone();
+        s.vAttnW = vAttnW.clone();
+        s.mAttnB = mAttnB.value;
+        s.vAttnB = vAttnB.value;
+        s.mEmbWy = mEmbWy.clone();
+        s.vEmbWy = vEmbWy.clone();
+        s.mEmbWp = mEmbWp.clone();
+        s.vEmbWp = vEmbWp.clone();
+        s.mEmbB = mEmbB.clone();
+        s.vEmbB = vEmbB.clone();
+
+        int L = cfg.numLayers;
+        s.fwdWeights = new LayerWeightsSnapshot[L];
+        s.fwdStates = new LayerStateSnapshot[L];
+        s.bwdWeights = cfg.bidirectional ? new LayerWeightsSnapshot[L] : null;
+        s.bwdStates = cfg.bidirectional ? new LayerStateSnapshot[L] : null;
+
+        for (int l = 0; l < L; l++) {
+            s.fwdWeights[l] = new LayerWeightsSnapshot(encoder.fwd[l]);
+            s.fwdStates[l] = new LayerStateSnapshot(fwdState[l]);
+            if (cfg.bidirectional) {
+                s.bwdWeights[l] = new LayerWeightsSnapshot(encoder.bwd[l]);
+                s.bwdStates[l] = new LayerStateSnapshot(bwdState[l]);
+            }
+        }
+
+        return s;
+    }
+
+    private void restoreTrainingSnapshot(TrainingSnapshot s) {
+        if (s == null) return;
+
+        step = s.step;
+        opt.t = s.optT;
+
+        copyArray(s.embWy, rawPre.getEmbeddingWy());
+        copyArray(s.embWp, rawPre.getEmbeddingWp());
+        copyArray(s.embB, rawPre.getEmbeddingB());
+
+        copyArray(s.attnW, attnPooling.W);
+        attnPooling.b = s.attnB;
+        attnB.value = s.attnB;
+
+        copyArray(s.headV, head.V);
+        head.bias = s.headBias;
+        headBias.value = s.headBias;
+
+        copyArray(s.mHeadV, mHeadV);
+        copyArray(s.vHeadV, vHeadV);
+        mHeadBias.value = s.mHeadBias;
+        vHeadBias.value = s.vHeadBias;
+        copyArray(s.mAttnW, mAttnW);
+        copyArray(s.vAttnW, vAttnW);
+        mAttnB.value = s.mAttnB;
+        vAttnB.value = s.vAttnB;
+        copyArray(s.mEmbWy, mEmbWy);
+        copyArray(s.vEmbWy, vEmbWy);
+        copyArray(s.mEmbWp, mEmbWp);
+        copyArray(s.vEmbWp, vEmbWp);
+        copyArray(s.mEmbB, mEmbB);
+        copyArray(s.vEmbB, vEmbB);
+
+        for (int l = 0; l < cfg.numLayers; l++) {
+            restoreLayerWeights(s.fwdWeights[l], encoder.fwd[l]);
+            restoreLayerState(s.fwdStates[l], fwdState[l]);
+            if (cfg.bidirectional) {
+                restoreLayerWeights(s.bwdWeights[l], encoder.bwd[l]);
+                restoreLayerState(s.bwdStates[l], bwdState[l]);
+            }
+        }
+
+        zeroBatchGrads();
+    }
+
+    private static final class PredictionPair implements Comparable<PredictionPair> {
+        final double prob;
+        final double label;
+        PredictionPair(double prob, double label) {
+            this.prob = prob;
+            this.label = label;
+        }
+        @Override
+        public int compareTo(PredictionPair o) {
+            return Double.compare(o.prob, this.prob);
+        }
+    }
+
+    private static final class DatasetMetrics {
+        double lossSum;
+        double avgLoss;
+        double acc;
+        long tp;
+        long tn;
+        long fp;
+        long fn;
+        int used;
+        int skippedInvalidOrNonFinite;
+        final List<PredictionPair> pairs = new ArrayList<>();
     }
 
     private double rocAuc(List<PredictionPair> pairs) {
@@ -1269,9 +949,10 @@ public final class RNNModelML implements Millennium {
         return auc;
     }
 
-    private DatasetMetrics evaluateDataset(List<Pair<List<ObjectML>, Boolean>> dataset) {
+    private DatasetMetrics evaluateDataset(List<Pair<List<ObjectML>, Boolean>> dataset, double decisionThreshold) {
         DatasetMetrics metrics = new DatasetMetrics();
         if (dataset == null || dataset.isEmpty()) return metrics;
+        double th = Math.max(0.0, Math.min(1.0, decisionThreshold));
 
         for (Pair<List<ObjectML>, Boolean> dataPair : dataset) {
             double[][] vecs = prepareVectors(dataPair.getX());
@@ -1281,7 +962,7 @@ public final class RNNModelML implements Millennium {
             }
 
             double y = dataPair.getY() ? 1.0 : 0.0;
-            double p = forwardProbabilityOrNaN(vecs);
+            double p = forwardProbability(vecs);
             if (!Double.isFinite(p)) {
                 metrics.skippedInvalidOrNonFinite++;
                 continue;
@@ -1292,7 +973,7 @@ public final class RNNModelML implements Millennium {
             metrics.pairs.add(new PredictionPair(p, y));
 
             boolean actual = y >= 0.5;
-            boolean pred = p >= 0.5;
+            boolean pred = p >= th;
             if (actual && pred) metrics.tp++;
             else if (!actual && !pred) metrics.tn++;
             else if (!actual) metrics.fp++;
@@ -1311,16 +992,18 @@ public final class RNNModelML implements Millennium {
     @Override
     public void trainEpochs(List<Pair<List<ObjectML>, Boolean>> dataset, int epochs) {
         if (dataset == null || dataset.isEmpty() || epochs <= 0) return;
-
-        int bs;
-        double labelSmoothing;
-        readLock.lock();
-        try {
-            bs = Math.max(1, batchSize);
-            labelSmoothing = cfg.labelSmoothing;
-        } finally {
-            readLock.unlock();
-        }
+        int bs = Math.max(1, batchSize);
+        double labelSmoothing = cfg.labelSmoothing;
+        double decisionThreshold = CHECKPOINT_DECISION_THRESHOLD;
+        TrainingSnapshot bestSnapshot = null;
+        int bestEpoch = -1;
+        double bestPrAuc = Double.NEGATIVE_INFINITY;
+        double bestRocAuc = 0.0;
+        double bestF1 = 0.0;
+        double bestFpr = Double.POSITIVE_INFINITY;
+        double bestRecall = 0.0;
+        double bestValidLoss = Double.POSITIVE_INFINITY;
+        double bestValidAcc = 0.0;
 
         List<Pair<List<ObjectML>, Boolean>> shuffled = new ArrayList<>(dataset);
         java.util.Collections.shuffle(shuffled, rng);
@@ -1337,15 +1020,13 @@ public final class RNNModelML implements Millennium {
         List<Pair<List<ObjectML>, Boolean>> trainSet = new ArrayList<>(shuffled.subList(0, splitIndex));
         List<Pair<List<ObjectML>, Boolean>> validSet = splitIndex < total
                 ? new ArrayList<>(shuffled.subList(splitIndex, total))
-                : Collections.emptyList();
+                : java.util.Collections.emptyList();
 
         Logger.info("Dataset split: " + trainSet.size() + " training samples, " + validSet.size() + " validation samples.");
 
         for (int e = 0; e < epochs; e++) {
             java.util.Collections.shuffle(trainSet, rng);
             List<Sample> currentBatch = new ArrayList<>(bs);
-            int trainSkippedInvalid = 0;
-            int trainSkippedNonFiniteProb = 0;
 
             for (Pair<List<ObjectML>, Boolean> dataPair : trainSet) {
                 double y = dataPair.getY() ? 1.0 : 0.0;
@@ -1356,46 +1037,28 @@ public final class RNNModelML implements Millennium {
                 double[][] vecs = prepareVectors(dataPair.getX());
                 if (vecs.length < 2) continue;
 
-                List<Sample> chunks = new ArrayList<>();
-                appendChunks(vecs, y, chunks);
-                for (Sample chunk : chunks) {
-                    currentBatch.add(chunk);
+                int chunkSize = 150;
+                for (int i = 0; i < vecs.length; i += chunkSize) {
+                    int end = Math.min(vecs.length, i + chunkSize);
+                    if (end - i < 2) continue;
+                    double[][] chunk = new double[end - i][2];
+                    System.arraycopy(vecs, i, chunk, 0, end - i);
+
+                    currentBatch.add(new Sample(chunk, y));
+
                     if (currentBatch.size() >= bs) {
-                        TrainBatchResult res;
-                        writeLock.lock();
-                        try {
-                            res = trainBatch(currentBatch);
-                        } finally {
-                            writeLock.unlock();
-                        }
-                        trainSkippedInvalid += res.skippedInvalidSequence;
-                        trainSkippedNonFiniteProb += res.skippedNonFiniteProb;
+                        trainBatch(currentBatch);
                         currentBatch.clear();
                     }
                 }
             }
             if (!currentBatch.isEmpty()) {
-                TrainBatchResult res;
-                writeLock.lock();
-                try {
-                    res = trainBatch(currentBatch);
-                } finally {
-                    writeLock.unlock();
-                }
-                trainSkippedInvalid += res.skippedInvalidSequence;
-                trainSkippedNonFiniteProb += res.skippedNonFiniteProb;
+                trainBatch(currentBatch);
                 currentBatch.clear();
             }
 
-            DatasetMetrics trainMetrics;
-            DatasetMetrics validMetrics;
-            readLock.lock();
-            try {
-                trainMetrics = evaluateDataset(trainSet);
-                validMetrics = evaluateDataset(validSet);
-            } finally {
-                readLock.unlock();
-            }
+            DatasetMetrics trainMetrics = evaluateDataset(trainSet, decisionThreshold);
+            DatasetMetrics validMetrics = evaluateDataset(validSet, decisionThreshold);
 
             double avgTrainLoss = trainMetrics.avgLoss;
             double avgTrainAcc = trainMetrics.acc;
@@ -1410,19 +1073,47 @@ public final class RNNModelML implements Millennium {
             double prAuc = prAuc(validMetrics.pairs);
 
             Logger.info(String.format("Epoch %d/%d | Train [Loss: %.4f, Acc: %.1f%%] | Valid [Loss: %.4f, Acc: %.1f%%]",
-                            (e + 1), epochs, avgTrainLoss, avgTrainAcc, avgValidLoss, acc));
-            if (trainSkippedInvalid > 0
-                    || trainSkippedNonFiniteProb > 0
-                    || trainMetrics.skippedInvalidOrNonFinite > 0
-                    || validMetrics.skippedInvalidOrNonFinite > 0) {
+                    (e + 1), epochs, avgTrainLoss, avgTrainAcc, avgValidLoss, acc));
+            if (trainMetrics.skippedInvalidOrNonFinite > 0 || validMetrics.skippedInvalidOrNonFinite > 0) {
                 Logger.warn(String.format(
-                                "Skipped samples -> train chunks invalid: %d, train chunks non-finite probability: %d, train samples invalid/non-finite (eval): %d, validation samples invalid/non-finite (eval): %d",
-                                trainSkippedInvalid, trainSkippedNonFiniteProb, trainMetrics.skippedInvalidOrNonFinite, validMetrics.skippedInvalidOrNonFinite));
+                        "Skipped samples -> train invalid/non-finite: %d, validation invalid/non-finite: %d",
+                        trainMetrics.skippedInvalidOrNonFinite, validMetrics.skippedInvalidOrNonFinite));
             }
             Logger.info(String.format("Validation Metrics -> Precision: %.4f | Recall: %.4f | F1: %.4f | FPR: %.4f",
-                            precision, recall, f1, fpr));
+                    precision, recall, f1, fpr));
             Logger.info(String.format("Advanced Metrics -> ROC-AUC: %.4f | PR-AUC: %.4f", rocAuc, prAuc));
-            Logger.info(String.format("Confusion Matrix -> TP: %d | TN: %d | FP: %d | FN: %d", validMetrics.tp, validMetrics.tn, validMetrics.fp, validMetrics.fn));
+            Logger.info(String.format("Confusion Matrix -> TP: %d | TN: %d | FP: %d | FN: %d",
+                    validMetrics.tp, validMetrics.tn, validMetrics.fp, validMetrics.fn));
+            Logger.info(String.format("Decision Threshold -> %.2f", decisionThreshold));
+
+            boolean betterF1 = f1 > bestF1 + 1e-12;
+            boolean sameF1 = Math.abs(f1 - bestF1) <= 1e-12;
+            boolean betterFpr = fpr < bestFpr - 1e-12;
+            boolean sameFpr = Math.abs(fpr - bestFpr) <= 1e-12;
+            boolean betterPr = prAuc > bestPrAuc + 1e-12;
+            boolean betterLoss = avgValidLoss < bestValidLoss - 1e-12;
+
+            if (betterF1 || (sameF1 && (betterFpr || (sameFpr && (betterPr || betterLoss))))) {
+                bestSnapshot = captureTrainingSnapshot();
+                bestEpoch = e + 1;
+                bestPrAuc = prAuc;
+                bestRocAuc = rocAuc;
+                bestF1 = f1;
+                bestFpr = fpr;
+                bestRecall = recall;
+                bestValidLoss = avgValidLoss;
+                bestValidAcc = acc;
+                Logger.info(String.format(
+                        "Best checkpoint -> epoch %d selected (thr: %.2f | F1: %.4f | FPR: %.4f | Recall: %.4f | PR-AUC: %.4f | Valid Loss: %.4f)",
+                        bestEpoch, decisionThreshold, bestF1, bestFpr, bestRecall, bestPrAuc, bestValidLoss));
+            }
+        }
+
+        if (bestSnapshot != null) {
+            restoreTrainingSnapshot(bestSnapshot);
+            Logger.info(String.format(
+                    "Best epoch restored -> %d/%d (thr: %.2f | F1: %.4f | FPR: %.4f | Recall: %.4f | PR-AUC: %.4f | ROC-AUC: %.4f | Valid Acc: %.1f%% | Valid Loss: %.4f)",
+                    bestEpoch, epochs, decisionThreshold, bestF1, bestFpr, bestRecall, bestPrAuc, bestRocAuc, bestValidAcc, bestValidLoss));
         }
     }
 }

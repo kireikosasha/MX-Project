@@ -13,6 +13,7 @@ public final class LSTMLayer {
     public final double[] bf, bi, bc, bo;
 
     public final double[] lnGamma, lnBeta;
+    private final int lnOffset;
 
     public static final class Cache {
         public int T;
@@ -27,9 +28,10 @@ public final class LSTMLayer {
         public double[] recDropMask;
     }
 
-    public LSTMLayer(int inputSize, int hiddenSize, Random rng) {
+    public LSTMLayer(int inputSize, int hiddenSize, Random rng, int lnOffset) {
         this.inputSize = inputSize;
         this.hiddenSize = hiddenSize;
+        this.lnOffset = lnOffset;
 
         Wf = MathOps.xavierUniform(rng, hiddenSize * inputSize, inputSize, hiddenSize);
         Wi = MathOps.xavierUniform(rng, hiddenSize * inputSize, inputSize, hiddenSize);
@@ -185,7 +187,7 @@ public final class LSTMLayer {
         }
     }
 
-    public double[][] backward(Cache cch, double[][] dH_time, Grad gAcc) {
+    public double[][] backward(Cache cch, double[][] dH_time, Grad gAcc, double clip) {
         int T = cch.T;
         double[][] dX_time = new double[T][inputSize];
 
@@ -205,6 +207,8 @@ public final class LSTMLayer {
 
             for (int k = 0; k < hiddenSize; k++) {
                 dh[k] = dH_time[t][k] + dhNext[k];
+                if(dh[k] > clip) dh[k] = clip;
+                else if(dh[k] < -clip) dh[k] = -clip;
             }
 
             double[] dPre = LayerNorm.backward(dh, lnGamma, 0, cch.lnCache[s], gAcc.dLnGamma, gAcc.dLnBeta);
@@ -268,6 +272,8 @@ public final class LSTMLayer {
                     sdx += Wc[wOff] * dGg[n];
                     sdx += Wo[wOff] * dOo[n];
                 }
+                if(sdx > clip) sdx = clip;
+                else if(sdx < -clip) sdx = -clip;
                 dX_time[t][k] += sdx;
             }
 
