@@ -36,18 +36,24 @@ public final class UseEntityListener extends PacketAdapter {
         }
         PacketContainer packet = event.getPacket();
         boolean attack = !packet.getEntityUseActions().getValues().isEmpty() ?
-                        packet.getEntityUseActions().read(0).toString().equals("ATTACK")
-                        : packet.getEnumEntityUseActions().read(0).getAction().equals(
-                        EnumWrappers.EntityUseAction.ATTACK);
+                packet.getEntityUseActions().read(0).toString().equals("ATTACK")
+                : packet.getEnumEntityUseActions().read(0).getAction().equals(
+                EnumWrappers.EntityUseAction.ATTACK);
         if (packet.getIntegers().getValues().isEmpty()) return;
         int entityId = packet.getIntegers().read(0);
-        /*
-        Entity entity = (modern) ? AsyncEntityFetcher.getEntityFromIDAsync(event.getPlayer().getWorld(), entityId).get()
-                        : ProtocolLibrary.getProtocolManager().
-                        getEntityFromID(event.getPlayer().getWorld(), entityId);
-         */
-        Entity entity = ProtocolLibrary.getProtocolManager().
-                        getEntityFromID(event.getPlayer().getWorld(), entityId);
+        Entity fetchEntity = null;
+        try {
+            if (Bukkit.isPrimaryThread()) {
+                fetchEntity = ProtocolLibrary.getProtocolManager().getEntityFromID(player.getWorld(), entityId);
+            } else {
+                fetchEntity = Bukkit.getScheduler().callSyncMethod(MX.getInstance(), () ->
+                        ProtocolLibrary.getProtocolManager().getEntityFromID(player.getWorld(), entityId)
+                ).get();
+            }
+        } catch (Exception ex) {
+            fetchEntity = null;
+        }
+        final Entity entity = fetchEntity;
         if (profile.getAttackBlockToTime() > System.currentTimeMillis()) {
             if (ConfigCache.PREVENTION > 0) {
                 event.setCancelled(true);
@@ -56,9 +62,9 @@ public final class UseEntityListener extends PacketAdapter {
                         player.teleport(player.getLocation());
                     });
                 } else if (ConfigCache.PREVENTION == 1
-                                && attack
-                                && entity instanceof LivingEntity
-                                && player.getLocation().toVector().distance(entity.getLocation().toVector()) < 3.3) {
+                        && attack
+                        && entity instanceof LivingEntity
+                        && player.getLocation().toVector().distance(entity.getLocation().toVector()) < 3.3) {
                     Bukkit.getScheduler().runTask(MX.getInstance(), () -> {
                         ((LivingEntity) entity).damage(0.5, player);
                     });
