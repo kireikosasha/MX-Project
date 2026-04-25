@@ -1,13 +1,9 @@
 package kireiko.dev.millennium.ml.data.reasoning;
 
-import kireiko.dev.millennium.math.Simplification;
 import kireiko.dev.millennium.math.Statistics;
-import kireiko.dev.millennium.ml.data.ObjectML;
 import kireiko.dev.millennium.vectors.Pair;
-import kireiko.dev.millennium.vectors.Vec2;
 import lombok.experimental.UtilityClass;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;

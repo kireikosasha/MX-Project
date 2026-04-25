@@ -1,7 +1,7 @@
 package kireiko.dev.millennium.ml.logic.rnn.data.preprocessing;
 
-import kireiko.dev.millennium.ml.logic.rnn.util.MathOps;
 import kireiko.dev.millennium.ml.logic.rnn.data.SequenceData;
+import kireiko.dev.millennium.ml.logic.rnn.util.MathOps;
 import lombok.Getter;
 
 import java.util.Arrays;

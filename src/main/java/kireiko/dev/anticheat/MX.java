@@ -104,6 +104,7 @@ public class MX extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new InteractSpellListener(), this);
         Bukkit.getPluginManager().registerEvents(new JoinQuitListener(), this);
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+        EntityTrackerListener.register();
         protocolManager.addPacketListener(new RawMovementListener());
         protocolManager.addPacketListener(new UseEntityListener());
         protocolManager.addPacketListener(new LatencyHandler());

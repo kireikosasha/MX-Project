@@ -1,7 +1,7 @@
 package kireiko.dev.millennium.ml;
 
 import kireiko.dev.anticheat.checks.aim.ml.modules.v4_5.*;
-import kireiko.dev.anticheat.checks.aim.ml.modules.v5.RNN1Module;
+import kireiko.dev.anticheat.checks.aim.ml.modules.v5.*;
 import kireiko.dev.millennium.ml.data.module.ModuleML;
 import kireiko.dev.millennium.ml.logic.Logger;
 import kireiko.dev.millennium.ml.logic.Millennium;
@@ -15,7 +15,7 @@ public class ClientML {
 
     public static final boolean DEV_MODE = false;
 
-    public static final String CLIENT_NAME = "quark-e-1.5-56k-public";
+    public static final String CLIENT_NAME = "quark-e-4.0-100k-mini";
     private static final int TABLE_SIZE = 2;
 
     public static final List<ModuleML> MODEL_LIST = Arrays.asList(

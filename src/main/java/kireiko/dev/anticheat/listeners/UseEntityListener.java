@@ -1,7 +1,6 @@
 package kireiko.dev.anticheat.listeners;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import kireiko.dev.anticheat.MX;
@@ -9,7 +8,7 @@ import kireiko.dev.anticheat.api.data.PlayerContainer;
 import kireiko.dev.anticheat.api.events.UseEntityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.utils.ConfigCache;
-import kireiko.dev.anticheat.utils.version.VersionUtil;
+import kireiko.dev.anticheat.utils.cache.EntityCache;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -20,10 +19,8 @@ import java.util.Collections;
 
 public final class UseEntityListener extends PacketAdapter {
 
-    private static final boolean modern = VersionUtil.is1_13orAbove();
-
     public UseEntityListener() {
-        super(MX.getInstance(), ListenerPriority.HIGHEST, Collections.singletonList(PacketType.Play.Client.USE_ENTITY), ListenerOptions.SYNC);
+        super(MX.getInstance(), ListenerPriority.HIGHEST, Collections.singletonList(PacketType.Play.Client.USE_ENTITY), ListenerOptions.ASYNC);
     }
 
     @SneakyThrows
@@ -41,13 +38,7 @@ public final class UseEntityListener extends PacketAdapter {
                         EnumWrappers.EntityUseAction.ATTACK);
         if (packet.getIntegers().getValues().isEmpty()) return;
         int entityId = packet.getIntegers().read(0);
-        /*
-        Entity entity = (modern) ? AsyncEntityFetcher.getEntityFromIDAsync(event.getPlayer().getWorld(), entityId).get()
-                        : ProtocolLibrary.getProtocolManager().
-                        getEntityFromID(event.getPlayer().getWorld(), entityId);
-         */
-        Entity entity = ProtocolLibrary.getProtocolManager().
-                        getEntityFromID(event.getPlayer().getWorld(), entityId);
+        Entity entity = EntityCache.get(player, entityId);
         if (profile.getAttackBlockToTime() > System.currentTimeMillis()) {
             if (ConfigCache.PREVENTION > 0) {
                 event.setCancelled(true);

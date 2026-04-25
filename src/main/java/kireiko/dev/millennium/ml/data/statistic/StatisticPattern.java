@@ -1,6 +1,5 @@
 package kireiko.dev.millennium.ml.data.statistic;
 
-import kireiko.dev.millennium.math.Statistics;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

@@ -24,7 +24,7 @@ public class FactoryML {
         Millennium m;
         switch (ver) {
             case VERSION_5:
-                m = new RNNModelML(16, 32);
+                m = new RNNModelML(16, 48);
                 break;
             default:
                 m = new ModelML(tableSize, stackSize);
@@ -49,7 +49,7 @@ public class FactoryML {
         File file = new File(folder, name);
 
         if (ver == ModelVer.VERSION_5) {
-            RNNModelML m = new RNNModelML(16, 32);
+            RNNModelML m = new RNNModelML(16, 48);
             if (file.exists()) {
                 try (InputStream in = Files.newInputStream(file.toPath())) {
                     m.load(in);
@@ -90,7 +90,7 @@ public class FactoryML {
         try (InputStream is = MX.class.getResourceAsStream(path)) {
             if (is != null) {
                 if (ver == ModelVer.VERSION_5) {
-                    RNNModelML m = new RNNModelML(16, 32);
+                    RNNModelML m = new RNNModelML(16, 48);
                     m.load(is);
                     CACHE.put(id, m);
                     Logger.info("Model loaded from JAR: " + name);

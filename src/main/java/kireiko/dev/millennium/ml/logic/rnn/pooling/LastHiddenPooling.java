@@ -1,9 +1,5 @@
 package kireiko.dev.millennium.ml.logic.rnn.pooling;
 
-import kireiko.dev.millennium.ml.logic.rnn.pooling.PoolingCache;
-import kireiko.dev.millennium.ml.logic.rnn.pooling.PoolingGrad;
-import kireiko.dev.millennium.ml.logic.rnn.pooling.PoolingStrategy;
-
 public final class LastHiddenPooling implements PoolingStrategy {
     private final int outSize;
 

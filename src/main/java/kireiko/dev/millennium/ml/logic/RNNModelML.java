@@ -30,6 +30,7 @@ public final class RNNModelML implements Millennium {
     private static final int MAGIC = 0x524E4E36;
     private static final int VERSION = 6;
     private static final double CHECKPOINT_DECISION_THRESHOLD = 0.60;
+    private static final double CHECKPOINT_MIN_RECALL = 0.75;
 
     private final RNNConfig cfg;
     private final Random rng;
@@ -715,6 +716,7 @@ public final class RNNModelML implements Millennium {
     private static final class TrainingSnapshot {
         long step;
         long optT;
+        double decisionThreshold;
 
         double[] embWy, embWp, embB;
         double[] attnW;
@@ -762,6 +764,7 @@ public final class RNNModelML implements Millennium {
         TrainingSnapshot s = new TrainingSnapshot();
         s.step = step;
         s.optT = opt.t;
+        s.decisionThreshold = decisionThreshold;
 
         s.embWy = rawPre.getEmbeddingWy().clone();
         s.embWp = rawPre.getEmbeddingWp().clone();
@@ -810,6 +813,7 @@ public final class RNNModelML implements Millennium {
 
         step = s.step;
         opt.t = s.optT;
+        decisionThreshold = s.decisionThreshold;
 
         copyArray(s.embWy, rawPre.getEmbeddingWy());
         copyArray(s.embWp, rawPre.getEmbeddingWp());
@@ -874,6 +878,147 @@ public final class RNNModelML implements Millennium {
         int used;
         int skippedInvalidOrNonFinite;
         final List<PredictionPair> pairs = new ArrayList<>();
+    }
+
+    private static final class ThresholdMetrics {
+        double threshold;
+        double acc;
+        double precision;
+        double recall;
+        double f1;
+        double fpr;
+        long tp;
+        long tn;
+        long fp;
+        long fn;
+    }
+
+    private ThresholdMetrics selectBestThreshold(List<PredictionPair> pairs, double fallbackThreshold) {
+        ThresholdMetrics best = evaluateThreshold(pairs, fallbackThreshold);
+        if (pairs == null || pairs.isEmpty()) return best;
+
+        List<PredictionPair> sorted = new ArrayList<>(pairs);
+        sorted.sort((a, b) -> Double.compare(b.prob, a.prob));
+
+        long totalPos = 0;
+        long totalNeg = 0;
+        for (PredictionPair pair : sorted) {
+            if (pair.label >= 0.5) totalPos++;
+            else totalNeg++;
+        }
+
+        long tp = 0;
+        long fp = 0;
+        int i = 0;
+        while (i < sorted.size()) {
+            double score = sorted.get(i).prob;
+            while (i < sorted.size() && Double.compare(sorted.get(i).prob, score) == 0) {
+                if (sorted.get(i).label >= 0.5) tp++;
+                else fp++;
+                i++;
+            }
+
+            long fn = totalPos - tp;
+            long tn = totalNeg - fp;
+
+            ThresholdMetrics candidate = new ThresholdMetrics();
+            candidate.threshold = score;
+            candidate.tp = tp;
+            candidate.fp = fp;
+            candidate.tn = tn;
+            candidate.fn = fn;
+            fillThresholdMetrics(candidate, totalPos, totalNeg);
+
+            if (isBetterThresholdCandidate(candidate, best)) {
+                best = candidate;
+            }
+        }
+
+        return best;
+    }
+
+    private ThresholdMetrics evaluateThreshold(List<PredictionPair> pairs, double threshold) {
+        ThresholdMetrics metrics = new ThresholdMetrics();
+        metrics.threshold = Math.max(0.0, Math.min(1.0, threshold));
+        if (pairs == null || pairs.isEmpty()) return metrics;
+
+        long totalPos = 0;
+        long totalNeg = 0;
+        for (PredictionPair pair : pairs) {
+            boolean actual = pair.label >= 0.5;
+            boolean pred = pair.prob >= metrics.threshold;
+
+            if (actual) totalPos++;
+            else totalNeg++;
+
+            if (actual && pred) metrics.tp++;
+            else if (!actual && !pred) metrics.tn++;
+            else if (!actual) metrics.fp++;
+            else metrics.fn++;
+        }
+
+        fillThresholdMetrics(metrics, totalPos, totalNeg);
+        return metrics;
+    }
+
+    private void fillThresholdMetrics(ThresholdMetrics metrics, long totalPos, long totalNeg) {
+        long total = totalPos + totalNeg;
+        metrics.acc = total == 0 ? 0.0 : ((double) (metrics.tp + metrics.tn) / total) * 100.0;
+        metrics.precision = (metrics.tp + metrics.fp) == 0 ? 0.0 : (double) metrics.tp / (metrics.tp + metrics.fp);
+        metrics.recall = totalPos == 0 ? 0.0 : (double) metrics.tp / totalPos;
+        metrics.f1 = (metrics.precision + metrics.recall) == 0.0
+                ? 0.0
+                : 2.0 * metrics.precision * metrics.recall / (metrics.precision + metrics.recall);
+        metrics.fpr = totalNeg == 0 ? 0.0 : (double) metrics.fp / totalNeg;
+    }
+
+    private boolean isBetterThresholdCandidate(ThresholdMetrics candidate, ThresholdMetrics best) {
+        if (best == null) return true;
+
+        boolean candidateMeetsRecall = candidate.recall >= CHECKPOINT_MIN_RECALL;
+        boolean bestMeetsRecall = best.recall >= CHECKPOINT_MIN_RECALL;
+
+        if (candidateMeetsRecall != bestMeetsRecall) return candidateMeetsRecall;
+        if (!candidateMeetsRecall) {
+            if (candidate.recall > best.recall + 1e-12) return true;
+            if (candidate.recall < best.recall - 1e-12) return false;
+        }
+        if (candidate.fpr < best.fpr - 1e-12) return true;
+        if (candidate.fpr > best.fpr + 1e-12) return false;
+        if (candidate.precision > best.precision + 1e-12) return true;
+        if (candidate.precision < best.precision - 1e-12) return false;
+        if (candidate.f1 > best.f1 + 1e-12) return true;
+        if (candidate.f1 < best.f1 - 1e-12) return false;
+        if (candidate.recall > best.recall + 1e-12) return true;
+        if (candidate.recall < best.recall - 1e-12) return false;
+        return candidate.threshold > best.threshold + 1e-12;
+    }
+
+    private boolean isBetterCheckpoint(ThresholdMetrics candidate, ThresholdMetrics best, double candidatePrAuc, double bestPrAuc,
+                                       double candidateRocAuc, double bestRocAuc, double candidateValidLoss, double bestValidLoss) {
+        if (best == null) return true;
+
+        boolean candidateMeetsRecall = candidate.recall >= CHECKPOINT_MIN_RECALL;
+        boolean bestMeetsRecall = best.recall >= CHECKPOINT_MIN_RECALL;
+
+        if (candidateMeetsRecall != bestMeetsRecall) return candidateMeetsRecall;
+        if (!candidateMeetsRecall) {
+            if (candidate.recall > best.recall + 1e-12) return true;
+            if (candidate.recall < best.recall - 1e-12) return false;
+        }
+        if (candidate.fpr < best.fpr - 1e-12) return true;
+        if (candidate.fpr > best.fpr + 1e-12) return false;
+        if (candidate.precision > best.precision + 1e-12) return true;
+        if (candidate.precision < best.precision - 1e-12) return false;
+        if (candidate.f1 > best.f1 + 1e-12) return true;
+        if (candidate.f1 < best.f1 - 1e-12) return false;
+        if (candidatePrAuc > bestPrAuc + 1e-12) return true;
+        if (candidatePrAuc < bestPrAuc - 1e-12) return false;
+        if (candidateRocAuc > bestRocAuc + 1e-12) return true;
+        if (candidateRocAuc < bestRocAuc - 1e-12) return false;
+        if (candidateValidLoss < bestValidLoss - 1e-12) return true;
+        if (candidateValidLoss > bestValidLoss + 1e-12) return false;
+        return candidate.threshold > best.threshold + 1e-12;
     }
 
     private double rocAuc(List<PredictionPair> pairs) {
@@ -994,21 +1139,55 @@ public final class RNNModelML implements Millennium {
         return metrics;
     }
 
+    private void trainOneEpoch(List<Pair<List<ObjectML>, Boolean>> dataset, int bs, double labelSmoothing) {
+        if (dataset == null || dataset.isEmpty()) return;
+
+        java.util.Collections.shuffle(dataset, rng);
+        List<Sample> currentBatch = new ArrayList<>(bs);
+
+        for (Pair<List<ObjectML>, Boolean> dataPair : dataset) {
+            double y = dataPair.getY() ? 1.0 : 0.0;
+            if (labelSmoothing > 0.0) {
+                y = y * (1.0 - labelSmoothing) + 0.5 * labelSmoothing;
+            }
+
+            double[][] vecs = prepareVectors(dataPair.getX());
+            if (vecs.length < 2) continue;
+
+            int chunkSize = 150;
+            for (int i = 0; i < vecs.length; i += chunkSize) {
+                int end = Math.min(vecs.length, i + chunkSize);
+                if (end - i < 2) continue;
+                double[][] chunk = new double[end - i][2];
+                System.arraycopy(vecs, i, chunk, 0, end - i);
+
+                currentBatch.add(new Sample(chunk, y));
+
+                if (currentBatch.size() >= bs) {
+                    trainBatch(currentBatch);
+                    currentBatch.clear();
+                }
+            }
+        }
+        if (!currentBatch.isEmpty()) {
+            trainBatch(currentBatch);
+            currentBatch.clear();
+        }
+    }
+
     @Override
     public void trainEpochs(List<Pair<List<ObjectML>, Boolean>> dataset, int epochs) {
         if (dataset == null || dataset.isEmpty() || epochs <= 0) return;
         int bs = Math.max(1, batchSize);
         double labelSmoothing = cfg.labelSmoothing;
-        double decisionThreshold = this.decisionThreshold;
+        double initialDecisionThreshold = this.decisionThreshold;
+        TrainingSnapshot initialSnapshot = captureTrainingSnapshot();
         TrainingSnapshot bestSnapshot = null;
         int bestEpoch = -1;
         double bestPrAuc = Double.NEGATIVE_INFINITY;
         double bestRocAuc = 0.0;
-        double bestF1 = 0.0;
-        double bestFpr = Double.POSITIVE_INFINITY;
-        double bestRecall = 0.0;
+        ThresholdMetrics bestThresholdMetrics = null;
         double bestValidLoss = Double.POSITIVE_INFINITY;
-        double bestValidAcc = 0.0;
 
         List<Pair<List<ObjectML>, Boolean>> shuffled = new ArrayList<>(dataset);
         java.util.Collections.shuffle(shuffled, rng);
@@ -1024,101 +1203,117 @@ public final class RNNModelML implements Millennium {
 
         List<Pair<List<ObjectML>, Boolean>> trainSet = new ArrayList<>(shuffled.subList(0, splitIndex));
         List<Pair<List<ObjectML>, Boolean>> validSet = splitIndex < total
-                        ? new ArrayList<>(shuffled.subList(splitIndex, total))
-                        : java.util.Collections.emptyList();
+                ? new ArrayList<>(shuffled.subList(splitIndex, total))
+                : java.util.Collections.emptyList();
 
         Logger.info("Dataset split: " + trainSet.size() + " training samples, " + validSet.size() + " validation samples.");
 
         for (int e = 0; e < epochs; e++) {
-            java.util.Collections.shuffle(trainSet, rng);
-            List<Sample> currentBatch = new ArrayList<>(bs);
+            trainOneEpoch(trainSet, bs, labelSmoothing);
 
-            for (Pair<List<ObjectML>, Boolean> dataPair : trainSet) {
-                double y = dataPair.getY() ? 1.0 : 0.0;
-                if (labelSmoothing > 0.0) {
-                    y = y * (1.0 - labelSmoothing) + 0.5 * labelSmoothing;
-                }
-
-                double[][] vecs = prepareVectors(dataPair.getX());
-                if (vecs.length < 2) continue;
-
-                int chunkSize = 150;
-                for (int i = 0; i < vecs.length; i += chunkSize) {
-                    int end = Math.min(vecs.length, i + chunkSize);
-                    if (end - i < 2) continue;
-                    double[][] chunk = new double[end - i][2];
-                    System.arraycopy(vecs, i, chunk, 0, end - i);
-
-                    currentBatch.add(new Sample(chunk, y));
-
-                    if (currentBatch.size() >= bs) {
-                        trainBatch(currentBatch);
-                        currentBatch.clear();
-                    }
-                }
-            }
-            if (!currentBatch.isEmpty()) {
-                trainBatch(currentBatch);
-                currentBatch.clear();
-            }
-
-            DatasetMetrics trainMetrics = evaluateDataset(trainSet, decisionThreshold);
-            DatasetMetrics validMetrics = evaluateDataset(validSet, decisionThreshold);
+            DatasetMetrics trainMetrics = evaluateDataset(trainSet, initialDecisionThreshold);
+            DatasetMetrics validMetrics = evaluateDataset(validSet, initialDecisionThreshold);
+            ThresholdMetrics thresholdMetrics = selectBestThreshold(validMetrics.pairs, initialDecisionThreshold);
 
             double avgTrainLoss = trainMetrics.avgLoss;
             double avgTrainAcc = trainMetrics.acc;
             double avgValidLoss = validMetrics.avgLoss;
-            double acc = validMetrics.acc;
-            double precision = (validMetrics.tp + validMetrics.fp) == 0 ? 0.0 : (double) validMetrics.tp / (validMetrics.tp + validMetrics.fp);
-            double recall = (validMetrics.tp + validMetrics.fn) == 0 ? 0.0 : (double) validMetrics.tp / (validMetrics.tp + validMetrics.fn);
-            double f1 = precision + recall == 0 ? 0.0 : 2 * precision * recall / (precision + recall);
-            double fpr = (validMetrics.fp + validMetrics.tn) == 0 ? 0.0 : (double) validMetrics.fp / (validMetrics.fp + validMetrics.tn);
-
             double rocAuc = rocAuc(validMetrics.pairs);
             double prAuc = prAuc(validMetrics.pairs);
 
             Logger.info(String.format("Epoch %d/%d | Train [Loss: %.4f, Acc: %.1f%%] | Valid [Loss: %.4f, Acc: %.1f%%]",
-                            (e + 1), epochs, avgTrainLoss, avgTrainAcc, avgValidLoss, acc));
+                    (e + 1), epochs, avgTrainLoss, avgTrainAcc, avgValidLoss, thresholdMetrics.acc));
             if (trainMetrics.skippedInvalidOrNonFinite > 0 || validMetrics.skippedInvalidOrNonFinite > 0) {
                 Logger.warn(String.format(
-                                "Skipped samples -> train invalid/non-finite: %d, validation invalid/non-finite: %d",
-                                trainMetrics.skippedInvalidOrNonFinite, validMetrics.skippedInvalidOrNonFinite));
+                        "Skipped samples -> train invalid/non-finite: %d, validation invalid/non-finite: %d",
+                        trainMetrics.skippedInvalidOrNonFinite, validMetrics.skippedInvalidOrNonFinite));
             }
             Logger.info(String.format("Validation Metrics -> Precision: %.4f | Recall: %.4f | F1: %.4f | FPR: %.4f",
-                            precision, recall, f1, fpr));
+                    thresholdMetrics.precision, thresholdMetrics.recall, thresholdMetrics.f1, thresholdMetrics.fpr));
             Logger.info(String.format("Advanced Metrics -> ROC-AUC: %.4f | PR-AUC: %.4f", rocAuc, prAuc));
             Logger.info(String.format("Confusion Matrix -> TP: %d | TN: %d | FP: %d | FN: %d",
-                            validMetrics.tp, validMetrics.tn, validMetrics.fp, validMetrics.fn));
-            Logger.info(String.format("Decision Threshold -> %.2f", decisionThreshold));
+                    thresholdMetrics.tp, thresholdMetrics.tn, thresholdMetrics.fp, thresholdMetrics.fn));
+            Logger.info(String.format("Decision Threshold -> %.2f (auto-selected, initial: %.2f)",
+                    thresholdMetrics.threshold, initialDecisionThreshold));
 
-            boolean betterF1 = f1 > bestF1 + 1e-12;
-            boolean sameF1 = Math.abs(f1 - bestF1) <= 1e-12;
-            boolean betterFpr = fpr < bestFpr - 1e-12;
-            boolean sameFpr = Math.abs(fpr - bestFpr) <= 1e-12;
-            boolean betterPr = prAuc > bestPrAuc + 1e-12;
-            boolean betterLoss = avgValidLoss < bestValidLoss - 1e-12;
-
-            if (betterF1 || (sameF1 && (betterFpr || (sameFpr && (betterPr || betterLoss))))) {
+            if (isBetterCheckpoint(thresholdMetrics, bestThresholdMetrics, prAuc, bestPrAuc, rocAuc, bestRocAuc, avgValidLoss, bestValidLoss)) {
+                this.decisionThreshold = thresholdMetrics.threshold;
                 bestSnapshot = captureTrainingSnapshot();
                 bestEpoch = e + 1;
                 bestPrAuc = prAuc;
                 bestRocAuc = rocAuc;
-                bestF1 = f1;
-                bestFpr = fpr;
-                bestRecall = recall;
+                bestThresholdMetrics = thresholdMetrics;
                 bestValidLoss = avgValidLoss;
-                bestValidAcc = acc;
                 Logger.info(String.format(
-                                "Best checkpoint -> epoch %d selected (thr: %.2f | F1: %.4f | FPR: %.4f | Recall: %.4f | PR-AUC: %.4f | Valid Loss: %.4f)",
-                                bestEpoch, decisionThreshold, bestF1, bestFpr, bestRecall, bestPrAuc, bestValidLoss));
+                        "Best checkpoint -> epoch %d selected (thr: %.2f | Precision: %.4f | Recall: %.4f | F1: %.4f | FPR: %.4f | PR-AUC: %.4f | Valid Loss: %.4f)",
+                        bestEpoch, thresholdMetrics.threshold, thresholdMetrics.precision, thresholdMetrics.recall,
+                        thresholdMetrics.f1, thresholdMetrics.fpr, bestPrAuc, bestValidLoss));
             }
         }
 
         if (bestSnapshot != null) {
             restoreTrainingSnapshot(bestSnapshot);
             Logger.info(String.format(
-                            "Best epoch restored -> %d/%d (thr: %.2f | F1: %.4f | FPR: %.4f | Recall: %.4f | PR-AUC: %.4f | ROC-AUC: %.4f | Valid Acc: %.1f%% | Valid Loss: %.4f)",
-                            bestEpoch, epochs, decisionThreshold, bestF1, bestFpr, bestRecall, bestPrAuc, bestRocAuc, bestValidAcc, bestValidLoss));
+                    "Best epoch restored -> %d/%d (thr: %.2f | Precision: %.4f | Recall: %.4f | F1: %.4f | FPR: %.4f | PR-AUC: %.4f | ROC-AUC: %.4f | Valid Acc: %.1f%% | Valid Loss: %.4f)",
+                    bestEpoch, epochs, bestThresholdMetrics.threshold, bestThresholdMetrics.precision, bestThresholdMetrics.recall,
+                    bestThresholdMetrics.f1, bestThresholdMetrics.fpr, bestPrAuc, bestRocAuc, bestThresholdMetrics.acc, bestValidLoss));
+
+            restoreTrainingSnapshot(initialSnapshot);
+            this.decisionThreshold = bestThresholdMetrics.threshold;
+            Logger.info(String.format(
+                    "Final-fit -> retraining on full dataset for %d epoch(s) with threshold %.2f",
+                    bestEpoch, this.decisionThreshold));
+
+            List<Pair<List<ObjectML>, Boolean>> fullTrainSet = new ArrayList<>(dataset);
+
+            // Best-checkpoint state for final-fit. Composite score: precision when recall >= MIN_RECALL,
+            // otherwise F1. Tie-break by lower FPR.
+            double bestFinalScore = -1.0;
+            double bestFinalFpr = Double.POSITIVE_INFINITY;
+            int bestFinalEpoch = 0;
+            TrainingSnapshot bestFinalSnapshot = null;
+            double bestFinalPrecision = 0.0, bestFinalRecall = 0.0, bestFinalF1 = 0.0;
+
+            for (int e = 0; e < bestEpoch; e++) {
+                trainOneEpoch(fullTrainSet, bs, labelSmoothing);
+                DatasetMetrics fullMetrics = evaluateDataset(fullTrainSet, this.decisionThreshold);
+                double fullPrecision = (fullMetrics.tp + fullMetrics.fp) == 0 ? 0.0 : (double) fullMetrics.tp / (fullMetrics.tp + fullMetrics.fp);
+                double fullRecall = (fullMetrics.tp + fullMetrics.fn) == 0 ? 0.0 : (double) fullMetrics.tp / (fullMetrics.tp + fullMetrics.fn);
+                double fullF1 = (fullPrecision + fullRecall) == 0.0 ? 0.0 : 2.0 * fullPrecision * fullRecall / (fullPrecision + fullRecall);
+                double fullFpr = (fullMetrics.fp + fullMetrics.tn) == 0 ? 0.0 : (double) fullMetrics.fp / (fullMetrics.fp + fullMetrics.tn);
+
+                double score = (fullRecall >= CHECKPOINT_MIN_RECALL) ? fullPrecision : fullF1;
+                boolean better = score > bestFinalScore + 1e-9
+                        || (Math.abs(score - bestFinalScore) <= 1e-9 && fullFpr < bestFinalFpr);
+
+                Logger.info(String.format(
+                        "Final-fit Epoch %d/%d | Train [Loss: %.4f, Acc: %.1f%%] | Precision: %.4f | Recall: %.4f | F1: %.4f | FPR: %.4f%s",
+                        (e + 1), bestEpoch, fullMetrics.avgLoss, fullMetrics.acc,
+                        fullPrecision, fullRecall, fullF1, fullFpr,
+                        better ? " <- best" : ""));
+
+                if (better) {
+                    bestFinalScore = score;
+                    bestFinalFpr = fullFpr;
+                    bestFinalEpoch = e + 1;
+                    bestFinalSnapshot = captureTrainingSnapshot();
+                    bestFinalPrecision = fullPrecision;
+                    bestFinalRecall = fullRecall;
+                    bestFinalF1 = fullF1;
+                }
+            }
+
+            if (bestFinalSnapshot != null) {
+                restoreTrainingSnapshot(bestFinalSnapshot);
+                Logger.info(String.format(
+                        "Final-fit best epoch restored -> %d/%d | Precision: %.4f | Recall: %.4f | F1: %.4f | FPR: %.4f",
+                        bestFinalEpoch, bestEpoch, bestFinalPrecision, bestFinalRecall, bestFinalF1, bestFinalFpr));
+            }
+            Logger.info(String.format(
+                    "Final-fit complete -> threshold %.2f retained for inference (validation-selected, NOT recalibrated on train).",
+                    this.decisionThreshold));
+        } else {
+            this.decisionThreshold = initialDecisionThreshold;
         }
     }
 }
