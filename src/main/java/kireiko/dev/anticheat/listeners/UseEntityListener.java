@@ -38,7 +38,7 @@ public final class UseEntityListener extends PacketAdapter {
                         EnumWrappers.EntityUseAction.ATTACK);
         if (packet.getIntegers().getValues().isEmpty()) return;
         int entityId = packet.getIntegers().read(0);
-        Entity entity = EntityCache.get(player, entityId);
+        Entity entity = EntityCache.get(entityId);
         if (profile.getAttackBlockToTime() > System.currentTimeMillis()) {
             if (ConfigCache.PREVENTION > 0) {
                 event.setCancelled(true);
@@ -50,8 +50,9 @@ public final class UseEntityListener extends PacketAdapter {
                                 && attack
                                 && entity instanceof LivingEntity
                                 && player.getLocation().toVector().distance(entity.getLocation().toVector()) < 3.3) {
+                    final LivingEntity target = (LivingEntity) entity;
                     Bukkit.getScheduler().runTask(MX.getInstance(), () -> {
-                        ((LivingEntity) entity).damage(0.5, player);
+                        target.damage(0.5, player);
                     });
                 }
                 profile.debug("UseEntity packet blocked");
