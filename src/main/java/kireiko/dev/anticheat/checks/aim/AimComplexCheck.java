@@ -18,7 +18,7 @@ import java.util.*;
 public final class AimComplexCheck implements PacketCheckHandler {
     private final List<Float> buffer;
     private final PlayerProfile profile;
-    private final List<Vec2i> /*rotations,*/ rotations2;
+    private final List<Vec2i> rotations2;
     private final List<Vec2> kireikoGeneric;
     private final List<Vec2f> rawRotations;
     private long lastAttack;
