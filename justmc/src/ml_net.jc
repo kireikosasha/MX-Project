@@ -483,6 +483,12 @@ function ml_trace_forward_input() {
 // trace after pooling and the head
 function ml_trace_forward_result() {
   if (g`mlg.trace`.greater(0)) {
+    tl_name = "head row";
+    tl_v = s`ml.head`;
+    ml_trace_list_print();
+    tl_name = "head input [1 | pooled]";
+    tl_v = variable::append_list(g`mlg.one`, po_v);
+    ml_trace_list_print();
     ml_broadcast("&7[trace] &flogit ${fw_logit}, probability ${fw_prob}");
   }
 }
