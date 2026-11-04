@@ -117,7 +117,7 @@ function ml_admin_dispatch_model_commands() {
   } elif (cm_sub.equals("admin")) {
     ml_cmd_admins();
   } elif (cm_sub.equals("selftest")) {
-    code::start_process("ml_selftest_process", "DONT_COPY", "CURRENT_TARGET", {});
+    code::start_process("ml_selftest_process", "DONT_COPY", "CURRENT_TARGET");
   } else {
     ml_cmd_help();
   }
@@ -304,7 +304,7 @@ function ml_cmd_model() {
     } else {
       ml_listen_add(cm_u);
       player::message("§eCreating a fresh model (Xavier + orthogonal init), this takes a while...");
-      code::start_process("ml_reset_process", "DONT_COPY", "NO_TARGET", {});
+      code::start_process("ml_reset_process", "DONT_COPY", "NO_TARGET");
     }
   } elif (cm_a2.equals("import")) {
     if (cm_a3.equals("")) {
@@ -320,7 +320,8 @@ function ml_cmd_model() {
       player::message("§cUsage: ~ml model export <url>  (the JSON is sent with POST)");
     } else {
       ml_listen_add(cm_u);
-      code::start_process("ml_export_process", "DONT_COPY", "NO_TARGET", {"xp_url": cm_a3});
+      xp_url = cm_a3;
+      code::start_process("ml_export_process", "COPY", "NO_TARGET");
     }
   } else {
     ml_cmd_saved_models();
@@ -340,7 +341,8 @@ function ml_cmd_saved_models() {
     player::message("§cTraining is running.");
   } else {
     ml_listen_add(cm_u);
-    code::start_process("ml_saved_model_process", "DONT_COPY", "NO_TARGET", {"sp_action": cm_a2, "sm_name": sm_name});
+    sp_action = cm_a2;
+    code::start_process("ml_saved_model_process", "COPY", "NO_TARGET");
   }
 }
 
@@ -356,7 +358,7 @@ function ml_cmd_model_list() {
   }
 }
 
-process ml_saved_model_process(sp_action, sm_name) {
+process ml_saved_model_process() {
   if (sp_action.equals("save")) {
     ml_model_save();
     ml_count_parameters();
@@ -381,7 +383,7 @@ process ml_reset_process() {
   ml_broadcast("§aFresh model created (${pc_n} weights).");
 }
 
-process ml_export_process(xp_url) {
+process ml_export_process() {
   ml_export_json();
   world::send_web_request(xp_url, io_text, {}, "POST", "APPLICATION_JSON");
   ml_broadcast("§aModel JSON sent to ${xp_url} (${variable::get_text_length(io_text)} chars).");
@@ -393,7 +395,9 @@ function ml_admin_web_response() {
     g`mlg.imports` = variable::remove_list_value(g`mlg.imports`, wr_url);
     wr_code = value::url_response_code;
     if (wr_code.equals(200)) {
-      code::start_process("ml_import_process", "DONT_COPY", "NO_TARGET", {"ip_text": value::url_response, "ip_url": wr_url});
+      ip_text = value::url_response;
+      ip_url = wr_url;
+      code::start_process("ml_import_process", "COPY", "NO_TARGET");
     } else {
       ml_warn("Import failed: HTTP ${wr_code} for ${wr_url}");
     }
@@ -408,7 +412,7 @@ function ml_admin_web_exception() {
   }
 }
 
-process ml_import_process(ip_text, ip_url) {
+process ml_import_process() {
   io_text = ip_text;
   ml_import_json();
   if (io_ok.equals(1)) {

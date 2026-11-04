@@ -94,7 +94,7 @@ function ml_train(tn_epochs: number) {
   g`mlg.training` = 0;
 }
 
-process ml_train_process(tq_epochs) {
+process ml_train_process() {
   ml_train(tq_epochs);
   if (g`mlg.stop`.equals(1)) {
     ml_broadcast("§eTraining stopped.");
@@ -106,5 +106,6 @@ process ml_train_process(tq_epochs) {
 
 function ml_train_async(ta_epochs: number) {
   g`mlg.training` = 1;
-  code::start_process("ml_train_process", "DONT_COPY", "NO_TARGET", {"tq_epochs": ta_epochs});
+  tq_epochs = ta_epochs;
+  code::start_process("ml_train_process", "COPY", "NO_TARGET");
 }

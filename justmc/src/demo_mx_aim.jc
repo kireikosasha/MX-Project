@@ -29,7 +29,7 @@ event<world_start> {
   g`mx.wbusy` = 0;
   g`mx.players` = [];
   g`mx.debug` = [];
-  code::start_process("mx_vl_decay", "DONT_COPY", "NO_TARGET", {});
+  code::start_process("mx_vl_decay", "DONT_COPY", "NO_TARGET");
 }
 
 event<world_web_response> {
@@ -209,7 +209,7 @@ function mx_queue_check() {
       g`mx.queue`.append_value([[rt_u, value::name, g`mx.p.${rt_u}.ny`, g`mx.p.${rt_u}.np`]]);
       if (not g`mx.wbusy`.equals(1)) {
         g`mx.wbusy` = 1;
-        code::start_process("mx_check_worker", "DONT_COPY", "NO_TARGET", {});
+        code::start_process("mx_check_worker", "DONT_COPY", "NO_TARGET");
       }
     }
   }
