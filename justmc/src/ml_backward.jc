@@ -554,7 +554,8 @@ function ml_adam_prepare_step() {
 
 // BinaryHead [bias | V]
 function ml_update_head() {
-  ad_G = [variable::add(`ac.head.dl`)];
+  ad_G = [];
+  ad_G.append_value(variable::add(`ac.head.dl`));
   repeat::for_each_in_list(g`mlg.idxOut`) { au_k, au_i ->
     ad_G.append_value(variable::mathematical_expectation(`ac.head.dl`, `ac.head.p.${au_i}`));
   }
@@ -566,7 +567,8 @@ function ml_update_head() {
 
 // AttentionPooling [b | W]
 function ml_update_attention() {
-  ad_G = [ac_attB];
+  ad_G = [];
+  ad_G.append_value(ac_attB);
   repeat::for_each_in_list(g`mlg.idxOut`) { au_k, au_i ->
     if (`ac.att.ds`.list_is_empty()) {
       ad_G.append_value(0.0);

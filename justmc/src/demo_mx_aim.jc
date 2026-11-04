@@ -211,7 +211,12 @@ function mx_record_rotation() {
 function mx_queue_check() {
   if (rt_rec.equals(0)) {
     if (s`ml.ready`.equals(1)) {
-      g`mx.queue`.append_value([[rt_u, value::name, g`mx.p.${rt_u}.ny`, g`mx.p.${rt_u}.np`]]);
+      qc_item = [];
+      qc_item.append_value(rt_u);
+      qc_item.append_value(value::name);
+      qc_item.append_value([g`mx.p.${rt_u}.ny`]);
+      qc_item.append_value([g`mx.p.${rt_u}.np`]);
+      g`mx.queue`.append_value([qc_item]);
       if (not g`mx.wbusy`.equals(1)) {
         g`mx.wbusy` = 1;
         code::start_process("mx_check_worker", "DONT_COPY", "NO_TARGET");

@@ -367,7 +367,7 @@ function ml_smoothness_step() {
 
 // f / SCALER, then x / (1 + |x|); features beyond 15 are 0
 function ml_feature_scale() {
-  ex_raw = [ex_f0, ex_f1, ex_f2, ex_f3, ex_f4, ex_f5, ex_f6, ex_f7, ex_f8, ex_f9, ex_f10, ex_sa, ex_sb, ex_sc, ex_sd];
+  ml_feature_collect();
   ex_scalers = ML_SCALERS;
   ex_f = [];
   repeat::for_each_in_list(g`mlg.idxIn`) { ex_k, ex_i ->
@@ -376,6 +376,26 @@ function ml_feature_scale() {
     ex_v = variable::divide([ex_v, ex_s]);
     ex_f.append_value(variable::divide([ex_v, variable::add([1, variable::absolute(ex_v)])]));
   }
+}
+
+// the 15 raw features in the order of StatisticalSequencePreprocessor -> ex_raw
+function ml_feature_collect() {
+  ex_raw = [];
+  ex_raw.append_value(ex_f0);
+  ex_raw.append_value(ex_f1);
+  ex_raw.append_value(ex_f2);
+  ex_raw.append_value(ex_f3);
+  ex_raw.append_value(ex_f4);
+  ex_raw.append_value(ex_f5);
+  ex_raw.append_value(ex_f6);
+  ex_raw.append_value(ex_f7);
+  ex_raw.append_value(ex_f8);
+  ex_raw.append_value(ex_f9);
+  ex_raw.append_value(ex_f10);
+  ex_raw.append_value(ex_sa);
+  ex_raw.append_value(ex_sb);
+  ex_raw.append_value(ex_sc);
+  ex_raw.append_value(ex_sd);
 }
 
 // getMedian(values.subList(ex_mo, ex_mo + ex_ms)) — unsorted, as in Statistics.getOutliers

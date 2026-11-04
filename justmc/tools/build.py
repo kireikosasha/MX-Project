@@ -11,6 +11,7 @@ Upload a .json to any file host (or use `jmcc.py compile <file> -u`) and load it
 """
 import json
 import os
+import re
 import subprocess
 import sys
 import types
@@ -86,7 +87,9 @@ def postprocess(path):
         desc = ["&f" + x for x in _wrap(en)] + [" "] + ["&7" + x for x in _wrap(ru)]
         h["values"] = [{"name": "description", "value": {"type": "array", "values": [_text(x) for x in desc]}},
                        {"name": "icon", "value": {"type": "item", "item": '{id:"%s",count:1}' % icon}}]
-    json.dump(code, open(path, "w"), separators=(",", ":"))
+    text = json.dumps(code, separators=(",", ":"), ensure_ascii=False)
+    text = re.sub(r"jmcc\.(\d+)", r"tmp.\1", text)   # temporary variables of the compiler
+    open(path, "w", encoding="utf-8").write(text)
     if split:
         print("ERROR: functions longer than one JustMC code line were split by JMCC:", split)
     print(f"postprocess: missing descriptions: {missing}")

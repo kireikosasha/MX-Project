@@ -250,12 +250,39 @@ function ml_normalize_heads() {
   s`ml.head` = nv_dst;
 }
 
-// nv_src -> nv_dst: every element goes through an addition, which yields a plain number
+// nv_src -> nv_dst: every element is read with get_list_value, passed through an addition (a fresh
+// plain number) and appended to a new list
 function ml_normalize_vector() {
   nv_dst = [];
-  repeat::for_each_in_list(nv_src) { nv_k, nv_x ->
-    nv_dst.append_value(variable::add([nv_x, 0]));
+  nv_i = 0;
+  nv_n = variable::get_list_length(nv_src);
+  repeat::while(nv_i.less(nv_n)) {
+    nv_e = variable::get_list_value(nv_src, nv_i);
+    nv_dst.append_value(variable::add([nv_e, 0]));
+    nv_i = variable::add([nv_i, 1]);
   }
+}
+
+// the 16 numbers of the configuration -> s`mlm.<name>.cfg`
+function ml_model_save_config() {
+  sm_cfg = [];
+  sm_cfg.append_value(s`ml.in`);
+  sm_cfg.append_value(s`ml.hid`);
+  sm_cfg.append_value(s`ml.layers`);
+  sm_cfg.append_value(s`ml.bi`);
+  sm_cfg.append_value(s`ml.im`);
+  sm_cfg.append_value(s`ml.pm`);
+  sm_cfg.append_value(s`ml.lr`);
+  sm_cfg.append_value(s`ml.dr`);
+  sm_cfg.append_value(s`ml.rdr`);
+  sm_cfg.append_value(s`ml.wd`);
+  sm_cfg.append_value(s`ml.gc`);
+  sm_cfg.append_value(s`ml.ls`);
+  sm_cfg.append_value(s`ml.bs`);
+  sm_cfg.append_value(s`ml.step`);
+  sm_cfg.append_value(s`ml.t`);
+  sm_cfg.append_value(s`ml.th`);
+  s`mlm.${sm_name}.cfg` = sm_cfg;
 }
 
 // inputSize, hiddenSize, numLayers, bidirectional (io_new_arch = 1 if any changed)
@@ -392,7 +419,8 @@ inline var ML_CHUNK_CHARS = 24000;   // JustMC cuts texts of web requests / resp
 function ml_export_chunks() {
   ml_export_header();
   io_parts.append_value("}");
-  io_chunks = [variable::join_text(io_parts, "")];
+  io_chunks = [];
+  io_chunks.append_value(variable::join_text(io_parts, ""));
   ml_export_norms();
   io_rows = [];
   io_rlen = 0;
@@ -446,7 +474,8 @@ function ml_export_flush_rows() {
 function ml_export_header() {
   io_cfg = variable::create_map(["inputSize", "hiddenSize", "numLayers", "bidirectional", "inputMode", "poolingMode", "learningRate", "dropoutRate", "recurrentDropoutRate", "weightDecay", "gradientClip", "labelSmoothing", "batchSize", "step", "optT", "decisionThreshold"], [s`ml.in`, s`ml.hid`, s`ml.layers`, s`ml.bi`, s`ml.im`, s`ml.pm`, s`ml.lr`, s`ml.dr`, s`ml.rdr`, s`ml.wd`, s`ml.gc`, s`ml.ls`, s`ml.bs`, s`ml.step`, s`ml.t`, s`ml.th`]);
   io_jc = variable::to_json(io_cfg, "FALSE");
-  io_parts = ['{"format":"millennium","version":6,"config":', io_jc];
+  io_parts = ['{"format":"millennium","version":6,"config":'];
+  io_parts.append_value(io_jc);
   io_parts.append_value([',"embWy":', variable::to_json(s`ml.embWy`, "FALSE"), ',"embWp":', variable::to_json(s`ml.embWp`, "FALSE"), ',"embB":', variable::to_json(s`ml.embB`, "FALSE")]);
   io_len = variable::get_list_length(s`ml.attn`);
   io_parts.append_value([',"attnW":', variable::to_json(mli_slice(s`ml.attn`, 1, io_len), "FALSE"), ',"attnB":', variable::to_json([variable::get_list_value(s`ml.attn`, 0)], "FALSE")]);
@@ -469,7 +498,7 @@ function ml_model_save() {
     s`mlm.list` = [];
   }
   ml_model_delete_data();
-  s`mlm.${sm_name}.cfg` = [s`ml.in`, s`ml.hid`, s`ml.layers`, s`ml.bi`, s`ml.im`, s`ml.pm`, s`ml.lr`, s`ml.dr`, s`ml.rdr`, s`ml.wd`, s`ml.gc`, s`ml.ls`, s`ml.bs`, s`ml.step`, s`ml.t`, s`ml.th`];
+  ml_model_save_config();
   sm_all = variable::append_list(g`mlg.vecnames`, g`mlg.lnnames`);
   sm_all = variable::append_list(sm_all, g`mlg.rownames`);
   s`mlm.${sm_name}.names` = sm_all;

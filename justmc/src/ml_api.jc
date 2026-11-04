@@ -71,7 +71,11 @@ function ml_learn(la_a: array, la_b: array, la_label: number) {
 }
 
 function ml_dataset_add(da_a: array, da_b: array, da_label: number) {
-  s`ml.ds`.append_value([[da_a, da_b, da_label]]);
+  da_s = [];
+  da_s.append_value([da_a]);
+  da_s.append_value([da_b]);
+  da_s.append_value(da_label);
+  s`ml.ds`.append_value([da_s]);
 }
 
 function ml_dataset_size() -> number {

@@ -49,7 +49,22 @@ function ml_threshold_metrics() {
   if (fm_neg.greater(0)) {
     fm_fpr = variable::divide([fm_fp, fm_neg]);
   }
-  fm_res = [fm_thr, fm_acc, fm_prec, fm_rec, fm_f1, fm_fpr, fm_tp, fm_tn, fm_fp, fm_fn];
+  ml_threshold_metrics_pack();
+}
+
+// [thr, acc, prec, rec, f1, fpr, tp, tn, fp, fn] -> fm_res
+function ml_threshold_metrics_pack() {
+  fm_res = [];
+  fm_res.append_value(fm_thr);
+  fm_res.append_value(fm_acc);
+  fm_res.append_value(fm_prec);
+  fm_res.append_value(fm_rec);
+  fm_res.append_value(fm_f1);
+  fm_res.append_value(fm_fpr);
+  fm_res.append_value(fm_tp);
+  fm_res.append_value(fm_tn);
+  fm_res.append_value(fm_fp);
+  fm_res.append_value(fm_fn);
 }
 
 // compare helper: c > b + eps -> 1 ; c < b - eps -> -1 ; else 0       in: cm_c, cm_b, cm_eps -> cm_r
@@ -479,7 +494,11 @@ function ml_epoch_add_sample_chunks() {
     oe_end = variable::min([oe_len, variable::add([oe_i, ML_CHUNK])]);
     oe_cl = variable::subtract([oe_end, oe_i]);
     if (oe_cl.greater_or_equals(2)) {
-      tb_batch.append_value([[mli_slice(oe_ys, oe_i, oe_end), mli_slice(oe_ps, oe_i, oe_end), oe_y]]);
+      oe_item = [];
+      oe_item.append_value([mli_slice(oe_ys, oe_i, oe_end)]);
+      oe_item.append_value([mli_slice(oe_ps, oe_i, oe_end)]);
+      oe_item.append_value(oe_y);
+      tb_batch.append_value([oe_item]);
       oe_bl = variable::get_list_length(tb_batch);
       if (oe_bl.greater_or_equals(oe_bs)) {
         ml_train_batch();
