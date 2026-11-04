@@ -134,7 +134,7 @@ function ml_init_gate() {
     xv_fi = fi_in;
     xv_fo = s`ml.hid`;
     ml_xavier_uniform();
-    fi_row = variable::append_list([fi_b], xv_r);
+    fi_row = mli_cons(fi_b, xv_r);
     fi_row = variable::append_list(fi_row, `og.r.${fi_n}`);
     s`ml.L.${fi_d}.${fi_gt}.${fi_n}` = fi_row;
   }
@@ -147,9 +147,9 @@ function ml_init_heads() {
   xv_fi = g`mlg.out`;
   xv_fo = 1;
   ml_xavier_uniform();
-  s`ml.attn` = variable::append_list([0.0], xv_r);
+  s`ml.attn` = mli_cons(0.0, xv_r);
   ml_xavier_uniform();
-  s`ml.head` = variable::append_list([0.0], xv_r);
+  s`ml.head` = mli_cons(0.0, xv_r);
 }
 
 // RNNModelML.parameters()  -> pc_n
@@ -230,8 +230,32 @@ function ml_import_object() {
   // AdamW moments are not part of the file (same as RNNModelML.load)
   variable::purge(["mla.", "mlt."], "GAME", "STARTS_WITH");
   ml_check_complete();
+  if (s`ml.ready`.equals(1)) {
+    ml_normalize_heads();
+  }
   io_ok = 1;
   io_msg = "ok";
+}
+
+// Rebuilds ml.attn and ml.head number by number. Lists assembled at import from a JSON number and a
+// JSON list made mathematical_expectation stop with "unknown value" in JustMC; a copy of the
+// original attention row is kept in g`mlg.attn_orig` for ~ml selftest.
+function ml_normalize_heads() {
+  g`mlg.attn_orig` = s`ml.attn`;
+  nv_src = s`ml.attn`;
+  ml_normalize_vector();
+  s`ml.attn` = nv_dst;
+  nv_src = s`ml.head`;
+  ml_normalize_vector();
+  s`ml.head` = nv_dst;
+}
+
+// nv_src -> nv_dst: every element goes through an addition, which yields a plain number
+function ml_normalize_vector() {
+  nv_dst = [];
+  repeat::for_each_in_list(nv_src) { nv_k, nv_x ->
+    nv_dst.append_value(variable::add([nv_x, 0]));
+  }
 }
 
 // inputSize, hiddenSize, numLayers, bidirectional (io_new_arch = 1 if any changed)
@@ -317,7 +341,7 @@ function ml_import_embedding_and_heads() {
     if (io_sc.is_type("ARRAY")) {
       io_sc = variable::get_list_value(io_sc, 0);
     }
-    s`ml.attn` = variable::append_list([io_sc], io_v);
+    s`ml.attn` = mli_cons(io_sc, io_v);
   }
   io_v = variable::get_map_value(io_obj, "headV", 0);
   if (io_v.is_type("ARRAY")) {
@@ -325,7 +349,7 @@ function ml_import_embedding_and_heads() {
     if (io_sc.is_type("ARRAY")) {
       io_sc = variable::get_list_value(io_sc, 0);
     }
-    s`ml.head` = variable::append_list([io_sc], io_v);
+    s`ml.head` = mli_cons(io_sc, io_v);
   }
 }
 
@@ -351,7 +375,7 @@ function ml_import_gate_rows() {
   repeat::for_each_in_list(g`mlg.idxH`) { io_nk, io_n ->
     io_ws = variable::multiply([io_n, io_in]);
     io_us = variable::multiply([io_n, io_H]);
-    io_row = variable::append_list([variable::get_list_value(io_b, io_n)], mli_slice(io_W, io_ws, variable::add([io_ws, io_in])));
+    io_row = mli_cons(variable::get_list_value(io_b, io_n), mli_slice(io_W, io_ws, variable::add([io_ws, io_in])));
     io_row = variable::append_list(io_row, mli_slice(io_U, io_us, variable::add([io_us, io_H])));
     s`ml.L.${io_d}.${io_gt}.${io_n}` = io_row;
   }

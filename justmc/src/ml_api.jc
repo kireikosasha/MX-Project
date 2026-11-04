@@ -35,6 +35,9 @@ function ml_boot() {
   }
   ml_rebuild_runtime();
   ml_check_complete();
+  if (s`ml.ready`.equals(1)) {
+    code::start_process("ml_normalize_process", "DONT_COPY", "NO_TARGET");
+  }
   g`mlg.listeners` = [];
   g`mlg.training` = 0;
   g`mlg.stop` = 0;
@@ -110,4 +113,10 @@ function ml_train_async(ta_epochs: number) {
   g`mlg.training` = 1;
   tq_epochs = ta_epochs;
   code::start_process("ml_train_process", "COPY", "NO_TARGET");
+}
+
+// at world start: rebuild the attention row and the head of an already imported model (own process,
+// so a failure cannot stop the boot)
+process ml_normalize_process() {
+  ml_normalize_heads();
 }

@@ -522,7 +522,7 @@ function ml_selftest_inference() {
 
 // every probe runs in its own process: a missing "[probe N]" line means that probe crashed
 function ml_selftest_start_probes() {
-  player::message("&9[selftest] &fprobes 1-12 (a missing number = that probe crashed):");
+  player::message("&9[selftest] &fprobes 1-16 (a missing number = that probe crashed):");
   st_probe = 1;
   code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
   st_probe = 3;
@@ -536,6 +536,21 @@ function ml_selftest_start_probes() {
   st_probe = 8;
   code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
   st_probe = 10;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  st_probe = 16;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  if (s`ml.ready`.equals(1)) {
+    ml_selftest_start_model_probes();
+  }
+}
+
+// probes that need a loaded model
+function ml_selftest_start_model_probes() {
+  st_probe = 13;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  st_probe = 14;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  st_probe = 15;
   code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
   if (s`ml.ready`.equals(1)) {
     st_probe = 11;
@@ -554,9 +569,47 @@ function ml_selftest_start_probes() {
 process ml_selftest_probe_process() {
   if (st_probe.less(7)) {
     ml_probe_dispatch_lists();
-  } else {
+  } elif (st_probe.less(13)) {
     ml_probe_dispatch_model();
+  } else {
+    ml_probe_dispatch_heads();
   }
+}
+
+// probes 13-16: the attention row before and after the rebuild, a LayerNorm vector, list building
+function ml_probe_dispatch_heads() {
+  if (st_probe.equals(13)) {
+    pb_v = variable::mathematical_expectation(g`mlg.attn_orig`, g`mlg.attn_orig`);
+    player::message("&7[probe 13] &foriginal attention row . itself = ${pb_v}");
+  } elif (st_probe.equals(14)) {
+    pb_v = variable::mathematical_expectation(s`ml.attn`, s`ml.attn`);
+    player::message("&7[probe 14] &frebuilt attention row . itself = ${pb_v} (same as probe 13)");
+  } elif (st_probe.equals(15)) {
+    pb_v = variable::mathematical_expectation(s`ml.L.0.g`, s`ml.L.0.g`);
+    player::message("&7[probe 15] &fLayerNorm gamma of layer 0 . itself = ${pb_v}");
+  } else {
+    ml_probe_list_building();
+  }
+}
+
+// 16: three ways of building a list, each used in a dot product (a missing line = that way is broken)
+function ml_probe_list_building() {
+  pb_x = 0.5;
+  pb_d = [pb_x];
+  pb_v = variable::mathematical_expectation(pb_d, pb_d);
+  player::message("&7[probe 16a] &f[variable] in a dot product: ${pb_v} (0.25)");
+  pb_m = variable::parse_json('{"b":-0.5,"w":[1,2]}');
+  pb_y = variable::get_map_value(pb_m, "b");
+  pb_w = variable::get_map_value(pb_m, "w");
+  pb_e = [pb_y];
+  pb_v = variable::mathematical_expectation(pb_e, [1]);
+  player::message("&7[probe 16b] &f[number from a JSON map] in a dot product: ${pb_v} (-0.5)");
+  pb_f = variable::append_list([pb_y], pb_w);
+  pb_v = variable::mathematical_expectation(pb_f, pb_f);
+  player::message("&7[probe 16c] &f[number from a JSON map] + JSON list in a dot product: ${pb_v} (5.25)");
+  pb_g = mli_cons(pb_y, pb_w);
+  pb_v = variable::mathematical_expectation(pb_g, pb_g);
+  player::message("&7[probe 16d] &fthe same list built by append: ${pb_v} (5.25)");
 }
 
 // probes 1-6: lists and arithmetic

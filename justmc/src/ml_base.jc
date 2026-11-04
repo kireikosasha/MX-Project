@@ -61,6 +61,14 @@ inline function mli_dot(a, b) -> number {
   return variable::mathematical_expectation(a, b);
 }
 
+// [x | rest]: the element is appended to a new list (an inline array [x] with a variable gave a list
+// that mathematical_expectation could not read in JustMC)
+inline function mli_cons(x, rest) -> array {
+  var _cs = [];
+  _cs.append_value(x);
+  return variable::append_list(_cs, rest);
+}
+
 // list slice [start, endExclusive) — JustMC trim_list end index is calibrated at boot
 inline function mli_slice(lst, start, end_excl) -> array {
   var _sl_e = variable::subtract([end_excl, g`mlg.trim_off`]);
