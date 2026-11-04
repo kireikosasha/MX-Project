@@ -523,7 +523,7 @@ function ml_selftest_inference() {
 
 // every probe runs in its own process: a missing "[probe N]" line means that probe crashed
 function ml_selftest_start_probes() {
-  player::message("&9[selftest] &fprobes 1-23 (a missing number = that probe crashed):");
+  player::message("&9[selftest] &fprobes 1-24 (a missing number = that probe crashed):");
   st_probe = 1;
   code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
   st_probe = 3;
@@ -561,6 +561,8 @@ function ml_selftest_start_building_probes() {
   st_probe = 22;
   code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
   st_probe = 23;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  st_probe = 24;
   code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
 }
 
@@ -618,23 +620,50 @@ function ml_probe_dispatch_building() {
   pb_m = variable::parse_json('{"b":-0.5,"w":[1,2]}');
   pb_y = variable::get_map_value(pb_m, "b");
   pb_w = variable::get_map_value(pb_m, "w");
+  if (st_probe.less(20)) {
+    ml_probe_dispatch_building_a();
+  } else {
+    ml_probe_dispatch_building_b();
+  }
+}
+
+// probes 16-19
+function ml_probe_dispatch_building_a() {
   if (st_probe.equals(16)) {
     ml_probe_inline_variable();
   } elif (st_probe.equals(17)) {
     ml_probe_inline_map_number();
   } elif (st_probe.equals(18)) {
     ml_probe_inline_plus_list();
-  } elif (st_probe.equals(19)) {
+  } else {
     ml_probe_cons();
-  } elif (st_probe.equals(20)) {
+  }
+}
+
+// probes 20-24
+function ml_probe_dispatch_building_b() {
+  if (st_probe.equals(20)) {
     ml_probe_rebuild_by_index();
   } elif (st_probe.equals(21)) {
     ml_probe_loop_add();
   } elif (st_probe.equals(22)) {
     ml_probe_nested_inline();
-  } else {
+  } elif (st_probe.equals(23)) {
     ml_probe_append_map_number();
+  } else {
+    ml_probe_math_precision();
   }
+}
+
+// 24: precision of the arithmetic the model relies on (every value is expected with 16-17 digits)
+function ml_probe_math_precision() {
+  pb_a = variable::divide([1, 3]);
+  pb_b = variable::pow(0.36787944117144233, 2);
+  pb_c = variable::pow(7.38905609893065, 0.5);
+  pb_d = variable::log(10, 2);
+  pb_e = variable::pow(2, 0.5);
+  pb_f = variable::mathematical_expectation([0.1, 0.2], [3, 7]);
+  player::message("&7[probe 24] &f1/3 = ${pb_a} (0.3333333333333333); e^-2 = ${pb_b} (0.1353352832366127); sqrt(e^2) = ${pb_c} (2.718281828459045); log2(10) = ${pb_d} (3.321928094887362); sqrt 2 = ${pb_e} (1.4142135623730951); 0.1*3+0.2*7 = ${pb_f} (1.7000000000000002)");
 }
 
 // 16: [variable] stored in a variable, then a dot product

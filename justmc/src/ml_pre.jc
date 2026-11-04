@@ -98,6 +98,7 @@ function ml_trace_window() {
     tl_name = "window ${ps_w} features";
     tl_v = ex_f;
     ml_trace_list_print();
+    ml_broadcast("&7[trace] &fwindow ${ps_w} details: L=${ex_L} sum=${ex_sum} distinct=${ex_distinct} ent=${ex_ent} hash=${ex_hash} D=${ex_D} q1=${ex_q1} q3=${ex_q3} out=${ex_out} med=${ex_median} var=${ex_var} i75=${ex_i75} i25=${ex_i25} mode_ok=${ex_mode_ok} smooth=${ex_sa} ${ex_sb} ${ex_sc} ${ex_sd}");
   }
 }
 

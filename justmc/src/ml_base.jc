@@ -169,12 +169,30 @@ function ml_trace_list_print() {
       }
     }
     if (tl_bad.equals(-1)) {
-      ml_broadcast("&7[trace] &f${tl_name}: list of ${tl_n} numbers");
+      ml_trace_values();
+      ml_broadcast("&7[trace] &f${tl_name}: list of ${tl_n} numbers ${tl_vals}");
     } else {
       ml_broadcast("&7[trace] &c${tl_name}: list of ${tl_n}, element ${tl_bad} is ${tl_bt}");
     }
   } else {
     ml_broadcast("&7[trace] &c${tl_name}: ${tl_t}");
+  }
+}
+
+// values of the traced list tl_v as text -> tl_vals: every element (4 decimals) when there are at most
+// 16, otherwise the first three (6 decimals) and the sum
+function ml_trace_values() {
+  tl_r = [];
+  if (tl_n.less_or_equals(16)) {
+    repeat::for_each_in_list(tl_v) { tl_k, tl_x ->
+      tl_r.append_value(variable::round(tl_x, 4, "ROUND"));
+    }
+    tl_vals = "= ${tl_r}";
+  } else {
+    tl_r.append_value(variable::round(variable::get_list_value(tl_v, 0), 6, "ROUND"));
+    tl_r.append_value(variable::round(variable::get_list_value(tl_v, 1), 6, "ROUND"));
+    tl_r.append_value(variable::round(variable::get_list_value(tl_v, 2), 6, "ROUND"));
+    tl_vals = "first ${tl_r}, sum ${variable::round(variable::add(tl_v), 6, "ROUND")}";
   }
 }
 
