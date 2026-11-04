@@ -481,8 +481,21 @@ process ml_import_process() {
 // ~ml selftest — checks the JustMC semantics this port relies on + a reference inference
 process ml_selftest_process() {
   ml_selftest_semantics();
+  ml_selftest_lists();
+  ml_selftest_json();
+  ml_selftest_reference_data();
   player::message("&9[selftest] &fsemantics ok: ${st_ok} &7(trim_off=${g`mlg.trim_off`})");
+  st_bad = 0;
   if (s`ml.ready`.equals(1)) {
+    ml_selftest_model_types();
+  }
+  if (s`ml.ready`.equals(0)) {
+    player::message("&9[selftest] &7no model loaded, inference skipped");
+  } elif (st_ok.equals(0)) {
+    player::message("&9[selftest] &cinference skipped: send a screenshot of the lines above");
+  } elif (st_bad.greater(0)) {
+    player::message("&9[selftest] &cinference skipped: the model has broken vectors, import it again");
+  } else {
     ml_selftest_sequence();
     ck_ys = st_ys;
     ck_ps = st_ps;
@@ -491,6 +504,128 @@ process ml_selftest_process() {
     }
     player::message("&9[selftest] &fRNN probability: &e${ck_prob} &7(${st_ms} ms)");
     player::message("&9[selftest] &fexpected for the original quark-e weights: &e${ML_ST_EXPECTED}");
+  }
+}
+
+// type of tn_v as text -> tn_t
+function ml_type_name() {
+  if (tn_v.is_type("NUMBER")) {
+    tn_t = "number";
+  } elif (tn_v.is_type("TEXT")) {
+    tn_t = "text";
+  } elif (tn_v.is_type("ARRAY")) {
+    tn_t = "list";
+  } elif (tn_v.is_type("MAP")) {
+    tn_t = "map";
+  } else {
+    tn_t = "other";
+  }
+}
+
+// list loop index base, slices checked by value, value of an index outside the list
+function ml_selftest_lists() {
+  st_first = -1;
+  repeat::for_each_in_list([7, 8]) { st_i, st_x ->
+    if (st_x.equals(7)) {
+      st_first = st_i;
+    }
+  }
+  if (not st_first.equals(0)) {
+    st_ok = 0;
+    player::message("&c[selftest] list loop index of the first element is ${st_first}, expected 0");
+  }
+  st_l = mli_slice([10, 11, 12, 13], 1, 3);
+  st_a = variable::get_list_value(st_l, 0, -1);
+  if (not st_a.equals(11)) {
+    st_ok = 0;
+    player::message("&c[selftest] slice 1..3 of [10, 11, 12, 13] = ${st_l}, expected [11, 12]");
+  }
+  st_l = mli_slice([10, 11, 12], 0, 3);
+  st_a = variable::get_list_length(st_l);
+  if (not st_a.equals(3)) {
+    st_ok = 0;
+    player::message("&c[selftest] slice 0..3 of [10, 11, 12] = ${st_l}, expected the whole list");
+  }
+  tn_v = variable::get_list_value([1, 2], 5);
+  ml_type_name();
+  player::message("&7[selftest] value outside a list: ${tn_t}");
+}
+
+// parse_json: numbers in a list, in a list inside a list, in a list inside a map
+function ml_selftest_json() {
+  st_j = variable::parse_json("[0.5,1e-05,-2,[0.25,3]]");
+  tn_v = variable::get_list_value(st_j, 0);
+  ml_type_name();
+  st_t1 = tn_t;
+  st_v1 = variable::get_list_value(st_j, 1);
+  tn_v = st_v1;
+  ml_type_name();
+  st_t2 = tn_t;
+  st_in = variable::get_list_value(st_j, 3);
+  tn_v = st_in;
+  ml_type_name();
+  st_t3 = tn_t;
+  tn_v = variable::get_list_value(st_in, 0);
+  ml_type_name();
+  st_t4 = tn_t;
+  st_m = variable::parse_json('{"a":[0.75]}');
+  tn_v = variable::get_list_value(variable::get_map_value(st_m, "a"), 0);
+  ml_type_name();
+  st_all = "${st_t1} ${st_t2} ${st_t3} ${st_t4} ${tn_t}";
+  if (not st_all.equals("number number list number number")) {
+    st_ok = 0;
+    player::message("&c[selftest] json [0.5, 1e-05, -2, [0.25, 3]] / {a:[0.75]} gives: ${st_all} (1e-05 -> ${st_v1})");
+  }
+}
+
+// the reference sequence written in the code: 150 numbers in each list
+function ml_selftest_reference_data() {
+  ml_selftest_sequence();
+  st_a = variable::get_list_length(st_ys);
+  st_b = variable::get_list_length(st_ps);
+  tn_v = variable::get_list_value(st_ps, 149);
+  ml_type_name();
+  if (not "${st_a} ${st_b} ${tn_t}".equals("150 150 number")) {
+    st_ok = 0;
+    player::message("&c[selftest] reference sequence: ${st_a} / ${st_b} values, last one is ${tn_t} (expected 150 / 150, number)");
+  }
+}
+
+// every weight vector must be a list of numbers -> st_bad (count), first broken name in the chat
+function ml_selftest_model_types() {
+  st_bad = 0;
+  st_names = variable::append_list(variable::append_list(g`mlg.vecnames`, g`mlg.lnnames`), g`mlg.rownames`);
+  repeat::for_each_in_list(st_names) { st_k, st_n ->
+    st_vec = s`${st_n}`;
+    st_good = 0;
+    if (st_vec.is_type("ARRAY")) {
+      st_last = variable::subtract([variable::get_list_length(st_vec), 1]);
+      st_e0 = variable::get_list_value(st_vec, 0);
+      st_e1 = variable::get_list_value(st_vec, st_last);
+      if (st_e0.is_type("NUMBER")) {
+        if (st_e1.is_type("NUMBER")) {
+          st_good = 1;
+        }
+      }
+    }
+    if (st_good.equals(0)) {
+      ml_selftest_report_vector();
+    }
+    ml_yield(12);
+  }
+  player::message("&9[selftest] &fweight vectors: ${variable::get_list_length(st_names)}, broken: ${st_bad}");
+}
+
+// first broken vector: its type and the type of its first element
+function ml_selftest_report_vector() {
+  st_bad = variable::add([st_bad, 1]);
+  if (st_bad.equals(1)) {
+    tn_v = st_vec;
+    ml_type_name();
+    st_tv = tn_t;
+    tn_v = variable::get_list_value(st_vec, 0);
+    ml_type_name();
+    player::message("&c[selftest] broken vector ${st_n}: ${st_tv}, first element ${tn_t}");
   }
 }
 

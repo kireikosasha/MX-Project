@@ -52,6 +52,12 @@ process mx_vl_decay() {
 
 event<player_join> {
   ml_admin_join();
+  mx_player_init();
+}
+
+// per-player state: name <-> uuid, last rotation, rotation buffers, VL
+// (also called on the first rotation of a player who was in the world before it started)
+function mx_player_init() {
   jn_u = value::uuid;
   jn_name = value::name;
   g`mx.uuid.${jn_name}` = jn_u;
@@ -138,9 +144,8 @@ function mx_on_rotate() {
   rt_u = value::uuid;
   rt_yaw = value::yaw;
   rt_pitch = value::pitch;
-  if (not g`mx.p.${rt_u}.py`.exists()) {
-    g`mx.p.${rt_u}.py` = rt_yaw;
-    g`mx.p.${rt_u}.pp` = rt_pitch;
+  if (not g`mx.p.${rt_u}.ry`.exists()) {
+    mx_player_init();
   } else {
     mx_rotation_delta();
     if (rt_now.greater(rt_lim)) {
