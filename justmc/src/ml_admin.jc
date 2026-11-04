@@ -31,6 +31,9 @@ function ml_admin_boot() {
     s`ml.admins` = [];
   }
   g`mlg.imports` = [];
+  g`mlg.import_queue` = [];
+  g`mlg.import_done` = 0;
+  g`mlg.import_failed` = 0;
 }
 
 // in: ad_u, ad_name -> ad_ok
@@ -307,14 +310,7 @@ function ml_cmd_model() {
       code::start_process("ml_reset_process", "DONT_COPY", "NO_TARGET");
     }
   } elif (cm_a2.equals("import")) {
-    if (cm_a3.equals("")) {
-      player::message("§cUsage: ~ml model import <url>  (JSON, see tools/ml_convert.py)");
-    } else {
-      ml_listen_add(cm_u);
-      g`mlg.imports`.append_value(cm_a3);
-      world::send_web_request(cm_a3, "", {}, "GET", "TEXT_PLAIN");
-      player::message("§eDownloading ${cm_a3} ...");
-    }
+    ml_cmd_model_import();
   } elif (cm_a2.equals("export")) {
     if (cm_a3.equals("")) {
       player::message("§cUsage: ~ml model export <url>  (the JSON is sent with POST)");
@@ -325,6 +321,22 @@ function ml_cmd_model() {
     }
   } else {
     ml_cmd_saved_models();
+  }
+}
+
+// ~ml model import <url>: a model file or a manifest with the list of its parts
+function ml_cmd_model_import() {
+  if (cm_a3.equals("")) {
+    player::message("§cUsage: ~ml model import <url>  (JSON file or manifest, see tools/ml_convert.py)");
+  } else {
+    // a new import replaces an unfinished one: its pending answers are ignored
+    ml_listen_add(cm_u);
+    g`mlg.imports` = [];
+    g`mlg.import_queue` = [cm_a3];
+    g`mlg.import_done` = 0;
+    g`mlg.import_failed` = 0;
+    player::message("§eDownloading ${cm_a3} ...");
+    ml_import_download_next();
   }
 }
 
@@ -384,9 +396,12 @@ process ml_reset_process() {
 }
 
 process ml_export_process() {
-  ml_export_json();
-  world::send_web_request(xp_url, io_text, {}, "POST", "APPLICATION_JSON");
-  ml_broadcast("§aModel JSON sent to ${xp_url} (${variable::get_text_length(io_text)} chars).");
+  ml_export_chunks();
+  repeat::for_each_in_list(io_chunks) { xp_k, xp_body ->
+    world::send_web_request(xp_url, xp_body, {}, "POST", "APPLICATION_JSON");
+    code::wait(10, "TICKS");
+  }
+  ml_broadcast("§aModel sent to ${xp_url} as ${variable::get_list_length(io_chunks)} JSON files (merge them with tools/ml_convert.py json2dat).");
 }
 
 function ml_admin_web_response() {
@@ -400,6 +415,8 @@ function ml_admin_web_response() {
       code::start_process("ml_import_process", "COPY", "NO_TARGET");
     } else {
       ml_warn("Import failed: HTTP ${wr_code} for ${wr_url}");
+      g`mlg.import_failed` = variable::add([g`mlg.import_failed`, 1]);
+      ml_import_download_next();
     }
   }
 }
@@ -409,18 +426,56 @@ function ml_admin_web_exception() {
   if (g`mlg.imports`.list_contains_value(we_url)) {
     g`mlg.imports` = variable::remove_list_value(g`mlg.imports`, we_url);
     ml_warn("Import failed (web exception) for ${we_url}");
+    g`mlg.import_failed` = variable::add([g`mlg.import_failed`, 1]);
+    ml_import_download_next();
   }
+}
+
+// download the next file of the import queue (one at a time); report when the queue is empty
+function ml_import_download_next() {
+  if (g`mlg.import_queue`.list_is_empty()) {
+    ml_count_parameters();
+    ml_log("Model import finished: ${g`mlg.import_done`} file(s), ${g`mlg.import_failed`} failed -> ready=${s`ml.ready`}, parameters=${pc_n}");
+  } else {
+    dn_url = variable::get_list_value(g`mlg.import_queue`, 0);
+    variable::remove_list_value_at_index(removed_value=dn_rm, variable=g`mlg.import_queue`, list=g`mlg.import_queue`, index=0);
+    g`mlg.imports`.append_value(dn_url);
+    world::send_web_request(dn_url, "", {}, "GET", "TEXT_PLAIN");
+  }
+}
+
+// files of a manifest -> import queue (relative names are resolved against the manifest URL)
+function ml_import_queue_manifest() {
+  mq_dir = variable::split_text(ip_url, "/");
+  mq_last = variable::subtract([variable::get_list_length(mq_dir), 1]);
+  variable::remove_list_value_at_index(removed_value=mq_rm, variable=mq_dir, list=mq_dir, index=mq_last);
+  mq_base = variable::join_text(mq_dir, "/");
+  repeat::for_each_in_list(io_manifest) { mq_k, mq_f ->
+    if (mq_f.text_starts_with("http")) {
+      g`mlg.import_queue`.append_value(mq_f);
+    } else {
+      g`mlg.import_queue`.append_value("${mq_base}/${mq_f}");
+    }
+  }
+  ml_log("Manifest ${ip_url}: ${variable::get_list_length(io_manifest)} file(s) to download...");
 }
 
 process ml_import_process() {
   io_text = ip_text;
   ml_import_json();
-  if (io_ok.equals(1)) {
-    ml_count_parameters();
-    ml_log("Imported ${ip_url} -> ready=${s`ml.ready`}, parameters=${pc_n}");
+  if (io_ok.equals(2)) {
+    ml_import_queue_manifest();
+  } elif (io_ok.equals(1)) {
+    g`mlg.import_done` = variable::add([g`mlg.import_done`, 1]);
+    ip_mod = variable::remainder(g`mlg.import_done`, 10, "REMAINDER");
+    if (ip_mod.equals(0)) {
+      ml_log("Model import: ${g`mlg.import_done`} file(s) loaded...");
+    }
   } else {
+    g`mlg.import_failed` = variable::add([g`mlg.import_failed`, 1]);
     ml_warn("Bad model file ${ip_url}: ${io_msg}");
   }
+  ml_import_download_next();
 }
 
 // ~ml selftest — checks the JustMC semantics this port relies on + a reference inference

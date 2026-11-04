@@ -1,42 +1,31 @@
 #!/usr/bin/env python3
 """
-ml_convert.py — convert Millennium 5 (RNNModelML, format RNN6 v6) weights between the MX
-binary ``.dat`` file and the JSON format understood by the JustMC port (``ml_import_json``).
+ml_convert.py - convert Millennium RNN weights (RNNModelML, format RNN6 v6) between the MX
+binary .dat file and the JSON files of the JustMC port.
 
-Examples
-  # MX plugin model -> one JSON file (for `~mx model import <url>`)
-  python ml_convert.py dat2json ../../src/main/resources/ml/m1-rnn.dat quark.json
+JustMC cuts web responses at 25000 characters, so a model is written as many small JSON files:
+  <name>.json        manifest {"format": "millennium", "manifest": ["<name>-000.json", ...]}
+  <name>-000.json    config, embedding, attention, head
+  <name>-001.json    LayerNorm of every layer        {"ln": {"<d>": {"g": [...], "b": [...]}}}
+  <name>-002.json..  gate rows                       {"rows": [[d, "f|i|c|o", n, [b, W..., U...]], ...]}
+In JustMC:  ~ml model import <url of <name>.json>   (the other files must be next to it)
 
-  # the same, split into small parts (config+heads, then one LSTM layer-direction per file)
-  python ml_convert.py dat2json m1-rnn.dat quark.json --split
-
-  # JustMC export (or merged parts) -> MX plugin .dat (drop it into plugins/MX/models/)
-  python ml_convert.py json2dat model.json m1-rnn.dat part1.json part2.json ...
-
-  # check / describe a file
-  python ml_convert.py info m1-rnn.dat
-
-The binary layout mirrors RNNModelML.saveToFile():
-  int MAGIC(0x524E4E36) int VERSION(6)
-  int inputSize int hiddenSize int numLayers bool bidirectional
-  int inputMode int poolingMode
-  double lr dr rdr wd gc ls
-  int batchSize long step long optT
-  arr embWy arr embWp arr embB
-  int numLayers bool bidirectional  { for l: layer(fwd) [layer(bwd)] }
-      layer = Wf Wi Wc Wo Uf Ui Uc Uo bf bi bc bo lnGamma lnBeta   (arr = int n + n doubles)
-  arr attnW double attnB arr headV double headBias double decisionThreshold
+Usage
+  python ml_convert.py dat2json m1-rnn.dat quark-e.json            # MX -> JustMC files + manifest
+  python ml_convert.py json2dat m1-rnn.dat part1.json part2.json ... # JustMC export / files -> MX .dat
+  python ml_convert.py info m1-rnn.dat | info file.json ...
+Options:  --max-chars N (default 24000)   --single (one JSON file, only for small models)
 """
+import glob
 import json
+import os
 import struct
 import sys
 
 MAGIC = 0x524E4E36
 VERSION = 6
+GATES = ["f", "i", "c", "o"]
 LAYER_KEYS = ["Wf", "Wi", "Wc", "Wo", "Uf", "Ui", "Uc", "Uo", "bf", "bi", "bc", "bo", "lnGamma", "lnBeta"]
-CONFIG_KEYS = ["inputSize", "hiddenSize", "numLayers", "bidirectional", "inputMode", "poolingMode",
-               "learningRate", "dropoutRate", "recurrentDropoutRate", "weightDecay", "gradientClip",
-               "labelSmoothing", "batchSize", "step", "optT", "decisionThreshold"]
 
 
 class Reader:
@@ -65,9 +54,7 @@ class Reader:
 
     def arr(self):
         n = self.i32()
-        if n < 0:
-            return None
-        return [self.f64() for _ in range(n)]
+        return None if n < 0 else [self.f64() for _ in range(n)]
 
     def left(self):
         return len(self.b) - self.p
@@ -77,29 +64,21 @@ def read_dat(path):
     r = Reader(open(path, "rb").read())
     if r.i32() != MAGIC or r.i32() != VERSION:
         raise SystemExit("bad model version (expected RNN6 / 6)")
-    cfg = {}
-    cfg["inputSize"] = r.i32()
-    cfg["hiddenSize"] = r.i32()
-    cfg["numLayers"] = r.i32()
-    cfg["bidirectional"] = 1 if r.boolean() else 0
-    cfg["inputMode"] = r.i32()
-    cfg["poolingMode"] = r.i32()
+    cfg = {"inputSize": r.i32(), "hiddenSize": r.i32(), "numLayers": r.i32(),
+           "bidirectional": 1 if r.boolean() else 0, "inputMode": r.i32(), "poolingMode": r.i32()}
     for k in ["learningRate", "dropoutRate", "recurrentDropoutRate", "weightDecay", "gradientClip", "labelSmoothing"]:
         cfg[k] = r.f64()
     cfg["batchSize"] = r.i32()
     cfg["step"] = r.i64()
     cfg["optT"] = r.i64()
-    m = {"format": "millennium", "version": VERSION, "config": cfg}
-    m["embWy"] = r.arr()
-    m["embWp"] = r.arr()
-    m["embB"] = r.arr()
+    m = {"format": "millennium", "version": VERSION, "config": cfg,
+         "embWy": r.arr(), "embWp": r.arr(), "embB": r.arr()}
     layers = r.i32()
     bi = r.boolean()
-    lay = {}
+    m["layers"] = {}
     for l in range(layers):
         for d in ([0, 1] if bi else [0]):
-            lay[str(l * 2 + d)] = {k: r.arr() for k in LAYER_KEYS}
-    m["layers"] = lay
+            m["layers"][str(l * 2 + d)] = {k: r.arr() for k in LAYER_KEYS}
     m["attnW"] = r.arr()
     m["attnB"] = r.f64()
     m["headV"] = r.arr()
@@ -120,9 +99,8 @@ def write_dat(m, path):
 
     w(">i", MAGIC)
     w(">i", VERSION)
-    w(">i", int(cfg["inputSize"]))
-    w(">i", int(cfg["hiddenSize"]))
-    w(">i", int(cfg["numLayers"]))
+    for k in ["inputSize", "hiddenSize", "numLayers"]:
+        w(">i", int(cfg[k]))
     out.append(1 if int(cfg["bidirectional"]) else 0)
     w(">i", int(cfg["inputMode"]))
     w(">i", int(cfg["poolingMode"]))
@@ -139,9 +117,8 @@ def write_dat(m, path):
     out.append(1 if bi else 0)
     for l in range(int(cfg["numLayers"])):
         for d in ([0, 1] if bi else [0]):
-            layer = m["layers"][str(l * 2 + d)]
             for k in LAYER_KEYS:
-                arr(layer[k])
+                arr(m["layers"][str(l * 2 + d)][k])
     arr(m["attnW"])
     w(">d", float(scalar(m["attnB"])))
     arr(m["headV"])
@@ -154,67 +131,125 @@ def scalar(v):
     return v[0] if isinstance(v, list) else v
 
 
+def dims(cfg, d):
+    h = int(cfg["hiddenSize"])
+    n_in = int(cfg["inputSize"]) if int(d) // 2 == 0 else (2 * h if int(cfg["bidirectional"]) else h)
+    return n_in, h
+
+
+def to_rows(m):
+    """layers (flat Java arrays) -> [[d, gate, n, [b, W..., U...]], ...]"""
+    rows = []
+    for d, lay in sorted(m["layers"].items(), key=lambda kv: int(kv[0])):
+        n_in, h = dims(m["config"], d)
+        for n in range(h):
+            for g in GATES:
+                W, U, b = lay["W" + g], lay["U" + g], lay["b" + g]
+                rows.append([int(d), g, n, [b[n]] + W[n * n_in:(n + 1) * n_in] + U[n * h:(n + 1) * h]])
+    return rows
+
+
 def merge(parts):
-    m = {}
+    """files (full model, header, ln, rows, JustMC export chunks) -> one model dict"""
+    m, rows, ln = {}, [], {}
     for p in parts:
         for k, v in p.items():
             if k == "layers":
                 m.setdefault("layers", {}).update(v)
             elif k == "config":
                 m.setdefault("config", {}).update(v)
-            else:
+            elif k == "rows":
+                rows.extend(v)
+            elif k == "ln":
+                ln.update(v)
+            elif k != "manifest":
                 m[k] = v
+    if rows or ln:
+        cfg = m["config"]
+        lay = m.setdefault("layers", {})
+        for d, g, n, row in rows:
+            n_in, h = dims(cfg, d)
+            L = lay.setdefault(str(int(d)), {})
+            for key, size in (("W" + g, h * n_in), ("U" + g, h * h), ("b" + g, h)):
+                L.setdefault(key, [0.0] * size)
+            n = int(n)
+            L["b" + g][n] = row[0]
+            L["W" + g][n * n_in:(n + 1) * n_in] = row[1:1 + n_in]
+            L["U" + g][n * h:(n + 1) * h] = row[1 + n_in:]
+        for d, v in ln.items():
+            L = lay.setdefault(str(int(float(d))), {})
+            L["lnGamma"], L["lnBeta"] = v["g"], v["b"]
     return m
 
 
-def dump(obj, path, digits):
-    def rnd(x):
-        if isinstance(x, list):
-            return [rnd(y) for y in x]
-        if isinstance(x, dict):
-            return {k: rnd(y) for k, y in x.items()}
-        if isinstance(x, float) and digits:
-            return float(f"{x:.{digits}g}")
-        return x
-    open(path, "w").write(json.dumps(rnd(obj), separators=(",", ":")))
+def text(obj):
+    return json.dumps(obj, separators=(",", ":"))
+
+
+def write_chunks(m, out, max_chars):
+    base = out[:-5] if out.endswith(".json") else out
+    stem = os.path.basename(base)
+    files = [{k: v for k, v in m.items() if k != "layers"}]
+    files.append({"format": "millennium", "ln": {d: {"g": L["lnGamma"], "b": L["lnBeta"]}
+                                                  for d, L in m["layers"].items()}})
+    cur = []
+    for r in to_rows(m):
+        if cur and len(text({"format": "millennium", "rows": cur + [r]})) > max_chars:
+            files.append({"format": "millennium", "rows": cur})
+            cur = []
+        cur.append(r)
+    if cur:
+        files.append({"format": "millennium", "rows": cur})
+    names = []
+    os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
+    for i, f in enumerate(files):
+        t = text(f)
+        if len(t) > max_chars:
+            raise SystemExit(f"file {i} has {len(t)} characters (> {max_chars})")
+        name = f"{stem}-{i:03d}.json"
+        open(os.path.join(os.path.dirname(out) or ".", name), "w").write(t)
+        names.append(name)
+    open(out, "w").write(text({"format": "millennium", "manifest": names}))
+    print(f"written: {out} (manifest) + {len(names)} files of <= {max_chars} characters")
+
+
+def load_parts(paths):
+    parts = []
+    for p in paths:
+        for f in sorted(glob.glob(p)) or [p]:
+            parts.append(json.load(open(f)))
+    return parts
 
 
 def main(argv):
-    if len(argv) < 2:
+    if len(argv) < 3:
         print(__doc__)
         return 1
-    cmd = argv[1]
-    digits = None
-    if "--digits" in argv:
-        digits = int(argv[argv.index("--digits") + 1])
-    if cmd == "dat2json":
-        m = read_dat(argv[2])
-        out = argv[3]
-        if "--split" in argv:
-            base = out[:-5] if out.endswith(".json") else out
-            head = {k: v for k, v in m.items() if k != "layers"}
-            dump(head, f"{base}-part0.json", digits)
-            names = [f"{base}-part0.json"]
-            for i, (d, layer) in enumerate(sorted(m["layers"].items(), key=lambda kv: int(kv[0]))):
-                p = {"format": "millennium", "version": VERSION, "layers": {d: layer}}
-                dump(p, f"{base}-part{i + 1}.json", digits)
-                names.append(f"{base}-part{i + 1}.json")
-            print("written:", " ".join(names))
+    opts, args, max_chars = set(), [], 24000
+    it = iter(argv[1:])
+    for a in it:
+        if a == "--max-chars":
+            max_chars = int(next(it))
+        elif a.startswith("--"):
+            opts.add(a)
         else:
-            dump(m, out, digits)
-            print("written:", out)
+            args.append(a)
+    cmd = args[0]
+    if cmd == "dat2json":
+        m = read_dat(args[1])
+        if "--single" in opts:
+            open(args[2], "w").write(text(m))
+            print("written:", args[2])
+        else:
+            write_chunks(m, args[2], max_chars)
     elif cmd == "json2dat":
-        parts = [json.load(open(p)) for p in [argv[2]] + argv[4:] if not p.startswith("--")]
-        write_dat(merge(parts), argv[3])
-        print("written:", argv[3])
+        write_dat(merge(load_parts(args[2:])), args[1])
+        print("written:", args[1])
     elif cmd == "info":
-        src = argv[2]
-        m = read_dat(src) if src.endswith(".dat") else merge([json.load(open(p)) for p in argv[2:]])
-        cfg = m["config"]
-        n = 3 * cfg["inputSize"] + len(m["attnW"]) + 1 + len(m["headV"]) + 1
-        for layer in m["layers"].values():
-            n += sum(len(layer[k]) for k in LAYER_KEYS)
-        print(json.dumps(cfg, indent=1))
+        m = read_dat(args[1]) if args[1].endswith(".dat") else merge(load_parts(args[1:]))
+        n = 3 * m["config"]["inputSize"] + len(m["attnW"]) + 1 + len(m["headV"]) + 1
+        n += sum(len(L[k]) for L in m["layers"].values() for k in LAYER_KEYS)
+        print(json.dumps(m["config"], indent=1))
         print("parameters:", n)
     else:
         print(__doc__)

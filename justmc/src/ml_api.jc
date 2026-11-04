@@ -11,7 +11,7 @@
 //    ml_dataset_add(a, b, 0);          // DatasetManager.saveSample (save variable s`ml.ds`)
 //    ml_train(16);                     // RNNModelML.trainEpochs on s`ml.ds` (blocking, use a process)
 //    ml_train_async(16);               // the same in a background process
-//    ml_export_json(); -> io_text      // RNNModelML.saveToFile (JSON instead of binary)
+//    ml_export_chunks(); -> io_chunks  // RNNModelML.saveToFile (JSON files of <= 24000 chars)
 //    io_text = "..."; ml_import_json() // RNNModelML.load
 //    ml_init_fresh();                  // new RNNModelML(cfg)
 //    ml_count_parameters(); -> pc_n         // RNNModelML.parameters

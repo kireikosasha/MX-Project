@@ -13,7 +13,8 @@ StackedBiLSTM + LayerNorm, пулинги LAST / MEAN / MAX / ATTENTION, BinaryH
 ```
 build/millennium_trainer.json   модуль: библиотека + команды ~ml
 build/millennium_mx_demo.json   модуль: то же + демо проверки аима (AimMLCheck)
-weights/quark-e-part0..4.json   предобученная модель MX (m1-rnn.dat), 5 частей
+weights/quark-e.json            предобученная модель MX (m1-rnn.dat): манифест
+weights/quark-e-000..071.json   её части
 src/                            исходники JMCC
 tools/build.py                  сборка модулей
 tools/ml_convert.py             конвертер весов .dat <-> .json
@@ -27,7 +28,8 @@ tools/ml_convert.py             конвертер весов .dat <-> .json
    ```
    затем `/play`.
 2. Загрузить веса или создать новую модель:
-   - `~ml model import <ссылка>` — для quark-e по очереди все 5 частей из `weights/`;
+   - `~ml model import <ссылка на quark-e.json>` — манифест, части скачаются сами
+     (JustMC обрезает ответ сайта на 25000 символов, поэтому веса разбиты на файлы до 24000);
    - `~ml model reset` — случайные веса.
 3. Проверка: `~ml selftest`. С весами quark-e должно быть `semantics ok: 1` и
    вероятность `0.942535907508501`.
@@ -46,7 +48,8 @@ tools/ml_convert.py             конвертер весов .dat <-> .json
 | `~ml train <эпохи>` / `~ml stop` | обучение в фоне / остановка с откатом весов |
 | `~ml dataset info\|clear\|undo` | датасет |
 | `~ml model reset` | новая модель |
-| `~ml model import <url>` / `export <url>` | загрузка JSON / отправка JSON POST-запросом |
+| `~ml model import <url>` | загрузка модели: один JSON или манифест со списком частей |
+| `~ml model export <url>` | отправка модели частями, каждая отдельным POST-запросом |
 | `~ml model save\|load\|delete <имя>`, `~ml model list` | несколько моделей в save-переменных мира |
 | `~ml selftest` | самопроверка |
 
@@ -84,10 +87,13 @@ ml_learn(a, b, 1);                       // один шаг обучения (le
 ## Перенос весов между JustMC и MX
 
 ```bash
-python tools/ml_convert.py dat2json m1-rnn.dat model.json --split   # MX -> JustMC (5 частей)
-python tools/ml_convert.py json2dat model.json m1-rnn.dat           # JustMC -> plugins/MX/models/
-python tools/ml_convert.py info model.json
+python tools/ml_convert.py dat2json m1-rnn.dat weights/model.json         # MX -> манифест + части
+python tools/ml_convert.py json2dat m1-rnn.dat "export/*.json"            # части из export -> plugins/MX/models/
+python tools/ml_convert.py info "weights/model-*.json"
 ```
+
+Манифест и части должны лежать в одной папке на хостинге: имена частей в манифесте
+берутся относительно его адреса.
 
 ## Нагрузка
 

@@ -187,16 +187,22 @@ function ml_check_complete() {
 }
 
 // ---------------------------------------------------------------------
-// JSON import (format "millennium", see tools/ml_convert.py). Any subset of the keys may be
-// present, so a big model can be imported in several parts.
-// in: io_text            out: io_ok (1/0), io_msg
-// ---------------------------------------------------------------------
+// JSON import (format "millennium", see tools/ml_convert.py). in: io_text
+// JustMC cuts web responses at 25000 characters, so a model is stored as many small JSON files:
+// a header (config, embedding, attention, head), "ln" (LayerNorm) and "rows" ([d, gate, n, row]),
+// listed in a manifest {"manifest": [file, ...]}.  Out: io_ok = 1 (loaded), 2 (manifest -> io_manifest), 0 (error)
 function ml_import_json() {
   io_ok = 0;
   io_obj = variable::parse_json(io_text);
   io_msg = "not a JSON object";
   if (io_obj.is_type("MAP")) {
-    ml_import_object();
+    io_manifest = variable::get_map_value(io_obj, "manifest", 0);
+    if (io_manifest.is_type("ARRAY")) {
+      io_ok = 2;
+      io_msg = "manifest";
+    } else {
+      ml_import_object();
+    }
   }
 }
 
@@ -220,6 +226,7 @@ function ml_import_object() {
       ml_import_lstm_layer();
     }
   }
+  ml_import_rows_and_norms();
   // AdamW moments are not part of the file (same as RNNModelML.load)
   variable::purge(["mla.", "mlt."], "GAME", "STARTS_WITH");
   ml_check_complete();
@@ -266,6 +273,28 @@ function ml_import_hyperparameters() {
   s`ml.step` = variable::get_map_value(io_cfg, "step", s`ml.step`);
   s`ml.t` = variable::get_map_value(io_cfg, "optT", s`ml.t`);
   s`ml.th` = variable::clamp(variable::get_map_value(io_cfg, "decisionThreshold", s`ml.th`), 0, 1);
+}
+
+// "rows": [[d, gate, n, [b | W | U]], ...] and "ln": {"<d>": {"g": [...], "b": [...]}}
+function ml_import_rows_and_norms() {
+  io_rows = variable::get_map_value(io_obj, "rows", 0);
+  if (io_rows.is_type("ARRAY")) {
+    repeat::for_each_in_list(io_rows) { io_k, io_e ->
+      io_d = variable::get_list_value(io_e, 0);
+      io_gt = variable::get_list_value(io_e, 1);
+      io_n = variable::get_list_value(io_e, 2);
+      s`ml.L.${io_d}.${io_gt}.${io_n}` = variable::get_list_value(io_e, 3);
+    }
+  }
+  io_ln = variable::get_map_value(io_obj, "ln", 0);
+  if (io_ln.is_type("MAP")) {
+    repeat::for_each_in_list(variable::get_map_keys(io_ln)) { io_k, io_key ->
+      io_d = variable::convert_text_to_number(io_key, 10);
+      io_e = variable::get_map_value(io_ln, io_key);
+      s`ml.L.${io_d}.g` = variable::get_map_value(io_e, "g");
+      s`ml.L.${io_d}.b` = variable::get_map_value(io_e, "b");
+    }
+  }
 }
 
 // embWy / embWp / embB, attnW + attnB, headV + headBias (only the keys present in the file)
@@ -330,22 +359,63 @@ function ml_import_gate_rows() {
 }
 
 // ---------------------------------------------------------------------
-// JSON export of the whole model -> io_text   (same format as the importer / ml_convert.py)
+// JSON export of the whole model -> io_chunks   (same format as the importer / ml_convert.py)
 // ---------------------------------------------------------------------
-function ml_export_json() {
+inline var ML_CHUNK_CHARS = 24000;   // JustMC cuts texts of web requests / responses at 25000
+
+// the whole model as JSON files of at most ML_CHUNK_CHARS characters -> io_chunks (list of texts)
+// (header, LayerNorm, then gate rows; tools/ml_convert.py json2dat merges them back)
+function ml_export_chunks() {
   ml_export_header();
-  io_parts.append_value(',"layers":{');
-  io_first = 1;
+  io_parts.append_value("}");
+  io_chunks = [variable::join_text(io_parts, "")];
+  ml_export_norms();
+  io_rows = [];
+  io_rlen = 0;
   repeat::for_each_in_list(g`mlg.layers`) { io_li, io_l ->
-    io_in = mli_layer_in(io_l);
-    io_e1 = variable::add([io_in, 1]);
     repeat::for_each_in_list(g`mlg.dirs`) { io_di, io_dir ->
       io_d = variable::add([variable::multiply([io_l, 2]), io_dir]);
-      ml_export_lstm_layer();
+      repeat::for_each_in_list(g`mlg.idxH`) { io_nk, io_n ->
+        repeat::for_each_in_list(g`mlg.gates`) { io_gi, io_gt ->
+          ml_export_row();
+        }
+      }
+      ml_yield(variable::multiply([s`ml.hid`, 20]));
     }
   }
-  io_parts.append_value("}}");
-  io_text = variable::join_text(io_parts, "");
+  ml_export_flush_rows();
+}
+
+// {"ln": {"<d>": {"g": [...], "b": [...]}, ...}} -> io_chunks
+function ml_export_norms() {
+  io_ln = [];
+  repeat::for_each_in_list(g`mlg.layers`) { io_li, io_l ->
+    repeat::for_each_in_list(g`mlg.dirs`) { io_di, io_dir ->
+      io_d = variable::add([variable::multiply([io_l, 2]), io_dir]);
+      io_ln.append_value('"${io_d}":{"g":${variable::to_json(s`ml.L.${io_d}.g`, "FALSE")},"b":${variable::to_json(s`ml.L.${io_d}.b`, "FALSE")}}');
+    }
+  }
+  io_chunks.append_value('{"format":"millennium","ln":{${variable::join_text(io_ln, ",")}}}');
+}
+
+// one gate row as [d,"gate",n,[...]]; a full chunk is flushed first
+function ml_export_row() {
+  io_e = '[${io_d},"${io_gt}",${io_n},${variable::to_json(s`ml.L.${io_d}.${io_gt}.${io_n}`, "FALSE")}]';
+  io_elen = variable::get_text_length(io_e);
+  if (variable::add([io_rlen, io_elen, 100]).greater(ML_CHUNK_CHARS)) {
+    ml_export_flush_rows();
+  }
+  io_rows.append_value(io_e);
+  io_rlen = variable::add([io_rlen, io_elen, 1]);
+}
+
+// pending rows -> one chunk {"rows": [...]}
+function ml_export_flush_rows() {
+  if (not io_rows.list_is_empty()) {
+    io_chunks.append_value('{"format":"millennium","rows":[${variable::join_text(io_rows, ",")}]}');
+    io_rows = [];
+    io_rlen = 0;
+  }
 }
 
 // config, embedding, attention and head as JSON fragments -> io_parts
@@ -359,33 +429,7 @@ function ml_export_header() {
   io_parts.append_value([',"headV":', variable::to_json(mli_slice(s`ml.head`, 1, io_len), "FALSE"), ',"headBias":', variable::to_json([variable::get_list_value(s`ml.head`, 0)], "FALSE")]);
 }
 
-// one layer-direction io_d as "<d>":{Wf,Uf,bf,...,lnGamma,lnBeta}
-function ml_export_lstm_layer() {
-  if (io_first.equals(0)) {
-    io_parts.append_value(",");
-  }
-  io_first = 0;
-  io_parts.append_value('"${io_d}":{');
-  repeat::for_each_in_list(g`mlg.gates`) { io_gi, io_gt ->
-    ml_export_gate();
-  }
-  io_parts.append_value(['"lnGamma":', variable::to_json(s`ml.L.${io_d}.g`, "FALSE"), ',"lnBeta":', variable::to_json(s`ml.L.${io_d}.b`, "FALSE"), '}']);
-}
 
-// rows of gate io_gt -> flat W<gate>, U<gate>, b<gate>
-function ml_export_gate() {
-  io_W = [];
-  io_U = [];
-  io_b = [];
-  repeat::for_each_in_list(g`mlg.idxH`) { io_nk, io_n ->
-    io_row = s`ml.L.${io_d}.${io_gt}.${io_n}`;
-    io_b.append_value(variable::get_list_value(io_row, 0));
-    io_W = variable::append_list(io_W, mli_slice(io_row, 1, io_e1));
-    io_U = variable::append_list(io_U, mli_slice(io_row, io_e1, variable::get_list_length(io_row)));
-  }
-  io_parts.append_value(['"W${io_gt}":', variable::to_json(io_W, "FALSE"), ',"U${io_gt}":', variable::to_json(io_U, "FALSE"), ',"b${io_gt}":', variable::to_json(io_b, "FALSE"), ',']);
-  ml_yield(variable::multiply([s`ml.hid`, 10]));
-}
 
 // ---------------------------------------------------------------------
 // Saved models: several models kept in the world's save variables under a name.
