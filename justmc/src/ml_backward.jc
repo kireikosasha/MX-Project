@@ -121,7 +121,7 @@ function ml_lstm_backward_init() {
   lb_rm = `fc.${lb_d}.rm`;
   lb_rev = `fc.${lb_d}.rev`;
   lb_H = s`ml.hid`;
-  lb_invN = variable::divide([1.0, lb_H]);
+  lb_invN = mli_inv(lb_H);
   lb_gc = s`ml.gc`;
   lb_ngc = variable::multiply([lb_gc, -1]);
   lb_gam = s`ml.L.${lb_d}.g`;
@@ -165,19 +165,21 @@ function ml_layer_norm_backward() {
   lb_dh = [];
   lb_dxh = [];
   repeat::for_each_in_list(lb_dHt) { lb_k, lb_v ->
-    lb_dhk = variable::clamp(variable::add([lb_v, variable::get_list_value(lb_dhn, lb_k)]), lb_ngc, lb_gc);
+    lb_dhk = variable::clamp(mli_add2(lb_v, variable::get_list_value(lb_dhn, lb_k)), lb_ngc, lb_gc);
     lb_dh.append_value(lb_dhk);
-    lb_dxh.append_value(variable::multiply([lb_dhk, variable::get_list_value(lb_gam, lb_k)]));
+    lb_dxh.append_value(mli_mul(lb_dhk, variable::get_list_value(lb_gam, lb_k)));
     `ac.${lb_d}.dh.${lb_k}`.append_value(lb_dhk);
     `ac.${lb_d}.xh.${lb_k}`.append_value(variable::get_list_value(lb_xh, lb_k));
   }
-  lb_s1 = variable::add(lb_dxh);
+  lb_s1 = variable::mathematical_expectation(lb_dxh, g`mlg.onesH`);
   lb_s2 = variable::mathematical_expectation(lb_dxh, lb_xh);
-  lb_a1 = variable::multiply([lb_invN, lb_s1]);
+  lb_a1 = mli_mul(lb_invN, lb_s1);
+  lb_a2 = mli_mul(lb_invN, lb_s2);
   lb_dpre = [];
   repeat::for_each_in_list(lb_dxh) { lb_k, lb_v ->
-    lb_t2 = variable::multiply([variable::get_list_value(lb_xh, lb_k), lb_invN, lb_s2]);
-    lb_dpre.append_value(variable::multiply([lb_inv, variable::subtract([lb_v, lb_a1, lb_t2])]));
+    lb_t2 = mli_mul(variable::get_list_value(lb_xh, lb_k), lb_a2);
+    lb_t3 = variable::mathematical_expectation([lb_v, lb_a1, lb_t2], [1, -1, -1]);
+    lb_dpre.append_value(mli_mul(lb_inv, lb_t3));
   }
 }
 
@@ -207,18 +209,20 @@ function ml_lstm_unit_gradient() {
   lb_gk = variable::get_list_value(lb_g, lb_k);
   lb_ok = variable::get_list_value(lb_o, lb_k);
   lb_tk = variable::get_list_value(lb_tc, lb_k);
-  lb_dO = variable::multiply([lb_dp, lb_tk, lb_ok, variable::subtract([1.0, lb_ok])]);
-  lb_u = variable::multiply([lb_dp, lb_ok, variable::subtract([1.0, variable::multiply([lb_tk, lb_tk])])]);
-  lb_dc = variable::add([variable::get_list_value(lb_dcn, lb_k), lb_u]);
-  lb_dF = variable::multiply([lb_dc, variable::get_list_value(lb_cp, lb_k), lb_fk, variable::subtract([1.0, lb_fk])]);
-  lb_dI = variable::multiply([lb_dc, lb_gk, lb_ik, variable::subtract([1.0, lb_ik])]);
-  lb_dG = variable::multiply([lb_dc, lb_ik, variable::subtract([1.0, variable::multiply([lb_gk, lb_gk])])]);
+  // every product is exact: a gradient is often far below the 9 decimals JustMC keeps in multiply
+  lb_dpo = mli_mul(lb_dp, lb_ok);
+  lb_dO = mli_mul(mli_mul(lb_dp, lb_tk), mli_mul(lb_ok, mli_one_minus(lb_ok)));
+  lb_u = mli_mul(lb_dpo, mli_one_minus(mli_mul(lb_tk, lb_tk)));
+  lb_dc = mli_add2(variable::get_list_value(lb_dcn, lb_k), lb_u);
+  lb_dF = mli_mul(mli_mul(lb_dc, variable::get_list_value(lb_cp, lb_k)), mli_mul(lb_fk, mli_one_minus(lb_fk)));
+  lb_dI = mli_mul(mli_mul(lb_dc, lb_gk), mli_mul(lb_ik, mli_one_minus(lb_ik)));
+  lb_dG = mli_mul(mli_mul(lb_dc, lb_ik), mli_one_minus(mli_mul(lb_gk, lb_gk)));
   lb_dgi.append_value([lb_dF, lb_dI, lb_dG, lb_dO]);
   `ac.${lb_d}.dg.f.${lb_k}`.append_value(lb_dF);
   `ac.${lb_d}.dg.i.${lb_k}`.append_value(lb_dI);
   `ac.${lb_d}.dg.c.${lb_k}`.append_value(lb_dG);
   `ac.${lb_d}.dg.o.${lb_k}`.append_value(lb_dO);
-  lb_dcn2.append_value(variable::multiply([lb_dc, lb_fk]));
+  lb_dcn2.append_value(mli_mul(lb_dc, lb_fk));
 }
 
 // dX[t] = clip(W^T dGates) ; dh_prev = (U^T dGates) * recurrent mask
@@ -230,7 +234,7 @@ function ml_lstm_input_gradients() {
   lb_dhp = [];
   if (lb_um.equals(1)) {
     repeat::for_each_in_list(g`mlg.idxH`) { lb_k, lb_j ->
-      lb_dhp.append_value(variable::multiply([variable::mathematical_expectation(g`mlt.${lb_d}.h.${lb_j}`, lb_dgi), variable::get_list_value(lb_rm, lb_j)]));
+      lb_dhp.append_value(mli_mul(variable::mathematical_expectation(g`mlt.${lb_d}.h.${lb_j}`, lb_dgi), variable::get_list_value(lb_rm, lb_j)));
     }
   } else {
     repeat::for_each_in_list(g`mlg.idxH`) { lb_k, lb_j ->
@@ -349,10 +353,10 @@ function ml_pool_last_backward() {
 }
 
 function ml_pool_mean_backward() {
-  pb_sc = variable::divide([1.0, po_valid]);
+  pb_sc = mli_inv(po_valid);
   pb_row = [];
   repeat::for_each_in_list(pb_dP) { pb_i, pb_x ->
-    pb_row.append_value(variable::multiply([pb_x, pb_sc]));
+    pb_row.append_value(mli_mul(pb_x, pb_sc));
   }
   repeat::for_each_in_list(po_H) { pb_t, pb_h ->
     if (pb_t.less(po_valid)) {
@@ -386,7 +390,7 @@ function ml_pool_attention_backward() {
   pb_sum = variable::mathematical_expectation(po_a, pb_dA);
   pb_ds = [];
   repeat::for_each_in_list(po_a) { pb_t, pb_at ->
-    pb_ds.append_value(variable::multiply([pb_at, variable::subtract([variable::get_list_value(pb_dA, pb_t), pb_sum])]));
+    pb_ds.append_value(mli_mul(pb_at, mli_sub2(variable::get_list_value(pb_dA, pb_t), pb_sum)));
   }
   repeat::for_each_in_list(po_H) { pb_t, pb_h ->
     if (pb_t.less(po_valid)) {
@@ -405,7 +409,9 @@ function ml_pool_attention_backward() {
       pb_dH.append_value([g`mlg.zerosOut`]);
     }
   }
-  ac_attB = variable::add([ac_attB, variable::add(pb_ds)]);
+  repeat::for_each_in_list(pb_ds) { pb_t, pb_x ->
+    ac_attB = mli_add2(ac_attB, pb_x);
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -440,7 +446,7 @@ function ml_loss_and_head_gradient() {
   }
   bs_p = variable::clamp(bs_p, ML_P_MIN, ML_P_MAX);
   bs_loss = variable::multiply([-1, variable::mathematical_expectation([bs_y, variable::subtract([1.0, bs_y])], [variable::log(bs_p, ML_E), variable::log(variable::subtract([1.0, bs_p]), ML_E)])]);
-  bs_dl = variable::subtract([bs_p, bs_y]);
+  bs_dl = mli_sub2(bs_p, bs_y);
   // BinaryHead.backward
   `ac.head.dl`.append_value(bs_dl);
   repeat::for_each_in_list(fw_pooled) { bs_i, bs_x ->
@@ -449,7 +455,7 @@ function ml_loss_and_head_gradient() {
   bs_V = mli_slice(s`ml.head`, 1, variable::get_list_length(s`ml.head`));
   pb_dP = [];
   repeat::for_each_in_list(bs_V) { bs_i, bs_v ->
-    pb_dP.append_value(variable::multiply([bs_dl, bs_v]));
+    pb_dP.append_value(mli_mul(bs_dl, bs_v));
   }
 }
 
@@ -461,8 +467,8 @@ function ml_embedding_gradient() {
   bs_T = variable::min([variable::get_list_length(bs_ys), variable::get_list_length(eb_dX)]);
   repeat::for_each_in_list(eb_dX) { bs_t, bs_row ->
     if (bs_t.less(bs_T)) {
-      `ac.emb.vy`.append_value(mli_tanh(variable::divide([variable::get_list_value(bs_ys, bs_t), 100])));
-      `ac.emb.vp`.append_value(mli_tanh(variable::divide([variable::get_list_value(bs_ps, bs_t), 100])));
+      `ac.emb.vy`.append_value(mli_tanh(mli_mul(variable::get_list_value(bs_ys, bs_t), 0.01)));
+      `ac.emb.vp`.append_value(mli_tanh(mli_mul(variable::get_list_value(bs_ps, bs_t), 0.01)));
       repeat::for_each_in_list(bs_row) { bs_i, bs_g ->
         `ac.emb.g.${bs_i}`.append_value(variable::clamp(bs_g, bs_ngc, bs_gc));
       }
@@ -492,7 +498,7 @@ function ml_adamw_step() {
   ad_vo = [];
   ad_nbig = variable::multiply([g`mlg.big`, -1]);
   repeat::for_each_in_list(ad_G) { ad_k, ad_g ->
-    ad_gi = variable::multiply([ad_g, ad_inv]);
+    ad_gi = mli_mul(ad_g, ad_inv);
     if (not variable::number_in_range(ad_gi, ad_nbig, g`mlg.big`, "INCLUDE_ALL")) {
       ad_gi = 0.0;
     }
@@ -500,11 +506,12 @@ function ml_adamw_step() {
       ad_gi = variable::clamp(ad_gi, ad_nclip, ad_clip);
     }
     ad_mk = variable::mathematical_expectation([variable::get_list_value(ad_m, ad_k), ad_gi], [ML_B1, ML_1MB1]);
-    ad_vk = variable::mathematical_expectation([variable::get_list_value(ad_v, ad_k), variable::multiply([ML_1MB2, ad_gi, ad_gi])], [ML_B2, 1.0]);
-    ad_mh = variable::divide([ad_mk, ad_bc1]);
-    ad_vh = variable::divide([ad_vk, ad_bc2]);
-    ad_den = variable::add([variable::pow(ad_vh, 0.5), ML_ADAM_EPS]);
-    ad_q = variable::divide([variable::multiply([ad_lr, ad_mh]), ad_den]);
+    ad_g2 = mli_mul(ad_gi, ad_gi);
+    ad_vk = variable::mathematical_expectation([variable::get_list_value(ad_v, ad_k), ad_g2], [ML_B2, ML_1MB2]);
+    ad_mh = mli_mul(ad_mk, ad_ibc1);
+    ad_vh = mli_mul(ad_vk, ad_ibc2);
+    ad_den = mli_add2(variable::pow(ad_vh, 0.5), ML_ADAM_EPS);
+    ad_q = mli_mul(mli_mul(ad_lr, ad_mh), mli_inv(ad_den));
     ad_w = variable::get_list_value(ad_P, ad_k);
     ad_out.append_value(variable::mathematical_expectation([ad_w, ad_w, ad_q], [1.0, ad_nlrwd, -1.0]));
     ad_mo.append_value(ad_mk);
@@ -537,11 +544,11 @@ function ml_apply_update() {
 
 // constants of this optimiser step: 1/used, bias corrections, lr, weight decay, clipping
 function ml_adam_prepare_step() {
-  ad_inv = variable::divide([1.0, au_used]);
-  ad_bc1 = variable::subtract([1.0, variable::pow(ML_B1, s`ml.t`)]);
-  ad_bc2 = variable::subtract([1.0, variable::pow(ML_B2, s`ml.t`)]);
+  ad_inv = mli_inv(au_used);
+  ad_ibc1 = mli_inv(mli_one_minus(variable::pow(ML_B1, s`ml.t`)));
+  ad_ibc2 = mli_inv(mli_one_minus(variable::pow(ML_B2, s`ml.t`)));
   ad_lr = s`ml.lr`;
-  ad_nlrwd = variable::multiply([-1, variable::multiply([s`ml.lr`, s`ml.wd`])]);
+  ad_nlrwd = variable::mathematical_expectation([s`ml.lr`], [variable::mathematical_expectation([s`ml.wd`], [-1])]);
   ad_clip = s`ml.gc`;
   ad_nclip = variable::multiply([ad_clip, -1]);
   ad_doclip = 0;

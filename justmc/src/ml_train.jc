@@ -70,10 +70,10 @@ function ml_threshold_metrics_pack() {
 // compare helper: c > b + eps -> 1 ; c < b - eps -> -1 ; else 0       in: cm_c, cm_b, cm_eps -> cm_r
 function ml_compare_with_tolerance() {
   cm_r = 0;
-  if (cm_c.greater(variable::add([cm_b, cm_eps]))) {
+  if (cm_c.greater(mli_add2(cm_b, cm_eps))) {
     cm_r = 1;
   } else {
-    if (cm_c.less(variable::subtract([cm_b, cm_eps]))) {
+    if (cm_c.less(mli_sub2(cm_b, cm_eps))) {
       cm_r = -1;
     }
   }
@@ -786,11 +786,11 @@ function ml_final_epoch_metrics() {
 // better score (or equal score with lower FPR) -> snapshot "final"
 function ml_final_epoch_keep_best() {
   te_better = 0;
-  te_x = variable::add([te_bfScore, ML_TIE9]);
+  te_x = mli_add2(te_bfScore, ML_TIE9);
   if (te_score.greater(te_x)) {
     te_better = 1;
   } else {
-    te_x = variable::absolute(variable::subtract([te_score, te_bfScore]));
+    te_x = variable::absolute(mli_sub2(te_score, te_bfScore));
     if (te_x.less_or_equals(ML_TIE9)) {
       if (te_fFpr.less(te_bfFpr)) {
         te_better = 1;

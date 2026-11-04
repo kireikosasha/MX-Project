@@ -32,8 +32,8 @@ function ml_preprocess_raw() {
   pr_b = s`ml.embB`;
   repeat::for_each_in_list(pp_ys) { pr_t, pr_y ->
     pr_p = variable::get_list_value(pp_ps, pr_t);
-    pr_vy = mli_tanh(variable::divide([pr_y, 100]));
-    pr_vp = mli_tanh(variable::divide([pr_p, 100]));
+    pr_vy = mli_tanh(mli_mul(pr_y, 0.01));
+    pr_vp = mli_tanh(mli_mul(pr_p, 0.01));
     pr_x = [];
     repeat::for_each_in_list(pr_wy) { pr_i, pr_w ->
       pr_x.append_value(variable::mathematical_expectation([pr_vy, pr_vp, 1], [pr_w, variable::get_list_value(pr_wp, pr_i), variable::get_list_value(pr_b, pr_i)]));
@@ -196,15 +196,16 @@ function ml_feature_entropy_hash() {
 function ml_shannon_entropy() {
   ex_ks = 0;
   ex_kc = 0;
+  ex_invL = mli_inv(ex_L);
   repeat::for_each_in_list(ex_counts) { ex_k, ex_cnt ->
-    ex_pr = variable::divide([ex_cnt, ex_L]);
-    ex_term = variable::multiply([ex_pr, variable::log(ex_pr, 2)]);
-    ex_tmp = variable::subtract([ex_term, ex_kc]);
-    ex_vel = variable::add([ex_ks, ex_tmp]);
-    ex_kc = variable::subtract([ex_vel, ex_ks, ex_tmp]);
+    ex_pr = mli_mul(ex_cnt, ex_invL);
+    ex_term = mli_mul(ex_pr, variable::log(ex_pr, 2));
+    ex_tmp = mli_sub2(ex_term, ex_kc);
+    ex_vel = mli_add2(ex_ks, ex_tmp);
+    ex_kc = variable::mathematical_expectation([ex_vel, ex_ks, ex_tmp], [1, -1, -1]);
     ex_ks = ex_vel;
   }
-  ex_ent = variable::subtract([ex_kc, ex_ks]);
+  ex_ent = mli_sub2(ex_kc, ex_ks);
 }
 
 // f1: kolmogorovJiffIdentity = (int)(KS(|x[i] - x[i-1]|, identity) / 4)

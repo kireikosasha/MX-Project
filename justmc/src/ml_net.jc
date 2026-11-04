@@ -16,7 +16,7 @@ import "./ml_pre.jc";
 function ml_vector_multiply() {
   vm_r = [];
   repeat::for_each_in_list(vm_a) { vm_k, vm_x ->
-    vm_r.append_value(variable::multiply([vm_x, variable::get_list_value(vm_b, vm_k)]));
+    vm_r.append_value(mli_mul(vm_x, variable::get_list_value(vm_b, vm_k)));
   }
 }
 
@@ -24,14 +24,14 @@ function ml_vector_multiply() {
 function ml_vector_add() {
   va_r = [];
   repeat::for_each_in_list(va_a) { va_k, va_x ->
-    va_r.append_value(variable::add([va_x, variable::get_list_value(va_b, va_k)]));
+    va_r.append_value(mli_add2(va_x, variable::get_list_value(va_b, va_k)));
   }
 }
 
 // random keep-mask (inverted dropout): rm_n values, each 1/keep with probability keep, else 0
 function ml_dropout_mask() {
-  rm_keep = variable::subtract([1.0, rm_rate]);
-  rm_inv = variable::divide([1.0, rm_keep]);
+  rm_keep = mli_one_minus(rm_rate);
+  rm_inv = mli_inv(rm_keep);
   rm_mask = [];
   repeat::for_each_in_list(rm_idx) { rm_k, rm_v ->
     if (variable::random_number(0, 1, "FALSE").less(rm_keep)) {
@@ -165,24 +165,24 @@ function ml_lstm_cell_update() {
     lf_cn.append_value(lf_cc);
     lf_tk = mli_tanh(lf_cc);
     lf_tc.append_value(lf_tk);
-    lf_pre.append_value(variable::multiply([variable::get_list_value(lf_go, lf_k), lf_tk]));
+    lf_pre.append_value(mli_mul(variable::get_list_value(lf_go, lf_k), lf_tk));
   }
 }
 
 // LayerNorm.forward: h = gamma * (pre - mean) / sqrt(var + 1e-5) + beta
 function ml_layer_norm_forward() {
-  lf_mean = variable::divide([variable::add(lf_pre), lf_H]);
+  lf_invH = mli_inv(lf_H);
+  lf_mean = mli_mul(variable::mathematical_expectation(lf_pre, g`mlg.onesH`), lf_invH);
   lf_dl = [];
   repeat::for_each_in_list(lf_pre) { lf_k, lf_p ->
-    lf_dl.append_value(variable::subtract([lf_p, lf_mean]));
+    lf_dl.append_value(mli_sub2(lf_p, lf_mean));
   }
-  lf_var = variable::divide([variable::mathematical_expectation(lf_dl, lf_dl), lf_H]);
-  lf_inv = variable::add([lf_var, ML_LN_EPS]);
-  lf_inv = variable::divide([1.0, variable::pow(lf_inv, 0.5)]);
+  lf_var = mli_mul(variable::mathematical_expectation(lf_dl, lf_dl), lf_invH);
+  lf_inv = variable::pow(mli_add2(lf_var, ML_LN_EPS), -0.5);
   lf_xh = [];
   lf_hn = [];
   repeat::for_each_in_list(lf_dl) { lf_k, lf_dk ->
-    lf_xk = variable::multiply([lf_dk, lf_inv]);
+    lf_xk = mli_mul(lf_dk, lf_inv);
     lf_xh.append_value(lf_xk);
     lf_hn.append_value(variable::mathematical_expectation([variable::get_list_value(lf_gam, lf_k), 1], [lf_xk, variable::get_list_value(lf_bet, lf_k)]));
   }
@@ -387,9 +387,10 @@ function ml_pool_all_masked() {
 
 // MEAN_POOLING
 function ml_pool_mean() {
+  po_isc = mli_inv(po_valid);
   po_v = [];
   repeat::for_each_in_list(g`mlg.idxOut`) { po_k, po_i ->
-    po_v.append_value(variable::divide([variable::add(`po.col.${po_i}`), po_valid]));
+    po_v.append_value(mli_mul(variable::add(`po.col.${po_i}`), po_isc));
   }
 }
 
@@ -422,12 +423,12 @@ function ml_pool_attention() {
   po_max = variable::max(po_sc);
   po_e = [];
   repeat::for_each_in_list(po_sc) { po_t, po_s ->
-    po_e.append_value(variable::pow(ML_E, variable::subtract([po_s, po_max])));
+    po_e.append_value(variable::pow(ML_E, mli_sub2(po_s, po_max)));
   }
-  po_inv = variable::divide([1.0, variable::add([variable::add(po_e), ML_ATT_EPS])]);
+  po_inv = mli_inv(mli_add2(variable::add(po_e), ML_ATT_EPS));
   po_a = [];
   repeat::for_each_in_list(po_e) { po_t, po_x ->
-    po_a.append_value(variable::multiply([po_x, po_inv]));
+    po_a.append_value(mli_mul(po_x, po_inv));
   }
   tl_name = "attention weights";
   tl_v = po_a;

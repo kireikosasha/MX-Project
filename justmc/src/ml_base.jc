@@ -32,33 +32,55 @@ inline var ML_FORMAT_VERSION = 6;            // RNNModelML.VERSION
 
 // ---------- elementary functions (one place = one implementation) ----------
 // sigmoid with the LSTM gate clamp (+-50): 1 / (1 + exp(-x))
+// (pow and mathematical_expectation keep the full precision; add / divide would round to 9 decimals)
 inline function mli_sigm(x) -> number {
   var _sg = variable::clamp(x, -50, 50);
   _sg = variable::pow(ML_INV_E, _sg);
-  _sg = variable::add([1, _sg]);
-  return variable::divide([1, _sg]);
+  _sg = variable::mathematical_expectation([1, _sg], [1, 1]);
+  return variable::pow(_sg, -1);
 }
 
 // MathOps.sigmoid (clamp +-500) — used by the BinaryHead
 inline function mli_sigm500(x) -> number {
   var _sh = variable::clamp(x, -500, 500);
   _sh = variable::pow(ML_INV_E, _sh);
-  _sh = variable::add([1, _sh]);
-  return variable::divide([1, _sh]);
+  _sh = variable::mathematical_expectation([1, _sh], [1, 1]);
+  return variable::pow(_sh, -1);
 }
 
 // tanh(x) = 1 - 2 / (e^(2x) + 1); |x| > 30 gives exactly +-1.0 in double, so the clamp is lossless
 inline function mli_tanh(x) -> number {
   var _th = variable::clamp(x, -30, 30);
   _th = variable::pow(ML_E2, _th);
-  _th = variable::add([_th, 1]);
-  _th = variable::divide([2, _th]);
-  return variable::subtract([1, _th]);
+  _th = variable::mathematical_expectation([_th, 1], [1, 1]);
+  _th = variable::pow(_th, -1);
+  return variable::mathematical_expectation([1, _th], [1, -2]);
 }
 
 // dot product of two equal-length lists: sum(a[i] * b[i]) — the workhorse of the port
 inline function mli_dot(a, b) -> number {
   return variable::mathematical_expectation(a, b);
+}
+
+// ---------- exact arithmetic ----------
+// JustMC rounds the result of add / subtract / multiply / divide to 9 decimal places, while
+// mathematical_expectation and pow keep the full double precision. Gradients and optimizer moments
+// are far below 1e-9, so the backward pass and AdamW use these forms (one action each, like the
+// rounded ones).
+inline function mli_mul(a, b) -> number {
+  return variable::mathematical_expectation([a], [b]);
+}
+inline function mli_add2(a, b) -> number {
+  return variable::mathematical_expectation([a, b], [1, 1]);
+}
+inline function mli_sub2(a, b) -> number {
+  return variable::mathematical_expectation([a, b], [1, -1]);
+}
+inline function mli_one_minus(a) -> number {
+  return variable::mathematical_expectation([1, a], [1, -1]);
+}
+inline function mli_inv(a) -> number {
+  return variable::pow(a, -1);
 }
 
 // [x | rest]: the element is appended to a new list (an inline array [x] with a variable gave a list
@@ -293,8 +315,14 @@ function ml_build_zero_vectors() {
     g`mlg.zerosH`.append_value(0);
   }
   g`mlg.zerosOut` = [];
+  g`mlg.onesOut` = [];
   repeat::for_each_in_list(g`mlg.idxOut`) { mb_k, mb_v ->
     g`mlg.zerosOut`.append_value(0);
+    g`mlg.onesOut`.append_value(1);
+  }
+  g`mlg.onesH` = [];
+  repeat::for_each_in_list(g`mlg.idxH`) { mb_k, mb_v ->
+    g`mlg.onesH`.append_value(1);
   }
 }
 

@@ -250,15 +250,15 @@ function ml_normalize_heads() {
   s`ml.head` = nv_dst;
 }
 
-// nv_src -> nv_dst: every element is read with get_list_value, passed through an addition (a fresh
-// plain number) and appended to a new list
+// nv_src -> nv_dst: every element is read with get_list_value, passed through an exact multiplication
+// by 1 (a fresh plain number, nothing rounded) and appended to a new list
 function ml_normalize_vector() {
   nv_dst = [];
   nv_i = 0;
   nv_n = variable::get_list_length(nv_src);
   repeat::while(nv_i.less(nv_n)) {
     nv_e = variable::get_list_value(nv_src, nv_i);
-    nv_dst.append_value(variable::add([nv_e, 0]));
+    nv_dst.append_value(mli_mul(nv_e, 1));
     nv_i = variable::add([nv_i, 1]);
   }
 }
