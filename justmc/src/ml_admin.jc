@@ -522,7 +522,7 @@ function ml_selftest_inference() {
 
 // every probe runs in its own process: a missing "[probe N]" line means that probe crashed
 function ml_selftest_start_probes() {
-  player::message("&9[selftest] &fprobes 1-9 (a missing number = that probe crashed):");
+  player::message("&9[selftest] &fprobes 1-12 (a missing number = that probe crashed):");
   st_probe = 1;
   code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
   st_probe = 3;
@@ -535,7 +535,13 @@ function ml_selftest_start_probes() {
   code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
   st_probe = 8;
   code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  st_probe = 10;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
   if (s`ml.ready`.equals(1)) {
+    st_probe = 11;
+    code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+    st_probe = 12;
+    code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
     st_probe = 2;
     code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
     st_probe = 7;
@@ -546,6 +552,15 @@ function ml_selftest_start_probes() {
 }
 
 process ml_selftest_probe_process() {
+  if (st_probe.less(7)) {
+    ml_probe_dispatch_lists();
+  } else {
+    ml_probe_dispatch_model();
+  }
+}
+
+// probes 1-6: lists and arithmetic
+function ml_probe_dispatch_lists() {
   if (st_probe.equals(1)) {
     ml_probe_dot_product();
   } elif (st_probe.equals(2)) {
@@ -556,15 +571,73 @@ process ml_selftest_probe_process() {
     ml_probe_nested_lists();
   } elif (st_probe.equals(5)) {
     ml_probe_dynamic_locals();
-  } elif (st_probe.equals(6)) {
+  } else {
     ml_probe_slices();
-  } elif (st_probe.equals(7)) {
+  }
+}
+
+// probes 7-12: the weights, the stages of the model, local variable limits
+function ml_probe_dispatch_model() {
+  if (st_probe.equals(7)) {
     ml_probe_scan_weights();
   } elif (st_probe.equals(8)) {
     ml_probe_magnitudes();
-  } else {
+  } elif (st_probe.equals(9)) {
     ml_probe_preprocess();
+  } elif (st_probe.equals(10)) {
+    ml_probe_many_locals();
+  } elif (st_probe.equals(11)) {
+    ml_probe_pooling();
+  } else {
+    ml_probe_pooling_after_locals();
   }
+}
+
+// 10: 600 local variables with names built from a number
+function ml_probe_many_locals() {
+  pb_i = 0;
+  repeat::while(pb_i.less(600)) {
+    `pb.v.${pb_i}` = pb_i;
+    pb_i = variable::add([pb_i, 1]);
+  }
+  pb_n = 0;
+  pb_i = 0;
+  repeat::while(pb_i.less(600)) {
+    if (`pb.v.${pb_i}`.exists()) {
+      pb_n = variable::add([pb_n, 1]);
+    }
+    pb_i = variable::add([pb_i, 1]);
+  }
+  player::message("&7[probe 10] &flocal variables with dynamic names: ${pb_n} of 600 exist, pb.v.599 = ${`pb.v.599`} (599)");
+}
+
+// 11: the pooling of the model on 7 rows of zeros (a fresh process with few local variables)
+function ml_probe_pooling() {
+  po_H = [];
+  po_M = [];
+  repeat::for_each_in_list([1, 2, 3, 4, 5, 6, 7]) { pb_k, pb_i ->
+    po_H.append_value([g`mlg.zerosOut`]);
+    po_M.append_value(1);
+  }
+  ml_pool_forward();
+  player::message("&7[probe 11] &fpooling in a fresh process: pooled ${variable::get_list_length(po_v)} numbers (${g`mlg.out`}), first ${variable::get_list_value(po_v, 0)} (0)");
+}
+
+// 12: the same pooling after 400 other local variables were created in the process
+function ml_probe_pooling_after_locals() {
+  pb_i = 0;
+  repeat::while(pb_i.less(400)) {
+    `pb.w.${pb_i}` = pb_i;
+    pb_i = variable::add([pb_i, 1]);
+  }
+  po_H = [];
+  po_M = [];
+  repeat::for_each_in_list([1, 2, 3, 4, 5, 6, 7]) { pb_k, pb_i ->
+    po_H.append_value([g`mlg.zerosOut`]);
+    po_M.append_value(1);
+  }
+  ml_pool_forward();
+  player::message("&7[probe 12] &fpooling after 400 local variables: pooled ${variable::get_list_length(po_v)} numbers (${g`mlg.out`})");
 }
 
 // 1: dot product of two list variables of 100 numbers
@@ -636,7 +709,11 @@ function ml_probe_dynamic_locals() {
   }
   pb_v = variable::mathematical_expectation(`st.col.0`, [1, 1]);
   pb_n = variable::get_list_length(`st.col.2`);
-  player::message("&7[probe 5] &flocal lists with dynamic names: column 0 sum = ${pb_v} (11), column 2 length = ${pb_n} (2)");
+  pb_s = 0;
+  repeat::for_each_in_list([0, 1, 2]) { pb_k, pb_i ->
+    pb_s = variable::add([pb_s, variable::mathematical_expectation(`st.col.${pb_i}`, [1, 1])]);
+  }
+  player::message("&7[probe 5] &flocal lists with dynamic names: column 0 sum = ${pb_v} (11), column 2 length = ${pb_n} (2), sum of all read by name = ${pb_s} (39)");
 }
 
 // 6: slices of the 150-element reference lists

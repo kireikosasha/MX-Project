@@ -351,6 +351,28 @@ function ml_pool_valid_columns() {
       }
     }
   }
+  ml_trace_columns();
+}
+
+// trace: how many of the column variables exist and are lists; the first bad one is named
+function ml_trace_columns() {
+  if (g`mlg.trace`.greater(0)) {
+    tl_ok = 0;
+    tl_first = "";
+    repeat::for_each_in_list(g`mlg.idxOut`) { po_k, po_i ->
+      if (`po.col.${po_i}`.is_type("ARRAY")) {
+        tl_ok = variable::add([tl_ok, 1]);
+      } elif (tl_first.equals("")) {
+        tn_v = `po.col.${po_i}`;
+        ml_type_name();
+        tl_first = "(first bad: column ${po_i} is ${tn_t})";
+      }
+    }
+    ml_broadcast("&7[trace] &fcolumns that are lists: ${tl_ok} of ${variable::get_list_length(g`mlg.idxOut`)} ${tl_first}");
+    tl_name = "column 0";
+    tl_v = `po.col.0`;
+    ml_trace_list_print();
+  }
 }
 
 // every row masked: pooled = 0 (MaxPooling: -inf -> 0, argmax -1; attention: weights 0)
@@ -385,12 +407,18 @@ function ml_pool_max() {
 // ATTENTION: softmax(b + W.h_t) over valid rows, pooled = sum a_t h_t
 function ml_pool_attention() {
   po_att = s`ml.attn`;
+  tl_name = "attention row";
+  tl_v = po_att;
+  ml_trace_list();
   po_sc = [];
   repeat::for_each_in_list(po_H) { po_t, po_h ->
     if (po_t.less(po_valid)) {
       po_sc.append_value(variable::mathematical_expectation(po_att, variable::append_list(g`mlg.one`, po_h)));
     }
   }
+  tl_name = "attention scores";
+  tl_v = po_sc;
+  ml_trace_list();
   po_max = variable::max(po_sc);
   po_e = [];
   repeat::for_each_in_list(po_sc) { po_t, po_s ->
@@ -401,9 +429,24 @@ function ml_pool_attention() {
   repeat::for_each_in_list(po_e) { po_t, po_x ->
     po_a.append_value(variable::multiply([po_x, po_inv]));
   }
+  tl_name = "attention weights";
+  tl_v = po_a;
+  ml_trace_list();
   po_v = [];
   repeat::for_each_in_list(g`mlg.idxOut`) { po_k, po_i ->
+    ml_trace_column();
     po_v.append_value(variable::mathematical_expectation(`po.col.${po_i}`, po_a));
+  }
+}
+
+// trace of one column right before it is used (only when it is not a list of numbers)
+function ml_trace_column() {
+  if (g`mlg.trace`.greater(0)) {
+    if (not `po.col.${po_i}`.is_type("ARRAY")) {
+      tl_name = "column ${po_i} (index ${po_k})";
+      tl_v = `po.col.${po_i}`;
+      ml_trace_list_print();
+    }
   }
 }
 
@@ -450,11 +493,6 @@ function ml_trace_pooled() {
     tl_name = "pooled (${po_valid} valid rows of ${po_T})";
     tl_v = po_v;
     ml_trace_list_print();
-    if (s`ml.pm`.equals(3)) {
-      tl_name = "attention weights";
-      tl_v = po_a;
-      ml_trace_list_print();
-    }
   }
 }
 
