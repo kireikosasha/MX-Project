@@ -118,6 +118,58 @@ inline function mli_f2(x) -> number {
   return variable::round(x, 2, "ROUND");
 }
 
+// ---------- diagnostics (used by ~ml selftest) ----------
+// type of tn_v as text -> tn_t
+function ml_type_name() {
+  if (tn_v.is_type("NUMBER")) {
+    tn_t = "number";
+  } elif (tn_v.is_type("TEXT")) {
+    tn_t = "text";
+  } elif (tn_v.is_type("ARRAY")) {
+    tn_t = "list";
+  } elif (tn_v.is_type("MAP")) {
+    tn_t = "map";
+  } else {
+    tn_t = "other";
+  }
+}
+
+// trace line about the value tl_v called tl_name: a list is scanned for elements that are not numbers
+// (g`mlg.trace` is 1 while ~ml selftest runs the model; the lines go to the log listeners)
+function ml_trace_list() {
+  if (g`mlg.trace`.greater(0)) {
+    ml_trace_list_print();
+  }
+}
+
+function ml_trace_list_print() {
+  tn_v = tl_v;
+  ml_type_name();
+  tl_t = tn_t;
+  if (tl_v.is_type("ARRAY")) {
+    tl_n = variable::get_list_length(tl_v);
+    tl_bad = -1;
+    tl_bt = "";
+    repeat::for_each_in_list(tl_v) { tl_k, tl_x ->
+      if (not tl_x.is_type("NUMBER")) {
+        if (tl_bad.equals(-1)) {
+          tl_bad = tl_k;
+          tn_v = tl_x;
+          ml_type_name();
+          tl_bt = tn_t;
+        }
+      }
+    }
+    if (tl_bad.equals(-1)) {
+      ml_broadcast("&7[trace] &f${tl_name}: list of ${tl_n} numbers");
+    } else {
+      ml_broadcast("&7[trace] &c${tl_name}: list of ${tl_n}, element ${tl_bad} is ${tl_bt}");
+    }
+  } else {
+    ml_broadcast("&7[trace] &c${tl_name}: ${tl_t}");
+  }
+}
+
 // ---------- index lists & calibration (rebuilt from the saved config) ----------
 // mlg.idxIn   = [0 .. in-1]
 // mlg.idxH    = [0 .. H-1]

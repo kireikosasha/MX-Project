@@ -120,6 +120,7 @@ function ml_admin_dispatch_model_commands() {
   } elif (cm_sub.equals("admin")) {
     ml_cmd_admins();
   } elif (cm_sub.equals("selftest")) {
+    ml_listen_add(cm_u);
     code::start_process("ml_selftest_process", "DONT_COPY", "CURRENT_TARGET");
   } else {
     ml_cmd_help();
@@ -478,8 +479,11 @@ process ml_import_process() {
   ml_import_download_next();
 }
 
-// ~ml selftest — checks the JustMC semantics this port relies on + a reference inference
+// ~ml selftest: checks of the JustMC behaviour the port relies on, probes (one process each, so a
+// crash kills only that probe) and the reference inference with a stage trace
 process ml_selftest_process() {
+  g`mlg.trace` = 0;
+  g`mlg.trace_pre` = 0;
   ml_selftest_semantics();
   ml_selftest_lists();
   ml_selftest_json();
@@ -489,6 +493,7 @@ process ml_selftest_process() {
   if (s`ml.ready`.equals(1)) {
     ml_selftest_model_types();
   }
+  ml_selftest_start_probes();
   if (s`ml.ready`.equals(0)) {
     player::message("&9[selftest] &7no model loaded, inference skipped");
   } elif (st_ok.equals(0)) {
@@ -496,30 +501,202 @@ process ml_selftest_process() {
   } elif (st_bad.greater(0)) {
     player::message("&9[selftest] &cinference skipped: the model has broken vectors, import it again");
   } else {
-    ml_selftest_sequence();
-    ck_ys = st_ys;
-    ck_ps = st_ps;
-    controller::measure_time(st_ms, "MILLISECONDS") {
-      ml_check_data();
-    }
-    player::message("&9[selftest] &fRNN probability: &e${ck_prob} &7(${st_ms} ms)");
-    player::message("&9[selftest] &fexpected for the original quark-e weights: &e${ML_ST_EXPECTED}");
+    ml_selftest_inference();
   }
 }
 
-// type of tn_v as text -> tn_t
-function ml_type_name() {
-  if (tn_v.is_type("NUMBER")) {
-    tn_t = "number";
-  } elif (tn_v.is_type("TEXT")) {
-    tn_t = "text";
-  } elif (tn_v.is_type("ARRAY")) {
-    tn_t = "list";
-  } elif (tn_v.is_type("MAP")) {
-    tn_t = "map";
-  } else {
-    tn_t = "other";
+// the reference sequence through the model, with trace lines after every stage
+function ml_selftest_inference() {
+  ml_selftest_sequence();
+  ck_ys = st_ys;
+  ck_ps = st_ps;
+  player::message("&9[selftest] &fmodel run (trace lines follow; the last one shows where it stops if it fails):");
+  g`mlg.trace` = 1;
+  controller::measure_time(st_ms, "MILLISECONDS") {
+    ml_check_data();
   }
+  g`mlg.trace` = 0;
+  player::message("&9[selftest] &fRNN probability: &e${ck_prob} &7(${st_ms} ms)");
+  player::message("&9[selftest] &fexpected for the original quark-e weights: &e${ML_ST_EXPECTED}");
+}
+
+// every probe runs in its own process: a missing "[probe N]" line means that probe crashed
+function ml_selftest_start_probes() {
+  player::message("&9[selftest] &fprobes 1-9 (a missing number = that probe crashed):");
+  st_probe = 1;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  st_probe = 3;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  st_probe = 4;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  st_probe = 5;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  st_probe = 6;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  st_probe = 8;
+  code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  if (s`ml.ready`.equals(1)) {
+    st_probe = 2;
+    code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+    st_probe = 7;
+    code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+    st_probe = 9;
+    code::start_process("ml_selftest_probe_process", "COPY", "CURRENT_TARGET");
+  }
+}
+
+process ml_selftest_probe_process() {
+  if (st_probe.equals(1)) {
+    ml_probe_dot_product();
+  } elif (st_probe.equals(2)) {
+    ml_probe_weight_row();
+  } elif (st_probe.equals(3)) {
+    ml_probe_sum_max_sort();
+  } elif (st_probe.equals(4)) {
+    ml_probe_nested_lists();
+  } elif (st_probe.equals(5)) {
+    ml_probe_dynamic_locals();
+  } elif (st_probe.equals(6)) {
+    ml_probe_slices();
+  } elif (st_probe.equals(7)) {
+    ml_probe_scan_weights();
+  } elif (st_probe.equals(8)) {
+    ml_probe_magnitudes();
+  } else {
+    ml_probe_preprocess();
+  }
+}
+
+// 1: dot product of two list variables of 100 numbers
+function ml_probe_dot_product() {
+  pb_a = [];
+  pb_i = 0;
+  repeat::while(pb_i.less(100)) {
+    pb_a.append_value(pb_i);
+    pb_i = variable::add([pb_i, 1]);
+  }
+  pb_v = variable::mathematical_expectation(pb_a, pb_a);
+  player::message("&7[probe 1] &fdot product of two list variables of 100: ${pb_v} (expected 328350)");
+}
+
+// 2: a weight row from a save variable in a dot product
+function ml_probe_weight_row() {
+  pb_r = s`ml.L.0.f.0`;
+  pb_z = variable::append_list(g`mlg.one`, g`mlg.zerosIn`);
+  pb_z = variable::append_list(pb_z, g`mlg.zerosH`);
+  pb_v = variable::mathematical_expectation(pb_r, pb_z);
+  player::message("&7[probe 2] &frow ml.L.0.f.0 (${variable::get_list_length(pb_r)}) . [1 | zeros] (${variable::get_list_length(pb_z)}) = ${pb_v}, its bias = ${variable::get_list_value(pb_r, 0)}");
+  pb_v = variable::mathematical_expectation(pb_r, pb_r);
+  player::message("&7[probe 2] &frow . row = ${pb_v}");
+}
+
+// 3: sum, max and sort of a list variable
+function ml_probe_sum_max_sort() {
+  pb_a = [];
+  pb_i = 1;
+  repeat::while(pb_i.less_or_equals(100)) {
+    pb_a.append_value(pb_i);
+    pb_i = variable::add([pb_i, 1]);
+  }
+  pb_s = variable::add(pb_a);
+  pb_m = variable::max(pb_a);
+  pb_sorted = variable::sort_list(pb_a, "DESCENDING");
+  pb_f = variable::get_list_value(pb_sorted, 0);
+  player::message("&7[probe 3] &fsum of 1..100 = ${pb_s} (5050), max = ${pb_m} (100), sorted descending starts with ${pb_f} (100)");
+}
+
+// 4: list of lists, [1] + row
+function ml_probe_nested_lists() {
+  pb_row = [0.5, 1.5, 2.5];
+  pb_X = [];
+  pb_X.append_value([pb_row]);
+  pb_X.append_value([pb_row]);
+  pb_r1 = variable::get_list_value(pb_X, 1);
+  tn_v = pb_r1;
+  ml_type_name();
+  pb_t1 = tn_t;
+  tn_v = variable::get_list_value(pb_r1, 2);
+  ml_type_name();
+  pb_z = variable::append_list(g`mlg.one`, pb_r1);
+  player::message("&7[probe 4] &flist of lists: ${variable::get_list_length(pb_X)} rows (2), row 1 is a ${pb_t1} (list) of ${variable::get_list_length(pb_r1)} (3), its last element is a ${tn_t} (number); [1] + row has ${variable::get_list_length(pb_z)} (4)");
+}
+
+// 5: local lists with names built from a number
+function ml_probe_dynamic_locals() {
+  repeat::for_each_in_list([0, 1, 2]) { pb_k, pb_i ->
+    `st.col.${pb_i}` = [];
+  }
+  pb_rows = [];
+  pb_rows.append_value([[7, 8, 9]]);
+  pb_rows.append_value([[4, 5, 6]]);
+  repeat::for_each_in_list(pb_rows) { pb_t, pb_h ->
+    repeat::for_each_in_list(pb_h) { pb_i, pb_x ->
+      `st.col.${pb_i}`.append_value(pb_x);
+    }
+  }
+  pb_v = variable::mathematical_expectation(`st.col.0`, [1, 1]);
+  pb_n = variable::get_list_length(`st.col.2`);
+  player::message("&7[probe 5] &flocal lists with dynamic names: column 0 sum = ${pb_v} (11), column 2 length = ${pb_n} (2)");
+}
+
+// 6: slices of the 150-element reference lists
+function ml_probe_slices() {
+  ml_selftest_sequence();
+  pb_a = mli_slice(st_ys, 0, 150);
+  pb_b = mli_slice(st_ps, 126, 150);
+  tn_v = variable::get_list_value(pb_a, 149);
+  ml_type_name();
+  player::message("&7[probe 6] &fslice 0..150 of the reference: ${variable::get_list_length(pb_a)} (150), last is a ${tn_t} (number); slice 126..150: ${variable::get_list_length(pb_b)} (24)");
+}
+
+// 7: every element of every weight vector must be a number
+function ml_probe_scan_weights() {
+  pb_names = variable::append_list(variable::append_list(g`mlg.vecnames`, g`mlg.lnnames`), g`mlg.rownames`);
+  pb_bad = 0;
+  pb_first = "";
+  repeat::for_each_in_list(pb_names) { pb_k, pb_n ->
+    pb_vec = s`${pb_n}`;
+    repeat::for_each_in_list(pb_vec) { pb_i, pb_x ->
+      if (not pb_x.is_type("NUMBER")) {
+        ml_probe_bad_element();
+      }
+    }
+    ml_yield(variable::get_list_length(pb_vec));
+  }
+  player::message("&7[probe 7] &fweight elements that are not numbers: ${pb_bad} ${pb_first}");
+}
+
+function ml_probe_bad_element() {
+  pb_bad = variable::add([pb_bad, 1]);
+  if (pb_first.equals("")) {
+    tn_v = pb_x;
+    ml_type_name();
+    pb_first = "(first: ${pb_n}[${pb_i}] is a ${tn_t})";
+  }
+}
+
+// 8: the first stage of the model on the reference: magnitudes sqrt(yaw^2 + pitch^2)
+function ml_probe_magnitudes() {
+  ml_selftest_sequence();
+  pp_ys = st_ys;
+  pp_ps = st_ps;
+  ml_rotation_magnitudes();
+  tl_name = "[probe 8] magnitudes";
+  tl_v = ps_mag;
+  ml_trace_list_print();
+  player::message("&7[probe 8] &fmagnitudes: ${variable::get_list_length(ps_mag)} (150), first ${variable::get_list_value(ps_mag, 0)} (2.4499...)");
+}
+
+// 9: the statistical preprocessor on the reference, every window traced
+function ml_probe_preprocess() {
+  ml_selftest_sequence();
+  pp_ys = st_ys;
+  pp_ps = st_ps;
+  pp_n = 150;
+  g`mlg.trace_pre` = 1;
+  ml_preprocess_statistical();
+  g`mlg.trace_pre` = 0;
+  player::message("&7[probe 9] &fpreprocess: ${variable::get_list_length(pp_X)} windows (7), mask ${pp_M}");
 }
 
 // list loop index base, slices checked by value, value of an index outside the list

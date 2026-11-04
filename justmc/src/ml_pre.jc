@@ -79,6 +79,7 @@ function ml_preprocess_statistical() {
       if (ps_len.greater_or_equals(3)) {
         ex_seq = mli_slice(ps_mag, ps_start, ps_end);
         ml_extract_window_features();
+        ml_trace_window();
         pp_X.append_value([ex_f]);
         ps_used = variable::add([ps_used, 1]);
       }
@@ -86,6 +87,18 @@ function ml_preprocess_statistical() {
     }
   }
   ml_stat_mask_and_padding();
+}
+
+// trace of one window (only while g`mlg.trace_pre` is 1): its magnitudes and the 16 features
+function ml_trace_window() {
+  if (g`mlg.trace_pre`.equals(1)) {
+    tl_name = "window ${ps_w} magnitudes";
+    tl_v = ex_seq;
+    ml_trace_list_print();
+    tl_name = "window ${ps_w} features";
+    tl_v = ex_f;
+    ml_trace_list_print();
+  }
 }
 
 // mask = 1 for every window; fewer than 2 windows -> zero rows with mask 0

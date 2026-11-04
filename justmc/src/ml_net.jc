@@ -100,6 +100,7 @@ function ml_lstm_step() {
   }
   lf_z = variable::append_list(g`mlg.one`, lf_x);
   lf_z = variable::append_list(lf_z, lf_hin);
+  ml_trace_lstm_input();
   ml_lstm_sigmoid_gates();
   ml_lstm_candidate_gate();
   ml_lstm_cell_update();
@@ -110,6 +111,23 @@ function ml_lstm_step() {
   lf_c = lf_cn;
   lf_s = variable::add([lf_s, 1]);
   ml_yield(variable::multiply([lf_H, 50]));
+}
+
+// trace of the first step of a layer-direction: x, z = [1 | x | h] and the first forget-gate row
+function ml_trace_lstm_input() {
+  if (g`mlg.trace`.greater(0)) {
+    if (lf_s.equals(0)) {
+      tl_name = "layer ${lf_d} x[${lf_t}]";
+      tl_v = lf_x;
+      ml_trace_list_print();
+      tl_name = "layer ${lf_d} z";
+      tl_v = lf_z;
+      ml_trace_list_print();
+      tl_name = "row ml.L.${lf_d}.f.0";
+      tl_v = s`ml.L.${lf_d}.f.0`;
+      ml_trace_list_print();
+    }
+  }
 }
 
 // forget, input and output gates: sigmoid(b + W.x + U.h)
@@ -197,6 +215,16 @@ function ml_lstm_finish() {
     lf_out = variable::reverse_list(lf_outS);
   } else {
     lf_out = lf_outS;
+  }
+  ml_trace_lstm_output();
+}
+
+// trace of the output of a layer-direction: number of steps and the first output vector
+function ml_trace_lstm_output() {
+  if (g`mlg.trace`.greater(0)) {
+    tl_name = "layer ${lf_d} output row 0 of ${variable::get_list_length(lf_out)}";
+    tl_v = variable::get_list_value(lf_out, 0);
+    ml_trace_list_print();
   }
 }
 
@@ -299,6 +327,7 @@ function ml_pool_forward() {
       }
     }
   }
+  ml_trace_pooled();
 }
 
 // LAST_HIDDEN: last valid row (or the last row)
@@ -387,11 +416,45 @@ function ml_forward() {
   pp_ys = fw_ys;
   pp_ps = fw_ps;
   ml_preprocess();
+  ml_trace_forward_input();
   fw_T = variable::get_list_length(pp_X);
   fw_ok = 0;
   fw_prob = 0.5;
   if (fw_T.greater_or_equals(2)) {
     ml_forward_network();
+  }
+}
+
+// trace after preprocessing: number of rows, first row, mask
+function ml_trace_forward_input() {
+  if (g`mlg.trace`.greater(0)) {
+    tl_name = "input row 0 of ${variable::get_list_length(pp_X)}";
+    tl_v = variable::get_list_value(pp_X, 0);
+    ml_trace_list_print();
+    tl_name = "mask";
+    tl_v = pp_M;
+    ml_trace_list_print();
+  }
+}
+
+// trace after pooling and the head
+function ml_trace_forward_result() {
+  if (g`mlg.trace`.greater(0)) {
+    ml_broadcast("&7[trace] &flogit ${fw_logit}, probability ${fw_prob}");
+  }
+}
+
+// trace after pooling: the pooled vector (and the attention weights)
+function ml_trace_pooled() {
+  if (g`mlg.trace`.greater(0)) {
+    tl_name = "pooled (${po_valid} valid rows of ${po_T})";
+    tl_v = po_v;
+    ml_trace_list_print();
+    if (s`ml.pm`.equals(3)) {
+      tl_name = "attention weights";
+      tl_v = po_a;
+      ml_trace_list_print();
+    }
   }
 }
 
@@ -408,6 +471,7 @@ function ml_forward_network() {
   fw_logit = variable::mathematical_expectation(s`ml.head`, variable::append_list(g`mlg.one`, po_v));
   fw_prob = mli_sigm500(fw_logit);
   fw_ok = 1;
+  ml_trace_forward_result();
 }
 
 // RNNModelML.checkData: ck_ys, ck_ps (yaw/pitch lists) -> ck_prob (0 if fewer than 2 rotations)

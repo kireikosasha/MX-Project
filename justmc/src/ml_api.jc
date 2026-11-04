@@ -39,6 +39,8 @@ function ml_boot() {
   g`mlg.training` = 0;
   g`mlg.stop` = 0;
   g`mlg.batches` = 0;
+  g`mlg.trace` = 0;
+  g`mlg.trace_pre` = 0;
 }
 
 function ml_ready() -> number {
