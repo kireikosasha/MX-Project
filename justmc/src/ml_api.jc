@@ -1,0 +1,110 @@
+// =====================================================================
+//  ml_api.jc — public API of the Millennium 5 library (what your own JMCC code calls)
+//
+//  A sample is a two-channel sequence of numbers (RNNModelML.prepareVectors: o[0], o[1]),
+//  for example yaw/pitch deltas, but it can be any pair of signals with values roughly in
+//  the -100..100 range. For a single-channel signal pass the same list twice.
+//  Label 1 = positive class ("isMustBeBlocked"), 0 = negative class.
+//
+//    p = ml_predict(a, b);             // RNNModelML.checkData  -> probability 0..1
+//    ml_learn(a, b, 1);                // RNNModelML.learnByData (one AdamW step)
+//    ml_dataset_add(a, b, 0);          // DatasetManager.saveSample (save variable s`ml.ds`)
+//    ml_train(16);                     // RNNModelML.trainEpochs on s`ml.ds` (blocking, use a process)
+//    ml_train_async(16);               // the same in a background process
+//    ml_export_json(); -> io_text      // RNNModelML.saveToFile (JSON instead of binary)
+//    io_text = "..."; ml_import_json() // RNNModelML.load
+//    ml_init_fresh();                  // new RNNModelML(cfg)
+//    ml_count_parameters(); -> pc_n         // RNNModelML.parameters
+//  Hyper-parameters are save variables (RNNConfig + setters of RNNModelML):
+//    s`ml.lr` s`ml.dr` s`ml.rdr` s`ml.wd` s`ml.gc` s`ml.ls` s`ml.th` s`ml.bs` s`ml.im` s`ml.pm`
+//  Architecture: s`ml.in` s`ml.hid` s`ml.layers` s`ml.bi` (change, then ml_init_fresh()).
+// =====================================================================
+import "./ml_base.jc";
+import "./ml_net.jc";
+import "./ml_backward.jc";
+import "./ml_train.jc";
+import "./ml_io.jc";
+
+// make sure config + caches exist (call once from event<world_start>)
+function ml_boot() {
+  if (not s`ml.in`.exists()) {
+    ml_set_defaults();
+  }
+  if (not s`ml.ds`.exists()) {
+    s`ml.ds` = [];
+  }
+  ml_rebuild_runtime();
+  ml_check_complete();
+  g`mlg.listeners` = [];
+  g`mlg.training` = 0;
+  g`mlg.stop` = 0;
+  g`mlg.batches` = 0;
+}
+
+function ml_ready() -> number {
+  return s`ml.ready`;
+}
+
+function ml_threshold() -> number {
+  return s`ml.th`;
+}
+
+// probability that the sequence belongs to class 1
+function ml_predict(pa_a: array, pa_b: array) -> number {
+  ck_ys = pa_a;
+  ck_ps = pa_b;
+  ml_check_data();
+  return ck_prob;
+}
+
+// one online training step on a single sample
+function ml_learn(la_a: array, la_b: array, la_label: number) {
+  lr_ys = la_a;
+  lr_ps = la_b;
+  lr_cheat = la_label;
+  ml_learn_by_data();
+}
+
+function ml_dataset_add(da_a: array, da_b: array, da_label: number) {
+  s`ml.ds`.append_value([[da_a, da_b, da_label]]);
+}
+
+function ml_dataset_size() -> number {
+  return variable::get_list_length(s`ml.ds`);
+}
+
+// count of class-1 samples -> dsc_pos, total -> dsc_n
+function ml_dataset_stats() {
+  dsc_pos = 0;
+  repeat::for_each_in_list(s`ml.ds`) { dsc_k, dsc_s ->
+    if (variable::get_list_value(dsc_s, 2).equals(1)) {
+      dsc_pos = variable::add([dsc_pos, 1]);
+    }
+  }
+  dsc_n = variable::get_list_length(s`ml.ds`);
+}
+
+// trainEpochs on the saved dataset (blocking: call it from a process)
+function ml_train(tn_epochs: number) {
+  g`mlg.training` = 1;
+  g`mlg.stop` = 0;
+  te_data = s`ml.ds`;
+  te_epochs = tn_epochs;
+  ml_train_epochs();
+  g`mlg.training` = 0;
+}
+
+process ml_train_process(tq_epochs) {
+  ml_train(tq_epochs);
+  if (g`mlg.stop`.equals(1)) {
+    ml_broadcast("§eTraining stopped.");
+  } else {
+    ml_broadcast("§aTraining complete and model saved! &7(batches: ${g`mlg.batches`}, step: ${s`ml.step`})");
+  }
+  g`mlg.stop` = 0;
+}
+
+function ml_train_async(ta_epochs: number) {
+  g`mlg.training` = 1;
+  code::start_process("ml_train_process", "DONT_COPY", "NO_TARGET", {"tq_epochs": ta_epochs});
+}

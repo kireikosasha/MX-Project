@@ -1,0 +1,405 @@
+// =====================================================================
+//  demo_mx_aim.jc — DEMO: the MX "Aim (ML)" check built on the Millennium 5 library.
+//  It only collects data (combat rotations) and calls the library API; all ML lives in
+//  millennium.jc.  Port of AimMLCheck (RNN part) + RNN1Module + DatasetCommand.
+//
+//  Demo commands (besides every "~ml ..." command of ml_admin.jc):
+//    ~mx dataset <legit|cheat|off> <player|all>   — record 600-rotation samples into s`ml.ds`
+//    ~mx debug                                    — show every RNN probability
+//    ~mx vl                                       — VL of online players
+//    ~mx train|ml|model|...                       — same as "~ml ..." (MX syntax works too)
+// =====================================================================
+import "./ml_admin.jc";
+
+inline var MX_CMD_PREFIX = "~mx";  // demo chat command prefix
+inline var MX_RNN_LEN = 150;       // AimMLCheck: rnnRotations.size() >= 150
+inline var MX_SAMPLE_LEN = 600;    // AimMLCheck: rawRotations.size() >= 600 (dataset sample)
+inline var MX_COMBAT_MS = 3000;    // lastAttack + 3000 ms
+
+event<world_start> {
+  ml_admin_boot();
+  if (not s`mx.vl_limit`.exists()) {
+    s`mx.unusual_vl` = 10;
+    s`mx.strange_vl` = 20;
+    s`mx.suspected_vl` = 40;
+    s`mx.vl_limit` = 100;
+    s`mx.vl_reset` = 15;
+  }
+  g`mx.queue` = [];
+  g`mx.wbusy` = 0;
+  g`mx.players` = [];
+  g`mx.debug` = [];
+  code::start_process("mx_vl_decay", "DONT_COPY", "NO_TARGET", {});
+}
+
+event<world_web_response> {
+  ml_admin_web_response();
+}
+
+event<world_web_exception> {
+  ml_admin_web_exception();
+}
+
+// vlReset: every minute every VL goes down by s`mx.vl_reset`
+process mx_vl_decay() {
+  repeat::forever() {
+    code::wait(60, "SECONDS");
+    repeat::for_each_in_list(g`mx.players`) { vd_k, vd_u ->
+      g`mx.p.${vd_u}.vl` = variable::max([0, variable::subtract([g`mx.p.${vd_u}.vl`, s`mx.vl_reset`])]);
+    }
+  }
+}
+
+event<player_join> {
+  ml_admin_join();
+  jn_u = value::uuid;
+  jn_name = value::name;
+  g`mx.uuid.${jn_name}` = jn_u;
+  g`mx.p.${jn_u}.name` = jn_name;
+  g`mx.p.${jn_u}.py` = value::yaw;
+  g`mx.p.${jn_u}.pp` = value::pitch;
+  g`mx.p.${jn_u}.la` = 0;
+  g`mx.p.${jn_u}.ry` = [];
+  g`mx.p.${jn_u}.rp` = [];
+  g`mx.p.${jn_u}.ny` = [];
+  g`mx.p.${jn_u}.np` = [];
+  if (not g`mx.p.${jn_u}.vl`.exists()) {
+    g`mx.p.${jn_u}.vl` = 0;
+  }
+  if (not g`mx.players`.list_contains_value(jn_u)) {
+    g`mx.players`.append_value(jn_u);
+  }
+}
+
+event<player_quit> {
+  qt_u = value::uuid;
+  g`mx.players` = variable::remove_list_value(g`mx.players`, qt_u);
+  g`mlg.listeners` = variable::remove_list_value(g`mlg.listeners`, qt_u);
+  g`mx.debug` = variable::remove_list_value(g`mx.debug`, qt_u);
+  variable::purge(["mx.p.${qt_u}.ry", "mx.p.${qt_u}.rp", "mx.p.${qt_u}.ny", "mx.p.${qt_u}.np", "mx.p.${qt_u}.py", "mx.p.${qt_u}.pp", "mx.rec.${qt_u}"], "GAME", "EQUALS");
+}
+
+// UseEntityEvent (attack) -> lastAttack
+event<player_pre_attack_entity> {
+  g`mx.p.${value::uuid}.la` = value::timestamp;
+}
+event<player_damage_entity> {
+  g`mx.p.${value::uuid}.la` = value::timestamp;
+}
+event<player_damage_player> {
+  g`mx.p.${value::uuid}.la` = value::timestamp;
+}
+
+// float32 rounding: MX stores rotation deltas in Vec2f (floats)    in/out: fr_x
+function mx_round_to_float() {
+  if (not fr_x.equals(0)) {
+    mx_round_to_float_nonzero();
+  }
+}
+
+function mx_round_to_float_nonzero() {
+  fr_a = variable::absolute(fr_x);
+  fr_e = variable::round(variable::log(fr_a, 2), 0, "FLOOR");
+  if (variable::pow(2, fr_e).greater(fr_a)) {
+    fr_e = variable::subtract([fr_e, 1]);
+  }
+  fr_e1 = variable::add([fr_e, 1]);
+  if (variable::pow(2, fr_e1).less_or_equals(fr_a)) {
+    fr_e = fr_e1;
+  }
+  fr_e = variable::max([fr_e, -126]);
+  fr_ulp = variable::pow(2, variable::subtract([fr_e, 23]));
+  fr_q = variable::divide([fr_a, fr_ulp]);
+  fr_r = variable::round(fr_q, 0, "FLOOR");
+  fr_fr = variable::subtract([fr_q, fr_r]);
+  if (fr_fr.greater(0.5)) {
+    fr_r = variable::add([fr_r, 1]);
+  }
+  if (fr_fr.equals(0.5)) {
+    fr_odd = variable::remainder(fr_r, 2, "REMAINDER");
+    if (fr_odd.equals(1)) {
+      fr_r = variable::add([fr_r, 1]);
+    }
+  }
+  fr_res = variable::multiply([fr_r, fr_ulp]);
+  if (fr_x.less(0)) {
+    fr_res = variable::multiply([fr_res, -1]);
+  }
+  fr_x = fr_res;
+}
+
+// AimMLCheck.event(RotationEvent)
+event<player_rotate> {
+  mx_on_rotate();
+}
+
+// AimMLCheck.event(RotationEvent): rotation delta, combat window, buffers, checks, recording
+function mx_on_rotate() {
+  rt_u = value::uuid;
+  rt_yaw = value::yaw;
+  rt_pitch = value::pitch;
+  if (not g`mx.p.${rt_u}.py`.exists()) {
+    g`mx.p.${rt_u}.py` = rt_yaw;
+    g`mx.p.${rt_u}.pp` = rt_pitch;
+  } else {
+    mx_rotation_delta();
+    if (rt_now.greater(rt_lim)) {
+      mx_combat_timeout();
+    } else {
+      mx_record_rotation();
+    }
+  }
+}
+
+// delta to the previous rotation (yaw wrapped to -180..180), recording flag, combat window end
+function mx_rotation_delta() {
+  rt_dy = variable::wrap(variable::subtract([rt_yaw, g`mx.p.${rt_u}.py`]), -180, 180);
+  rt_dp = variable::subtract([rt_pitch, g`mx.p.${rt_u}.pp`]);
+  g`mx.p.${rt_u}.py` = rt_yaw;
+  g`mx.p.${rt_u}.pp` = rt_pitch;
+  rt_rec = 0;
+  if (g`mx.rec.${rt_u}`.exists()) {
+    rt_rec = 1;
+  }
+  rt_now = value::timestamp;
+  rt_lim = variable::add([g`mx.p.${rt_u}.la`, MX_COMBAT_MS]);
+}
+
+// no attack for 3 s: drop the collected rotations (unless the player is being recorded)
+function mx_combat_timeout() {
+  if (rt_rec.equals(0)) {
+    if (not g`mx.p.${rt_u}.ry`.list_is_empty()) {
+      g`mx.p.${rt_u}.ry` = [];
+      g`mx.p.${rt_u}.rp` = [];
+      g`mx.p.${rt_u}.ny` = [];
+      g`mx.p.${rt_u}.np` = [];
+    }
+  }
+}
+
+// store the float-rounded delta, run a check every 150 rotations, save a sample every 600
+function mx_record_rotation() {
+  fr_x = rt_dy;
+  mx_round_to_float();
+  rt_dy = fr_x;
+  fr_x = rt_dp;
+  mx_round_to_float();
+  rt_dp = fr_x;
+  g`mx.p.${rt_u}.ry`.append_value(rt_dy);
+  g`mx.p.${rt_u}.rp`.append_value(rt_dp);
+  g`mx.p.${rt_u}.ny`.append_value(rt_dy);
+  g`mx.p.${rt_u}.np`.append_value(rt_dp);
+  rt_nraw = variable::get_list_length(g`mx.p.${rt_u}.ry`);
+  if (rt_rec.equals(1)) {
+    player::send_action_bar("§cRECORDING: ${rt_nraw}/600");
+  }
+  rt_nrnn = variable::get_list_length(g`mx.p.${rt_u}.ny`);
+  if (rt_nrnn.greater_or_equals(MX_RNN_LEN)) {
+    mx_queue_check();
+  }
+  if (rt_nraw.greater_or_equals(MX_SAMPLE_LEN)) {
+    mx_save_sample();
+  }
+}
+
+// checkRNN(): queue the last 150 rotations for the model (not while recording)
+function mx_queue_check() {
+  if (rt_rec.equals(0)) {
+    if (s`ml.ready`.equals(1)) {
+      g`mx.queue`.append_value([[rt_u, value::name, g`mx.p.${rt_u}.ny`, g`mx.p.${rt_u}.np`]]);
+      if (not g`mx.wbusy`.equals(1)) {
+        g`mx.wbusy` = 1;
+        code::start_process("mx_check_worker", "DONT_COPY", "NO_TARGET", {});
+      }
+    }
+  }
+  g`mx.p.${rt_u}.ny` = [];
+  g`mx.p.${rt_u}.np` = [];
+}
+
+// checkLegacy() while recording: DatasetManager.saveSample of 600 rotations
+function mx_save_sample() {
+  if (rt_rec.equals(1)) {
+    ml_dataset_add(g`mx.p.${rt_u}.ry`, g`mx.p.${rt_u}.rp`, g`mx.rec.${rt_u}`);
+    player::message("§a[ML] Saved sample! Total in dataset: ${ml_dataset_size()}");
+  }
+  g`mx.p.${rt_u}.ry` = [];
+  g`mx.p.${rt_u}.rp` = [];
+}
+
+// inference queue: one worker at a time (the world CPU budget is shared)
+process mx_check_worker() {
+  repeat::while(g`mx.wbusy`.equals(1)) {
+    if (g`mx.queue`.list_is_empty()) {
+      g`mx.wbusy` = 0;
+    } else {
+      mx_check_next();
+    }
+  }
+}
+
+function mx_check_next() {
+    wk_item = variable::get_list_value(g`mx.queue`, 0);
+    variable::remove_list_value_at_index(removed_value=wk_rm, variable=g`mx.queue`, list=g`mx.queue`, index=0);
+    hr_p = ml_predict(variable::get_list_value(wk_item, 2), variable::get_list_value(wk_item, 3));
+    hr_u = variable::get_list_value(wk_item, 0);
+    hr_name = variable::get_list_value(wk_item, 1);
+    mx_classify_probability();
+}
+
+// RNN1Module.getResult + AimMLCheck.handleFlag + PlayerProfile.punish (VL + alert)
+// in: hr_u, hr_name, hr_p
+function mx_classify_probability() {
+  hr_pct = variable::round(variable::multiply([hr_p, 100]), 1, "ROUND");
+  hr_type = "NORMAL";
+  hr_info = "${hr_pct}%";
+  if (hr_p.greater(0.6)) {
+    hr_type = "UNUSUAL";
+    hr_info = "Unusual patterns ${hr_pct}%";
+    hr_color = "&e";
+    hr_m = variable::divide([s`mx.unusual_vl`, 10]);
+  }
+  if (hr_p.greater(0.7)) {
+    hr_type = "STRANGE";
+    hr_info = "Strange Behavior ${hr_pct}%";
+    hr_color = "&6";
+    hr_m = variable::divide([s`mx.strange_vl`, 10]);
+  }
+  if (hr_p.greater(0.8)) {
+    hr_type = "SUSPECTED";
+    hr_info = "Suspicious Probability ${hr_pct}%";
+    hr_color = "&c";
+    hr_m = variable::divide([s`mx.suspected_vl`, 10]);
+  }
+  if (hr_p.greater(0.9)) {
+    hr_info = "Insane Probability ${hr_pct}%";
+  }
+  // profile.debug("&dRNN Prob: ...")
+  if (not g`mx.debug`.list_is_empty()) {
+    select::player_by_name(g`mx.debug`);
+    player::message<current>("&9&l[Debug] &f${hr_name}: &dRNN Prob: ${hr_info} (${hr_type})");
+    select::reset();
+  }
+  if (not hr_type.equals("NORMAL")) {
+    mx_punish();
+  }
+}
+
+// PlayerProfile.punish: VL += 10 * m, alert, limit hook     in: hr_u, hr_name, hr_type, hr_color, hr_m
+function mx_punish() {
+  hr_vl = variable::add([g`mx.p.${hr_u}.vl`, variable::multiply([10, hr_m])]);
+  g`mx.p.${hr_u}.vl` = hr_vl;
+  hr_vli = variable::round(hr_vl, 0, "FLOOR");
+  ml_broadcast("&9&l[MX] &e${hr_name} &8>>&c Aim &7(&cML&7) &8&fResult: ${hr_color}${hr_type} &8[m1-rnn] &f[${hr_vli}/${s`mx.vl_limit`}]");
+  if (hr_vl.greater_or_equals(s`mx.vl_limit`)) {
+    mx_on_punish();
+  }
+}
+
+// What to do when VL reaches the limit (MX: banCommand). Edit to your needs.
+// in: hr_u, hr_name
+function mx_on_punish() {
+  ml_broadcast("&9&l[MX] &e${hr_name} &8>>&4 Looks like a cheater! &7(VL limit reached)");
+  g`mx.p.${hr_u}.vl` = 0;
+}
+
+// ---------------------------------------------------------------------
+// chat: "~ml ..." -> library admin, "~mx ..." -> demo commands (+ MX aliases of ~ml)
+// ---------------------------------------------------------------------
+event<player_chat> {
+  ml_admin_chat();
+  if (cm_handled.equals(0)) {
+    mx_on_chat();
+  }
+}
+
+// "~mx ..." commands of the demo (everything unknown goes to the library commands)
+function mx_on_chat() {
+  cm_msg = value::event_chat_message;
+  if (cm_msg.text_starts_with(MX_CMD_PREFIX)) {
+    world::cancel_event();
+    cm_a = variable::split_text(cm_msg, " ");
+    cm_sub = variable::get_list_value(cm_a, 1, "help");
+    cm_a2 = variable::get_list_value(cm_a, 2, "");
+    cm_a3 = variable::get_list_value(cm_a, 3, "");
+    cm_a4 = variable::get_list_value(cm_a, 4, "");
+    ad_u = value::uuid;
+    ad_name = value::name;
+    ml_is_admin();
+    if (ad_ok.equals(0)) {
+      player::message("&cNo permission.");
+    } else {
+      mx_dispatch();
+    }
+  }
+}
+
+function mx_dispatch() {
+  if (cm_sub.equals("debug")) {
+    mx_cmd_debug_toggle();
+  } elif (cm_sub.equals("alerts")) {
+    cm_sub = "log";
+    ml_admin_command();
+  } elif (cm_sub.equals("vl")) {
+    repeat::for_each_in_list(g`mx.players`) { cv_k, cv_u ->
+      player::message("&e${g`mx.p.${cv_u}.name`} &7VL: &f${variable::round(g`mx.p.${cv_u}.vl`, 1, "ROUND")}");
+    }
+  } elif (cm_sub.equals("dataset")) {
+    mx_cmd_dataset();
+  } else {
+    ml_admin_command();
+  }
+}
+
+// ~mx debug: show every RNN probability to the sender
+function mx_cmd_debug_toggle() {
+  if (g`mx.debug`.list_contains_value(ad_u)) {
+    g`mx.debug` = variable::remove_list_value(g`mx.debug`, ad_u);
+    player::message("&9&l[MX] &fDebug &cdisabled");
+  } else {
+    g`mx.debug`.append_value(ad_u);
+    player::message("&9&l[MX] &fDebug &aenabled");
+  }
+}
+
+// DatasetCommand: ~mx dataset <legit|cheat|off> <player|all>
+function mx_cmd_dataset() {
+  ds_mode = cm_a2;
+  ds_label = 0;
+  if (ds_mode.equals("cheat")) {
+    ds_label = 1;
+  }
+  if (not ds_mode.equals(["legit", "cheat", "off"])) {
+    ml_cmd_dataset();
+  } elif (cm_a3.equals(["all", "*"])) {
+    ds_cnt = 0;
+    repeat::for_each_in_list(g`mx.players`) { ds_k, ds_u ->
+      if (ds_mode.equals("off")) {
+        variable::purge(["mx.rec.${ds_u}"], "GAME", "EQUALS");
+      } else {
+        g`mx.rec.${ds_u}` = ds_label;
+      }
+      ds_cnt = variable::add([ds_cnt, 1]);
+    }
+    player::message("§aApplied dataset mode §e${ds_mode} §ato §e${ds_cnt} §aonline players.");
+  } elif (not g`mx.uuid.${cm_a3}`.exists()) {
+    player::message("§cPlayer not found.");
+  } else {
+    mx_cmd_dataset_player();
+  }
+}
+
+function mx_cmd_dataset_player() {
+  ds_u = g`mx.uuid.${cm_a3}`;
+  if (ds_mode.equals("off")) {
+    variable::purge(["mx.rec.${ds_u}"], "GAME", "EQUALS");
+    player::message("§eStopped recording for ${cm_a3}");
+  } else {
+    g`mx.rec.${ds_u}` = ds_label;
+    if (ds_label.equals(1)) {
+      player::message("§cNow recording CHEAT data for ${cm_a3}");
+    } else {
+      player::message("§aNow recording LEGIT data for ${cm_a3}");
+    }
+  }
+}

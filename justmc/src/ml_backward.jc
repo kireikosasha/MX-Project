@@ -1,0 +1,728 @@
+// =====================================================================
+//  ml_backward.jc — backpropagation + AdamW (RNNModelML.trainBatch / applyUpdate)
+//
+//  Gradients are accumulated in "column" lists (locals, prefix ac.): for every weight
+//  dW[n][k] = sum over (sample, step) of dGate[n] * z[k].  Columns are appended in the exact
+//  order in which Java adds the terms, and a final dot product (sequential sum) reproduces
+//  the Java accumulator bit for bit.
+//    `ac.<d>.dg.<gate>.<n>`  gate gradients        `ac.<d>.z.<j>`  inputs z = [1 | x | h_in]
+//    `ac.<d>.dh.<k>` / `ac.<d>.xh.<k>`  LayerNorm (dGamma = dh . xHat, dBeta = sum dh)
+//    `ac.head.dl`, `ac.head.p.<i>`      head (dV = dLogit . pooled, dBias = sum dLogit)
+//    `ac.att.ds`, `ac.att.h.<i>`, ac_attB   attention (dW = dScore . h, dB = sum of sums)
+//    `ac.emb.vy`, `ac.emb.vp`, `ac.emb.g.<i>`  raw embedding
+//  Transposed weights for dX = W^T dGates (gate-interleaved like Java's inner loop):
+//    g`mlt.<d>.x.<j>` (input part), g`mlt.<d>.h.<j>` (recurrent part)
+// =====================================================================
+import "./ml_base.jc";
+import "./ml_net.jc";
+
+// (re)build the transposed weights of every layer-direction
+function ml_build_transposed_weights() {
+  repeat::for_each_in_list(g`mlg.layers`) { bw_li, bw_l ->
+    repeat::for_each_in_list(g`mlg.dirs`) { bw_di, bw_dir ->
+      wt_d = variable::add([variable::multiply([bw_l, 2]), bw_dir]);
+      wt_in = mli_layer_in(bw_l);
+      ml_transposed_reset();
+      repeat::for_each_in_list(g`mlg.idxH`) { bw_ni, bw_n ->
+        repeat::for_each_in_list(g`mlg.gates`) { bw_gi, bw_gt ->
+          wt_row = s`ml.L.${wt_d}.${bw_gt}.${bw_n}`;
+          ml_transposed_append_row();
+        }
+        ml_yield(variable::multiply([wt_in, 8]));
+      }
+    }
+  }
+}
+
+// in: wt_d, wt_in
+function ml_transposed_reset() {
+  if (wt_in.equals(s`ml.in`)) {
+    wt_xidx = g`mlg.idxIn`;
+  } else {
+    wt_xidx = g`mlg.idxOut`;
+  }
+  repeat::for_each_in_list(wt_xidx) { wr_k, wr_j ->
+    g`mlt.${wt_d}.x.${wr_j}` = [];
+  }
+  repeat::for_each_in_list(g`mlg.idxH`) { wr_k, wr_j ->
+    g`mlt.${wt_d}.h.${wr_j}` = [];
+  }
+}
+
+// append one gate row (already in interleaved order f,i,c,o per neuron) to the transposed lists
+// in: wt_d, wt_in, wt_row
+function ml_transposed_append_row() {
+  wa_x = mli_slice(wt_row, 1, variable::add([wt_in, 1]));
+  wa_h = mli_slice(wt_row, variable::add([wt_in, 1]), variable::get_list_length(wt_row));
+  repeat::for_each_in_list(wa_x) { wa_j, wa_w ->
+    g`mlt.${wt_d}.x.${wa_j}`.append_value(wa_w);
+  }
+  repeat::for_each_in_list(wa_h) { wa_j, wa_w ->
+    g`mlt.${wt_d}.h.${wa_j}`.append_value(wa_w);
+  }
+}
+
+// zeroBatchGrads(): create every column accumulator
+function ml_reset_gradients() {
+  variable::purge(["ac."], "LOCAL", "STARTS_WITH");
+  `ac.head.dl` = [];
+  `ac.att.ds` = [];
+  `ac.emb.vy` = [];
+  `ac.emb.vp` = [];
+  ac_attB = 0;
+  repeat::for_each_in_list(g`mlg.idxOut`) { ar_k, ar_i ->
+    `ac.head.p.${ar_i}` = [];
+    `ac.att.h.${ar_i}` = [];
+  }
+  repeat::for_each_in_list(g`mlg.idxIn`) { ar_k, ar_i ->
+    `ac.emb.g.${ar_i}` = [];
+  }
+  repeat::for_each_in_list(g`mlg.layers`) { ar_li, ar_l ->
+    ar_zlen = variable::add([mli_layer_in(ar_l), s`ml.hid`, 1]);
+    repeat::for_each_in_list(g`mlg.dirs`) { ar_di, ar_dir ->
+      ar_d = variable::add([variable::multiply([ar_l, 2]), ar_dir]);
+      ar_j = 0;
+      repeat::while(ar_j.less(ar_zlen)) {
+        `ac.${ar_d}.z.${ar_j}` = [];
+        ar_j = variable::add([ar_j, 1]);
+      }
+      repeat::for_each_in_list(g`mlg.idxH`) { ar_k, ar_n ->
+        `ac.${ar_d}.dh.${ar_n}` = [];
+        `ac.${ar_d}.xh.${ar_n}` = [];
+        repeat::for_each_in_list(g`mlg.gates`) { ar_gi, ar_gt ->
+          `ac.${ar_d}.dg.${ar_gt}.${ar_n}` = [];
+        }
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// LSTMLayer.backward
+// in : lb_d, lb_dH (T x H, time order), lb_in (input size of this layer)
+// out: lb_dX (T x in, time order)
+// ---------------------------------------------------------------------
+function ml_lstm_backward() {
+  ml_lstm_backward_init();
+  repeat::while(lb_s.greater_or_equals(0)) {
+    ml_lstm_backward_step();
+  }
+  if (lb_rev.equals(1)) {
+    lb_dX = lb_dXs;
+  } else {
+    lb_dX = variable::reverse_list(lb_dXs);
+  }
+}
+
+// read the layer cache, zero dh / dc carried between steps
+function ml_lstm_backward_init() {
+  lb_T = `fc.${lb_d}.T`;
+  lb_um = `fc.${lb_d}.um`;
+  lb_rm = `fc.${lb_d}.rm`;
+  lb_rev = `fc.${lb_d}.rev`;
+  lb_H = s`ml.hid`;
+  lb_invN = variable::divide([1.0, lb_H]);
+  lb_gc = s`ml.gc`;
+  lb_ngc = variable::multiply([lb_gc, -1]);
+  lb_gam = s`ml.L.${lb_d}.g`;
+  if (lb_in.equals(s`ml.in`)) {
+    lb_xidx = g`mlg.idxIn`;
+  } else {
+    lb_xidx = g`mlg.idxOut`;
+  }
+  lb_dhn = g`mlg.zerosH`;
+  lb_dcn = g`mlg.zerosH`;
+  lb_dXs = [];
+  lb_last = variable::subtract([lb_T, 1]);
+  lb_s = lb_last;
+}
+
+// one step of backpropagation through time (steps go from the last to the first)
+function ml_lstm_backward_step() {
+  if (lb_rev.equals(1)) {
+    lb_t = variable::subtract([lb_last, lb_s]);
+  } else {
+    lb_t = lb_s;
+  }
+  lb_dHt = variable::get_list_value(lb_dH, lb_t);
+  lb_xh = `fc.${lb_d}.xh.${lb_s}`;
+  lb_inv = `fc.${lb_d}.inv.${lb_s}`;
+  ml_layer_norm_backward();
+  ml_lstm_gate_gradients();
+  repeat::for_each_in_list(`fc.${lb_d}.z.${lb_s}`) { lb_j, lb_zj ->
+    `ac.${lb_d}.z.${lb_j}`.append_value(lb_zj);
+  }
+  ml_lstm_input_gradients();
+  lb_dXs.append_value([lb_dx]);
+  lb_dhn = lb_dhp;
+  lb_dcn = lb_dcn2;
+  lb_s = variable::subtract([lb_s, 1]);
+  ml_yield(variable::multiply([lb_H, 60]));
+}
+
+// dh = clip(dH[t] + dh_next); LayerNorm.backward -> lb_dpre (+ dGamma / dBeta columns)
+function ml_layer_norm_backward() {
+  lb_dh = [];
+  lb_dxh = [];
+  repeat::for_each_in_list(lb_dHt) { lb_k, lb_v ->
+    lb_dhk = variable::clamp(variable::add([lb_v, variable::get_list_value(lb_dhn, lb_k)]), lb_ngc, lb_gc);
+    lb_dh.append_value(lb_dhk);
+    lb_dxh.append_value(variable::multiply([lb_dhk, variable::get_list_value(lb_gam, lb_k)]));
+    `ac.${lb_d}.dh.${lb_k}`.append_value(lb_dhk);
+    `ac.${lb_d}.xh.${lb_k}`.append_value(variable::get_list_value(lb_xh, lb_k));
+  }
+  lb_s1 = variable::add(lb_dxh);
+  lb_s2 = variable::mathematical_expectation(lb_dxh, lb_xh);
+  lb_a1 = variable::multiply([lb_invN, lb_s1]);
+  lb_dpre = [];
+  repeat::for_each_in_list(lb_dxh) { lb_k, lb_v ->
+    lb_t2 = variable::multiply([variable::get_list_value(lb_xh, lb_k), lb_invN, lb_s2]);
+    lb_dpre.append_value(variable::multiply([lb_inv, variable::subtract([lb_v, lb_a1, lb_t2])]));
+  }
+}
+
+// gradients of the four gates for every unit -> lb_dgi (interleaved f,i,c,o), lb_dcn2
+function ml_lstm_gate_gradients() {
+  lb_f = `fc.${lb_d}.f.${lb_s}`;
+  lb_i = `fc.${lb_d}.i.${lb_s}`;
+  lb_g = `fc.${lb_d}.g.${lb_s}`;
+  lb_o = `fc.${lb_d}.o.${lb_s}`;
+  lb_tc = `fc.${lb_d}.tc.${lb_s}`;
+  if (lb_s.greater(0)) {
+    lb_cp = `fc.${lb_d}.c.${variable::subtract([lb_s, 1])}`;
+  } else {
+    lb_cp = g`mlg.zerosH`;
+  }
+  lb_dgi = [];
+  lb_dcn2 = [];
+  repeat::for_each_in_list(lb_dpre) { lb_k, lb_dp ->
+    ml_lstm_unit_gradient();
+  }
+}
+
+// gate gradients of unit lb_k   in: lb_dp (gradient of o * tanh(c))
+function ml_lstm_unit_gradient() {
+  lb_fk = variable::get_list_value(lb_f, lb_k);
+  lb_ik = variable::get_list_value(lb_i, lb_k);
+  lb_gk = variable::get_list_value(lb_g, lb_k);
+  lb_ok = variable::get_list_value(lb_o, lb_k);
+  lb_tk = variable::get_list_value(lb_tc, lb_k);
+  lb_dO = variable::multiply([lb_dp, lb_tk, lb_ok, variable::subtract([1.0, lb_ok])]);
+  lb_u = variable::multiply([lb_dp, lb_ok, variable::subtract([1.0, variable::multiply([lb_tk, lb_tk])])]);
+  lb_dc = variable::add([variable::get_list_value(lb_dcn, lb_k), lb_u]);
+  lb_dF = variable::multiply([lb_dc, variable::get_list_value(lb_cp, lb_k), lb_fk, variable::subtract([1.0, lb_fk])]);
+  lb_dI = variable::multiply([lb_dc, lb_gk, lb_ik, variable::subtract([1.0, lb_ik])]);
+  lb_dG = variable::multiply([lb_dc, lb_ik, variable::subtract([1.0, variable::multiply([lb_gk, lb_gk])])]);
+  lb_dgi.append_value([lb_dF, lb_dI, lb_dG, lb_dO]);
+  `ac.${lb_d}.dg.f.${lb_k}`.append_value(lb_dF);
+  `ac.${lb_d}.dg.i.${lb_k}`.append_value(lb_dI);
+  `ac.${lb_d}.dg.c.${lb_k}`.append_value(lb_dG);
+  `ac.${lb_d}.dg.o.${lb_k}`.append_value(lb_dO);
+  lb_dcn2.append_value(variable::multiply([lb_dc, lb_fk]));
+}
+
+// dX[t] = clip(W^T dGates) ; dh_prev = (U^T dGates) * recurrent mask
+function ml_lstm_input_gradients() {
+  lb_dx = [];
+  repeat::for_each_in_list(lb_xidx) { lb_k, lb_j ->
+    lb_dx.append_value(variable::clamp(variable::mathematical_expectation(g`mlt.${lb_d}.x.${lb_j}`, lb_dgi), lb_ngc, lb_gc));
+  }
+  lb_dhp = [];
+  if (lb_um.equals(1)) {
+    repeat::for_each_in_list(g`mlg.idxH`) { lb_k, lb_j ->
+      lb_dhp.append_value(variable::multiply([variable::mathematical_expectation(g`mlt.${lb_d}.h.${lb_j}`, lb_dgi), variable::get_list_value(lb_rm, lb_j)]));
+    }
+  } else {
+    repeat::for_each_in_list(g`mlg.idxH`) { lb_k, lb_j ->
+      lb_dhp.append_value(variable::mathematical_expectation(g`mlt.${lb_d}.h.${lb_j}`, lb_dgi));
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// StackedBiLSTM.backward    in: eb_dH (T x out)      out: eb_dX (T x in)
+// ---------------------------------------------------------------------
+function ml_encoder_backward() {
+  eb_cur = eb_dH;
+  eb_H = s`ml.hid`;
+  eb_H2 = variable::multiply([eb_H, 2]);
+  eb_lastl = variable::subtract([s`ml.layers`, 1]);
+  eb_l = eb_lastl;
+  repeat::while(eb_l.greater_or_equals(0)) {
+    ml_encoder_layer_backward();
+    eb_l = variable::subtract([eb_l, 1]);
+  }
+  eb_dX = eb_cur;
+}
+
+// one layer (from the top): undo dropout, split into directions, backprop both, sum   in: eb_l
+function ml_encoder_layer_backward() {
+  if (en_ud.equals(1)) {
+    if (eb_l.less(eb_lastl)) {
+      ml_encoder_dropout_backward();
+    }
+  }
+  lb_in = mli_layer_in(eb_l);
+  if (s`ml.bi`.equals(1)) {
+    ml_encoder_bidirectional_backward();
+  } else {
+    lb_d = variable::multiply([eb_l, 2]);
+    lb_dH = eb_cur;
+    ml_lstm_backward();
+    eb_cur = lb_dX;
+  }
+}
+
+// gradient through the dropout mask between layers
+function ml_encoder_dropout_backward() {
+  eb_tmp = [];
+  repeat::for_each_in_list(eb_cur) { eb_t, eb_v ->
+    vm_a = eb_v;
+    vm_b = en_dm;
+    ml_vector_multiply();
+    eb_tmp.append_value([vm_r]);
+  }
+  eb_cur = eb_tmp;
+}
+
+// split [forward | reverse] gradients, backprop both directions, add their input gradients
+function ml_encoder_bidirectional_backward() {
+  eb_dF = [];
+  eb_dB = [];
+  repeat::for_each_in_list(eb_cur) { eb_t, eb_v ->
+    eb_dF.append_value([mli_slice(eb_v, 0, eb_H)]);
+    eb_dB.append_value([mli_slice(eb_v, eb_H, eb_H2)]);
+  }
+  lb_d = variable::multiply([eb_l, 2]);
+  lb_dH = eb_dF;
+  ml_lstm_backward();
+  eb_dXF = lb_dX;
+  lb_d = variable::add([variable::multiply([eb_l, 2]), 1]);
+  lb_dH = eb_dB;
+  lb_in = mli_layer_in(eb_l);
+  ml_lstm_backward();
+  eb_next = [];
+  repeat::for_each_in_list(eb_dXF) { eb_t, eb_v ->
+    va_a = eb_v;
+    va_b = variable::get_list_value(lb_dX, eb_t);
+    ml_vector_add();
+    eb_next.append_value([va_r]);
+  }
+  eb_cur = eb_next;
+}
+
+// ---------------------------------------------------------------------
+// Pooling.backward     in: pb_dP (dPooled)      out: pb_dH (T x out)
+// uses the forward cache po_* (po_H, po_T, po_valid, po_last, po_arg, po_a, `po.col.<i>`)
+// ---------------------------------------------------------------------
+function ml_pool_backward() {
+  pb_dH = [];
+  if (s`ml.pm`.equals(0)) {
+    ml_pool_last_backward();
+  } else {
+    if (po_valid.equals(0)) {
+      repeat::for_each_in_list(po_H) { pb_t, pb_h ->
+        pb_dH.append_value([g`mlg.zerosOut`]);
+      }
+    } else {
+      if (s`ml.pm`.equals(1)) {
+        ml_pool_mean_backward();
+      } else {
+        if (s`ml.pm`.equals(2)) {
+          ml_pool_max_backward();
+        } else {
+          ml_pool_attention_backward();
+        }
+      }
+    }
+  }
+}
+
+function ml_pool_last_backward() {
+  repeat::for_each_in_list(po_H) { pb_t, pb_h ->
+    if (pb_t.equals(po_last)) {
+      pb_dH.append_value([pb_dP]);
+    } else {
+      pb_dH.append_value([g`mlg.zerosOut`]);
+    }
+  }
+}
+
+function ml_pool_mean_backward() {
+  pb_sc = variable::divide([1.0, po_valid]);
+  pb_row = [];
+  repeat::for_each_in_list(pb_dP) { pb_i, pb_x ->
+    pb_row.append_value(variable::multiply([pb_x, pb_sc]));
+  }
+  repeat::for_each_in_list(po_H) { pb_t, pb_h ->
+    if (pb_t.less(po_valid)) {
+      pb_dH.append_value([pb_row]);
+    } else {
+      pb_dH.append_value([g`mlg.zerosOut`]);
+    }
+  }
+}
+
+function ml_pool_max_backward() {
+  repeat::for_each_in_list(po_H) { pb_t, pb_h ->
+    pb_row = [];
+    repeat::for_each_in_list(po_arg) { pb_i, pb_am ->
+      if (pb_am.equals(pb_t)) {
+        pb_row.append_value(variable::get_list_value(pb_dP, pb_i));
+      } else {
+        pb_row.append_value(0.0);
+      }
+    }
+    pb_dH.append_value([pb_row]);
+  }
+}
+
+function ml_pool_attention_backward() {
+  pb_W = mli_slice(s`ml.attn`, 1, variable::get_list_length(s`ml.attn`));
+  pb_dA = [];
+  repeat::for_each_in_list(po_a) { pb_t, pb_at ->
+    pb_dA.append_value(variable::mathematical_expectation(pb_dP, variable::get_list_value(po_H, pb_t)));
+  }
+  pb_sum = variable::mathematical_expectation(po_a, pb_dA);
+  pb_ds = [];
+  repeat::for_each_in_list(po_a) { pb_t, pb_at ->
+    pb_ds.append_value(variable::multiply([pb_at, variable::subtract([variable::get_list_value(pb_dA, pb_t), pb_sum])]));
+  }
+  repeat::for_each_in_list(po_H) { pb_t, pb_h ->
+    if (pb_t.less(po_valid)) {
+      pb_at = variable::get_list_value(po_a, pb_t);
+      pb_dst = variable::get_list_value(pb_ds, pb_t);
+      pb_row = [];
+      repeat::for_each_in_list(pb_dP) { pb_i, pb_x ->
+        pb_row.append_value(variable::mathematical_expectation([pb_at, pb_dst], [pb_x, variable::get_list_value(pb_W, pb_i)]));
+      }
+      pb_dH.append_value([pb_row]);
+      `ac.att.ds`.append_value(pb_dst);
+      repeat::for_each_in_list(pb_h) { pb_i, pb_x ->
+        `ac.att.h.${pb_i}`.append_value(pb_x);
+      }
+    } else {
+      pb_dH.append_value([g`mlg.zerosOut`]);
+    }
+  }
+  ac_attB = variable::add([ac_attB, variable::add(pb_ds)]);
+}
+
+// ---------------------------------------------------------------------
+// one sample of trainBatch (after ml_forward with fw_train = fw_cache = 1)
+// in: bs_y (smoothed label), bs_ys / bs_ps (raw sequence, for the embedding gradient)
+// out: bs_loss, bs_correct
+// ---------------------------------------------------------------------
+function ml_backward_sample() {
+  ml_loss_and_head_gradient();
+  ml_pool_backward();
+  eb_dH = pb_dH;
+  ml_encoder_backward();
+  if (not s`ml.im`.equals(1)) {
+    ml_embedding_gradient();
+  }
+}
+
+// prediction correctness, binary cross-entropy, BinaryHead.backward -> pb_dP
+function ml_loss_and_head_gradient() {
+  bs_p = fw_prob;
+  bs_correct = 0;
+  bs_pc = 0;
+  if (bs_p.greater_or_equals(0.5)) {
+    bs_pc = 1;
+  }
+  bs_ac = 0;
+  if (bs_y.greater_or_equals(0.5)) {
+    bs_ac = 1;
+  }
+  if (bs_pc.equals(bs_ac)) {
+    bs_correct = 1;
+  }
+  bs_p = variable::clamp(bs_p, ML_P_MIN, ML_P_MAX);
+  bs_loss = variable::multiply([-1, variable::mathematical_expectation([bs_y, variable::subtract([1.0, bs_y])], [variable::log(bs_p, ML_E), variable::log(variable::subtract([1.0, bs_p]), ML_E)])]);
+  bs_dl = variable::subtract([bs_p, bs_y]);
+  // BinaryHead.backward
+  `ac.head.dl`.append_value(bs_dl);
+  repeat::for_each_in_list(fw_pooled) { bs_i, bs_x ->
+    `ac.head.p.${bs_i}`.append_value(bs_x);
+  }
+  bs_V = mli_slice(s`ml.head`, 1, variable::get_list_length(s`ml.head`));
+  pb_dP = [];
+  repeat::for_each_in_list(bs_V) { bs_i, bs_v ->
+    pb_dP.append_value(variable::multiply([bs_dl, bs_v]));
+  }
+}
+
+// accumulateEmbeddingGrad(s.vecs, dX) — applied for RAW and HYBRID (also when HYBRID used the
+// statistical path: original behaviour, kept 1:1)
+function ml_embedding_gradient() {
+  bs_gc = s`ml.gc`;
+  bs_ngc = variable::multiply([bs_gc, -1]);
+  bs_T = variable::min([variable::get_list_length(bs_ys), variable::get_list_length(eb_dX)]);
+  repeat::for_each_in_list(eb_dX) { bs_t, bs_row ->
+    if (bs_t.less(bs_T)) {
+      `ac.emb.vy`.append_value(mli_tanh(variable::divide([variable::get_list_value(bs_ys, bs_t), 100])));
+      `ac.emb.vp`.append_value(mli_tanh(variable::divide([variable::get_list_value(bs_ps, bs_t), 100])));
+      repeat::for_each_in_list(bs_row) { bs_i, bs_g ->
+        `ac.emb.g.${bs_i}`.append_value(variable::clamp(bs_g, bs_ngc, bs_gc));
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// AdamW.step on one parameter vector
+// in : ad_P (weights), ad_G (accumulated gradient, not yet scaled), ad_name (param name)
+//      ad_inv, ad_bc1, ad_bc2, ad_lr, ad_lrwd, ad_clip, ad_nclip, ad_doclip  (set by ml_apply_update)
+// out: ad_P (updated), moments stored in g`mla.m.<name>` / g`mla.v.<name>`
+// ---------------------------------------------------------------------
+function ml_adamw_step() {
+  if (not g`mla.m.${ad_name}`.exists()) {
+    ad_z = [];
+    repeat::for_each_in_list(ad_P) { ad_k, ad_x ->
+      ad_z.append_value(0.0);
+    }
+    g`mla.m.${ad_name}` = ad_z;
+    g`mla.v.${ad_name}` = ad_z;
+  }
+  ad_m = g`mla.m.${ad_name}`;
+  ad_v = g`mla.v.${ad_name}`;
+  ad_out = [];
+  ad_mo = [];
+  ad_vo = [];
+  ad_nbig = variable::multiply([g`mlg.big`, -1]);
+  repeat::for_each_in_list(ad_G) { ad_k, ad_g ->
+    ad_gi = variable::multiply([ad_g, ad_inv]);
+    if (not variable::number_in_range(ad_gi, ad_nbig, g`mlg.big`, "INCLUDE_ALL")) {
+      ad_gi = 0.0;
+    }
+    if (ad_doclip.equals(1)) {
+      ad_gi = variable::clamp(ad_gi, ad_nclip, ad_clip);
+    }
+    ad_mk = variable::mathematical_expectation([variable::get_list_value(ad_m, ad_k), ad_gi], [ML_B1, ML_1MB1]);
+    ad_vk = variable::mathematical_expectation([variable::get_list_value(ad_v, ad_k), variable::multiply([ML_1MB2, ad_gi, ad_gi])], [ML_B2, 1.0]);
+    ad_mh = variable::divide([ad_mk, ad_bc1]);
+    ad_vh = variable::divide([ad_vk, ad_bc2]);
+    ad_den = variable::add([variable::pow(ad_vh, 0.5), ML_ADAM_EPS]);
+    ad_q = variable::divide([variable::multiply([ad_lr, ad_mh]), ad_den]);
+    ad_w = variable::get_list_value(ad_P, ad_k);
+    ad_out.append_value(variable::mathematical_expectation([ad_w, ad_w, ad_q], [1.0, ad_nlrwd, -1.0]));
+    ad_mo.append_value(ad_mk);
+    ad_vo.append_value(ad_vk);
+  }
+  g`mla.m.${ad_name}` = ad_mo;
+  g`mla.v.${ad_name}` = ad_vo;
+  ad_P = ad_out;
+}
+
+// ---------------------------------------------------------------------
+// RNNModelML.applyUpdate(used)        in: au_used
+// ---------------------------------------------------------------------
+function ml_apply_update() {
+  ml_adam_prepare_step();
+  ml_update_head();
+  ml_update_attention();
+  ml_yield(1500);
+  if (not s`ml.im`.equals(1)) {
+    ml_update_embedding();
+  }
+  repeat::for_each_in_list(g`mlg.layers`) { au_li, au_l ->
+    repeat::for_each_in_list(g`mlg.dirs`) { au_di, au_dir ->
+      au_d = variable::add([variable::multiply([au_l, 2]), au_dir]);
+      ml_update_lstm_layer();
+      ml_update_layer_norm();
+    }
+  }
+}
+
+// constants of this optimiser step: 1/used, bias corrections, lr, weight decay, clipping
+function ml_adam_prepare_step() {
+  ad_inv = variable::divide([1.0, au_used]);
+  ad_bc1 = variable::subtract([1.0, variable::pow(ML_B1, s`ml.t`)]);
+  ad_bc2 = variable::subtract([1.0, variable::pow(ML_B2, s`ml.t`)]);
+  ad_lr = s`ml.lr`;
+  ad_nlrwd = variable::multiply([-1, variable::multiply([s`ml.lr`, s`ml.wd`])]);
+  ad_clip = s`ml.gc`;
+  ad_nclip = variable::multiply([ad_clip, -1]);
+  ad_doclip = 0;
+  if (ad_clip.greater(0)) {
+    if (ad_clip.less(g`mlg.big`)) {
+      ad_doclip = 1;
+    }
+  }
+}
+
+// BinaryHead [bias | V]
+function ml_update_head() {
+  ad_G = [variable::add(`ac.head.dl`)];
+  repeat::for_each_in_list(g`mlg.idxOut`) { au_k, au_i ->
+    ad_G.append_value(variable::mathematical_expectation(`ac.head.dl`, `ac.head.p.${au_i}`));
+  }
+  ad_P = s`ml.head`;
+  ad_name = "ml.head";
+  ml_adamw_step();
+  s`ml.head` = ad_P;
+}
+
+// AttentionPooling [b | W]
+function ml_update_attention() {
+  ad_G = [ac_attB];
+  repeat::for_each_in_list(g`mlg.idxOut`) { au_k, au_i ->
+    if (`ac.att.ds`.list_is_empty()) {
+      ad_G.append_value(0.0);
+    } else {
+      ad_G.append_value(variable::mathematical_expectation(`ac.att.ds`, `ac.att.h.${au_i}`));
+    }
+  }
+  ad_P = s`ml.attn`;
+  ad_name = "ml.attn";
+  ml_adamw_step();
+  s`ml.attn` = ad_P;
+}
+
+// raw embedding Wy, Wp, B (RAW / HYBRID input modes)
+function ml_update_embedding() {
+  au_gy = [];
+  au_gp = [];
+  au_gb = [];
+  repeat::for_each_in_list(g`mlg.idxIn`) { au_k, au_i ->
+    if (`ac.emb.vy`.list_is_empty()) {
+      au_gy.append_value(0.0);
+      au_gp.append_value(0.0);
+      au_gb.append_value(0.0);
+    } else {
+      au_gy.append_value(variable::mathematical_expectation(`ac.emb.g.${au_i}`, `ac.emb.vy`));
+      au_gp.append_value(variable::mathematical_expectation(`ac.emb.g.${au_i}`, `ac.emb.vp`));
+      au_gb.append_value(variable::add(`ac.emb.g.${au_i}`));
+    }
+  }
+  ad_G = au_gy;
+  ad_P = s`ml.embWy`;
+  ad_name = "ml.embWy";
+  ml_adamw_step();
+  s`ml.embWy` = ad_P;
+  ad_G = au_gp;
+  ad_P = s`ml.embWp`;
+  ad_name = "ml.embWp";
+  ml_adamw_step();
+  s`ml.embWp` = ad_P;
+  ad_G = au_gb;
+  ad_P = s`ml.embB`;
+  ad_name = "ml.embB";
+  ml_adamw_step();
+  s`ml.embB` = ad_P;
+}
+
+// every gate row of layer-direction au_d (Java's interleaved order f,i,c,o per unit);
+// the transposed weights for the next backward pass are rebuilt on the fly
+function ml_update_lstm_layer() {
+  wt_d = au_d;
+  wt_in = mli_layer_in(au_l);
+  ml_transposed_reset();
+  mr_n = variable::add([wt_in, s`ml.hid`, 1]);
+  ml_range();
+  au_zidx = mr_list;
+  repeat::for_each_in_list(g`mlg.idxH`) { au_ni, au_n ->
+    repeat::for_each_in_list(g`mlg.gates`) { au_gi, au_gt ->
+      ml_update_gate_row();
+    }
+    ml_yield(variable::multiply([mr_n, 80]));
+  }
+}
+
+// one gate row: dW = dGate . [1 | x | h] over every cached step, then AdamW   in: au_d, au_gt, au_n
+function ml_update_gate_row() {
+  ad_G = [];
+  au_dg = `ac.${au_d}.dg.${au_gt}.${au_n}`;
+  if (au_dg.list_is_empty()) {
+    repeat::for_each_in_list(au_zidx) { au_k, au_j2 ->
+      ad_G.append_value(0.0);
+    }
+  } else {
+    repeat::for_each_in_list(au_zidx) { au_k, au_j2 ->
+      ad_G.append_value(variable::mathematical_expectation(au_dg, `ac.${au_d}.z.${au_j2}`));
+    }
+  }
+  ad_name = "ml.L.${au_d}.${au_gt}.${au_n}";
+  ad_P = s`ml.L.${au_d}.${au_gt}.${au_n}`;
+  ml_adamw_step();
+  s`ml.L.${au_d}.${au_gt}.${au_n}` = ad_P;
+  wt_row = ad_P;
+  ml_transposed_append_row();
+}
+
+// LayerNorm gamma / beta of layer-direction au_d
+function ml_update_layer_norm() {
+  au_gg = [];
+  au_gb = [];
+  repeat::for_each_in_list(g`mlg.idxH`) { au_k, au_n ->
+    if (`ac.${au_d}.dh.${au_n}`.list_is_empty()) {
+      au_gg.append_value(0.0);
+      au_gb.append_value(0.0);
+    } else {
+      au_gg.append_value(variable::mathematical_expectation(`ac.${au_d}.dh.${au_n}`, `ac.${au_d}.xh.${au_n}`));
+      au_gb.append_value(variable::add(`ac.${au_d}.dh.${au_n}`));
+    }
+  }
+  ad_G = au_gg;
+  ad_P = s`ml.L.${au_d}.g`;
+  ad_name = "ml.L.${au_d}.g";
+  ml_adamw_step();
+  s`ml.L.${au_d}.g` = ad_P;
+  ad_G = au_gb;
+  ad_P = s`ml.L.${au_d}.b`;
+  ad_name = "ml.L.${au_d}.b";
+  ml_adamw_step();
+  s`ml.L.${au_d}.b` = ad_P;
+}
+
+// ---------------------------------------------------------------------
+// RNNModelML.trainBatch(batch)
+// in : tb_batch = list of [yaws, pitches, label]      out: tb_loss, tb_correct, tb_used
+// ---------------------------------------------------------------------
+function ml_train_batch() {
+  ml_reset_gradients();
+  tb_used = 0;
+  tb_lsum = 0;
+  tb_correct = 0;
+  repeat::for_each_in_list(tb_batch) { tb_k, tb_smp ->
+    fw_ys = variable::get_list_value(tb_smp, 0);
+    fw_ps = variable::get_list_value(tb_smp, 1);
+    fw_train = 1;
+    fw_cache = 1;
+    ml_forward();
+    if (fw_ok.equals(1)) {
+      bs_y = variable::get_list_value(tb_smp, 2);
+      bs_ys = fw_ys;
+      bs_ps = fw_ps;
+      ml_backward_sample();
+      tb_lsum = variable::add([tb_lsum, bs_loss]);
+      tb_correct = variable::add([tb_correct, bs_correct]);
+      tb_used = variable::add([tb_used, 1]);
+    }
+  }
+  if (tb_used.greater(0)) {
+    s`ml.t` = variable::add([s`ml.t`, 1]);
+    au_used = tb_used;
+    ml_apply_update();
+    s`ml.step` = variable::add([s`ml.step`, 1]);
+    tb_loss = variable::divide([tb_lsum, tb_used]);
+  } else {
+    tb_loss = 0;
+  }
+}
+
+// RNNModelML.learnByData(o, isMustBeBlocked): one-sample batch
+// in: lr_ys, lr_ps, lr_cheat (0/1)
+function ml_learn_by_data() {
+  lr_y = lr_cheat;
+  if (s`ml.ls`.greater(0)) {
+    lr_y = variable::mathematical_expectation([lr_y, 0.5], [variable::subtract([1.0, s`ml.ls`]), s`ml.ls`]);
+  }
+  lr_len = variable::min([variable::get_list_length(lr_ys), variable::get_list_length(lr_ps)]);
+  if (lr_len.greater_or_equals(2)) {
+    tb_batch = [[mli_slice(lr_ys, 0, lr_len), mli_slice(lr_ps, 0, lr_len), lr_y]];
+    ml_build_transposed_weights();
+    ml_train_batch();
+  }
+}

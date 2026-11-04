@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+# compiled JustMC modules are deliverables (root .gitignore ignores build/)
+!build/
+!build/*.json

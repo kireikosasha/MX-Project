@@ -1,0 +1,459 @@
+// =====================================================================
+//  ml_pre.jc — sequence preprocessing (RawSequencePreprocessor,
+//  StatisticalSequencePreprocessor, RNNModelML.HybridPre)
+//  in : pp_ys, pp_ps  (yaw / pitch deltas, equal length >= 2)
+//  out: pp_X (list of T input vectors, each of size s`ml.in`), pp_M (mask list, 1/0)
+// =====================================================================
+import "./ml_base.jc";
+
+inline var ML_SCALERS = [5.0, 0.5, 10.0, 20.0, 3.0, 10.0, 20.0, 0.5, 1.0, 15.0, 5.0, 2.0, 2.0, 2.0, 2.0, 1.0];
+
+function ml_preprocess() {
+  pp_n = variable::get_list_length(pp_ys);
+  if (s`ml.im`.equals(0)) {
+    ml_preprocess_raw();
+  } elif (s`ml.im`.equals(1)) {
+    ml_preprocess_statistical();
+  } else {
+    if (pp_n.greater_or_equals(40)) {
+      ml_preprocess_statistical();
+    } else {
+      ml_preprocess_raw();
+    }
+  }
+}
+
+// RawSequencePreprocessor: x[t][i] = tanh(yaw/100)*Wy[i] + tanh(pitch/100)*Wp[i] + B[i]
+function ml_preprocess_raw() {
+  pp_X = [];
+  pp_M = [];
+  pr_wy = s`ml.embWy`;
+  pr_wp = s`ml.embWp`;
+  pr_b = s`ml.embB`;
+  repeat::for_each_in_list(pp_ys) { pr_t, pr_y ->
+    pr_p = variable::get_list_value(pp_ps, pr_t);
+    pr_vy = mli_tanh(variable::divide([pr_y, 100]));
+    pr_vp = mli_tanh(variable::divide([pr_p, 100]));
+    pr_x = [];
+    repeat::for_each_in_list(pr_wy) { pr_i, pr_w ->
+      pr_x.append_value(variable::mathematical_expectation([pr_vy, pr_vp, 1], [pr_w, variable::get_list_value(pr_wp, pr_i), variable::get_list_value(pr_b, pr_i)]));
+    }
+    pp_X.append_value([pr_x]);
+    pp_M.append_value(1);
+    ml_yield(80);
+  }
+}
+
+// magnitudes sqrt(a^2 + b^2) of the whole sequence -> ps_mag
+function ml_rotation_magnitudes() {
+  ps_mag = [];
+  repeat::for_each_in_list(pp_ys) { ps_t, ps_y ->
+    ps_p = variable::get_list_value(pp_ps, ps_t);
+    ps_mag.append_value(variable::pow(variable::mathematical_expectation([ps_y, ps_p], [ps_y, ps_p]), 0.5));
+  }
+}
+
+// StatisticalSequencePreprocessor.prepare
+function ml_preprocess_statistical() {
+  ps_nw = variable::divide([pp_n, 20], "FLOOR");
+  ps_nw = variable::max([2, ps_nw]);
+  ps_nw = variable::min([15, ps_nw]);
+  ps_ws = variable::divide([pp_n, ps_nw], "FLOOR");
+  ps_ws = variable::max([15, ps_ws]);
+  ml_rotation_magnitudes();
+  pp_X = [];
+  ps_used = 0;
+  ps_w = 0;
+  ps_last = variable::subtract([ps_nw, 1]);
+  repeat::while(ps_w.less(ps_nw)) {
+    ps_start = variable::multiply([ps_w, ps_ws]);
+    if (ps_start.greater_or_equals(pp_n)) {
+      ps_w = ps_nw;
+    } else {
+      if (ps_w.equals(ps_last)) {
+        ps_end = pp_n;
+      } else {
+        ps_end = variable::min([pp_n, variable::add([ps_start, ps_ws])]);
+      }
+      ps_len = variable::subtract([ps_end, ps_start]);
+      if (ps_len.greater_or_equals(3)) {
+        ex_seq = mli_slice(ps_mag, ps_start, ps_end);
+        ml_extract_window_features();
+        pp_X.append_value([ex_f]);
+        ps_used = variable::add([ps_used, 1]);
+      }
+      ps_w = variable::add([ps_w, 1]);
+    }
+  }
+  ml_stat_mask_and_padding();
+}
+
+// mask = 1 for every window; fewer than 2 windows -> zero rows with mask 0
+function ml_stat_mask_and_padding() {
+  pp_M = [];
+  repeat::for_each_in_list(pp_X) { ps_k, ps_v ->
+    pp_M.append_value(1);
+  }
+  if (ps_used.less(2)) {
+    // pad to max(2, used) rows of zeros, mask 0
+    ps_cnt = variable::get_list_length(pp_X);
+    repeat::while(ps_cnt.less(2)) {
+      pp_X.append_value([g`mlg.zerosIn`]);
+      pp_M.append_value(0);
+      ps_cnt = variable::add([ps_cnt, 1]);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// StatisticalSequencePreprocessor.extract(seq): 15 statistical features of one window,
+// scaled with SCALERS and squashed by x / (1 + |x|).
+// in: ex_seq (list of magnitudes, length >= 3)    out: ex_f (list of s`ml.in` numbers)
+// ---------------------------------------------------------------------
+function ml_extract_window_features() {
+  ml_feature_moments();
+  ml_feature_value_groups();
+  ml_feature_entropy_hash();
+  ml_feature_kolmogorov();
+  ml_feature_outliers();
+  ml_feature_skewness();
+  ml_feature_kurtosis();
+  ml_feature_spread();
+  ml_feature_iqr_and_mode();
+  ml_feature_smoothness();
+  ml_feature_scale();
+  ml_yield(variable::multiply([ex_L, 60]));
+}
+
+// length, sorted copy, sum, mean, deviations, variance, standard deviation
+function ml_feature_moments() {
+  ex_L = variable::get_list_length(ex_seq);
+  ex_sorted = variable::sort_list(ex_seq, "ASCENDING");
+  ex_sum = variable::add(ex_seq);
+  ex_mean = variable::divide([ex_sum, ex_L]);
+  ex_d = [];
+  ex_d4 = [];
+  repeat::for_each_in_list(ex_seq) { ex_k, ex_x ->
+    ex_dd = variable::subtract([ex_x, ex_mean]);
+    ex_d.append_value(ex_dd);
+    ex_d4.append_value(variable::pow(ex_dd, 4));
+  }
+  ex_ss = variable::mathematical_expectation(ex_d, ex_d);
+  ex_var = variable::divide([ex_ss, ex_L]);
+  ex_std = variable::pow(ex_var, 0.5);
+}
+
+// sizes of the groups of exactly equal values (groupingBy / distinct)
+function ml_feature_value_groups() {
+  ex_counts = [];
+  ex_prev = variable::get_list_value(ex_sorted, 0);
+  ex_c = 0;
+  repeat::for_each_in_list(ex_sorted) { ex_k, ex_x ->
+    if (ex_x.equals(ex_prev)) {
+      ex_c = variable::add([ex_c, 1]);
+    } else {
+      ex_counts.append_value(ex_c);
+      ex_c = 1;
+      ex_prev = ex_x;
+    }
+  }
+  ex_counts.append_value(ex_c);
+  ex_distinct = variable::get_list_length(ex_counts);
+}
+
+// f0: MathML.shannonEntropyIdentity = Objects.hashCode(entropy) / 10000
+function ml_feature_entropy_hash() {
+  if (ex_distinct.equals(1)) {
+    // entropy = -(0.0) = -0.0 -> hashCode = Integer.MIN_VALUE -> / 10000
+    ex_f0 = -214748;
+  } else {
+    ml_shannon_entropy();
+    ml_double_hash_code();
+    ex_f0 = variable::divide([ex_hash, 10000]);
+    if (ex_f0.less(0)) {
+      ex_f0 = variable::round(ex_f0, 0, "CEIL");
+    } else {
+      ex_f0 = variable::round(ex_f0, 0, "FLOOR");
+    }
+  }
+}
+
+// Statistics.getShannonEntropy with DoubleStream.sum() (compensated summation) -> ex_ent
+function ml_shannon_entropy() {
+  ex_ks = 0;
+  ex_kc = 0;
+  repeat::for_each_in_list(ex_counts) { ex_k, ex_cnt ->
+    ex_pr = variable::divide([ex_cnt, ex_L]);
+    ex_term = variable::multiply([ex_pr, variable::log(ex_pr, 2)]);
+    ex_tmp = variable::subtract([ex_term, ex_kc]);
+    ex_vel = variable::add([ex_ks, ex_tmp]);
+    ex_kc = variable::subtract([ex_vel, ex_ks, ex_tmp]);
+    ex_ks = ex_vel;
+  }
+  ex_ent = variable::subtract([ex_kc, ex_ks]);
+}
+
+// f1: kolmogorovJiffIdentity = (int)(KS(|x[i] - x[i-1]|, identity) / 4)
+function ml_feature_kolmogorov() {
+  ex_jiff = [];
+  ex_old = variable::get_list_value(ex_seq, 0);
+  repeat::for_each_in_list(ex_seq) { ex_k, ex_x ->
+    if (ex_k.greater(0)) {
+      ex_jiff.append_value(variable::absolute(variable::subtract([ex_x, ex_old])));
+    }
+    ex_old = ex_x;
+  }
+  ex_js = variable::sort_list(ex_jiff, "ASCENDING");
+  ex_nj = variable::get_list_length(ex_js);
+  ex_D = 0;
+  repeat::for_each_in_list(ex_js) { ex_k, ex_x ->
+    ex_e = variable::divide([variable::add([ex_k, 1]), ex_nj]);
+    ex_D = variable::max([ex_D, variable::absolute(variable::subtract([ex_e, ex_x]))]);
+  }
+  ex_f1 = variable::divide([ex_D, 4.0], "FLOOR");
+}
+
+// f2: outliersIdentity = outliers below + above + duplicates (halves are NOT sorted); f3: distinct / 2
+function ml_feature_outliers() {
+  ex_h1 = variable::divide([ex_L, 2], "FLOOR");
+  ex_h2 = variable::subtract([ex_L, ex_h1]);
+  ex_mo = 0;
+  ex_ms = ex_h1;
+  ml_median_of_part();
+  ex_q1 = ex_med;
+  ex_mo = ex_h1;
+  ex_ms = ex_h2;
+  ml_median_of_part();
+  ex_q3 = ex_med;
+  ex_iqr = variable::absolute(variable::subtract([ex_q1, ex_q3]));
+  ex_low = variable::subtract([ex_q1, variable::multiply([1.5, ex_iqr])]);
+  ex_high = variable::add([ex_q3, variable::multiply([1.5, ex_iqr])]);
+  ex_out = 0;
+  repeat::for_each_in_list(ex_seq) { ex_k, ex_x ->
+    if (ex_x.less(ex_low)) {
+      ex_out = variable::add([ex_out, 1]);
+    } elif (ex_x.greater(ex_high)) {
+      ex_out = variable::add([ex_out, 1]);
+    }
+  }
+  ex_f2 = variable::add([ex_out, variable::subtract([ex_L, ex_distinct])]);
+  ex_f3 = variable::divide([ex_distinct, 2], "FLOOR");
+}
+
+// f4: skewness = 3 * (mean - median) / variance  (median of the sorted values)
+function ml_feature_skewness() {
+  ex_half = variable::divide([ex_L, 2], "FLOOR");
+  ex_odd = variable::remainder(ex_L, 2, "REMAINDER");
+  if (ex_odd.equals(1)) {
+    ex_median = variable::get_list_value(ex_sorted, ex_half);
+  } else {
+    ex_hm1 = variable::subtract([ex_half, 1]);
+    ex_ma = variable::get_list_value(ex_sorted, ex_hm1);
+    ex_mb = variable::get_list_value(ex_sorted, ex_half);
+    ex_median = variable::divide([variable::add([ex_ma, ex_mb]), 2]);
+  }
+  if (ex_var.equals(0)) {
+    ex_f4 = 0;
+  } else {
+    ex_f4 = variable::divide([variable::multiply([3, variable::subtract([ex_mean, ex_median])]), ex_var]);
+  }
+}
+
+// f5: kurtosis (Statistics.getKurtosis, original formula; NaN / Infinity -> 0)
+function ml_feature_kurtosis() {
+  ex_f5 = 0;
+  if (ex_L.greater(3)) {
+    if (not ex_sum.equals(0)) {
+      ex_r = variable::divide([ex_ss, ex_sum]);
+      ex_den = variable::pow(ex_r, 2);
+      if (not ex_den.equals(0)) {
+        ex_Lm1 = variable::subtract([ex_L, 1]);
+        ex_Lm2 = variable::subtract([ex_L, 2]);
+        ex_Lm3 = variable::subtract([ex_L, 3]);
+        ex_e1 = variable::divide([variable::multiply([ex_L, variable::add([ex_L, 1])]), variable::multiply([ex_Lm1, ex_Lm2, ex_Lm3])]);
+        ex_e2 = variable::divide([variable::multiply([3, variable::pow(ex_Lm1, 2)]), variable::multiply([ex_Lm2, ex_Lm3])]);
+        ex_vsq = variable::add(ex_d4);
+        ex_f5 = variable::subtract([variable::multiply([ex_e1, variable::divide([ex_vsq, ex_den])]), ex_e2]);
+      }
+    }
+  }
+}
+
+// f6: standard deviation, f7: Gini index, f8: coefficient of variation
+function ml_feature_spread() {
+  ex_f6 = ex_std;
+  ex_f7 = 0;
+  ex_f8 = 0;
+  if (not ex_mean.equals(0)) {
+    // sum_i sum_j |s_i - s_j| = 2 * sum_i (2i - n + 1) s_i  for sorted s
+    ex_coef = [];
+    ex_nm1 = variable::subtract([1, ex_L]);
+    repeat::for_each_in_list(ex_sorted) { ex_k, ex_x ->
+      ex_coef.append_value(variable::multiply([2, variable::add([variable::multiply([2, ex_k]), ex_nm1])]));
+    }
+    ex_gs = variable::mathematical_expectation(ex_sorted, ex_coef);
+    ex_f7 = variable::divide([ex_gs, variable::multiply([2, ex_L, ex_L, ex_mean])]);
+    ex_f8 = variable::divide([ex_std, ex_mean]);
+  }
+}
+
+// f9: IQR (calculatePercentile 75 - 25), f10: |average - modeDouble| (NaN mode -> 0)
+function ml_feature_iqr_and_mode() {
+  ex_last = variable::subtract([ex_L, 1]);
+  ex_i75 = variable::multiply([0.75, ex_L]);
+  ex_i75 = variable::subtract([variable::round(ex_i75, 0, "CEIL"), 1]);
+  ex_i75 = variable::clamp(ex_i75, 0, ex_last);
+  ex_i25 = variable::multiply([0.25, ex_L]);
+  ex_i25 = variable::subtract([variable::round(ex_i25, 0, "CEIL"), 1]);
+  ex_i25 = variable::clamp(ex_i25, 0, ex_last);
+  ex_f9 = variable::subtract([variable::get_list_value(ex_sorted, ex_i75), variable::get_list_value(ex_sorted, ex_i25)]);
+  ml_window_mode();
+  ex_f10 = 0;
+  if (ex_mode_ok.equals(1)) {
+    ex_f10 = variable::absolute(variable::subtract([ex_mean, ex_mode]));
+  }
+}
+
+// f11..f14: MathML.smoothIdentity (robotized, machine-known, constant, aggressive rotations)
+function ml_feature_smoothness() {
+  ex_old = variable::get_list_value(ex_seq, 0);
+  ex_ycf = variable::absolute(variable::subtract([ex_old, variable::get_list_value(ex_seq, 1)]));
+  ex_sa = 0;
+  ex_sb = 0;
+  ex_sc = 0;
+  ex_sd = 0;
+  repeat::for_each_in_list(ex_seq) { ex_k, ex_x ->
+    ml_smoothness_step();
+  }
+}
+
+// one rotation of smoothIdentity   in: ex_x, ex_old, ex_ycf
+function ml_smoothness_step() {
+  ex_yc = variable::absolute(variable::subtract([ex_x, ex_old]));
+  ex_rob = variable::absolute(variable::subtract([ex_yc, ex_ycf]));
+  if (ex_rob.less(2)) {
+    if (ex_yc.greater(2.5)) {
+      ex_sa = variable::add([ex_sa, 1]);
+    }
+    if (ex_yc.greater(3)) {
+      ex_sd = variable::add([ex_sd, 1]);
+    }
+  }
+  if (ex_rob.less(0.99)) {
+    if (ex_yc.greater(4)) {
+      ex_sb = variable::add([ex_sb, 1]);
+    }
+  }
+  if (ex_rob.less(0.02)) {
+    if (ex_yc.greater(3)) {
+      ex_sc = variable::add([ex_sc, 1]);
+    }
+  }
+  ex_old = ex_x;
+}
+
+// f / SCALER, then x / (1 + |x|); features beyond 15 are 0
+function ml_feature_scale() {
+  ex_raw = [ex_f0, ex_f1, ex_f2, ex_f3, ex_f4, ex_f5, ex_f6, ex_f7, ex_f8, ex_f9, ex_f10, ex_sa, ex_sb, ex_sc, ex_sd];
+  ex_scalers = ML_SCALERS;
+  ex_f = [];
+  repeat::for_each_in_list(g`mlg.idxIn`) { ex_k, ex_i ->
+    ex_v = variable::get_list_value(ex_raw, ex_i, 0);
+    ex_s = variable::get_list_value(ex_scalers, ex_i, 1.0);
+    ex_v = variable::divide([ex_v, ex_s]);
+    ex_f.append_value(variable::divide([ex_v, variable::add([1, variable::absolute(ex_v)])]));
+  }
+}
+
+// getMedian(values.subList(ex_mo, ex_mo + ex_ms)) — unsorted, as in Statistics.getOutliers
+function ml_median_of_part() {
+  md_h = variable::divide([ex_ms, 2], "FLOOR");
+  md_odd = variable::remainder(ex_ms, 2, "REMAINDER");
+  md_i = variable::add([ex_mo, md_h]);
+  if (md_odd.equals(1)) {
+    ex_med = variable::get_list_value(ex_seq, md_i);
+  } else {
+    md_im1 = variable::subtract([md_i, 1]);
+    md_a = variable::get_list_value(ex_seq, md_i);
+    md_b = variable::get_list_value(ex_seq, md_im1);
+    ex_med = variable::divide([variable::add([md_a, md_b]), 2]);
+  }
+}
+
+// Statistics.getModeDouble(seq) — out: ex_mode_ok (0 means NaN), ex_mode
+function ml_window_mode() {
+  // fast path: no two values closer than 0.001 -> every count is 1 -> result NaN
+  ex_mode_ok = 0;
+  md_close = 0;
+  md_prev = variable::get_list_value(ex_sorted, 0);
+  repeat::for_each_in_list(ex_sorted) { md_k, md_x ->
+    if (md_k.greater(0)) {
+      if (variable::subtract([md_x, md_prev]).less(0.001)) {
+        md_close = 1;
+      }
+    }
+    md_prev = md_x;
+  }
+  if (md_close.equals(0)) {
+    if (ex_L.equals(1)) {
+      ex_mode_ok = 1;
+      ex_mode = variable::get_list_value(ex_seq, 0);
+    }
+  } else {
+    ml_window_mode_exact();
+  }
+}
+
+// exact O(n^2) Statistics.getModeDouble
+function ml_window_mode_exact() {
+  md_maxc = 0;
+  md_maxv = -1.0;
+  md_nan = 0;
+  repeat::for_each_in_list(ex_seq) { md_i, md_cur ->
+    md_cnt = 1;
+    repeat::for_each_in_list(ex_seq) { md_j, md_o ->
+      if (md_j.greater(md_i)) {
+        if (variable::absolute(variable::subtract([md_o, md_cur])).less(0.001)) {
+          md_cnt = variable::add([md_cnt, 1]);
+        }
+      }
+    }
+    if (md_cnt.greater(md_maxc)) {
+      md_maxc = md_cnt;
+      md_maxv = md_cur;
+      md_nan = 0;
+    } elif (md_cnt.equals(md_maxc)) {
+      md_nan = 1;
+    }
+  }
+  if (md_nan.equals(0)) {
+    ex_mode_ok = 1;
+    ex_mode = md_maxv;
+  }
+}
+
+// Double.hashCode(ex_ent) for a positive normal double -> ex_hash (signed int32)
+function ml_double_hash_code() {
+  dh_e = variable::round(variable::log(ex_ent, 2), 0, "FLOOR");
+  if (variable::pow(2, dh_e).greater(ex_ent)) {
+    dh_e = variable::subtract([dh_e, 1]);
+  }
+  if (variable::pow(2, variable::add([dh_e, 1])).less_or_equals(ex_ent)) {
+    dh_e = variable::add([dh_e, 1]);
+  }
+  // mantissa bits (52) and exponent bits
+  dh_m = variable::multiply([variable::subtract([variable::divide([ex_ent, variable::pow(2, dh_e)]), 1]), 4503599627370496]);
+  dh_hi = variable::add([variable::multiply([variable::add([dh_e, 1023]), 1048576]), variable::divide([dh_m, 4294967296], "FLOOR")]);
+  dh_lo = variable::subtract([dh_m, variable::multiply([variable::divide([dh_m, 4294967296], "FLOOR"), 4294967296])]);
+  // xor of two 32-bit words, done on 16-bit halves (safe for int and long implementations)
+  dh_hh = variable::divide([dh_hi, 65536], "FLOOR");
+  dh_hl = variable::subtract([dh_hi, variable::multiply([dh_hh, 65536])]);
+  dh_lh = variable::divide([dh_lo, 65536], "FLOOR");
+  dh_ll = variable::subtract([dh_lo, variable::multiply([dh_lh, 65536])]);
+  dh_xh = variable::bitwise_operation(dh_hh, dh_lh, "XOR");
+  dh_xl = variable::bitwise_operation(dh_hl, dh_ll, "XOR");
+  ex_hash = variable::add([variable::multiply([dh_xh, 65536]), dh_xl]);
+  if (ex_hash.greater_or_equals(2147483648)) {
+    ex_hash = variable::subtract([ex_hash, 4294967296]);
+  }
+}

@@ -1,0 +1,466 @@
+// =====================================================================
+//  ml_io.jc — default config, weight initialisation, JSON import / export, parameter count
+// =====================================================================
+import "./ml_base.jc";
+
+// FactoryML: new RNNModelML(16, 48) with RNNConfig defaults
+function ml_set_defaults() {
+  s`ml.in` = 16;
+  s`ml.hid` = 48;
+  s`ml.layers` = 2;
+  s`ml.bi` = 1;
+  s`ml.im` = 2;          // InputMode: 0 RAW_SEQUENCE, 1 STATISTICAL_FEATURES, 2 HYBRID
+  s`ml.pm` = 3;          // PoolingMode: 0 LAST_HIDDEN, 1 MEAN_POOLING, 2 MAX_POOLING, 3 ATTENTION
+  s`ml.lr` = 0.0003;
+  s`ml.dr` = 0.1;
+  s`ml.rdr` = 0.2;
+  s`ml.wd` = 0.001;
+  s`ml.gc` = 5.0;
+  s`ml.ls` = 0.1;
+  s`ml.bs` = 16;
+  s`ml.step` = 0;
+  s`ml.t` = 0;
+  s`ml.th` = ML_CHECKPOINT_THRESHOLD;
+}
+
+// xavierUniform(size, fanIn, fanOut) -> xv_r     in: xv_n, xv_fi, xv_fo
+function ml_xavier_uniform() {
+  xv_lim = variable::pow(variable::divide([6.0, variable::add([xv_fi, xv_fo])]), 0.5);
+  xv_r = [];
+  xv_i = 0;
+  repeat::while(xv_i.less(xv_n)) {
+    xv_u = variable::random_number(0, 1, "FALSE");
+    xv_r.append_value(variable::multiply([variable::subtract([variable::multiply([xv_u, 2.0]), 1.0]), xv_lim]));
+    xv_i = variable::add([xv_i, 1]);
+  }
+}
+
+// MathOps.orthogonal(n): Gram-Schmidt on a gaussian matrix -> rows `og.r.<i>`   in: og_n (= H)
+function ml_orthogonal_matrix() {
+  repeat::for_each_in_list(g`mlg.idxH`) { og_k, og_i ->
+    og_row = [];
+    repeat::for_each_in_list(g`mlg.idxH`) { og_k2, og_j ->
+      og_row.append_value(variable::gaussian_distribution(1.0, 0.0, "NORMAL"));
+    }
+    `og.r.${og_i}` = og_row;
+  }
+  repeat::for_each_in_list(g`mlg.idxH`) { og_k, og_i ->
+    og_mi = `og.r.${og_i}`;
+    repeat::for_each_in_list(g`mlg.idxH`) { og_k2, og_j ->
+      if (og_j.less(og_i)) {
+        og_mj = `og.r.${og_j}`;
+        og_dot = variable::mathematical_expectation(og_mi, og_mj);
+        og_norm = variable::mathematical_expectation(og_mj, og_mj);
+        if (og_norm.greater(0.0000000001)) {
+          og_ns = variable::multiply([variable::divide([og_dot, og_norm]), -1]);
+          og_new = [];
+          repeat::for_each_in_list(og_mi) { og_q, og_x ->
+            og_new.append_value(variable::mathematical_expectation([og_x, variable::get_list_value(og_mj, og_q)], [1.0, og_ns]));
+          }
+          og_mi = og_new;
+        }
+      }
+    }
+    og_norm = variable::pow(variable::mathematical_expectation(og_mi, og_mi), 0.5);
+    if (og_norm.greater(0.0000000001)) {
+      og_new = [];
+      repeat::for_each_in_list(og_mi) { og_q, og_x ->
+        og_new.append_value(variable::divide([og_x, og_norm]));
+      }
+      og_mi = og_new;
+    }
+    `og.r.${og_i}` = og_mi;
+    ml_yield(variable::multiply([s`ml.hid`, og_i, 4]));
+  }
+}
+
+// new RNNModelML(cfg): fresh weights for the current configuration
+function ml_init_fresh() {
+  s`ml.ready` = 0;
+  variable::purge(["ml.L."], "SAVE", "STARTS_WITH");
+  ml_rebuild_runtime();
+  ml_init_embedding();
+  repeat::for_each_in_list(g`mlg.layers`) { fi_li, fi_l ->
+    fi_in = mli_layer_in(fi_l);
+    repeat::for_each_in_list(g`mlg.dirs`) { fi_di, fi_dir ->
+      fi_d = variable::add([variable::multiply([fi_l, 2]), fi_dir]);
+      ml_init_lstm_layer();
+    }
+  }
+  ml_init_heads();
+  // a new RNNModelML starts with step 0, AdamW t 0 and the default threshold 0.60
+  s`ml.step` = 0;
+  s`ml.t` = 0;
+  s`ml.th` = ML_CHECKPOINT_THRESHOLD;
+  variable::purge(["mla.", "mlt."], "GAME", "STARTS_WITH");
+  variable::purge(["og."], "LOCAL", "STARTS_WITH");
+  s`ml.ready` = 1;
+}
+
+// RawSequencePreprocessor: Wy, Wp ~ Xavier(1, in), B = 0
+function ml_init_embedding() {
+  xv_n = s`ml.in`;
+  xv_fi = 1;
+  xv_fo = s`ml.in`;
+  ml_xavier_uniform();
+  s`ml.embWy` = xv_r;
+  ml_xavier_uniform();
+  s`ml.embWp` = xv_r;
+  s`ml.embB` = g`mlg.zerosIn`;
+}
+
+// LSTMLayer constructor for layer-direction fi_d: W ~ Xavier, U orthogonal, forget bias 1, LayerNorm (1, 0)
+function ml_init_lstm_layer() {
+  repeat::for_each_in_list(g`mlg.gates`) { fi_gi, fi_gt ->
+    ml_init_gate();
+  }
+  fi_ones = [];
+  repeat::for_each_in_list(g`mlg.idxH`) { fi_k, fi_n ->
+    fi_ones.append_value(1.0);
+  }
+  s`ml.L.${fi_d}.g` = fi_ones;
+  s`ml.L.${fi_d}.b` = g`mlg.zerosH`;
+}
+
+// all rows [b | W | U] of gate fi_gt
+function ml_init_gate() {
+  ml_orthogonal_matrix();
+  fi_b = 0.0;
+  if (fi_gt.equals("f")) {
+    fi_b = 1.0;
+  }
+  repeat::for_each_in_list(g`mlg.idxH`) { fi_k, fi_n ->
+    xv_n = fi_in;
+    xv_fi = fi_in;
+    xv_fo = s`ml.hid`;
+    ml_xavier_uniform();
+    fi_row = variable::append_list([fi_b], xv_r);
+    fi_row = variable::append_list(fi_row, `og.r.${fi_n}`);
+    s`ml.L.${fi_d}.${fi_gt}.${fi_n}` = fi_row;
+  }
+  ml_yield(variable::multiply([s`ml.hid`, fi_in, 4]));
+}
+
+// AttentionPooling W and BinaryHead V ~ Xavier(out, 1), biases 0
+function ml_init_heads() {
+  xv_n = g`mlg.out`;
+  xv_fi = g`mlg.out`;
+  xv_fo = 1;
+  ml_xavier_uniform();
+  s`ml.attn` = variable::append_list([0.0], xv_r);
+  ml_xavier_uniform();
+  s`ml.head` = variable::append_list([0.0], xv_r);
+}
+
+// RNNModelML.parameters()  -> pc_n
+function ml_count_parameters() {
+  pc_n = variable::multiply([s`ml.in`, 3]);
+  repeat::for_each_in_list(g`mlg.layers`) { pc_li, pc_l ->
+    pc_in = mli_layer_in(pc_l);
+    pc_layer = variable::add([variable::multiply([4, s`ml.hid`, pc_in]), variable::multiply([4, s`ml.hid`, s`ml.hid`]), variable::multiply([6, s`ml.hid`])]);
+    repeat::for_each_in_list(g`mlg.dirs`) { pc_di, pc_dir ->
+      pc_n = variable::add([pc_n, pc_layer]);
+    }
+  }
+  pc_n = variable::add([pc_n, variable::multiply([2, variable::add([g`mlg.out`, 1])])]);
+}
+
+// is the model complete? -> s`ml.ready`
+function ml_check_complete() {
+  ck_ok = 1;
+  repeat::for_each_in_list(g`mlg.vecnames`) { ckr_k, ckr_n ->
+    if (not s`${ckr_n}`.exists()) {
+      ck_ok = 0;
+    }
+  }
+  repeat::for_each_in_list(g`mlg.lnnames`) { ckr_k, ckr_n ->
+    if (not s`${ckr_n}`.exists()) {
+      ck_ok = 0;
+    }
+  }
+  repeat::for_each_in_list(g`mlg.rownames`) { ckr_k, ckr_n ->
+    if (not s`${ckr_n}`.exists()) {
+      ck_ok = 0;
+    }
+  }
+  s`ml.ready` = ck_ok;
+}
+
+// ---------------------------------------------------------------------
+// JSON import (format "millennium", see tools/ml_convert.py). Any subset of the keys may be
+// present, so a big model can be imported in several parts.
+// in: io_text            out: io_ok (1/0), io_msg
+// ---------------------------------------------------------------------
+function ml_import_json() {
+  io_ok = 0;
+  io_obj = variable::parse_json(io_text);
+  io_msg = "not a JSON object";
+  if (io_obj.is_type("MAP")) {
+    ml_import_object();
+  }
+}
+
+// in: io_obj (parsed map) -> io_ok, io_msg
+function ml_import_object() {
+  io_cfg = variable::get_map_value(io_obj, "config", 0);
+  if (io_cfg.is_type("MAP")) {
+    ml_import_architecture();
+    ml_import_hyperparameters();
+    ml_rebuild_runtime();
+    if (io_new_arch.equals(1)) {
+      // architecture changed: drop the old weights
+      variable::purge(["ml.L.", "ml.emb", "ml.attn", "ml.head"], "SAVE", "STARTS_WITH");
+    }
+  }
+  ml_import_embedding_and_heads();
+  io_layers = variable::get_map_value(io_obj, "layers", 0);
+  if (io_layers.is_type("MAP")) {
+    io_keys = variable::get_map_keys(io_layers);
+    repeat::for_each_in_list(io_keys) { io_k, io_key ->
+      ml_import_lstm_layer();
+    }
+  }
+  // AdamW moments are not part of the file (same as RNNModelML.load)
+  variable::purge(["mla.", "mlt."], "GAME", "STARTS_WITH");
+  ml_check_complete();
+  io_ok = 1;
+  io_msg = "ok";
+}
+
+// inputSize, hiddenSize, numLayers, bidirectional (io_new_arch = 1 if any changed)
+function ml_import_architecture() {
+  io_new_arch = 0;
+  io_v = variable::get_map_value(io_cfg, "inputSize", s`ml.in`);
+  if (not io_v.equals(s`ml.in`)) {
+    io_new_arch = 1;
+  }
+  s`ml.in` = io_v;
+  io_v = variable::get_map_value(io_cfg, "hiddenSize", s`ml.hid`);
+  if (not io_v.equals(s`ml.hid`)) {
+    io_new_arch = 1;
+  }
+  s`ml.hid` = io_v;
+  io_v = variable::get_map_value(io_cfg, "numLayers", s`ml.layers`);
+  if (not io_v.equals(s`ml.layers`)) {
+    io_new_arch = 1;
+  }
+  s`ml.layers` = io_v;
+  io_v = variable::get_map_value(io_cfg, "bidirectional", s`ml.bi`);
+  if (not io_v.equals(s`ml.bi`)) {
+    io_new_arch = 1;
+  }
+  s`ml.bi` = io_v;
+}
+
+// modes, optimiser settings, step counters, decision threshold
+function ml_import_hyperparameters() {
+  s`ml.im` = variable::clamp(variable::get_map_value(io_cfg, "inputMode", s`ml.im`), 0, 2);
+  s`ml.pm` = variable::clamp(variable::get_map_value(io_cfg, "poolingMode", s`ml.pm`), 0, 3);
+  s`ml.lr` = variable::get_map_value(io_cfg, "learningRate", s`ml.lr`);
+  s`ml.dr` = variable::get_map_value(io_cfg, "dropoutRate", s`ml.dr`);
+  s`ml.rdr` = variable::get_map_value(io_cfg, "recurrentDropoutRate", s`ml.rdr`);
+  s`ml.wd` = variable::get_map_value(io_cfg, "weightDecay", s`ml.wd`);
+  s`ml.gc` = variable::get_map_value(io_cfg, "gradientClip", s`ml.gc`);
+  s`ml.ls` = variable::get_map_value(io_cfg, "labelSmoothing", s`ml.ls`);
+  s`ml.bs` = variable::max([1, variable::get_map_value(io_cfg, "batchSize", s`ml.bs`)]);
+  s`ml.step` = variable::get_map_value(io_cfg, "step", s`ml.step`);
+  s`ml.t` = variable::get_map_value(io_cfg, "optT", s`ml.t`);
+  s`ml.th` = variable::clamp(variable::get_map_value(io_cfg, "decisionThreshold", s`ml.th`), 0, 1);
+}
+
+// embWy / embWp / embB, attnW + attnB, headV + headBias (only the keys present in the file)
+function ml_import_embedding_and_heads() {
+  io_v = variable::get_map_value(io_obj, "embWy", 0);
+  if (io_v.is_type("ARRAY")) {
+    s`ml.embWy` = io_v;
+  }
+  io_v = variable::get_map_value(io_obj, "embWp", 0);
+  if (io_v.is_type("ARRAY")) {
+    s`ml.embWp` = io_v;
+  }
+  io_v = variable::get_map_value(io_obj, "embB", 0);
+  if (io_v.is_type("ARRAY")) {
+    s`ml.embB` = io_v;
+  }
+  io_v = variable::get_map_value(io_obj, "attnW", 0);
+  if (io_v.is_type("ARRAY")) {
+    io_sc = variable::get_map_value(io_obj, "attnB", 0.0);
+    if (io_sc.is_type("ARRAY")) {
+      io_sc = variable::get_list_value(io_sc, 0);
+    }
+    s`ml.attn` = variable::append_list([io_sc], io_v);
+  }
+  io_v = variable::get_map_value(io_obj, "headV", 0);
+  if (io_v.is_type("ARRAY")) {
+    io_sc = variable::get_map_value(io_obj, "headBias", 0.0);
+    if (io_sc.is_type("ARRAY")) {
+      io_sc = variable::get_list_value(io_sc, 0);
+    }
+    s`ml.head` = variable::append_list([io_sc], io_v);
+  }
+}
+
+// one layer-direction "layers.<io_key>": flat Wf/Uf/bf... -> rows [b | W | U], LayerNorm
+function ml_import_lstm_layer() {
+  io_d = variable::convert_text_to_number(io_key, 10);
+  io_l = variable::divide([io_d, 2], "FLOOR");
+  io_in = mli_layer_in(io_l);
+  io_H = s`ml.hid`;
+  io_lay = variable::get_map_value(io_layers, io_key);
+  repeat::for_each_in_list(g`mlg.gates`) { io_gi, io_gt ->
+    ml_import_gate_rows();
+  }
+  s`ml.L.${io_d}.g` = variable::get_map_value(io_lay, "lnGamma");
+  s`ml.L.${io_d}.b` = variable::get_map_value(io_lay, "lnBeta");
+}
+
+// rows of gate io_gt from the flat arrays W<gate>, U<gate>, b<gate>
+function ml_import_gate_rows() {
+  io_W = variable::get_map_value(io_lay, "W${io_gt}");
+  io_U = variable::get_map_value(io_lay, "U${io_gt}");
+  io_b = variable::get_map_value(io_lay, "b${io_gt}");
+  repeat::for_each_in_list(g`mlg.idxH`) { io_nk, io_n ->
+    io_ws = variable::multiply([io_n, io_in]);
+    io_us = variable::multiply([io_n, io_H]);
+    io_row = variable::append_list([variable::get_list_value(io_b, io_n)], mli_slice(io_W, io_ws, variable::add([io_ws, io_in])));
+    io_row = variable::append_list(io_row, mli_slice(io_U, io_us, variable::add([io_us, io_H])));
+    s`ml.L.${io_d}.${io_gt}.${io_n}` = io_row;
+  }
+  ml_yield(variable::multiply([io_H, 6]));
+}
+
+// ---------------------------------------------------------------------
+// JSON export of the whole model -> io_text   (same format as the importer / ml_convert.py)
+// ---------------------------------------------------------------------
+function ml_export_json() {
+  ml_export_header();
+  io_parts.append_value(',"layers":{');
+  io_first = 1;
+  repeat::for_each_in_list(g`mlg.layers`) { io_li, io_l ->
+    io_in = mli_layer_in(io_l);
+    io_e1 = variable::add([io_in, 1]);
+    repeat::for_each_in_list(g`mlg.dirs`) { io_di, io_dir ->
+      io_d = variable::add([variable::multiply([io_l, 2]), io_dir]);
+      ml_export_lstm_layer();
+    }
+  }
+  io_parts.append_value("}}");
+  io_text = variable::join_text(io_parts, "");
+}
+
+// config, embedding, attention and head as JSON fragments -> io_parts
+function ml_export_header() {
+  io_cfg = variable::create_map(["inputSize", "hiddenSize", "numLayers", "bidirectional", "inputMode", "poolingMode", "learningRate", "dropoutRate", "recurrentDropoutRate", "weightDecay", "gradientClip", "labelSmoothing", "batchSize", "step", "optT", "decisionThreshold"], [s`ml.in`, s`ml.hid`, s`ml.layers`, s`ml.bi`, s`ml.im`, s`ml.pm`, s`ml.lr`, s`ml.dr`, s`ml.rdr`, s`ml.wd`, s`ml.gc`, s`ml.ls`, s`ml.bs`, s`ml.step`, s`ml.t`, s`ml.th`]);
+  io_jc = variable::to_json(io_cfg, "FALSE");
+  io_parts = ['{"format":"millennium","version":6,"config":', io_jc];
+  io_parts.append_value([',"embWy":', variable::to_json(s`ml.embWy`, "FALSE"), ',"embWp":', variable::to_json(s`ml.embWp`, "FALSE"), ',"embB":', variable::to_json(s`ml.embB`, "FALSE")]);
+  io_len = variable::get_list_length(s`ml.attn`);
+  io_parts.append_value([',"attnW":', variable::to_json(mli_slice(s`ml.attn`, 1, io_len), "FALSE"), ',"attnB":', variable::to_json([variable::get_list_value(s`ml.attn`, 0)], "FALSE")]);
+  io_parts.append_value([',"headV":', variable::to_json(mli_slice(s`ml.head`, 1, io_len), "FALSE"), ',"headBias":', variable::to_json([variable::get_list_value(s`ml.head`, 0)], "FALSE")]);
+}
+
+// one layer-direction io_d as "<d>":{Wf,Uf,bf,...,lnGamma,lnBeta}
+function ml_export_lstm_layer() {
+  if (io_first.equals(0)) {
+    io_parts.append_value(",");
+  }
+  io_first = 0;
+  io_parts.append_value('"${io_d}":{');
+  repeat::for_each_in_list(g`mlg.gates`) { io_gi, io_gt ->
+    ml_export_gate();
+  }
+  io_parts.append_value(['"lnGamma":', variable::to_json(s`ml.L.${io_d}.g`, "FALSE"), ',"lnBeta":', variable::to_json(s`ml.L.${io_d}.b`, "FALSE"), '}']);
+}
+
+// rows of gate io_gt -> flat W<gate>, U<gate>, b<gate>
+function ml_export_gate() {
+  io_W = [];
+  io_U = [];
+  io_b = [];
+  repeat::for_each_in_list(g`mlg.idxH`) { io_nk, io_n ->
+    io_row = s`ml.L.${io_d}.${io_gt}.${io_n}`;
+    io_b.append_value(variable::get_list_value(io_row, 0));
+    io_W = variable::append_list(io_W, mli_slice(io_row, 1, io_e1));
+    io_U = variable::append_list(io_U, mli_slice(io_row, io_e1, variable::get_list_length(io_row)));
+  }
+  io_parts.append_value(['"W${io_gt}":', variable::to_json(io_W, "FALSE"), ',"U${io_gt}":', variable::to_json(io_U, "FALSE"), ',"b${io_gt}":', variable::to_json(io_b, "FALSE"), ',']);
+  ml_yield(variable::multiply([s`ml.hid`, 10]));
+}
+
+// ---------------------------------------------------------------------
+// Saved models: several models kept in the world's save variables under a name.
+//   s`mlm.list`                 names of the saved models
+//   s`mlm.<name>.cfg`           [in, hid, layers, bi, im, pm, lr, dr, rdr, wd, gc, ls, bs, step, t, th]
+//   s`mlm.<name>.names`         names of the weight vectors of that model
+//   s`mlm.<name>.w.<vector>`    the weight vectors
+// ---------------------------------------------------------------------
+
+// save the current model as sm_name (overwrites a model with the same name)
+function ml_model_save() {
+  if (not s`mlm.list`.exists()) {
+    s`mlm.list` = [];
+  }
+  ml_model_delete_data();
+  s`mlm.${sm_name}.cfg` = [s`ml.in`, s`ml.hid`, s`ml.layers`, s`ml.bi`, s`ml.im`, s`ml.pm`, s`ml.lr`, s`ml.dr`, s`ml.rdr`, s`ml.wd`, s`ml.gc`, s`ml.ls`, s`ml.bs`, s`ml.step`, s`ml.t`, s`ml.th`];
+  sm_all = variable::append_list(g`mlg.vecnames`, g`mlg.lnnames`);
+  sm_all = variable::append_list(sm_all, g`mlg.rownames`);
+  s`mlm.${sm_name}.names` = sm_all;
+  repeat::for_each_in_list(sm_all) { sm_k, sm_v ->
+    s`mlm.${sm_name}.w.${sm_v}` = s`${sm_v}`;
+    ml_yield(4);
+  }
+  if (not s`mlm.list`.list_contains_value(sm_name)) {
+    s`mlm.list`.append_value(sm_name);
+  }
+}
+
+// make the saved model sm_name the current one -> sm_ok (0 if it does not exist)
+function ml_model_load() {
+  sm_ok = 0;
+  if (s`mlm.${sm_name}.cfg`.exists()) {
+    ml_model_load_config();
+    variable::purge(["ml.L.", "ml.emb", "ml.attn", "ml.head"], "SAVE", "STARTS_WITH");
+    repeat::for_each_in_list(s`mlm.${sm_name}.names`) { sm_k, sm_v ->
+      s`${sm_v}` = s`mlm.${sm_name}.w.${sm_v}`;
+      ml_yield(4);
+    }
+    variable::purge(["mla.", "mlt."], "GAME", "STARTS_WITH");
+    ml_check_complete();
+    sm_ok = 1;
+  }
+}
+
+// architecture and hyper-parameters of the saved model sm_name
+function ml_model_load_config() {
+  sm_cfg = s`mlm.${sm_name}.cfg`;
+  s`ml.in` = variable::get_list_value(sm_cfg, 0);
+  s`ml.hid` = variable::get_list_value(sm_cfg, 1);
+  s`ml.layers` = variable::get_list_value(sm_cfg, 2);
+  s`ml.bi` = variable::get_list_value(sm_cfg, 3);
+  s`ml.im` = variable::get_list_value(sm_cfg, 4);
+  s`ml.pm` = variable::get_list_value(sm_cfg, 5);
+  s`ml.lr` = variable::get_list_value(sm_cfg, 6);
+  s`ml.dr` = variable::get_list_value(sm_cfg, 7);
+  s`ml.rdr` = variable::get_list_value(sm_cfg, 8);
+  s`ml.wd` = variable::get_list_value(sm_cfg, 9);
+  s`ml.gc` = variable::get_list_value(sm_cfg, 10);
+  s`ml.ls` = variable::get_list_value(sm_cfg, 11);
+  s`ml.bs` = variable::get_list_value(sm_cfg, 12);
+  s`ml.step` = variable::get_list_value(sm_cfg, 13);
+  s`ml.t` = variable::get_list_value(sm_cfg, 14);
+  s`ml.th` = variable::get_list_value(sm_cfg, 15);
+  ml_rebuild_runtime();
+}
+
+// delete the saved model sm_name
+function ml_model_delete() {
+  ml_model_delete_data();
+  if (s`mlm.list`.exists()) {
+    s`mlm.list` = variable::remove_list_value(s`mlm.list`, sm_name);
+  }
+}
+
+// remove every save variable of the saved model sm_name
+function ml_model_delete_data() {
+  variable::purge(["mlm.${sm_name}."], "SAVE", "STARTS_WITH");
+}

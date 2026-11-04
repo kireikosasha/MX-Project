@@ -1,0 +1,425 @@
+// =====================================================================
+//  ml_net.jc — forward pass: LSTMLayer (+LayerNorm), StackedBiLSTM, pooling, BinaryHead
+//
+//  Weights layout (save scope):
+//    s`ml.L.<d>.<gate>.<n>`  gate row, gate in {f,i,c,o}, n in [0,H):  [ b | W (in_l) | U (H) ]
+//    s`ml.L.<d>.g` / .b      LayerNorm gamma / beta (H)
+//    d = 2*layer + direction (direction 0 = forward in time, 1 = reverse)
+//    s`ml.attn` = [ b | W (out) ],  s`ml.head` = [ bias | V (out) ]
+//  Row layout [b | W | U] and input z = [1 | x | h] give exactly the Java summation order
+//  (sum = b; sum += W*x; sum += U*h).
+// =====================================================================
+import "./ml_base.jc";
+import "./ml_pre.jc";
+
+// elementwise product: vm_a * vm_b -> vm_r
+function ml_vector_multiply() {
+  vm_r = [];
+  repeat::for_each_in_list(vm_a) { vm_k, vm_x ->
+    vm_r.append_value(variable::multiply([vm_x, variable::get_list_value(vm_b, vm_k)]));
+  }
+}
+
+// elementwise sum: va_a + va_b -> va_r
+function ml_vector_add() {
+  va_r = [];
+  repeat::for_each_in_list(va_a) { va_k, va_x ->
+    va_r.append_value(variable::add([va_x, variable::get_list_value(va_b, va_k)]));
+  }
+}
+
+// random keep-mask (inverted dropout): rm_n values, each 1/keep with probability keep, else 0
+function ml_dropout_mask() {
+  rm_keep = variable::subtract([1.0, rm_rate]);
+  rm_inv = variable::divide([1.0, rm_keep]);
+  rm_mask = [];
+  repeat::for_each_in_list(rm_idx) { rm_k, rm_v ->
+    if (variable::random_number(0, 1, "FALSE").less(rm_keep)) {
+      rm_mask.append_value(rm_inv);
+    } else {
+      rm_mask.append_value(0.0);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// LSTMLayer.forward
+// in : lf_d, lf_X (T vectors), lf_rev (0/1), lf_train (0/1), lf_cache (0/1)
+// out: lf_out (T vectors, time order)
+// cache (locals): `fc.<d>.T`, `fc.<d>.um`, `fc.<d>.rm`, and per step s:
+//   `fc.<d>.z.<s>` `fc.<d>.f.<s>` `fc.<d>.i.<s>` `fc.<d>.g.<s>` `fc.<d>.o.<s>`
+//   `fc.<d>.tc.<s>` `fc.<d>.c.<s>` `fc.<d>.xh.<s>` `fc.<d>.inv.<s>`
+// ---------------------------------------------------------------------
+function ml_lstm_forward() {
+  ml_lstm_init_state();
+  repeat::while(lf_s.less(lf_T)) {
+    ml_lstm_step();
+  }
+  ml_lstm_finish();
+}
+
+// zero state, recurrent dropout mask, LayerNorm parameters of layer lf_d
+function ml_lstm_init_state() {
+  lf_T = variable::get_list_length(lf_X);
+  lf_H = s`ml.hid`;
+  lf_h = g`mlg.zerosH`;
+  lf_c = g`mlg.zerosH`;
+  lf_um = 0;
+  lf_rm = [];
+  if (lf_train.equals(1)) {
+    if (s`ml.rdr`.greater(0)) {
+      rm_rate = s`ml.rdr`;
+      rm_idx = g`mlg.idxH`;
+      ml_dropout_mask();
+      lf_rm = rm_mask;
+      lf_um = 1;
+    }
+  }
+  lf_gam = s`ml.L.${lf_d}.g`;
+  lf_bet = s`ml.L.${lf_d}.b`;
+  lf_outS = [];
+  lf_s = 0;
+  lf_last = variable::subtract([lf_T, 1]);
+}
+
+// one time step: input z = [1 | x | h], gates, cell, LayerNorm, cache
+function ml_lstm_step() {
+  if (lf_rev.equals(1)) {
+    lf_t = variable::subtract([lf_last, lf_s]);
+  } else {
+    lf_t = lf_s;
+  }
+  lf_x = variable::get_list_value(lf_X, lf_t);
+  if (lf_um.equals(1)) {
+    vm_a = lf_h;
+    vm_b = lf_rm;
+    ml_vector_multiply();
+    lf_hin = vm_r;
+  } else {
+    lf_hin = lf_h;
+  }
+  lf_z = variable::append_list(g`mlg.one`, lf_x);
+  lf_z = variable::append_list(lf_z, lf_hin);
+  ml_lstm_sigmoid_gates();
+  ml_lstm_candidate_gate();
+  ml_lstm_cell_update();
+  ml_layer_norm_forward();
+  ml_lstm_cache_step();
+  lf_outS.append_value([lf_hn]);
+  lf_h = lf_hn;
+  lf_c = lf_cn;
+  lf_s = variable::add([lf_s, 1]);
+  ml_yield(variable::multiply([lf_H, 50]));
+}
+
+// forget, input and output gates: sigmoid(b + W.x + U.h)
+function ml_lstm_sigmoid_gates() {
+  lf_gf = [];
+  lf_gi = [];
+  lf_go = [];
+  repeat::for_each_in_list(g`mlg.idxH`) { lf_k, lf_n ->
+    lf_gf.append_value(mli_sigm(variable::mathematical_expectation(s`ml.L.${lf_d}.f.${lf_n}`, lf_z)));
+  }
+  repeat::for_each_in_list(g`mlg.idxH`) { lf_k, lf_n ->
+    lf_gi.append_value(mli_sigm(variable::mathematical_expectation(s`ml.L.${lf_d}.i.${lf_n}`, lf_z)));
+  }
+  repeat::for_each_in_list(g`mlg.idxH`) { lf_k, lf_n ->
+    lf_go.append_value(mli_sigm(variable::mathematical_expectation(s`ml.L.${lf_d}.o.${lf_n}`, lf_z)));
+  }
+}
+
+// candidate gate: tanh(clamp(b + W.x + U.h, -50, 50))
+function ml_lstm_candidate_gate() {
+  lf_gg = [];
+  repeat::for_each_in_list(g`mlg.idxH`) { lf_k, lf_n ->
+    lf_a = variable::clamp(variable::mathematical_expectation(s`ml.L.${lf_d}.c.${lf_n}`, lf_z), -50, 50);
+    lf_gg.append_value(mli_tanh(lf_a));
+  }
+}
+
+// c = f * c_prev + i * g ;  pre = o * tanh(c)
+function ml_lstm_cell_update() {
+  lf_cn = [];
+  lf_tc = [];
+  lf_pre = [];
+  repeat::for_each_in_list(lf_gf) { lf_k, lf_fk ->
+    lf_cc = variable::mathematical_expectation([lf_fk, variable::get_list_value(lf_gi, lf_k)], [variable::get_list_value(lf_c, lf_k), variable::get_list_value(lf_gg, lf_k)]);
+    lf_cn.append_value(lf_cc);
+    lf_tk = mli_tanh(lf_cc);
+    lf_tc.append_value(lf_tk);
+    lf_pre.append_value(variable::multiply([variable::get_list_value(lf_go, lf_k), lf_tk]));
+  }
+}
+
+// LayerNorm.forward: h = gamma * (pre - mean) / sqrt(var + 1e-5) + beta
+function ml_layer_norm_forward() {
+  lf_mean = variable::divide([variable::add(lf_pre), lf_H]);
+  lf_dl = [];
+  repeat::for_each_in_list(lf_pre) { lf_k, lf_p ->
+    lf_dl.append_value(variable::subtract([lf_p, lf_mean]));
+  }
+  lf_var = variable::divide([variable::mathematical_expectation(lf_dl, lf_dl), lf_H]);
+  lf_inv = variable::add([lf_var, ML_LN_EPS]);
+  lf_inv = variable::divide([1.0, variable::pow(lf_inv, 0.5)]);
+  lf_xh = [];
+  lf_hn = [];
+  repeat::for_each_in_list(lf_dl) { lf_k, lf_dk ->
+    lf_xk = variable::multiply([lf_dk, lf_inv]);
+    lf_xh.append_value(lf_xk);
+    lf_hn.append_value(variable::mathematical_expectation([variable::get_list_value(lf_gam, lf_k), 1], [lf_xk, variable::get_list_value(lf_bet, lf_k)]));
+  }
+}
+
+// keep what backpropagation needs for step lf_s (training only)
+function ml_lstm_cache_step() {
+  if (lf_cache.equals(1)) {
+    `fc.${lf_d}.z.${lf_s}` = lf_z;
+    `fc.${lf_d}.f.${lf_s}` = lf_gf;
+    `fc.${lf_d}.i.${lf_s}` = lf_gi;
+    `fc.${lf_d}.g.${lf_s}` = lf_gg;
+    `fc.${lf_d}.o.${lf_s}` = lf_go;
+    `fc.${lf_d}.tc.${lf_s}` = lf_tc;
+    `fc.${lf_d}.c.${lf_s}` = lf_cn;
+    `fc.${lf_d}.xh.${lf_s}` = lf_xh;
+    `fc.${lf_d}.inv.${lf_s}` = lf_inv;
+  }
+}
+
+// outputs in time order (+ layer-level cache)
+function ml_lstm_finish() {
+  if (lf_cache.equals(1)) {
+    `fc.${lf_d}.T` = lf_T;
+    `fc.${lf_d}.um` = lf_um;
+    `fc.${lf_d}.rm` = lf_rm;
+    `fc.${lf_d}.rev` = lf_rev;
+  }
+  if (lf_rev.equals(1)) {
+    lf_out = variable::reverse_list(lf_outS);
+  } else {
+    lf_out = lf_outS;
+  }
+}
+
+// ---------------------------------------------------------------------
+// StackedBiLSTM.forward
+// in : en_X, en_train, en_cache        out: en_H (T vectors of size out)
+// cache: en_ud (dropout used), en_dm (dropout mask)
+// ---------------------------------------------------------------------
+function ml_encoder_forward() {
+  en_cur = en_X;
+  en_ud = 0;
+  en_dm = [];
+  if (en_train.equals(1)) {
+    if (s`ml.dr`.greater(0)) {
+      rm_rate = s`ml.dr`;
+      rm_idx = g`mlg.idxOut`;
+      ml_dropout_mask();
+      en_dm = rm_mask;
+      en_ud = 1;
+    }
+  }
+  en_lastl = variable::subtract([s`ml.layers`, 1]);
+  repeat::for_each_in_list(g`mlg.layers`) { en_li, en_l ->
+    ml_encoder_layer_forward();
+  }
+  en_H = en_cur;
+}
+
+// one layer: forward direction, reverse direction, concatenation, dropout   in: en_l, en_cur
+function ml_encoder_layer_forward() {
+  lf_X = en_cur;
+  lf_train = en_train;
+  lf_cache = en_cache;
+  lf_rev = 0;
+  lf_d = variable::multiply([en_l, 2]);
+  ml_lstm_forward();
+  en_fo = lf_out;
+  if (s`ml.bi`.equals(1)) {
+    lf_X = en_cur;
+    lf_rev = 1;
+    lf_d = variable::add([variable::multiply([en_l, 2]), 1]);
+    ml_lstm_forward();
+    en_bo = lf_out;
+    en_out = [];
+    repeat::for_each_in_list(en_fo) { en_t, en_v ->
+      en_out.append_value([variable::append_list(en_v, variable::get_list_value(en_bo, en_t))]);
+    }
+  } else {
+    en_out = en_fo;
+  }
+  if (en_ud.equals(1)) {
+    if (en_l.less(en_lastl)) {
+      ml_encoder_dropout();
+    }
+  }
+  en_cur = en_out;
+}
+
+// dropout between layers: en_out[t] *= en_dm
+function ml_encoder_dropout() {
+  en_tmp = [];
+  repeat::for_each_in_list(en_out) { en_t, en_v ->
+    vm_a = en_v;
+    vm_b = en_dm;
+    ml_vector_multiply();
+    en_tmp.append_value([vm_r]);
+  }
+  en_out = en_tmp;
+}
+
+// ---------------------------------------------------------------------
+// Pooling.forward  (s`ml.pm`: 0 LAST_HIDDEN, 1 MEAN, 2 MAX, 3 ATTENTION)
+// in : po_H (T vectors), po_M (mask)        out: po_v (pooled vector)
+// cache: po_T, po_valid (# valid rows, always a prefix), po_last, po_cnt, po_arg (MAX),
+//        po_a (attention weights), `po.col.<i>` (columns over valid rows)
+// ---------------------------------------------------------------------
+function ml_pool_forward() {
+  po_T = variable::get_list_length(po_H);
+  po_valid = 0;
+  repeat::for_each_in_list(po_M) { po_t, po_m ->
+    if (po_m.greater(0.5)) {
+      po_valid = variable::add([po_valid, 1]);
+    }
+  }
+  if (s`ml.pm`.equals(0)) {
+    ml_pool_last();
+  } else {
+    ml_pool_valid_columns();
+    if (po_valid.equals(0)) {
+      ml_pool_all_masked();
+    } else {
+      if (s`ml.pm`.equals(1)) {
+        ml_pool_mean();
+      } else {
+        if (s`ml.pm`.equals(2)) {
+          ml_pool_max();
+        } else {
+          ml_pool_attention();
+        }
+      }
+    }
+  }
+}
+
+// LAST_HIDDEN: last valid row (or the last row)
+function ml_pool_last() {
+  po_last = variable::subtract([po_T, 1]);
+  if (po_valid.greater(0)) {
+    po_last = variable::subtract([po_valid, 1]);
+  }
+  po_v = variable::get_list_value(po_H, po_last);
+}
+
+// columns of the valid rows
+function ml_pool_valid_columns() {
+  repeat::for_each_in_list(g`mlg.idxOut`) { po_k, po_i ->
+    `po.col.${po_i}` = [];
+  }
+  repeat::for_each_in_list(po_H) { po_t, po_h ->
+    if (po_t.less(po_valid)) {
+      repeat::for_each_in_list(po_h) { po_i, po_x ->
+        `po.col.${po_i}`.append_value(po_x);
+      }
+    }
+  }
+}
+
+// every row masked: pooled = 0 (MaxPooling: -inf -> 0, argmax -1; attention: weights 0)
+function ml_pool_all_masked() {
+  po_v = g`mlg.zerosOut`;
+  po_a = [];
+  po_arg = [];
+  repeat::for_each_in_list(g`mlg.idxOut`) { po_k, po_i ->
+    po_arg.append_value(-1);
+  }
+}
+
+// MEAN_POOLING
+function ml_pool_mean() {
+  po_v = [];
+  repeat::for_each_in_list(g`mlg.idxOut`) { po_k, po_i ->
+    po_v.append_value(variable::divide([variable::add(`po.col.${po_i}`), po_valid]));
+  }
+}
+
+// MAX_POOLING (first index of the maximum, strict >)
+function ml_pool_max() {
+  po_v = [];
+  po_arg = [];
+  repeat::for_each_in_list(g`mlg.idxOut`) { po_k, po_i ->
+    po_mx = variable::max(`po.col.${po_i}`);
+    po_v.append_value(po_mx);
+    po_arg.append_value(variable::get_list_index_of_value(`po.col.${po_i}`, po_mx, "FIRST"));
+  }
+}
+
+// ATTENTION: softmax(b + W.h_t) over valid rows, pooled = sum a_t h_t
+function ml_pool_attention() {
+  po_att = s`ml.attn`;
+  po_sc = [];
+  repeat::for_each_in_list(po_H) { po_t, po_h ->
+    if (po_t.less(po_valid)) {
+      po_sc.append_value(variable::mathematical_expectation(po_att, variable::append_list(g`mlg.one`, po_h)));
+    }
+  }
+  po_max = variable::max(po_sc);
+  po_e = [];
+  repeat::for_each_in_list(po_sc) { po_t, po_s ->
+    po_e.append_value(variable::pow(ML_E, variable::subtract([po_s, po_max])));
+  }
+  po_inv = variable::divide([1.0, variable::add([variable::add(po_e), ML_ATT_EPS])]);
+  po_a = [];
+  repeat::for_each_in_list(po_e) { po_t, po_x ->
+    po_a.append_value(variable::multiply([po_x, po_inv]));
+  }
+  po_v = [];
+  repeat::for_each_in_list(g`mlg.idxOut`) { po_k, po_i ->
+    po_v.append_value(variable::mathematical_expectation(`po.col.${po_i}`, po_a));
+  }
+}
+
+// ---------------------------------------------------------------------
+// forwardCache / forwardProbability
+// in : fw_ys, fw_ps, fw_train, fw_cache
+// out: fw_ok (0 -> sequence too short, prob = 0.5), fw_prob, fw_pooled
+// ---------------------------------------------------------------------
+function ml_forward() {
+  pp_ys = fw_ys;
+  pp_ps = fw_ps;
+  ml_preprocess();
+  fw_T = variable::get_list_length(pp_X);
+  fw_ok = 0;
+  fw_prob = 0.5;
+  if (fw_T.greater_or_equals(2)) {
+    ml_forward_network();
+  }
+}
+
+function ml_forward_network() {
+  fw_M = pp_M;
+  en_X = pp_X;
+  en_train = fw_train;
+  en_cache = fw_cache;
+  ml_encoder_forward();
+  po_H = en_H;
+  po_M = pp_M;
+  ml_pool_forward();
+  fw_pooled = po_v;
+  fw_logit = variable::mathematical_expectation(s`ml.head`, variable::append_list(g`mlg.one`, po_v));
+  fw_prob = mli_sigm500(fw_logit);
+  fw_ok = 1;
+}
+
+// RNNModelML.checkData: ck_ys, ck_ps (yaw/pitch lists) -> ck_prob (0 if fewer than 2 rotations)
+function ml_check_data() {
+  ck_len = variable::min([variable::get_list_length(ck_ys), variable::get_list_length(ck_ps)]);
+  ck_prob = 0;
+  if (ck_len.greater_or_equals(2)) {
+    fw_ys = mli_slice(ck_ys, 0, ck_len);
+    fw_ps = mli_slice(ck_ps, 0, ck_len);
+    fw_train = 0;
+    fw_cache = 0;
+    ml_forward();
+    ck_prob = fw_prob;
+  }
+}

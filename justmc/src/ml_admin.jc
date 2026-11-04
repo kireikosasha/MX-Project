@@ -1,0 +1,477 @@
+// =====================================================================
+//  ml_admin.jc — optional admin layer of the library: chat commands, model download/upload,
+//  background training, self-test.  Not tied to any particular data source.
+//
+//  Call from YOUR events (JustMC allows one handler per event, so the hooks are functions):
+//    event<world_start>         { ml_admin_boot(); }
+//    event<player_join>         { ml_admin_join(); }
+//    event<player_chat>         { ml_admin_chat(); }        // handles messages starting with "~ml"
+//    event<world_web_response>  { ml_admin_web_response(); }
+//    event<world_web_exception> { ml_admin_web_exception(); }
+//
+//  Commands (world owner or players from s`ml.admins`):
+//    ~ml help | info | log
+//    ~ml param info | ~ml param <lr|dr|rdr|wd|gc|ls|th|bs|im|pm> <value>   (alias: ml)
+//    ~ml train <epochs> | ~ml stop
+//    ~ml dataset info|clear|undo
+//    ~ml model reset | import <url> | export <url>
+//    ~ml admin add|remove <name> | ~ml selftest
+// =====================================================================
+import "./millennium.jc";
+import "./ml_selftest_data.jc";
+
+// chat command prefix. Not "!" (on JustMC it sends the message to the global chat),
+// not "." / "#" (intercepted by some clients).
+inline var ML_CMD_PREFIX = "~ml";
+
+
+function ml_admin_boot() {
+  ml_boot();
+  if (not s`ml.admins`.exists()) {
+    s`ml.admins` = [];
+  }
+  g`mlg.imports` = [];
+}
+
+// in: ad_u, ad_name -> ad_ok
+function ml_is_admin() {
+  ad_ok = 0;
+  if (ad_u.equals(value::owner_uuid)) {
+    ad_ok = 1;
+  }
+  if (s`ml.admins`.list_contains_value(ad_name)) {
+    ad_ok = 1;
+  }
+}
+
+function ml_listen_add(la_u: text) {
+  if (not g`mlg.listeners`.list_contains_value(la_u)) {
+    g`mlg.listeners`.append_value(la_u);
+  }
+}
+
+// admins get the training log automatically
+function ml_admin_join() {
+  ad_u = value::uuid;
+  ad_name = value::name;
+  ml_is_admin();
+  if (ad_ok.equals(1)) {
+    ml_listen_add(ad_u);
+    if (s`ml.ready`.equals(0)) {
+      player::message("&9[ML] &cThe model is not loaded. &fUse &e~ml model import <url> &for &e~ml model reset");
+    }
+  }
+}
+
+// event<player_chat>: handles "~ml ..." (sets cm_handled = 1)
+function ml_admin_chat() {
+  cm_handled = 0;
+  cm_msg = value::event_chat_message;
+  if (cm_msg.text_starts_with(ML_CMD_PREFIX)) {
+    cm_handled = 1;
+    world::cancel_event();
+    cm_a = variable::split_text(cm_msg, " ");
+    cm_sub = variable::get_list_value(cm_a, 1, "help");
+    cm_a2 = variable::get_list_value(cm_a, 2, "");
+    cm_a3 = variable::get_list_value(cm_a, 3, "");
+    cm_a4 = variable::get_list_value(cm_a, 4, "");
+    ml_admin_command();
+  }
+}
+
+// in: cm_sub, cm_a2, cm_a3, cm_a4 (texts); the event player is the sender
+function ml_admin_command() {
+  cm_u = value::uuid;
+  ad_u = cm_u;
+  ad_name = value::name;
+  ml_is_admin();
+  if (ad_ok.equals(0)) {
+    player::message("&cNo permission.");
+  } else {
+    ml_admin_dispatch();
+  }
+}
+
+function ml_admin_dispatch() {
+  if (cm_sub.equals("info")) {
+    ml_cmd_info();
+  } elif (cm_sub.equals("log")) {
+    ml_cmd_log_toggle();
+  } elif (cm_sub.equals(["param", "ml"])) {
+    ml_cmd_param();
+  } elif (cm_sub.equals("train")) {
+    ml_cmd_train();
+  } elif (cm_sub.equals("stop")) {
+    ml_cmd_stop();
+  } else {
+    ml_admin_dispatch_model_commands();
+  }
+}
+
+// dataset / model / admin / selftest / help sub-commands
+function ml_admin_dispatch_model_commands() {
+  if (cm_sub.equals("dataset")) {
+    ml_cmd_dataset();
+  } elif (cm_sub.equals("model")) {
+    ml_cmd_model();
+  } elif (cm_sub.equals("admin")) {
+    ml_cmd_admins();
+  } elif (cm_sub.equals("selftest")) {
+    code::start_process("ml_selftest_process", "DONT_COPY", "CURRENT_TARGET", {});
+  } else {
+    ml_cmd_help();
+  }
+}
+
+// ~ml info: model state, number of weights, dataset
+function ml_cmd_info() {
+  ml_count_parameters();
+  ml_dataset_stats();
+  player::message("&9[ML] &fMillennium RNN: ready=${s`ml.ready`}, parameters=${pc_n}, step=${s`ml.step`}, threshold=${s`ml.th`}");
+  player::message("&9[ML] &fdataset=${dsc_n} samples (${dsc_pos} positive), training=${g`mlg.training`}");
+}
+
+// ~ml log: training log on / off for the sender
+function ml_cmd_log_toggle() {
+  if (g`mlg.listeners`.list_contains_value(cm_u)) {
+    g`mlg.listeners` = variable::remove_list_value(g`mlg.listeners`, cm_u);
+    player::message("&9[ML] &fLog &cdisabled");
+  } else {
+    g`mlg.listeners`.append_value(cm_u);
+    player::message("&9[ML] &fLog &aenabled");
+  }
+}
+
+// ~ml stop: stop the training after the current batch
+function ml_cmd_stop() {
+  if (g`mlg.training`.equals(1)) {
+    g`mlg.stop` = 1;
+    player::message("&eStopping after the current batch...");
+  } else {
+    player::message("&cNothing to stop.");
+  }
+}
+
+// ~ml admin add|remove <name> (world owner only)
+function ml_cmd_admins() {
+  if (not cm_u.equals(value::owner_uuid)) {
+    player::message("&cOnly the world owner can manage admins.");
+  } elif (cm_a2.equals("add")) {
+    s`ml.admins`.append_value(cm_a3);
+    player::message("&a${cm_a3} is now an admin.");
+  } elif (cm_a2.equals("remove")) {
+    s`ml.admins` = variable::remove_list_value(s`ml.admins`, cm_a3);
+    player::message("&e${cm_a3} is no longer an admin.");
+  } else {
+    player::message("&7Admins: &f${s`ml.admins`}");
+  }
+}
+
+// ~ml help
+function ml_cmd_help() {
+  player::message("&9[ML] &fMillennium for JustMC — commands:");
+  player::message("&e~ml info &7| &e~ml log &7| &e~ml selftest");
+  player::message("&e~ml param info &7| &e~ml param <lr|dr|rdr|wd|gc|ls|th|bs|im|pm> <value>");
+  player::message("&e~ml train <epochs> &7| &e~ml stop &7| &e~ml dataset info|clear|undo");
+  player::message("&e~ml model reset &7| &e~ml model import <url> &7| &e~ml model export <url>");
+  player::message("&e~ml model save|load|delete <name> &7| &e~ml model list");
+  player::message("&e~ml admin add|remove <name>");
+}
+
+// MLCommand: <param> <value>   (MX syntax "<index> <param> <value>" is accepted too)
+function ml_cmd_param() {
+  if (cm_a2.equals("info")) {
+    ml_count_parameters();
+    player::message("&9[ML] &fready=${s`ml.ready`} in=${s`ml.in`} hid=${s`ml.hid`} layers=${s`ml.layers`} bi=${s`ml.bi`} im=${s`ml.im`} pm=${s`ml.pm`} params=${pc_n}");
+    player::message("&9[ML] &flr=${s`ml.lr`} dr=${s`ml.dr`} rdr=${s`ml.rdr`} wd=${s`ml.wd`} gc=${s`ml.gc`} ls=${s`ml.ls`} th=${s`ml.th`} bs=${s`ml.bs`} step=${s`ml.step`} t=${s`ml.t`}");
+  } else {
+    ml_cmd_param_assign();
+  }
+}
+
+function ml_cmd_param_assign() {
+  mp_p = cm_a2;
+  mp_v = cm_a3;
+  if (not cm_a4.equals("")) {
+    mp_p = cm_a3;
+    mp_v = cm_a4;
+  }
+  mp_num = variable::convert_text_to_number(mp_v, 10);
+  mp_known = 1;
+  if (mp_p.equals(["im", "pm"])) {
+    ml_param_set_mode();
+  } else {
+    ml_param_set_number();
+  }
+  if (mp_known.equals(1)) {
+    player::message("§a[ML] ${mp_p} -> ${mp_v}");
+  }
+  if (mp_known.equals(0)) {
+    player::message("§cUnknown param. Use: lr, dr, rdr, wd, gc, ls, th, bs, im, pm");
+  }
+}
+
+// numeric hyper-parameters: lr, dr, rdr, wd, gc, ls, th, bs
+function ml_param_set_number() {
+  if (mp_p.equals("lr")) {
+    s`ml.lr` = mp_num;
+  } elif (mp_p.equals("dr")) {
+    s`ml.dr` = mp_num;
+  } elif (mp_p.equals("rdr")) {
+    s`ml.rdr` = mp_num;
+  } elif (mp_p.equals("wd")) {
+    s`ml.wd` = mp_num;
+  } elif (mp_p.equals("gc")) {
+    s`ml.gc` = mp_num;
+  } elif (mp_p.equals("ls")) {
+    s`ml.ls` = mp_num;
+  } elif (mp_p.equals("th")) {
+    s`ml.th` = variable::clamp(mp_num, 0, 1);
+  } elif (mp_p.equals("bs")) {
+    s`ml.bs` = variable::max([1, mp_num]);
+  } else {
+    mp_known = 0;
+  }
+}
+
+// im (input mode) and pm (pooling mode) given by name
+function ml_param_set_mode() {
+  mp_up = variable::set_text_case(mp_v, "UPPER");
+  if (mp_p.equals("im")) {
+    mp_i = variable::get_list_index_of_value(["RAW_SEQUENCE", "STATISTICAL_FEATURES", "HYBRID"], mp_up, "FIRST");
+    if (mp_i.less(0)) {
+      mp_known = 2;
+      player::message("&cUse RAW_SEQUENCE, STATISTICAL_FEATURES or HYBRID");
+    } else {
+      s`ml.im` = mp_i;
+    }
+  } else {
+    mp_i = variable::get_list_index_of_value(["LAST_HIDDEN", "MEAN_POOLING", "MAX_POOLING", "ATTENTION"], mp_up, "FIRST");
+    if (mp_i.less(0)) {
+      mp_known = 2;
+      player::message("&cUse LAST_HIDDEN, MEAN_POOLING, MAX_POOLING or ATTENTION");
+    } else {
+      s`ml.pm` = mp_i;
+    }
+  }
+}
+
+// TrainCommand: <epochs>   (MX syntax "<index> <epochs>" is accepted too)
+function ml_cmd_train() {
+  tr_arg = cm_a2;
+  if (not cm_a3.equals("")) {
+    tr_arg = cm_a3;
+  }
+  tr_ep = variable::convert_text_to_number(tr_arg, 10);
+  ml_dataset_stats();
+  if (not variable::number_in_range(tr_ep, 1, 1000, "INCLUDE_ALL")) {
+    player::message("§cInvalid numbers.");
+  } elif (g`mlg.training`.equals(1)) {
+    player::message("§cTraining is already running (~ml stop).");
+  } elif (s`ml.ready`.equals(0)) {
+    player::message("§cModel not found. Use ~ml model import <url> or ~ml model reset");
+  } elif (dsc_n.equals(0)) {
+    player::message("§cDataset is empty.");
+  } else {
+    ml_listen_add(cm_u);
+    player::message("§eStarting training process... This will take a while and run in background.");
+    player::message("§aLoaded ${dsc_n} samples (${dsc_pos} positive, ${variable::subtract([dsc_n, dsc_pos])} negative).");
+    player::message("§eTraining ${tr_ep} epochs...");
+    ml_train_async(tr_ep);
+  }
+}
+
+function ml_cmd_dataset() {
+  if (cm_a2.equals("clear")) {
+    s`ml.ds` = [];
+    player::message("&eDataset cleared.");
+  } elif (cm_a2.equals("undo")) {
+    if (not s`ml.ds`.list_is_empty()) {
+      du_last = variable::subtract([variable::get_list_length(s`ml.ds`), 1]);
+      variable::remove_list_value_at_index(removed_value=du_rm, variable=s`ml.ds`, list=s`ml.ds`, index=du_last);
+    }
+    player::message("&eLast sample removed. Total: ${variable::get_list_length(s`ml.ds`)}");
+  } else {
+    ml_dataset_stats();
+    player::message("&aDataset: ${dsc_n} samples (${dsc_pos} positive, ${variable::subtract([dsc_n, dsc_pos])} negative).");
+  }
+}
+
+function ml_cmd_model() {
+  if (cm_a2.equals("reset")) {
+    if (g`mlg.training`.equals(1)) {
+      player::message("§cTraining is running.");
+    } else {
+      ml_listen_add(cm_u);
+      player::message("§eCreating a fresh model (Xavier + orthogonal init), this takes a while...");
+      code::start_process("ml_reset_process", "DONT_COPY", "NO_TARGET", {});
+    }
+  } elif (cm_a2.equals("import")) {
+    if (cm_a3.equals("")) {
+      player::message("§cUsage: ~ml model import <url>  (JSON, see tools/ml_convert.py)");
+    } else {
+      ml_listen_add(cm_u);
+      g`mlg.imports`.append_value(cm_a3);
+      world::send_web_request(cm_a3, "", {}, "GET", "TEXT_PLAIN");
+      player::message("§eDownloading ${cm_a3} ...");
+    }
+  } elif (cm_a2.equals("export")) {
+    if (cm_a3.equals("")) {
+      player::message("§cUsage: ~ml model export <url>  (the JSON is sent with POST)");
+    } else {
+      ml_listen_add(cm_u);
+      code::start_process("ml_export_process", "DONT_COPY", "NO_TARGET", {"xp_url": cm_a3});
+    }
+  } else {
+    ml_cmd_saved_models();
+  }
+}
+
+// ~ml model save|load|delete <name>, ~ml model list
+function ml_cmd_saved_models() {
+  sm_name = cm_a3;
+  if (cm_a2.equals("list")) {
+    ml_cmd_model_list();
+  } elif (not cm_a2.equals(["save", "load", "delete"])) {
+    player::message("§cUsage: ~ml model reset | import <url> | export <url> | save|load|delete <name> | list");
+  } elif (sm_name.equals("")) {
+    player::message("§cGive the model a name: ~ml model ${cm_a2} <name>");
+  } elif (g`mlg.training`.equals(1)) {
+    player::message("§cTraining is running.");
+  } else {
+    ml_listen_add(cm_u);
+    code::start_process("ml_saved_model_process", "DONT_COPY", "NO_TARGET", {"sp_action": cm_a2, "sm_name": sm_name});
+  }
+}
+
+// ~ml model list: names of the saved models
+function ml_cmd_model_list() {
+  if (not s`mlm.list`.exists()) {
+    s`mlm.list` = [];
+  }
+  if (s`mlm.list`.list_is_empty()) {
+    player::message("&9[ML] &fNo saved models. Save the current one: &e~ml model save <name>");
+  } else {
+    player::message("&9[ML] &fSaved models (${variable::get_list_length(s`mlm.list`)}): &e${variable::join_text(s`mlm.list`, ", ")}");
+  }
+}
+
+process ml_saved_model_process(sp_action, sm_name) {
+  if (sp_action.equals("save")) {
+    ml_model_save();
+    ml_count_parameters();
+    ml_broadcast("§aModel saved as '${sm_name}' (${pc_n} weights).");
+  } elif (sp_action.equals("load")) {
+    ml_model_load();
+    if (sm_ok.equals(1)) {
+      ml_count_parameters();
+      ml_broadcast("§aModel '${sm_name}' loaded (${pc_n} weights, threshold ${s`ml.th`}).");
+    } else {
+      ml_broadcast("§cNo saved model named '${sm_name}'. See ~ml model list");
+    }
+  } else {
+    ml_model_delete();
+    ml_broadcast("§eSaved model '${sm_name}' deleted.");
+  }
+}
+
+process ml_reset_process() {
+  ml_init_fresh();
+  ml_count_parameters();
+  ml_broadcast("§aFresh model created (${pc_n} weights).");
+}
+
+process ml_export_process(xp_url) {
+  ml_export_json();
+  world::send_web_request(xp_url, io_text, {}, "POST", "APPLICATION_JSON");
+  ml_broadcast("§aModel JSON sent to ${xp_url} (${variable::get_text_length(io_text)} chars).");
+}
+
+function ml_admin_web_response() {
+  wr_url = value::url;
+  if (g`mlg.imports`.list_contains_value(wr_url)) {
+    g`mlg.imports` = variable::remove_list_value(g`mlg.imports`, wr_url);
+    wr_code = value::url_response_code;
+    if (wr_code.equals(200)) {
+      code::start_process("ml_import_process", "DONT_COPY", "NO_TARGET", {"ip_text": value::url_response, "ip_url": wr_url});
+    } else {
+      ml_warn("Import failed: HTTP ${wr_code} for ${wr_url}");
+    }
+  }
+}
+
+function ml_admin_web_exception() {
+  we_url = value::url;
+  if (g`mlg.imports`.list_contains_value(we_url)) {
+    g`mlg.imports` = variable::remove_list_value(g`mlg.imports`, we_url);
+    ml_warn("Import failed (web exception) for ${we_url}");
+  }
+}
+
+process ml_import_process(ip_text, ip_url) {
+  io_text = ip_text;
+  ml_import_json();
+  if (io_ok.equals(1)) {
+    ml_count_parameters();
+    ml_log("Imported ${ip_url} -> ready=${s`ml.ready`}, parameters=${pc_n}");
+  } else {
+    ml_warn("Bad model file ${ip_url}: ${io_msg}");
+  }
+}
+
+// ~ml selftest — checks the JustMC semantics this port relies on + a reference inference
+process ml_selftest_process() {
+  ml_selftest_semantics();
+  player::message("&9[selftest] &fsemantics ok: ${st_ok} &7(trim_off=${g`mlg.trim_off`})");
+  if (s`ml.ready`.equals(1)) {
+    ml_selftest_sequence();
+    ck_ys = st_ys;
+    ck_ps = st_ps;
+    controller::measure_time(st_ms, "MILLISECONDS") {
+      ml_check_data();
+    }
+    player::message("&9[selftest] &fRNN probability: &e${ck_prob} &7(${st_ms} ms)");
+    player::message("&9[selftest] &fexpected for the original quark-e weights: &e${ML_ST_EXPECTED}");
+  }
+}
+
+// checks of the JustMC behaviour the library relies on -> st_ok
+function ml_selftest_semantics() {
+  st_ok = 1;
+  st_v = variable::get_list_value([5, 6, 7], 0);
+  if (not st_v.equals(5)) {
+    st_ok = 0;
+    player::message("&c[selftest] list index base is not 0 (got ${st_v})");
+  }
+  st_v = variable::mathematical_expectation([1, 2, 3], [4, 5, 6]);
+  if (not st_v.equals(32)) {
+    st_ok = 0;
+    player::message("&c[selftest] mathematical_expectation is not a dot product (got ${st_v}, expected 32)");
+  }
+  st_v = variable::mathematical_expectation([1, -2], [-3, 0.5]);
+  if (not st_v.equals(-4)) {
+    st_ok = 0;
+    player::message("&c[selftest] mathematical_expectation rejects negative weights (got ${st_v}, expected -4)");
+  }
+  st_v = variable::bitwise_operation(5, 3, "XOR");
+  if (not st_v.equals(6)) {
+    st_ok = 0;
+    player::message("&c[selftest] XOR(5,3) = ${st_v}");
+  }
+  st_a = variable::get_list_length([1, 2, 3, 4, 5, 6, 7]);
+  st_v = variable::divide([st_a, 2], "FLOOR");
+  if (not st_v.equals(3)) {
+    st_ok = 0;
+    player::message("&c[selftest] FLOOR(7/2) = ${st_v}");
+  }
+  st_v = variable::log(8, 2);
+  if (not variable::number_in_range(st_v, 2.9999999, 3.0000001, "INCLUDE_ALL")) {
+    st_ok = 0;
+    player::message("&c[selftest] log2(8) = ${st_v}");
+  }
+  st_v = variable::get_list_length(mli_slice([1, 2, 3, 4], 1, 3));
+  if (not st_v.equals(2)) {
+    st_ok = 0;
+    player::message("&c[selftest] slice length ${st_v} (trim_off=${g`mlg.trim_off`})");
+  }
+}

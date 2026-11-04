@@ -1,0 +1,808 @@
+// =====================================================================
+//  ml_train.jc — RNNModelML.trainEpochs protocol (split 80/20, per-epoch validation,
+//  threshold auto-selection, best checkpoint, final-fit on the full dataset)
+//
+//  Dataset sample = [channelA, channelB, label]   (label 1 = positive class)
+//  Threshold metrics are lists:  [thr, acc, precision, recall, f1, fpr, tp, tn, fp, fn]
+//
+//  NOTE: no code::return_function / stop_repeat / skip_iteration in this library — JMCC splits
+//  long functions into helper functions ("lines"), and an early exit inside a helper would only
+//  leave the helper. Decisions are taken with flags and nested blocks instead.
+// =====================================================================
+import "./ml_base.jc";
+import "./ml_net.jc";
+import "./ml_backward.jc";
+
+inline var TM_THR = 0;
+inline var TM_ACC = 1;
+inline var TM_PREC = 2;
+inline var TM_REC = 3;
+inline var TM_F1 = 4;
+inline var TM_FPR = 5;
+inline var TM_TP = 6;
+inline var TM_TN = 7;
+inline var TM_FP = 8;
+inline var TM_FN = 9;
+
+// fillThresholdMetrics: in fm_thr, fm_tp, fm_tn, fm_fp, fm_fn, fm_pos, fm_neg -> fm_res
+function ml_threshold_metrics() {
+  fm_total = variable::add([fm_pos, fm_neg]);
+  fm_acc = 0;
+  if (fm_total.greater(0)) {
+    fm_acc = variable::multiply([variable::divide([variable::add([fm_tp, fm_tn]), fm_total]), 100.0]);
+  }
+  fm_prec = 0;
+  fm_pp = variable::add([fm_tp, fm_fp]);
+  if (fm_pp.greater(0)) {
+    fm_prec = variable::divide([fm_tp, fm_pp]);
+  }
+  fm_rec = 0;
+  if (fm_pos.greater(0)) {
+    fm_rec = variable::divide([fm_tp, fm_pos]);
+  }
+  fm_f1 = 0;
+  fm_pr = variable::add([fm_prec, fm_rec]);
+  if (not fm_pr.equals(0)) {
+    fm_f1 = variable::divide([variable::multiply([2.0, fm_prec, fm_rec]), fm_pr]);
+  }
+  fm_fpr = 0;
+  if (fm_neg.greater(0)) {
+    fm_fpr = variable::divide([fm_fp, fm_neg]);
+  }
+  fm_res = [fm_thr, fm_acc, fm_prec, fm_rec, fm_f1, fm_fpr, fm_tp, fm_tn, fm_fp, fm_fn];
+}
+
+// compare helper: c > b + eps -> 1 ; c < b - eps -> -1 ; else 0       in: cm_c, cm_b, cm_eps -> cm_r
+function ml_compare_with_tolerance() {
+  cm_r = 0;
+  if (cm_c.greater(variable::add([cm_b, cm_eps]))) {
+    cm_r = 1;
+  } else {
+    if (cm_c.less(variable::subtract([cm_b, cm_eps]))) {
+      cm_r = -1;
+    }
+  }
+}
+
+// "higher is better" step of the comparison chain: decides bt_r if not decided yet
+function ml_decide_higher_wins() {
+  if (bt_r.equals(-1)) {
+    ml_compare_with_tolerance();
+    if (cm_r.equals(1)) {
+      bt_r = 1;
+    }
+    if (cm_r.equals(-1)) {
+      bt_r = 0;
+    }
+  }
+}
+
+// "lower is better" step of the comparison chain
+function ml_decide_lower_wins() {
+  if (bt_r.equals(-1)) {
+    ml_compare_with_tolerance();
+    if (cm_r.equals(-1)) {
+      bt_r = 1;
+    }
+    if (cm_r.equals(1)) {
+      bt_r = 0;
+    }
+  }
+}
+
+// isBetterThresholdCandidate (bt_mode 0) / isBetterCheckpoint (bt_mode 1)
+// in: bt_c, bt_b (metric lists, bt_b = [] means null), bt_cpr, bt_bpr, bt_croc, bt_broc, bt_closs, bt_bloss
+// out: bt_r (1 / 0)
+function ml_is_better() {
+  bt_r = -1;
+  cm_eps = ML_TIE;
+  if (bt_b.list_is_empty()) {
+    bt_r = 1;
+  } else {
+    ml_better_by_recall_floor();
+    ml_better_by_rates();
+    if (bt_mode.equals(0)) {
+      cm_c = bt_cr;
+      cm_b = bt_br;
+      ml_decide_higher_wins();
+    } else {
+      ml_better_by_curves_and_loss();
+    }
+    ml_better_by_threshold();
+  }
+}
+
+// candidates that reach the minimum recall (0.75) win; below it the higher recall wins
+function ml_better_by_recall_floor() {
+  bt_cr = variable::get_list_value(bt_c, TM_REC);
+  bt_br = variable::get_list_value(bt_b, TM_REC);
+  bt_cm = 0;
+  if (bt_cr.greater_or_equals(ML_MIN_RECALL)) {
+    bt_cm = 1;
+  }
+  bt_bm = 0;
+  if (bt_br.greater_or_equals(ML_MIN_RECALL)) {
+    bt_bm = 1;
+  }
+  if (not bt_cm.equals(bt_bm)) {
+    bt_r = bt_cm;
+  }
+  if (bt_cm.equals(0)) {
+    cm_c = bt_cr;
+    cm_b = bt_br;
+    ml_decide_higher_wins();
+  }
+}
+
+// then lower FPR, higher precision, higher F1
+function ml_better_by_rates() {
+  cm_c = variable::get_list_value(bt_c, TM_FPR);
+  cm_b = variable::get_list_value(bt_b, TM_FPR);
+  ml_decide_lower_wins();
+  cm_c = variable::get_list_value(bt_c, TM_PREC);
+  cm_b = variable::get_list_value(bt_b, TM_PREC);
+  ml_decide_higher_wins();
+  cm_c = variable::get_list_value(bt_c, TM_F1);
+  cm_b = variable::get_list_value(bt_b, TM_F1);
+  ml_decide_higher_wins();
+}
+
+// checkpoints only: higher PR-AUC, higher ROC-AUC, lower validation loss
+function ml_better_by_curves_and_loss() {
+  cm_c = bt_cpr;
+  cm_b = bt_bpr;
+  ml_decide_higher_wins();
+  cm_c = bt_croc;
+  cm_b = bt_broc;
+  ml_decide_higher_wins();
+  cm_c = bt_closs;
+  cm_b = bt_bloss;
+  ml_decide_lower_wins();
+}
+
+// last tie-break: the higher threshold
+function ml_better_by_threshold() {
+  if (bt_r.equals(-1)) {
+    cm_c = variable::get_list_value(bt_c, TM_THR);
+    cm_b = variable::get_list_value(bt_b, TM_THR);
+    ml_compare_with_tolerance();
+    bt_r = 0;
+    if (cm_r.equals(1)) {
+      bt_r = 1;
+    }
+  }
+}
+
+// evaluateThreshold(pairs, th): in et_pos, et_neg (probabilities by label), et_th -> fm_res
+function ml_evaluate_threshold() {
+  fm_thr = variable::clamp(et_th, 0, 1);
+  fm_tp = 0;
+  fm_fp = 0;
+  repeat::for_each_in_list(et_pos) { et_k, et_p ->
+    if (et_p.greater_or_equals(fm_thr)) {
+      fm_tp = variable::add([fm_tp, 1]);
+    }
+  }
+  repeat::for_each_in_list(et_neg) { et_k, et_p ->
+    if (et_p.greater_or_equals(fm_thr)) {
+      fm_fp = variable::add([fm_fp, 1]);
+    }
+  }
+  fm_pos = variable::get_list_length(et_pos);
+  fm_neg = variable::get_list_length(et_neg);
+  fm_fn = variable::subtract([fm_pos, fm_tp]);
+  fm_tn = variable::subtract([fm_neg, fm_fp]);
+  ml_threshold_metrics();
+}
+
+// ---------------------------------------------------------------------
+// group iteration over two sorted lists (positives / negatives), used by the threshold
+// selection, ROC-AUC and PR-AUC.   in: gr_P, gr_N (sorted the same way), gr_np, gr_nn,
+// gr_desc (1 = descending order)   state: gr_ip, gr_in
+// ml_score_group_next -> gr_has (0 = finished), gr_score, gr_gp (#pos == score), gr_gn (#neg == score)
+// ---------------------------------------------------------------------
+function ml_score_group_next() {
+  ml_score_group_pick();
+  gr_gp = 0;
+  gr_gn = 0;
+  if (gr_has.equals(1)) {
+    ml_score_group_take();
+  }
+}
+
+// next score: the larger (descending) or smaller (ascending) of the two list heads -> gr_score
+function ml_score_group_pick() {
+  gr_has = 0;
+  if (gr_ip.less(gr_np)) {
+    gr_score = variable::get_list_value(gr_P, gr_ip);
+    gr_has = 1;
+  }
+  if (gr_in.less(gr_nn)) {
+    gr_sn = variable::get_list_value(gr_N, gr_in);
+    if (gr_has.equals(0)) {
+      gr_score = gr_sn;
+      gr_has = 1;
+    } else {
+      if (gr_desc.equals(1)) {
+        if (gr_sn.greater(gr_score)) {
+          gr_score = gr_sn;
+        }
+      } else {
+        if (gr_sn.less(gr_score)) {
+          gr_score = gr_sn;
+        }
+      }
+    }
+  }
+}
+
+// consume every positive / negative equal to gr_score -> gr_gp, gr_gn
+function ml_score_group_take() {
+  gr_run = 1;
+  repeat::while(gr_run.equals(1)) {
+    gr_run = 0;
+    if (gr_ip.less(gr_np)) {
+      gr_x = variable::get_list_value(gr_P, gr_ip);
+      if (gr_x.equals(gr_score)) {
+        gr_gp = variable::add([gr_gp, 1]);
+        gr_ip = variable::add([gr_ip, 1]);
+        gr_run = 1;
+      }
+    }
+  }
+  gr_run = 1;
+  repeat::while(gr_run.equals(1)) {
+    gr_run = 0;
+    if (gr_in.less(gr_nn)) {
+      gr_x = variable::get_list_value(gr_N, gr_in);
+      if (gr_x.equals(gr_score)) {
+        gr_gn = variable::add([gr_gn, 1]);
+        gr_in = variable::add([gr_in, 1]);
+        gr_run = 1;
+      }
+    }
+  }
+}
+
+function ml_score_group_start() {
+  gr_np = variable::get_list_length(gr_P);
+  gr_nn = variable::get_list_length(gr_N);
+  gr_ip = 0;
+  gr_in = 0;
+}
+
+// selectBestThreshold(pairs, fallback): in et_pos, et_neg, et_th -> sb_best
+function ml_select_threshold() {
+  ml_evaluate_threshold();
+  sb_best = fm_res;
+  gr_P = variable::sort_list(et_pos, "DESCENDING");
+  gr_N = variable::sort_list(et_neg, "DESCENDING");
+  gr_desc = 1;
+  ml_score_group_start();
+  sb_tp = 0;
+  sb_fp = 0;
+  ml_score_group_next();
+  repeat::while(gr_has.equals(1)) {
+    sb_tp = variable::add([sb_tp, gr_gp]);
+    sb_fp = variable::add([sb_fp, gr_gn]);
+    fm_pos = gr_np;
+    fm_neg = gr_nn;
+    fm_thr = gr_score;
+    fm_tp = sb_tp;
+    fm_fp = sb_fp;
+    fm_fn = variable::subtract([gr_np, sb_tp]);
+    fm_tn = variable::subtract([gr_nn, sb_fp]);
+    ml_threshold_metrics();
+    bt_c = fm_res;
+    bt_b = sb_best;
+    bt_mode = 0;
+    ml_is_better();
+    if (bt_r.equals(1)) {
+      sb_best = fm_res;
+    }
+    ml_score_group_next();
+  }
+}
+
+// rocAuc / prAuc  in: et_pos, et_neg -> ra_roc, ra_pr
+function ml_curve_metrics() {
+  ra_roc = 0;
+  ra_pr = 0;
+  ra_np = variable::get_list_length(et_pos);
+  ra_nn = variable::get_list_length(et_neg);
+  if (ra_np.greater(0)) {
+    if (ra_nn.greater(0)) {
+      ml_roc_auc();
+    }
+    ml_pr_auc();
+  }
+}
+
+// ascending order, average ranks for ties
+function ml_roc_auc() {
+  gr_P = variable::sort_list(et_pos, "ASCENDING");
+  gr_N = variable::sort_list(et_neg, "ASCENDING");
+  gr_desc = 0;
+  ml_score_group_start();
+  ra_rank = 0;
+  ra_sum = 0;
+  ml_score_group_next();
+  repeat::while(gr_has.equals(1)) {
+    ra_cnt = variable::add([gr_gp, gr_gn]);
+    ra_lo = variable::add([ra_rank, 1]);
+    ra_hi = variable::add([ra_rank, ra_cnt]);
+    ra_avg = variable::multiply([variable::add([ra_lo, ra_hi]), 0.5]);
+    ra_sum = variable::add([ra_sum, variable::multiply([ra_avg, gr_gp])]);
+    ra_rank = ra_hi;
+    ml_score_group_next();
+  }
+  ra_den = variable::multiply([ra_np, ra_nn]);
+  ra_sub = variable::multiply([ra_np, variable::add([ra_np, 1]), 0.5]);
+  ra_roc = variable::divide([variable::subtract([ra_sum, ra_sub]), ra_den]);
+  ra_roc = variable::clamp(ra_roc, 0, 1);
+}
+
+// descending order, trapezoid over (recall, precision)
+function ml_pr_auc() {
+  gr_P = variable::sort_list(et_pos, "DESCENDING");
+  gr_N = variable::sort_list(et_neg, "DESCENDING");
+  gr_desc = 1;
+  ml_score_group_start();
+  ra_tp = 0;
+  ra_fp = 0;
+  ra_prevR = 0;
+  ra_prevP = 1.0;
+  ml_score_group_next();
+  repeat::while(gr_has.equals(1)) {
+    ra_tp = variable::add([ra_tp, gr_gp]);
+    ra_fp = variable::add([ra_fp, gr_gn]);
+    ra_rc = variable::divide([ra_tp, ra_np]);
+    ra_pc = variable::divide([ra_tp, variable::add([ra_tp, ra_fp])]);
+    ra_pr = variable::add([ra_pr, variable::multiply([variable::subtract([ra_rc, ra_prevR]), variable::add([ra_pc, ra_prevP]), 0.5])]);
+    ra_prevR = ra_rc;
+    ra_prevP = ra_pc;
+    ml_score_group_next();
+  }
+  ra_pr = variable::clamp(ra_pr, 0, 1);
+}
+
+// evaluateDataset(set, th) — forwardProbability on the FULL samples
+// in: ev_set, ev_th   out: ev_loss, ev_acc, ev_used, ev_skip, ev_pos, ev_neg, ev_tp, ev_tn, ev_fp, ev_fn
+function ml_evaluate_dataset() {
+  ev_lsum = 0;
+  ev_used = 0;
+  ev_skip = 0;
+  ev_pos = [];
+  ev_neg = [];
+  ev_tp = 0;
+  ev_tn = 0;
+  ev_fp = 0;
+  ev_fn = 0;
+  ev_thc = variable::clamp(ev_th, 0, 1);
+  repeat::for_each_in_list(ev_set) { ev_k, ev_smp ->
+    if (g`mlg.stop`.equals(0)) {
+      ml_evaluate_sample();
+    }
+  }
+  ev_loss = 0;
+  ev_acc = 0;
+  if (ev_used.greater(0)) {
+    ev_loss = variable::divide([ev_lsum, ev_used]);
+    ev_acc = variable::multiply([variable::divide([variable::add([ev_tp, ev_tn]), ev_used]), 100.0]);
+  }
+}
+
+// one sample of evaluateDataset   in: ev_smp
+function ml_evaluate_sample() {
+  ev_ys = variable::get_list_value(ev_smp, 0);
+  ev_ps = variable::get_list_value(ev_smp, 1);
+  ev_len = variable::min([variable::get_list_length(ev_ys), variable::get_list_length(ev_ps)]);
+  if (ev_len.less(2)) {
+    ev_skip = variable::add([ev_skip, 1]);
+  } else {
+    ev_y = variable::get_list_value(ev_smp, 2);
+    fw_ys = mli_slice(ev_ys, 0, ev_len);
+    fw_ps = mli_slice(ev_ps, 0, ev_len);
+    fw_train = 0;
+    fw_cache = 0;
+    ml_forward();
+    ev_p = fw_prob;
+    if (not variable::number_in_range(ev_p, 0, 1, "INCLUDE_ALL")) {
+      ev_skip = variable::add([ev_skip, 1]);
+    } else {
+      ml_evaluate_count_prediction();
+    }
+  }
+}
+
+function ml_evaluate_count_prediction() {
+  ev_p = variable::clamp(ev_p, ML_P_MIN, ML_P_MAX);
+  ev_l1 = variable::log(ev_p, ML_E);
+  ev_l0 = variable::log(variable::subtract([1.0, ev_p]), ML_E);
+  ev_ce = variable::mathematical_expectation([ev_y, variable::subtract([1.0, ev_y])], [ev_l1, ev_l0]);
+  ev_lsum = variable::subtract([ev_lsum, ev_ce]);
+  if (ev_y.greater_or_equals(0.5)) {
+    ev_pos.append_value(ev_p);
+    if (ev_p.greater_or_equals(ev_thc)) {
+      ev_tp = variable::add([ev_tp, 1]);
+    } else {
+      ev_fn = variable::add([ev_fn, 1]);
+    }
+  } else {
+    ev_neg.append_value(ev_p);
+    if (ev_p.greater_or_equals(ev_thc)) {
+      ev_fp = variable::add([ev_fp, 1]);
+    } else {
+      ev_tn = variable::add([ev_tn, 1]);
+    }
+  }
+  ev_used = variable::add([ev_used, 1]);
+}
+
+// trainOneEpoch(dataset, bs, labelSmoothing): in/out oe_set (shuffled in place)
+function ml_train_one_epoch() {
+  if (not oe_set.list_is_empty()) {
+    oe_set = variable::randomize_list_order(oe_set);
+    oe_bs = variable::max([1, s`ml.bs`]);
+    oe_ls = s`ml.ls`;
+    oe_1ls = variable::subtract([1.0, oe_ls]);
+    tb_batch = [];
+    repeat::for_each_in_list(oe_set) { oe_k, oe_smp ->
+      if (g`mlg.stop`.equals(0)) {
+        ml_epoch_add_sample_chunks();
+      }
+    }
+    if (not tb_batch.list_is_empty()) {
+      if (g`mlg.stop`.equals(0)) {
+        ml_train_batch();
+        g`mlg.batches` = variable::add([g`mlg.batches`, 1]);
+      }
+      tb_batch = [];
+    }
+  }
+}
+
+// chunks of 150 of one sample -> batch   in: oe_smp
+function ml_epoch_add_sample_chunks() {
+  oe_y = variable::get_list_value(oe_smp, 2);
+  if (oe_ls.greater(0)) {
+    oe_y = variable::mathematical_expectation([oe_y, 0.5], [oe_1ls, oe_ls]);
+  }
+  oe_ys = variable::get_list_value(oe_smp, 0);
+  oe_ps = variable::get_list_value(oe_smp, 1);
+  oe_len = variable::min([variable::get_list_length(oe_ys), variable::get_list_length(oe_ps)]);
+  oe_i = 0;
+  if (oe_len.less(2)) {
+    oe_i = oe_len;
+  }
+  repeat::while(oe_i.less(oe_len)) {
+    oe_end = variable::min([oe_len, variable::add([oe_i, ML_CHUNK])]);
+    oe_cl = variable::subtract([oe_end, oe_i]);
+    if (oe_cl.greater_or_equals(2)) {
+      tb_batch.append_value([[mli_slice(oe_ys, oe_i, oe_end), mli_slice(oe_ps, oe_i, oe_end), oe_y]]);
+      oe_bl = variable::get_list_length(tb_batch);
+      if (oe_bl.greater_or_equals(oe_bs)) {
+        ml_train_batch();
+        tb_batch = [];
+        g`mlg.batches` = variable::add([g`mlg.batches`, 1]);
+      }
+    }
+    oe_i = variable::add([oe_i, ML_CHUNK]);
+  }
+}
+
+// ---------------------------------------------------------------------
+// snapshots (captureTrainingSnapshot / restoreTrainingSnapshot) in game scope
+// in: sn_tag
+// ---------------------------------------------------------------------
+function ml_snapshot() {
+  g`mls.${sn_tag}.step` = s`ml.step`;
+  g`mls.${sn_tag}.t` = s`ml.t`;
+  g`mls.${sn_tag}.th` = s`ml.th`;
+  sn_all = variable::append_list(g`mlg.vecnames`, g`mlg.lnnames`);
+  sn_all = variable::append_list(sn_all, g`mlg.rownames`);
+  repeat::for_each_in_list(sn_all) { sn_k, sn_n ->
+    g`mls.${sn_tag}.w.${sn_n}` = s`${sn_n}`;
+    if (g`mla.m.${sn_n}`.exists()) {
+      g`mls.${sn_tag}.m.${sn_n}` = g`mla.m.${sn_n}`;
+      g`mls.${sn_tag}.v.${sn_n}` = g`mla.v.${sn_n}`;
+    } else {
+      variable::purge(["mls.${sn_tag}.m.${sn_n}", "mls.${sn_tag}.v.${sn_n}"], "GAME", "EQUALS");
+    }
+    ml_yield(8);
+  }
+}
+
+function ml_restore() {
+  s`ml.step` = g`mls.${sn_tag}.step`;
+  s`ml.t` = g`mls.${sn_tag}.t`;
+  s`ml.th` = g`mls.${sn_tag}.th`;
+  sn_all = variable::append_list(g`mlg.vecnames`, g`mlg.lnnames`);
+  sn_all = variable::append_list(sn_all, g`mlg.rownames`);
+  repeat::for_each_in_list(sn_all) { sn_k, sn_n ->
+    s`${sn_n}` = g`mls.${sn_tag}.w.${sn_n}`;
+    if (g`mls.${sn_tag}.m.${sn_n}`.exists()) {
+      g`mla.m.${sn_n}` = g`mls.${sn_tag}.m.${sn_n}`;
+      g`mla.v.${sn_n}` = g`mls.${sn_tag}.v.${sn_n}`;
+    } else {
+      variable::purge(["mla.m.${sn_n}", "mla.v.${sn_n}"], "GAME", "EQUALS");
+    }
+    ml_yield(8);
+  }
+  ml_build_transposed_weights();
+}
+
+function ml_snapshot_delete() {
+  variable::purge(["mls.${sn_tag}."], "GAME", "STARTS_WITH");
+}
+
+// ---------------------------------------------------------------------
+// RNNModelML.trainEpochs(dataset, epochs)       in: te_data, te_epochs
+// ---------------------------------------------------------------------
+function ml_train_epochs() {
+  if (not te_data.list_is_empty()) {
+    if (te_epochs.greater(0)) {
+      ml_train_epochs_run();
+    }
+  }
+}
+
+function ml_train_epochs_run() {
+  g`mlg.batches` = 0;
+  ml_build_transposed_weights();
+  te_th0 = s`ml.th`;
+  sn_tag = "init";
+  ml_snapshot();
+  te_bestEpoch = -1;
+  te_bestPr = -10000000000.0;
+  te_bestRoc = 0;
+  te_bestTm = [];
+  te_bestLoss = 10000000000.0;
+  te_hasBest = 0;
+  ml_split_dataset();
+  te_e = 0;
+  repeat::while(te_e.less(te_epochs)) {
+    ml_train_epoch();
+    te_e = variable::add([te_e, 1]);
+    if (g`mlg.stop`.equals(1)) {
+      te_e = te_epochs;
+    }
+  }
+  if (g`mlg.stop`.equals(1)) {
+    ml_train_abort();
+  } else {
+    if (te_hasBest.equals(1)) {
+      ml_final_fit();
+    } else {
+      s`ml.th` = te_th0;
+    }
+  }
+  ml_train_cleanup();
+}
+
+// shuffle and split the dataset 80 / 20 -> te_train, te_valid
+function ml_split_dataset() {
+  te_sh = variable::randomize_list_order(te_data);
+  te_total = variable::get_list_length(te_sh);
+  if (te_total.equals(1)) {
+    te_split = 1;
+  } else {
+    te_split = variable::divide([variable::multiply([te_total, 0.8]), 1], "FLOOR");
+    te_split = variable::clamp(te_split, 1, variable::subtract([te_total, 1]));
+  }
+  te_train = mli_slice(te_sh, 0, te_split);
+  te_valid = [];
+  if (te_split.less(te_total)) {
+    te_valid = mli_slice(te_sh, te_split, te_total);
+  }
+  ml_log("Dataset split: ${variable::get_list_length(te_train)} training samples, ${variable::get_list_length(te_valid)} validation samples.");
+}
+
+// one epoch of the main loop: train, evaluate, select threshold, keep the best checkpoint
+function ml_train_epoch() {
+  oe_set = te_train;
+  ml_train_one_epoch();
+  te_train = oe_set;
+  if (g`mlg.stop`.equals(0)) {
+    ml_epoch_validate();
+    te_ep1 = variable::add([te_e, 1]);
+    ml_epoch_log();
+    ml_epoch_keep_best();
+  }
+}
+
+// metrics on train and validation, threshold selection, ROC / PR AUC
+function ml_epoch_validate() {
+    ev_set = te_train;
+    ev_th = te_th0;
+    ml_evaluate_dataset();
+    te_trLoss = ev_loss;
+    te_trAcc = ev_acc;
+    te_trSkip = ev_skip;
+    ev_set = te_valid;
+    ev_th = te_th0;
+    ml_evaluate_dataset();
+    te_vaLoss = ev_loss;
+    et_pos = ev_pos;
+    et_neg = ev_neg;
+    et_th = te_th0;
+    ml_select_threshold();
+    te_tm = sb_best;
+    ml_curve_metrics();
+}
+
+// keep the checkpoint if it is better than the best one so far
+function ml_epoch_keep_best() {
+    bt_c = te_tm;
+    bt_b = te_bestTm;
+    bt_mode = 1;
+    bt_cpr = ra_pr;
+    bt_bpr = te_bestPr;
+    bt_croc = ra_roc;
+    bt_broc = te_bestRoc;
+    bt_closs = te_vaLoss;
+    bt_bloss = te_bestLoss;
+    ml_is_better();
+    if (bt_r.equals(1)) {
+      s`ml.th` = variable::get_list_value(te_tm, TM_THR);
+      sn_tag = "best";
+      ml_snapshot();
+      te_hasBest = 1;
+      te_bestEpoch = te_ep1;
+      te_bestPr = ra_pr;
+      te_bestRoc = ra_roc;
+      te_bestTm = te_tm;
+      te_bestLoss = te_vaLoss;
+      ml_log("Best checkpoint -> epoch ${te_bestEpoch} selected (thr: ${mli_f2(variable::get_list_value(te_tm, TM_THR))} | Precision: ${mli_f4(variable::get_list_value(te_tm, TM_PREC))} | Recall: ${mli_f4(variable::get_list_value(te_tm, TM_REC))} | F1: ${mli_f4(variable::get_list_value(te_tm, TM_F1))} | FPR: ${mli_f4(variable::get_list_value(te_tm, TM_FPR))} | PR-AUC: ${mli_f4(te_bestPr)} | Valid Loss: ${mli_f4(te_bestLoss)})");
+    }
+}
+
+function ml_epoch_log() {
+  ml_log("Epoch ${te_ep1}/${te_epochs} | Train [Loss: ${mli_f4(te_trLoss)}, Acc: ${variable::round(te_trAcc, 1, "ROUND")}%] | Valid [Loss: ${mli_f4(te_vaLoss)}, Acc: ${variable::round(variable::get_list_value(te_tm, TM_ACC), 1, "ROUND")}%]");
+  te_skipAll = variable::add([te_trSkip, ev_skip]);
+  if (te_skipAll.greater(0)) {
+    ml_warn("Skipped samples -> train invalid/non-finite: ${te_trSkip}, validation invalid/non-finite: ${ev_skip}");
+  }
+  ml_log("Validation Metrics -> Precision: ${mli_f4(variable::get_list_value(te_tm, TM_PREC))} | Recall: ${mli_f4(variable::get_list_value(te_tm, TM_REC))} | F1: ${mli_f4(variable::get_list_value(te_tm, TM_F1))} | FPR: ${mli_f4(variable::get_list_value(te_tm, TM_FPR))}");
+  ml_log("Advanced Metrics -> ROC-AUC: ${mli_f4(ra_roc)} | PR-AUC: ${mli_f4(ra_pr)}");
+  ml_log("Confusion Matrix -> TP: ${variable::get_list_value(te_tm, TM_TP)} | TN: ${variable::get_list_value(te_tm, TM_TN)} | FP: ${variable::get_list_value(te_tm, TM_FP)} | FN: ${variable::get_list_value(te_tm, TM_FN)}");
+  ml_log("Decision Threshold -> ${mli_f2(variable::get_list_value(te_tm, TM_THR))} (auto-selected, initial: ${mli_f2(te_th0)})");
+}
+
+function ml_train_abort() {
+  ml_warn("Training stopped -> initial weights restored.");
+  sn_tag = "init";
+  ml_restore();
+}
+
+// restore best, restore initial, retrain on the full dataset for bestEpoch epochs
+function ml_final_fit() {
+  ml_final_fit_prepare();
+  te_e = 0;
+  repeat::while(te_e.less(te_bestEpoch)) {
+    ml_final_epoch();
+    te_e = variable::add([te_e, 1]);
+    if (g`mlg.stop`.equals(1)) {
+      te_e = te_bestEpoch;
+    }
+  }
+  if (g`mlg.stop`.equals(1)) {
+    ml_train_abort();
+  } else {
+    ml_final_fit_finish();
+  }
+}
+
+// restore the best checkpoint (for the log), then the initial weights; keep its threshold
+function ml_final_fit_prepare() {
+  sn_tag = "best";
+  ml_restore();
+  ml_log("Best epoch restored -> ${te_bestEpoch}/${te_epochs} (thr: ${mli_f2(variable::get_list_value(te_bestTm, TM_THR))} | Precision: ${mli_f4(variable::get_list_value(te_bestTm, TM_PREC))} | Recall: ${mli_f4(variable::get_list_value(te_bestTm, TM_REC))} | F1: ${mli_f4(variable::get_list_value(te_bestTm, TM_F1))} | FPR: ${mli_f4(variable::get_list_value(te_bestTm, TM_FPR))} | PR-AUC: ${mli_f4(te_bestPr)} | ROC-AUC: ${mli_f4(te_bestRoc)} | Valid Acc: ${variable::round(variable::get_list_value(te_bestTm, TM_ACC), 1, "ROUND")}% | Valid Loss: ${mli_f4(te_bestLoss)})");
+  sn_tag = "init";
+  ml_restore();
+  s`ml.th` = variable::get_list_value(te_bestTm, TM_THR);
+  ml_log("Final-fit -> retraining on full dataset for ${te_bestEpoch} epoch(s) with threshold ${mli_f2(s`ml.th`)}");
+  te_full = te_data;
+  te_bfScore = -1.0;
+  te_bfFpr = 10000000000.0;
+  te_bfEpoch = 0;
+  te_bfHas = 0;
+  te_bfP = 0;
+  te_bfR = 0;
+  te_bfF = 0;
+}
+
+// restore the best final-fit epoch
+function ml_final_fit_finish() {
+  if (te_bfHas.equals(1)) {
+    sn_tag = "final";
+    ml_restore();
+    ml_log("Final-fit best epoch restored -> ${te_bfEpoch}/${te_bestEpoch} | Precision: ${mli_f4(te_bfP)} | Recall: ${mli_f4(te_bfR)} | F1: ${mli_f4(te_bfF)} | FPR: ${mli_f4(te_bfFpr)}");
+  }
+  ml_log("Final-fit complete -> threshold ${mli_f2(s`ml.th`)} retained for inference (validation-selected, NOT recalibrated on train).");
+}
+
+function ml_final_epoch() {
+  oe_set = te_full;
+  ml_train_one_epoch();
+  te_full = oe_set;
+  if (g`mlg.stop`.equals(0)) {
+    ev_set = te_full;
+    ev_th = s`ml.th`;
+    ml_evaluate_dataset();
+    ml_final_epoch_metrics();
+    ml_final_epoch_keep_best();
+  }
+}
+
+// precision, recall, F1, FPR on the full dataset; score = precision if recall >= 0.75 else F1
+function ml_final_epoch_metrics() {
+  te_fP = 0;
+  te_x = variable::add([ev_tp, ev_fp]);
+  if (te_x.greater(0)) {
+    te_fP = variable::divide([ev_tp, te_x]);
+  }
+  te_fR = 0;
+  te_x = variable::add([ev_tp, ev_fn]);
+  if (te_x.greater(0)) {
+    te_fR = variable::divide([ev_tp, te_x]);
+  }
+  te_fF = 0;
+  te_x = variable::add([te_fP, te_fR]);
+  if (not te_x.equals(0)) {
+    te_fF = variable::divide([variable::multiply([2.0, te_fP, te_fR]), te_x]);
+  }
+  te_fFpr = 0;
+  te_x = variable::add([ev_fp, ev_tn]);
+  if (te_x.greater(0)) {
+    te_fFpr = variable::divide([ev_fp, te_x]);
+  }
+  if (te_fR.greater_or_equals(ML_MIN_RECALL)) {
+    te_score = te_fP;
+  } else {
+    te_score = te_fF;
+  }
+}
+
+// better score (or equal score with lower FPR) -> snapshot "final"
+function ml_final_epoch_keep_best() {
+  te_better = 0;
+  te_x = variable::add([te_bfScore, ML_TIE9]);
+  if (te_score.greater(te_x)) {
+    te_better = 1;
+  } else {
+    te_x = variable::absolute(variable::subtract([te_score, te_bfScore]));
+    if (te_x.less_or_equals(ML_TIE9)) {
+      if (te_fFpr.less(te_bfFpr)) {
+        te_better = 1;
+      }
+    }
+  }
+  te_ep1 = variable::add([te_e, 1]);
+  te_mark = "";
+  if (te_better.equals(1)) {
+    te_mark = " <- best";
+  }
+  ml_log("Final-fit Epoch ${te_ep1}/${te_bestEpoch} | Train [Loss: ${mli_f4(ev_loss)}, Acc: ${variable::round(ev_acc, 1, "ROUND")}%] | Precision: ${mli_f4(te_fP)} | Recall: ${mli_f4(te_fR)} | F1: ${mli_f4(te_fF)} | FPR: ${mli_f4(te_fFpr)}${te_mark}");
+  if (te_better.equals(1)) {
+    te_bfScore = te_score;
+    te_bfFpr = te_fFpr;
+    te_bfEpoch = te_ep1;
+    sn_tag = "final";
+    ml_snapshot();
+    te_bfHas = 1;
+    te_bfP = te_fP;
+    te_bfR = te_fR;
+    te_bfF = te_fF;
+  }
+}
+
+function ml_train_cleanup() {
+  sn_tag = "init";
+  ml_snapshot_delete();
+  sn_tag = "best";
+  ml_snapshot_delete();
+  sn_tag = "final";
+  ml_snapshot_delete();
+  variable::purge(["ac.", "fc."], "LOCAL", "STARTS_WITH");
+}

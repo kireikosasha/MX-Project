@@ -1,0 +1,230 @@
+// =====================================================================
+//  Millennium 5 (RNN) for JustMC — port of kireiko.dev.millennium.ml (MX Project)
+//  ml_base.jc — constants, math helpers, throttling, logging, meta-data
+// ---------------------------------------------------------------------
+//  Storage conventions
+//    s`ml.*`   — SAVE variables: the model itself (weights + config). Survive restarts.
+//    g`mlg.*`  — GAME variables: runtime caches (AdamW moments, transposed weights, index lists).
+//    locals    — every function uses its own name prefix, because JustMC functions share
+//                the local variables of the caller (JMCC passes arguments as locals).
+//  Index base of JustMC lists is 0 (same as Java).
+// =====================================================================
+
+// ---------- math constants (double literals identical to Java) ----------
+inline var ML_INV_E = 0.36787944117144233;   // Math.exp(-1)
+inline var ML_E = 2.718281828459045;         // Math.E
+inline var ML_E2 = 7.38905609893065;         // Math.exp(2)
+inline var ML_LN_EPS = 0.00001;              // LayerNorm.EPS = 1e-5
+inline var ML_B1 = 0.9;                      // AdamW.B1
+inline var ML_B2 = 0.999;                    // AdamW.B2
+inline var ML_1MB1 = 0.09999999999999998;    // 1.0 - B1 (as evaluated by Java)
+inline var ML_1MB2 = 0.0010000000000000009;  // 1.0 - B2 (as evaluated by Java)
+inline var ML_ADAM_EPS = 0.00000001;         // AdamW.EPS = 1e-8
+inline var ML_P_MIN = 0.000000000000001;     // 1e-15 (loss clamp)
+inline var ML_P_MAX = 0.999999999999999;     // 1.0 - 1e-15
+inline var ML_TIE = 0.000000000001;          // 1e-12 (checkpoint comparisons)
+inline var ML_TIE9 = 0.000000001;            // 1e-9  (final-fit comparisons)
+inline var ML_ATT_EPS = 0.0000000001;        // 1e-10 (attention softmax)
+inline var ML_CHECKPOINT_THRESHOLD = 0.6;    // CHECKPOINT_DECISION_THRESHOLD
+inline var ML_MIN_RECALL = 0.75;             // CHECKPOINT_MIN_RECALL
+inline var ML_CHUNK = 150;                   // trainOneEpoch chunk size
+inline var ML_FORMAT_VERSION = 6;            // RNNModelML.VERSION
+
+// ---------- elementary functions (one place = one implementation) ----------
+// sigmoid with the LSTM gate clamp (+-50): 1 / (1 + exp(-x))
+inline function mli_sigm(x) -> number {
+  var _sg = variable::clamp(x, -50, 50);
+  _sg = variable::pow(ML_INV_E, _sg);
+  _sg = variable::add([1, _sg]);
+  return variable::divide([1, _sg]);
+}
+
+// MathOps.sigmoid (clamp +-500) — used by the BinaryHead
+inline function mli_sigm500(x) -> number {
+  var _sh = variable::clamp(x, -500, 500);
+  _sh = variable::pow(ML_INV_E, _sh);
+  _sh = variable::add([1, _sh]);
+  return variable::divide([1, _sh]);
+}
+
+// tanh(x) = 1 - 2 / (e^(2x) + 1); |x| > 30 gives exactly +-1.0 in double, so the clamp is lossless
+inline function mli_tanh(x) -> number {
+  var _th = variable::clamp(x, -30, 30);
+  _th = variable::pow(ML_E2, _th);
+  _th = variable::add([_th, 1]);
+  _th = variable::divide([2, _th]);
+  return variable::subtract([1, _th]);
+}
+
+// dot product of two equal-length lists: sum(a[i] * b[i]) — the workhorse of the port
+inline function mli_dot(a, b) -> number {
+  return variable::mathematical_expectation(a, b);
+}
+
+// list slice [start, endExclusive) — JustMC trim_list end index is calibrated at boot
+inline function mli_slice(lst, start, end_excl) -> array {
+  var _sl_e = variable::subtract([end_excl, g`mlg.trim_off`]);
+  return variable::trim_list(lst, start, _sl_e);
+}
+
+// ---------- throttling: never let one tick run too much code ----------
+// ml_yield(cost) adds an estimated cost (JustMC actions); when the budget is spent it waits one tick,
+// and keeps waiting while the world CPU usage is above s`ml.cpu_max` percent.
+function ml_yield(yl_cost: number) {
+  g`mlg.yield_acc` = variable::add([g`mlg.yield_acc`, yl_cost]);
+  if (g`mlg.yield_acc`.greater_or_equals(s`ml.budget`)) {
+    g`mlg.yield_acc` = 0;
+    code::wait(1, "TICKS");
+    yl_n = 0;
+    yl_go = 1;
+    repeat::while(yl_go.equals(1)) {
+      yl_go = 0;
+      yl_cpu = value::cpu_usage;
+      if (yl_cpu.greater(s`ml.cpu_max`)) {
+        if (yl_n.less(200)) {
+          code::wait(1, "TICKS");
+          yl_n = variable::add([yl_n, 1]);
+          yl_go = 1;
+        }
+      }
+    }
+  }
+}
+
+// ---------- logging (Logger.info / warn / error) ----------
+// Messages go to every online player whose UUID is in g`mlg.listeners` (admins with alerts on).
+function ml_broadcast(sy_msg: text) {
+  if (not g`mlg.listeners`.exists()) {
+    g`mlg.listeners` = [];
+  }
+  if (not g`mlg.listeners`.list_is_empty()) {
+    select::player_by_name(g`mlg.listeners`);
+    player::message<current>(sy_msg);
+    select::reset();
+  }
+}
+function ml_log(lg_msg: text) {
+  ml_broadcast("&9[MILLENNIUM] &7[Info] &f${lg_msg}");
+}
+function ml_warn(lw_msg: text) {
+  ml_broadcast("&9[MILLENNIUM] &6[Warn] &f${lw_msg}");
+}
+
+// number -> short text with 4 decimals (String.format("%.4f") equivalent for the logs)
+inline function mli_f4(x) -> number {
+  return variable::round(x, 4, "ROUND");
+}
+inline function mli_f2(x) -> number {
+  return variable::round(x, 2, "ROUND");
+}
+
+// ---------- index lists & calibration (rebuilt from the saved config) ----------
+// mlg.idxIn   = [0 .. in-1]
+// mlg.idxH    = [0 .. H-1]
+// mlg.idxOut  = [0 .. out-1]      (out = 2H if bidirectional else H)
+// mlg.dirs    = [0] or [0, 1]
+// mlg.gates   = ["f", "i", "c", "o"]
+function ml_rebuild_runtime() {
+  ml_calibrate_trim();
+  ml_build_index_lists();
+  ml_build_parameter_names();
+  ml_build_zero_vectors();
+  if (not s`ml.budget`.exists()) {
+    s`ml.budget` = 4000;
+  }
+  if (not s`ml.cpu_max`.exists()) {
+    s`ml.cpu_max` = 75;
+  }
+  g`mlg.yield_acc` = 0;
+  g`mlg.big` = variable::pow(10, 308);
+  g`mlg.meta_ok` = 1;
+}
+
+// is the "end" index of trim_list inclusive? -> g`mlg.trim_off`
+function ml_calibrate_trim() {
+  mb_t = variable::trim_list([10, 11, 12, 13], 1, 2);
+  mb_tl = variable::get_list_length(mb_t);
+  if (mb_tl.equals(2)) {
+    g`mlg.trim_off` = 1;
+  } else {
+    g`mlg.trim_off` = 0;
+  }
+}
+
+// idxIn = [0..in-1], idxH = [0..H-1], idxOut = [0..out-1], layers, directions, gate letters
+function ml_build_index_lists() {
+  g`mlg.gates` = ["f", "i", "c", "o"];
+  mr_n = s`ml.in`;
+  ml_range();
+  g`mlg.idxIn` = mr_list;
+  mr_n = s`ml.hid`;
+  ml_range();
+  g`mlg.idxH` = mr_list;
+  if (s`ml.bi`.equals(1)) {
+    g`mlg.out` = variable::multiply([s`ml.hid`, 2]);
+    g`mlg.dirs` = [0, 1];
+  } else {
+    g`mlg.out` = s`ml.hid`;
+    g`mlg.dirs` = [0];
+  }
+  mr_n = g`mlg.out`;
+  ml_range();
+  g`mlg.idxOut` = mr_list;
+  mr_n = s`ml.layers`;
+  ml_range();
+  g`mlg.layers` = mr_list;
+}
+
+// [0, 1, ..., mr_n - 1] -> mr_list
+function ml_range() {
+  mr_list = [];
+  mr_i = 0;
+  repeat::while(mr_i.less(mr_n)) {
+    mr_list.append_value(mr_i);
+    mr_i = variable::add([mr_i, 1]);
+  }
+}
+
+// names of every parameter vector (used by AdamW, snapshots, import / export)
+function ml_build_parameter_names() {
+  g`mlg.vecnames` = ["ml.embWy", "ml.embWp", "ml.embB", "ml.attn", "ml.head"];
+  g`mlg.lnnames` = [];
+  g`mlg.rownames` = [];
+  repeat::for_each_in_list(g`mlg.layers`) { mb_li, mb_l ->
+    repeat::for_each_in_list(g`mlg.dirs`) { mb_di, mb_dir ->
+      mb_d = variable::add([variable::multiply([mb_l, 2]), mb_dir]);
+      g`mlg.lnnames`.append_value(["ml.L.${mb_d}.g", "ml.L.${mb_d}.b"]);
+      repeat::for_each_in_list(g`mlg.idxH`) { mb_ni, mb_n ->
+        repeat::for_each_in_list(g`mlg.gates`) { mb_gi, mb_gt ->
+          g`mlg.rownames`.append_value("ml.L.${mb_d}.${mb_gt}.${mb_n}");
+        }
+      }
+    }
+  }
+}
+
+// [1], zero vectors of size in / H / out
+function ml_build_zero_vectors() {
+  g`mlg.one` = [1];
+  g`mlg.zerosIn` = [];
+  repeat::for_each_in_list(g`mlg.idxIn`) { mb_k, mb_v ->
+    g`mlg.zerosIn`.append_value(0);
+  }
+  g`mlg.zerosH` = [];
+  repeat::for_each_in_list(g`mlg.idxH`) { mb_k, mb_v ->
+    g`mlg.zerosH`.append_value(0);
+  }
+  g`mlg.zerosOut` = [];
+  repeat::for_each_in_list(g`mlg.idxOut`) { mb_k, mb_v ->
+    g`mlg.zerosOut`.append_value(0);
+  }
+}
+
+// input size of LSTM layer l: in for l = 0, out (= 2H or H) otherwise
+inline function mli_layer_in(l) -> number {
+  var _li = s`ml.in`;
+  if (l.greater(0)) {
+    _li = g`mlg.out`;
+  }
+  return _li;
+}

@@ -1,0 +1,13 @@
+// =====================================================================
+//  Millennium 5 (RNN) for JustMC — library entry point.
+//  Port of kireiko.dev.millennium.ml (MX Project): RNNModelML + RNNConfig + preprocessors,
+//  StackedBiLSTM / LSTMLayer / LayerNorm, pooling strategies, BinaryHead, AdamW, trainEpochs.
+//  Public API: see ml_api.jc.  Optional admin layer (chat commands): ml_admin.jc.
+// =====================================================================
+import "./ml_base.jc";
+import "./ml_pre.jc";
+import "./ml_net.jc";
+import "./ml_backward.jc";
+import "./ml_train.jc";
+import "./ml_io.jc";
+import "./ml_api.jc";

@@ -1,0 +1,26 @@
+// =====================================================================
+//  ml_trainer.jc — minimal world: Millennium 5 library + admin commands, nothing else.
+//  Compile this file if you only want the ML library in your world and feed it from your own
+//  code (ml_dataset_add / ml_predict / ml_learn, see ml_api.jc).
+// =====================================================================
+import "./ml_admin.jc";
+
+event<world_start> {
+  ml_admin_boot();
+}
+
+event<player_join> {
+  ml_admin_join();
+}
+
+event<player_chat> {
+  ml_admin_chat();
+}
+
+event<world_web_response> {
+  ml_admin_web_response();
+}
+
+event<world_web_exception> {
+  ml_admin_web_exception();
+}
