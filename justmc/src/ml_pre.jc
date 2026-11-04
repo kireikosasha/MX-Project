@@ -476,10 +476,13 @@ function ml_double_hash_code() {
   if (variable::pow(2, variable::add([dh_e, 1])).less_or_equals(ex_ent)) {
     dh_e = variable::add([dh_e, 1]);
   }
-  // mantissa bits (52) and exponent bits
-  dh_m = variable::multiply([variable::subtract([variable::divide([ex_ent, variable::pow(2, dh_e)]), 1]), 4503599627370496]);
-  dh_hi = variable::add([variable::multiply([variable::add([dh_e, 1023]), 1048576]), variable::divide([dh_m, 4294967296], "FLOOR")]);
-  dh_lo = variable::subtract([dh_m, variable::multiply([variable::divide([dh_m, 4294967296], "FLOOR"), 4294967296])]);
+  // mantissa bits (52) and exponent bits; multiplications by powers of two are exact only through
+  // mathematical_expectation (multiply / divide round to 9 decimals)
+  dh_f = mli_mul(ex_ent, variable::pow(2, variable::mathematical_expectation([dh_e], [-1])));
+  dh_m = mli_mul(mli_sub2(dh_f, 1), 4503599627370496);
+  dh_q = variable::round(mli_mul(dh_m, 0.00000000023283064365386963), 0, "FLOOR");
+  dh_hi = variable::add([variable::multiply([variable::add([dh_e, 1023]), 1048576]), dh_q]);
+  dh_lo = mli_sub2(dh_m, variable::multiply([dh_q, 4294967296]));
   // xor of two 32-bit words, done on 16-bit halves (safe for int and long implementations)
   dh_hh = variable::divide([dh_hi, 65536], "FLOOR");
   dh_hl = variable::subtract([dh_hi, variable::multiply([dh_hh, 65536])]);
