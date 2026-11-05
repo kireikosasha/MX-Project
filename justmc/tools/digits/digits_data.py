@@ -7,11 +7,13 @@ Sources
   * every TrueType / OpenType font found in the font folders (system + downloaded)
   * MNIST handwritten digits (idx files)
   * hand-made pixel glyphs 3x3, 3x4, 3x5, 5x7 drawn at scale 1..6
-Each picture is "drawn" at a random block size (3..20 blocks high), optionally thinned to
-1-block strokes (as players usually draw), then normalized:
+Each picture is "drawn" in a random box of blocks: height 3..20 (small, medium and large equally
+often), width free (narrow, wide, square up to 20 x 20); often thinned to 1-block strokes (as players
+draw), sometimes with a 2-block brush; pixel glyphs also as big outlines joined by lines.
+Broken scatters and solid blobs are dropped. Then normalized:
   bounding box -> fit into N x N keeping the aspect ratio -> centered -> cell = OR of its source blocks
 
-    python digits_data.py --fonts DIR [DIR ...] --mnist DIR --out data.npz
+    python digits_data.py --fonts DIR [DIR ...] --mnist DIR --out data.npz --font-reps 100 --mnist-reps 3 --pixel-reps 1500
 """
 import argparse
 import glob
@@ -243,12 +245,32 @@ def augment_hi(g, rng):
     return a[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
 
 
-def to_blocks(g, hb, rng):
-    """area-resize a grayscale glyph to hb blocks high (width by its aspect), threshold -> 0/1"""
-    h, w = g.shape
-    wb = int(round(hb * w / h))
-    wb = max(1, min(CANVAS, wb))
-    hb = max(1, min(CANVAS, hb))
+def pick_box(rng, aspect, hmin):
+    """block size (hb, wb) of one drawing. Small (hmin..8), medium (9..14) and large (15..20) digits
+    are equally likely; the width follows the glyph, stretched 0.6..1.9 times, and now and then the
+    digit fills a square (18 x 18, 20 x 20 ...). Both sides are capped to the canvas."""
+    r = rng.random()
+    if r < 1 / 3:
+        hb = rng.randint(hmin, 8)
+    elif r < 2 / 3:
+        hb = rng.randint(9, 14)
+    else:
+        hb = rng.randint(15, CANVAS)
+    k = rng.random()
+    if k < 0.45:
+        stretch = 1.0
+    elif k < 0.65:
+        stretch = rng.uniform(0.6, 1.0)
+    else:
+        stretch = rng.uniform(1.0, 1.9)
+    wb = hb * aspect * stretch
+    if aspect > 0.35 and rng.random() < 0.15:
+        wb = hb * rng.uniform(0.85, 1.1)
+    return hb, max(1, min(CANVAS, int(round(wb))))
+
+
+def to_blocks(g, hb, wb, rng):
+    """area-resize a grayscale glyph to hb x wb blocks, threshold -> 0/1"""
     im = Image.fromarray((np.clip(g, 0, 1) * 255).astype(np.uint8)).resize((wb, hb), Image.BOX)
     a = np.asarray(im, np.float32) / 255.0
     thr = rng.uniform(0.15, 0.45)
@@ -277,50 +299,138 @@ def sloppy(b, rng):
     return b
 
 
-def plausible(x):
-    """drop degenerate drawings: holes closed into a solid block, or almost nothing left"""
-    if x is None:
-        return None
-    f = x.mean()
-    return x if 0.06 <= f <= 0.6 else None
+def components(b):
+    """sizes of the 8-connected groups of blocks, largest first"""
+    seen = np.zeros_like(b, bool)
+    sizes = []
+    H, W = b.shape
+    for y0, x0 in np.argwhere(b == 1):
+        if seen[y0, x0]:
+            continue
+        stack = [(y0, x0)]
+        seen[y0, x0] = True
+        n = 0
+        while stack:
+            y, x = stack.pop()
+            n += 1
+            for dy in (-1, 0, 1):
+                for dx in (-1, 0, 1):
+                    yy, xx = y + dy, x + dx
+                    if 0 <= yy < H and 0 <= xx < W and b[yy, xx] and not seen[yy, xx]:
+                        seen[yy, xx] = True
+                        stack.append((yy, xx))
+        sizes.append(n)
+    return sorted(sizes, reverse=True)
 
 
-def draw_glyph(g, rng, hmin, hmax, thin_p=0.55):
-    """one block drawing of a grayscale glyph -> normalized N x N picture (or None)"""
+def plausible_blocks(b, hb):
+    """a drawing a player could make on purpose: one stroke (two for 4, 5, 7 ...), not a broken
+    scatter of pieces, not a solid blob with its holes closed"""
+    total = int(b.sum())
+    if total < 3:
+        return False
+    comp = components(b)
+    if comp[0] < 0.8 * total or sum(1 for c in comp if c >= 2) > 2:
+        return False
+    fill = total / float(b.shape[0] * b.shape[1])
+    return fill <= (0.62 if hb <= 8 else 0.8)
+
+
+def draw_glyph(g, rng, hmin, thin_p=0.55):
+    """one block drawing of a grayscale glyph -> (normalized N x N picture, hb, wb) or None"""
     g = augment_hi(g, rng)
-    hb = rng.randint(hmin, hmax)
-    b = to_blocks(g, hb, rng)
-    if hb >= 6 and rng.random() < thin_p:
+    hb, wb = pick_box(rng, g.shape[1] / g.shape[0], hmin)
+    b = to_blocks(g, hb, wb, rng)
+    if hb >= 6 and rng.random() < (thin_p if hb <= 8 else min(0.8, thin_p + 0.15)):
         t = thin(b)
         if t.sum() >= 3:
             b = t
+            if hb >= 12 and rng.random() < 0.25:
+                b = dilate2(b)
     b = sloppy(b, rng)
-    return plausible(normalize(b))
+    if not plausible_blocks(b, hb):
+        return None
+    return normalize(b), b.shape[0], b.shape[1]
+
+
+def dilate2(b):
+    """a thick brush: every block also fills its right, lower and lower-right neighbour -> strokes of
+    2 blocks (the picture keeps its size)"""
+    out = b.copy()
+    out[1:, :] |= b[:-1, :]
+    out[:, 1:] |= b[:, :-1]
+    out[1:, 1:] |= b[:-1, :-1]
+    return out
 
 
 def draw_pixel(p, rng):
-    """a pixel glyph drawn at a random integer scale (thick strokes or thinned)"""
+    """a pixel glyph drawn with thick strokes: every pixel becomes ky x kx blocks"""
     h, w = p.shape
     ky = rng.randint(1, max(1, CANVAS // h))
-    kx = rng.randint(max(1, ky - 1), max(1, min(CANVAS // w, ky + 1)))
+    kx = rng.randint(1, max(1, CANVAS // w))
+    if rng.random() < 0.6:
+        kx = max(1, min(CANVAS // w, ky + rng.randint(-1, 1)))
     b = np.kron(p, np.ones((ky, kx), np.uint8))
     if b.shape[0] >= 8 and rng.random() < 0.5:
         b = sloppy(b, rng)
-    return normalize(b)
+    return normalize(b), b.shape[0], b.shape[1]
+
+
+def _line(b, y0, x0, y1, x1):
+    n = max(abs(y1 - y0), abs(x1 - x0), 1)
+    for i in range(n + 1):
+        b[int(round(y0 + (y1 - y0) * i / n)), int(round(x0 + (x1 - x0) * i / n))] = 1
+
+
+def draw_pixel_lines(p, rng):
+    """a pixel glyph drawn big with 1-block strokes: the pixels are spread over the box and
+    neighbouring pixels are joined by straight lines (how a player draws a large blocky digit)"""
+    h, w = p.shape
+    hb = rng.randint(max(5, h), CANVAS)
+    if w == 1:
+        wb = 1
+    else:
+        wb = rng.randint(max(w, int(hb * w / h * 0.6)), min(CANVAS, max(w, int(hb * w / h * 1.9))))
+    b = pixel_lines_blocks(p, hb, wb)
+    if rng.random() < 0.4:
+        b = sloppy(b, rng)
+    return normalize(b), hb, wb
+
+
+def pixel_lines_blocks(p, hb, wb):
+    """block image hb x wb of pixel glyph p drawn with 1-block lines"""
+    h, w = p.shape
+    ys = [int(round(r * (hb - 1) / max(1, h - 1))) for r in range(h)]
+    xs = [int(round(c * (wb - 1) / max(1, w - 1))) for c in range(w)]
+    b = np.zeros((hb, wb), np.uint8)
+    on = {(r, c) for r, c in np.argwhere(p == 1)}
+    for r, c in on:
+        b[ys[r], xs[c]] = 1
+        for dr, dc in ((0, 1), (1, 0)):
+            if (r + dr, c + dc) in on:
+                _line(b, ys[r], xs[c], ys[r + dr], xs[c + dc])
+        for dr, dc in ((1, 1), (1, -1)):
+            # diagonal neighbours only when they are not already joined through a side neighbour
+            if (r + dr, c + dc) in on and (r + dr, c) not in on and (r, c + dc) not in on:
+                _line(b, ys[r], xs[c], ys[r + dr], xs[c + dc])
+    return b
 
 
 # ----------------------------------------------------------------------------- dataset
 def _work(job):
     kind, seed, payload = job
     rng = random.Random(seed)
-    xs, ys, src = [], [], []
+    xs, ys, src, hbs, wbs = [], [], [], [], []
+
+    def add(res, d, s):
+        if res is not None:
+            xs.append(res[0]); ys.append(d); src.append(s); hbs.append(res[1]); wbs.append(res[2])
+
     if kind == "font":
         name, crops, reps = payload
         for _ in range(reps):
             for d in range(10):
-                x = draw_glyph(crops[d], rng, 5, 20)
-                if x is not None:
-                    xs.append(x); ys.append(d); src.append(0)
+                add(draw_glyph(crops[d], rng, 5), d, 0)
     elif kind == "mnist":
         imgs, labels = payload
         for img, d in zip(imgs, labels):
@@ -328,18 +438,18 @@ def _work(job):
             g = np.kron(g, np.ones((3, 3), np.float32))
             ys_, xs_ = np.where(g > 0.2)
             g = g[ys_.min():ys_.max() + 1, xs_.min():xs_.max() + 1]
-            x = draw_glyph(g, rng, 6, 20, thin_p=0.6)
-            if x is not None:
-                xs.append(x); ys.append(int(d)); src.append(1)
+            add(draw_glyph(g, rng, 6, thin_p=0.6), int(d), 1)
     else:
         reps = payload
         for _ in range(reps):
             for size, table in PIXEL.items():
                 for d, variants in table.items():
-                    x = draw_pixel(variants[rng.randrange(len(variants))], rng)
-                    if x is not None:
-                        xs.append(x); ys.append(d); src.append(2)
-    return np.array(xs, np.uint8), np.array(ys, np.uint8), np.array(src, np.uint8)
+                    v = variants[rng.randrange(len(variants))]
+                    add(draw_pixel(v, rng), d, 2)
+                    if size != "3x3":
+                        add(draw_pixel_lines(v, rng), d, 2)
+    return (np.array(xs, np.uint8), np.array(ys, np.uint8), np.array(src, np.uint8),
+            np.array(hbs, np.uint8), np.array(wbs, np.uint8))
 
 
 def build(fonts, mnist_x, mnist_y, font_reps, mnist_reps, pixel_reps, seed):
@@ -355,10 +465,7 @@ def build(fonts, mnist_x, mnist_y, font_reps, mnist_reps, pixel_reps, seed):
     with Pool(os.cpu_count()) as pool:
         parts = pool.map(_work, jobs, chunksize=1)
     parts = [p for p in parts if len(p[0])]
-    x = np.concatenate([p[0] for p in parts])
-    y = np.concatenate([p[1] for p in parts])
-    s = np.concatenate([p[2] for p in parts])
-    return x, y, s
+    return tuple(np.concatenate([p[i] for p in parts]) for i in range(5))
 
 
 def main():
@@ -382,12 +489,15 @@ def main():
 
     mx, my = load_mnist(a.mnist, "train")
     tx, ty = load_mnist(a.mnist, "test")
-    xtr, ytr, str_ = build(train_fonts, mx, my, a.font_reps, a.mnist_reps, a.pixel_reps, a.seed)
-    xva, yva, sva = build(val_fonts, tx, ty, max(10, a.font_reps // 4), 1, max(50, a.pixel_reps // 4), a.seed + 1)
+    xtr, ytr, str_, htr, wtr = build(train_fonts, mx, my, a.font_reps, a.mnist_reps, a.pixel_reps, a.seed)
+    xva, yva, sva, hva, wva = build(val_fonts, tx, ty, max(10, a.font_reps // 4), 1, max(50, a.pixel_reps // 4), a.seed + 1)
     print(f"train {len(xtr)} pictures, validation {len(xva)}")
-    for name, arr, src in (("train", ytr, str_), ("val", yva, sva)):
-        print(name, "per digit:", np.bincount(arr, minlength=10).tolist(), "per source (font, mnist, pixel):", np.bincount(src, minlength=3).tolist())
-    np.savez_compressed(a.out, xtr=xtr, ytr=ytr, str=str_, xva=xva, yva=yva, sva=sva)
+    for name, arr, src, hh, ww in (("train", ytr, str_, htr, wtr), ("val", yva, sva, hva, wva)):
+        big = np.maximum(hh, ww)
+        print(name, "per digit:", np.bincount(arr, minlength=10).tolist(),
+              "per source (font, mnist, pixel):", np.bincount(src, minlength=3).tolist(),
+              "size <=8 / 9-14 / >=15 blocks:", [int((big <= 8).sum()), int(((big > 8) & (big < 15)).sum()), int((big >= 15).sum())])
+    np.savez_compressed(a.out, xtr=xtr, ytr=ytr, str=str_, htr=htr, wtr=wtr, xva=xva, yva=yva, sva=sva, hva=hva, wva=wva)
 
 
 if __name__ == "__main__":

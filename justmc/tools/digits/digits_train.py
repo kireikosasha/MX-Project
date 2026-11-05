@@ -9,7 +9,7 @@ By default the ten models share the encoder (LSTM + attention) and differ in the
 then runs the encoder once and the ten heads after it (--separate: ten independent models).
 Loss: softmax cross-entropy over the ten logits plus the binary loss of every model.
 
-    python digits_train.py --data data.npz --out weights/digits --hidden 32 --epochs 30 --batch 512 --lr 4e-3
+    python digits_train.py --data data.npz --out weights/digits --hidden 32 --epochs 20
 """
 import argparse
 import json
@@ -191,6 +191,9 @@ def main():
     D = np.load(a.data)
     xtr, ytr = D["xtr"].reshape(len(D["xtr"]), -1), D["ytr"].astype(np.int64)
     xva, yva, sva = D["xva"].reshape(len(D["xva"]), -1), D["yva"].astype(np.int64), D["sva"]
+    big = np.maximum(D["hva"], D["wva"]) if "hva" in D else np.full(len(yva), 10)
+    size_class = np.where(big <= 8, 0, np.where(big <= 14, 1, 2))      # small / medium / large
+    sub = np.random.RandomState(0).choice(len(xtr), min(20000, len(xtr)), replace=False)
     n = int(round(math.sqrt(xtr.shape[1])))
     m = DigitModels(10, n, a.hidden, shared=not a.separate)
     enc = sum(p.numel() for name, p in m.named_parameters() if name not in ("hV", "hB")) // m.k
@@ -220,9 +223,12 @@ def main():
             sched.step()
             tot += float(loss.detach()) * len(idx)
         acc, pred = accuracy(m, xva, yva, n)
+        tr_acc, _ = accuracy(m, xtr[sub], ytr[sub], n)
         per_src = [float((pred[sva == s] == yva[sva == s]).mean()) for s in range(3)]
-        print(f"epoch {ep + 1:2d}/{a.epochs}  loss {tot / len(perm):.4f}  validation {acc * 100:.2f}%  "
-              f"(fonts {per_src[0] * 100:.1f}%, handwritten {per_src[1] * 100:.1f}%, pixel {per_src[2] * 100:.1f}%)", flush=True)
+        per_size = [float((pred[size_class == c] == yva[size_class == c]).mean()) for c in range(3)]
+        print(f"epoch {ep + 1:2d}/{a.epochs}  loss {tot / len(perm):.4f}  train {tr_acc * 100:.2f}%  validation {acc * 100:.2f}%  "
+              f"(fonts {per_src[0] * 100:.1f}%, handwritten {per_src[1] * 100:.1f}%, pixel {per_src[2] * 100:.1f}% | "
+              f"<=8 blocks {per_size[0] * 100:.1f}%, 9-14 {per_size[1] * 100:.1f}%, >=15 {per_size[2] * 100:.1f}%)", flush=True)
         if acc > best:
             best = acc
             best_state = {k: v.clone() for k, v in m.state_dict().items()}
@@ -231,7 +237,10 @@ def main():
     conf = np.zeros((10, 10), int)
     for t, p in zip(yva, pred):
         conf[t, p] += 1
-    print(f"best validation accuracy {acc * 100:.2f}%")
+    per_src = [float((pred[sva == s] == yva[sva == s]).mean()) for s in range(3)]
+    per_size = [float((pred[size_class == c] == yva[size_class == c]).mean()) for c in range(3)]
+    print(f"best validation accuracy {acc * 100:.2f}%  fonts {per_src[0] * 100:.1f}%, handwritten {per_src[1] * 100:.1f}%, "
+          f"pixel {per_src[2] * 100:.1f}%  |  <=8 blocks {per_size[0] * 100:.1f}%, 9-14 {per_size[1] * 100:.1f}%, >=15 {per_size[2] * 100:.1f}%")
     print("confusion (rows = true digit):")
     for d in range(10):
         print(d, " ".join(f"{v:5d}" for v in conf[d]))
