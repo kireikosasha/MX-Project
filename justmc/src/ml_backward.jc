@@ -424,7 +424,8 @@ function ml_backward_sample() {
   ml_pool_backward();
   eb_dH = pb_dH;
   ml_encoder_backward();
-  if (not s`ml.im`.equals(1)) {
+  // the raw embedding is used by RAW (0) and HYBRID (2); STATISTICAL (1) and GRID (3) have none
+  if (s`ml.im`.equals([0, 2])) {
     ml_embedding_gradient();
   }
 }
@@ -530,7 +531,7 @@ function ml_apply_update() {
   ml_update_head();
   ml_update_attention();
   ml_yield(1500);
-  if (not s`ml.im`.equals(1)) {
+  if (s`ml.im`.equals([0, 2])) {
     ml_update_embedding();
   }
   repeat::for_each_in_list(g`mlg.layers`) { au_li, au_l ->
@@ -730,7 +731,12 @@ function ml_learn_by_data() {
   }
   lr_len = variable::min([variable::get_list_length(lr_ys), variable::get_list_length(lr_ps)]);
   if (lr_len.greater_or_equals(2)) {
-    tb_batch = [[mli_slice(lr_ys, 0, lr_len), mli_slice(lr_ps, 0, lr_len), lr_y]];
+    lr_item = [];
+    lr_item.append_value([mli_slice(lr_ys, 0, lr_len)]);
+    lr_item.append_value([mli_slice(lr_ps, 0, lr_len)]);
+    lr_item.append_value(lr_y);
+    tb_batch = [];
+    tb_batch.append_value([lr_item]);
     ml_build_transposed_weights();
     ml_train_batch();
   }

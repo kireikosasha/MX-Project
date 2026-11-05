@@ -14,12 +14,30 @@ function ml_preprocess() {
     ml_preprocess_raw();
   } elif (s`ml.im`.equals(1)) {
     ml_preprocess_statistical();
+  } elif (s`ml.im`.equals(3)) {
+    ml_preprocess_grid();
   } else {
     if (pp_n.greater_or_equals(40)) {
       ml_preprocess_statistical();
     } else {
       ml_preprocess_raw();
     }
+  }
+}
+
+// GRID (JustMC port only, not in MX): pp_ys is a flat grid, row after row, of s`ml.in` values each;
+// every row is one time step, used as it is (pp_ps is ignored). Example: a 10 x 10 picture of 0 / 1.
+function ml_preprocess_grid() {
+  pg_in = s`ml.in`;
+  pg_T = variable::divide([pp_n, pg_in], "FLOOR");
+  pp_X = [];
+  pp_M = [];
+  pg_t = 0;
+  repeat::while(pg_t.less(pg_T)) {
+    pg_s = variable::multiply([pg_t, pg_in]);
+    pp_X.append_value([mli_slice(pp_ys, pg_s, variable::add([pg_s, pg_in]))]);
+    pp_M.append_value(1);
+    pg_t = variable::add([pg_t, 1]);
   }
 }
 

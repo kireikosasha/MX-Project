@@ -7,6 +7,7 @@ Build every JustMC module of the port with JMCC and sanity-check the result.
 Outputs (justmc/build/):
     millennium_trainer.json   library + "~ml" admin commands (pure ML world)
     millennium_mx_demo.json   library + admin + MX aim-check demo
+    millennium_digits_demo.json  library + admin + digit recognition demo
 Upload a .json to any file host (or use `jmcc.py compile <file> -u`) and load it in JustMC.
 """
 import json
@@ -25,6 +26,7 @@ OUT = os.path.join(HERE, "..", "build")
 TARGETS = {
     "ml_trainer.jc": "millennium_trainer.json",
     "demo_mx_aim.jc": "millennium_mx_demo.json",
+    "demo_digits.jc": "millennium_digits_demo.json",
 }
 
 
@@ -68,10 +70,36 @@ def _wrap(text, width=42):
     return lines
 
 
-def postprocess(path):
+def block_arguments(jmcc_dir):
+    """{action id: {argument id}} of the arguments that take blocks"""
+    acts = json.load(open(os.path.join(jmcc_dir, "data", "actions.json"), encoding="utf-8"))
+    acts = acts if isinstance(acts, list) else list(acts.values())
+    return {a["id"]: {g["id"] for g in a["args"] if g.get("type") == "block"} for a in acts}
+
+
+def fix_block_lists(ops, spec):
+    """JMCC turns a text into a block value only for a single block argument; inside a list of
+    blocks (world::block_equals, allow_placing_breaking_blocks, ...) the texts stay texts"""
+    n = 0
+    for op in ops:
+        for v in op.get("values", []):
+            if v["name"] in spec.get(op.get("action"), ()) and v["value"].get("type") == "array":
+                for i, it in enumerate(v["value"]["values"]):
+                    if it.get("type") == "text":
+                        bid = it["text"].split(":", 1)[-1] if it["text"].startswith("minecraft:") else it["text"]
+                        v["value"]["values"][i] = {"type": "block", "block": bid}
+                        n += 1
+        n += fix_block_lists(op.get("operations", []), spec)
+    return n
+
+
+def postprocess(path, jmcc_dir):
     """Icons and English + Russian descriptions for every function / process (tools/function_meta.py).
     Every function must fit in one JustMC code line: helper functions "jmcc.N" are not allowed."""
     code = json.load(open(path))
+    spec = block_arguments(jmcc_dir)
+    for h in code["handlers"]:
+        fix_block_lists(h.get("operations", []), spec)
     missing, split = [], []
     for h in code["handlers"]:
         if h["type"] not in ("function", "process"):
@@ -114,7 +142,7 @@ def main():
         if not compile_one(jmcc, s, o):
             ok = False
             continue
-        ok = postprocess(o) and ok
+        ok = postprocess(o, jmcc) and ok
         r = subprocess.run([sys.executable, os.path.join(HERE, "check_build.py"), o])
         ok = ok and r.returncode == 0
     sys.exit(0 if ok else 1)

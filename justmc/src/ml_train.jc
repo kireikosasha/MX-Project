@@ -486,12 +486,17 @@ function ml_epoch_add_sample_chunks() {
   oe_ys = variable::get_list_value(oe_smp, 0);
   oe_ps = variable::get_list_value(oe_smp, 1);
   oe_len = variable::min([variable::get_list_length(oe_ys), variable::get_list_length(oe_ps)]);
+  // a GRID sample is one picture: it is never cut into chunks
+  oe_chunk = ML_CHUNK;
+  if (s`ml.im`.equals(3)) {
+    oe_chunk = oe_len;
+  }
   oe_i = 0;
   if (oe_len.less(2)) {
     oe_i = oe_len;
   }
   repeat::while(oe_i.less(oe_len)) {
-    oe_end = variable::min([oe_len, variable::add([oe_i, ML_CHUNK])]);
+    oe_end = variable::min([oe_len, variable::add([oe_i, oe_chunk])]);
     oe_cl = variable::subtract([oe_end, oe_i]);
     if (oe_cl.greater_or_equals(2)) {
       oe_item = [];
@@ -506,7 +511,7 @@ function ml_epoch_add_sample_chunks() {
         g`mlg.batches` = variable::add([g`mlg.batches`, 1]);
       }
     }
-    oe_i = variable::add([oe_i, ML_CHUNK]);
+    oe_i = variable::add([oe_i, oe_chunk]);
   }
 }
 

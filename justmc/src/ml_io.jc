@@ -9,7 +9,7 @@ function ml_set_defaults() {
   s`ml.hid` = 48;
   s`ml.layers` = 2;
   s`ml.bi` = 1;
-  s`ml.im` = 2;          // InputMode: 0 RAW_SEQUENCE, 1 STATISTICAL_FEATURES, 2 HYBRID
+  s`ml.im` = 2;          // InputMode: 0 RAW_SEQUENCE, 1 STATISTICAL_FEATURES, 2 HYBRID, 3 GRID (port only)
   s`ml.pm` = 3;          // PoolingMode: 0 LAST_HIDDEN, 1 MEAN_POOLING, 2 MAX_POOLING, 3 ATTENTION
   s`ml.lr` = 0.0003;
   s`ml.dr` = 0.1;
@@ -190,16 +190,22 @@ function ml_check_complete() {
 // JSON import (format "millennium", see tools/ml_convert.py). in: io_text
 // JustMC cuts web responses at 25000 characters, so a model is stored as many small JSON files:
 // a header (config, embedding, attention, head), "ln" (LayerNorm) and "rows" ([d, gate, n, row]),
-// listed in a manifest {"manifest": [file, ...]}.  Out: io_ok = 1 (loaded), 2 (manifest -> io_manifest), 0 (error)
+// listed in a manifest {"manifest": [file, ...]}. A manifest may also list {"save": "<name>"} files: the
+// model loaded so far is then saved under that name, so one manifest can install a pack of models.
+// Out: io_ok = 1 (loaded), 2 (manifest -> io_manifest), 3 (save -> io_name), 0 (error)
 function ml_import_json() {
   io_ok = 0;
   io_obj = variable::parse_json(io_text);
   io_msg = "not a JSON object";
   if (io_obj.is_type("MAP")) {
     io_manifest = variable::get_map_value(io_obj, "manifest", 0);
+    io_name = variable::get_map_value(io_obj, "save", 0);
     if (io_manifest.is_type("ARRAY")) {
       io_ok = 2;
       io_msg = "manifest";
+    } elif (io_name.is_type("TEXT")) {
+      io_ok = 3;
+      io_msg = "save";
     } else {
       ml_import_object();
     }
@@ -265,24 +271,30 @@ function ml_normalize_vector() {
 
 // the 16 numbers of the configuration -> s`mlm.<name>.cfg`
 function ml_model_save_config() {
-  sm_cfg = [];
-  sm_cfg.append_value(s`ml.in`);
-  sm_cfg.append_value(s`ml.hid`);
-  sm_cfg.append_value(s`ml.layers`);
-  sm_cfg.append_value(s`ml.bi`);
-  sm_cfg.append_value(s`ml.im`);
-  sm_cfg.append_value(s`ml.pm`);
-  sm_cfg.append_value(s`ml.lr`);
-  sm_cfg.append_value(s`ml.dr`);
-  sm_cfg.append_value(s`ml.rdr`);
-  sm_cfg.append_value(s`ml.wd`);
-  sm_cfg.append_value(s`ml.gc`);
-  sm_cfg.append_value(s`ml.ls`);
-  sm_cfg.append_value(s`ml.bs`);
-  sm_cfg.append_value(s`ml.step`);
-  sm_cfg.append_value(s`ml.t`);
-  sm_cfg.append_value(s`ml.th`);
-  s`mlm.${sm_name}.cfg` = sm_cfg;
+  ml_config_list();
+  s`mlm.${sm_name}.cfg` = cf_list;
+}
+
+// [in, hid, layers, bi, im, pm, lr, dr, rdr, wd, gc, ls, bs, step, t, th] -> cf_list (built by appending:
+// a list written as [variable, ...] keeps references that JustMC list actions cannot read)
+function ml_config_list() {
+  cf_list = [];
+  cf_list.append_value(s`ml.in`);
+  cf_list.append_value(s`ml.hid`);
+  cf_list.append_value(s`ml.layers`);
+  cf_list.append_value(s`ml.bi`);
+  cf_list.append_value(s`ml.im`);
+  cf_list.append_value(s`ml.pm`);
+  cf_list.append_value(s`ml.lr`);
+  cf_list.append_value(s`ml.dr`);
+  cf_list.append_value(s`ml.rdr`);
+  cf_list.append_value(s`ml.wd`);
+  cf_list.append_value(s`ml.gc`);
+  cf_list.append_value(s`ml.ls`);
+  cf_list.append_value(s`ml.bs`);
+  cf_list.append_value(s`ml.step`);
+  cf_list.append_value(s`ml.t`);
+  cf_list.append_value(s`ml.th`);
 }
 
 // inputSize, hiddenSize, numLayers, bidirectional (io_new_arch = 1 if any changed)
@@ -312,7 +324,7 @@ function ml_import_architecture() {
 
 // modes, optimiser settings, step counters, decision threshold
 function ml_import_hyperparameters() {
-  s`ml.im` = variable::clamp(variable::get_map_value(io_cfg, "inputMode", s`ml.im`), 0, 2);
+  s`ml.im` = variable::clamp(variable::get_map_value(io_cfg, "inputMode", s`ml.im`), 0, 3);
   s`ml.pm` = variable::clamp(variable::get_map_value(io_cfg, "poolingMode", s`ml.pm`), 0, 3);
   s`ml.lr` = variable::get_map_value(io_cfg, "learningRate", s`ml.lr`);
   s`ml.dr` = variable::get_map_value(io_cfg, "dropoutRate", s`ml.dr`);
@@ -472,14 +484,15 @@ function ml_export_flush_rows() {
 
 // config, embedding, attention and head as JSON fragments -> io_parts
 function ml_export_header() {
-  io_cfg = variable::create_map(["inputSize", "hiddenSize", "numLayers", "bidirectional", "inputMode", "poolingMode", "learningRate", "dropoutRate", "recurrentDropoutRate", "weightDecay", "gradientClip", "labelSmoothing", "batchSize", "step", "optT", "decisionThreshold"], [s`ml.in`, s`ml.hid`, s`ml.layers`, s`ml.bi`, s`ml.im`, s`ml.pm`, s`ml.lr`, s`ml.dr`, s`ml.rdr`, s`ml.wd`, s`ml.gc`, s`ml.ls`, s`ml.bs`, s`ml.step`, s`ml.t`, s`ml.th`]);
+  ml_config_list();
+  io_cfg = variable::create_map(["inputSize", "hiddenSize", "numLayers", "bidirectional", "inputMode", "poolingMode", "learningRate", "dropoutRate", "recurrentDropoutRate", "weightDecay", "gradientClip", "labelSmoothing", "batchSize", "step", "optT", "decisionThreshold"], cf_list);
   io_jc = variable::to_json(io_cfg, "FALSE");
   io_parts = ['{"format":"millennium","version":6,"config":'];
   io_parts.append_value(io_jc);
   io_parts.append_value([',"embWy":', variable::to_json(s`ml.embWy`, "FALSE"), ',"embWp":', variable::to_json(s`ml.embWp`, "FALSE"), ',"embB":', variable::to_json(s`ml.embB`, "FALSE")]);
   io_len = variable::get_list_length(s`ml.attn`);
-  io_parts.append_value([',"attnW":', variable::to_json(mli_slice(s`ml.attn`, 1, io_len), "FALSE"), ',"attnB":', variable::to_json([variable::get_list_value(s`ml.attn`, 0)], "FALSE")]);
-  io_parts.append_value([',"headV":', variable::to_json(mli_slice(s`ml.head`, 1, io_len), "FALSE"), ',"headBias":', variable::to_json([variable::get_list_value(s`ml.head`, 0)], "FALSE")]);
+  io_parts.append_value([',"attnW":', variable::to_json(mli_slice(s`ml.attn`, 1, io_len), "FALSE"), ',"attnB":', variable::to_json(variable::get_list_value(s`ml.attn`, 0), "FALSE")]);
+  io_parts.append_value([',"headV":', variable::to_json(mli_slice(s`ml.head`, 1, io_len), "FALSE"), ',"headBias":', variable::to_json(variable::get_list_value(s`ml.head`, 0), "FALSE")]);
 }
 
 

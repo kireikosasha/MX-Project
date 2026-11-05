@@ -1,0 +1,541 @@
+// =====================================================================
+//  demo_digits.jc — demo 2 of the Millennium library: recognition of drawn digits 0-9.
+//
+//  A 20 x 20 wall of blocks is the canvas: a block is 1, air is 0. The drawing is cut to its
+//  bounding box and fitted into a 10 x 10 picture (so the size and the place of the digit do not
+//  matter: a 3 x 3 digit in a corner and a 20-block digit are read the same way). Ten Millennium
+//  models (one per digit, input mode GRID, one row of the picture per time step) give the
+//  probability "this is my digit"; the highest one wins.
+//
+//  Install the models once:   ~dg install
+//  Build a canvas in front:   ~dg canvas
+//  Draw with any block; the guess appears ~1 s after the last block (or ~dg guess).
+// =====================================================================
+import "./ml_admin.jc";
+
+inline var DG_CMD_PREFIX = "~dg";
+inline var DG_N = 10;                 // picture side = s`ml.in` of the digit models
+inline var DG_MAX = 32;               // largest canvas side accepted by ~dg corners
+inline var DG_WEIGHTS = "https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/weights/digits/digits.json";
+inline var DG_BACK = "minecraft:white_concrete";   // wall behind the canvas
+inline var DG_IDLE_MS = 1200;         // auto guess after this pause in drawing
+
+// default canvas (top-left and bottom-right corner as seen by the player drawing on it):
+// a 20 x 20 wall in the plane z = 10, seen from the north side (player at z < 10 looking south)
+inline var DG_X1 = 9;
+inline var DG_Y1 = 83;
+inline var DG_Z1 = 10;
+inline var DG_X2 = -10;
+inline var DG_Y2 = 64;
+inline var DG_Z2 = 10;
+
+// ---------------------------------------------------------------------
+// events
+// ---------------------------------------------------------------------
+event<world_start> {
+  ml_admin_boot();
+  dg_boot();
+}
+
+event<player_join> {
+  ml_admin_join();
+  dg_on_join();
+}
+
+event<player_chat> {
+  ml_admin_chat();
+  if (cm_handled.equals(0)) {
+    dg_on_chat();
+  }
+}
+
+event<world_web_response> {
+  ml_admin_web_response();
+}
+
+event<world_web_exception> {
+  ml_admin_web_exception();
+}
+
+event<player_place_block> {
+  dg_on_block_change();
+}
+
+event<player_break_block> {
+  dg_on_block_change();
+}
+
+// canvas from the save variables (or the default one), runtime flags
+function dg_boot() {
+  if (not s`dg.w`.exists()) {
+    dc_x1 = DG_X1;
+    dc_y1 = DG_Y1;
+    dc_z1 = DG_Z1;
+    dc_x2 = DG_X2;
+    dc_y2 = DG_Y2;
+    dc_z2 = DG_Z2;
+    dg_set_corners();
+  }
+  if (not s`dg.auto`.exists()) {
+    s`dg.auto` = 1;
+  }
+  g`dg.busy` = 0;
+  g`dg.again` = 0;
+  g`dg.waiting` = 0;
+  g`dg.changed` = 0;
+}
+
+// a player may place and break any block on the canvas; a stack of black concrete to draw with
+function dg_on_join() {
+  player::allow_placing_breaking_blocks("minecraft:black_concrete", "TRUE");
+  player::give_items([item("minecraft:black_concrete", count=64)], 1);
+  player::message("&9[Digits] &fDraw a digit 0-9 on the canvas with blocks, then wait a second. &7~dg help");
+  if (not s`mlm.digit9.cfg`.exists()) {
+    player::message("&9[Digits] &cThe digit models are not installed: &e~dg install");
+  }
+}
+
+// ---------------------------------------------------------------------
+// canvas geometry
+//   s`dg.x1 / y1 / z1`  top-left cell (as seen by the player)     s`dg.w`, s`dg.h`  size in blocks
+//   s`dg.cx / cz`       step of one column to the right (one of them is 0, the other +-1)
+//   s`dg.fx / fz`       direction from the player into the wall (where the backing wall is)
+// ---------------------------------------------------------------------
+// in: dc_x1, dc_y1, dc_z1 (top-left), dc_x2, dc_y2, dc_z2 (bottom-right) -> save variables, dc_ok
+function dg_set_corners() {
+  dc_ok = 1;
+  if (dc_x1.equals(dc_x2)) {
+    dc_d = variable::subtract([dc_z2, dc_z1]);
+  } else {
+    dc_d = variable::subtract([dc_x2, dc_x1]);
+  }
+  dc_step = 1;
+  if (dc_d.less(0)) {
+    dc_step = -1;
+  }
+  dc_w = variable::add([variable::absolute(dc_d), 1]);
+  if (dc_x1.equals(dc_x2)) {
+    s`dg.cx` = 0;
+    s`dg.cz` = dc_step;
+  } else {
+    s`dg.cx` = dc_step;
+    s`dg.cz` = 0;
+  }
+  dc_top = variable::max([dc_y1, dc_y2]);
+  dc_h = variable::absolute(variable::subtract([dc_y1, dc_y2]));
+  dc_h = variable::add([dc_h, 1]);
+  if (dc_w.greater(DG_MAX)) {
+    dc_ok = 0;
+  }
+  if (dc_h.greater(DG_MAX)) {
+    dc_ok = 0;
+  }
+  if (dc_ok.equals(1)) {
+    s`dg.x1` = dc_x1;
+    s`dg.y1` = dc_top;
+    s`dg.z1` = dc_z1;
+    s`dg.w` = dc_w;
+    s`dg.h` = dc_h;
+    // the player looks along F = (cz, 0, -cx): right = F x up
+    s`dg.fx` = s`dg.cz`;
+    s`dg.fz` = variable::multiply([s`dg.cx`, -1]);
+  }
+}
+
+// location of canvas cell (row dl_r from the top, column dl_c from the left) shifted dl_f blocks into
+// the wall -> dl_loc
+function dg_cell_location() {
+  dl_x = variable::add([s`dg.x1`, variable::multiply([dl_c, s`dg.cx`]), variable::multiply([dl_f, s`dg.fx`])]);
+  dl_y = variable::subtract([s`dg.y1`, dl_r]);
+  dl_z = variable::add([s`dg.z1`, variable::multiply([dl_c, s`dg.cz`]), variable::multiply([dl_f, s`dg.fz`])]);
+  dl_loc = variable::set_all_coordinates(dl_x, dl_y, dl_z, 0, 0);
+}
+
+// corners of the canvas (dl_f = 0) or of the wall behind it (dl_f = 1) -> db_p1, db_p2
+function dg_corner_locations() {
+  dl_r = 0;
+  dl_c = 0;
+  dg_cell_location();
+  db_p1 = dl_loc;
+  dl_r = variable::subtract([s`dg.h`, 1]);
+  dl_c = variable::subtract([s`dg.w`, 1]);
+  dg_cell_location();
+  db_p2 = dl_loc;
+}
+
+// backing wall + empty canvas
+function dg_build() {
+  dl_f = 1;
+  dg_corner_locations();
+  world::set_region(DG_BACK, db_p1, db_p2);
+  dl_f = 0;
+  dg_corner_locations();
+  world::set_region("minecraft:air", db_p1, db_p2);
+}
+
+// ~dg canvas: a 20 x 20 canvas 5 blocks in front of the player, its bottom row at the feet
+function dg_cmd_canvas() {
+  dv_loc = value::location;
+  dv_yaw = variable::get_coordinate(dv_loc, "YAW");
+  dv_yaw = variable::wrap(dv_yaw, 0, 360);
+  // facing: south (yaw 0) +z, west (90) -x, north (180) -z, east (270) +x
+  dv_q = variable::round(variable::divide([dv_yaw, 90]), 0, "ROUND");
+  dv_q = variable::remainder(dv_q, 4, "REMAINDER");
+  dv_fx = variable::get_list_value([0, -1, 0, 1], dv_q);
+  dv_fz = variable::get_list_value([1, 0, -1, 0], dv_q);
+  // right = F x up = (-fz, 0, fx)
+  dv_rx = variable::multiply([dv_fz, -1]);
+  dv_rz = dv_fx;
+  dv_px = variable::round(variable::get_coordinate(dv_loc, "X"), 0, "FLOOR");
+  dv_py = variable::round(variable::get_coordinate(dv_loc, "Y"), 0, "FLOOR");
+  dv_pz = variable::round(variable::get_coordinate(dv_loc, "Z"), 0, "FLOOR");
+  dc_x1 = variable::add([dv_px, variable::multiply([dv_fx, 5]), variable::multiply([dv_rx, -10])]);
+  dc_z1 = variable::add([dv_pz, variable::multiply([dv_fz, 5]), variable::multiply([dv_rz, -10])]);
+  dc_y1 = variable::add([dv_py, 19]);
+  dc_x2 = variable::add([dc_x1, variable::multiply([dv_rx, 19])]);
+  dc_z2 = variable::add([dc_z1, variable::multiply([dv_rz, 19])]);
+  dc_y2 = dv_py;
+  dg_set_corners();
+  dg_build();
+  player::message("&9[Digits] &aCanvas built: &f(${dc_x1}, ${dc_y1}, ${dc_z1}) &7-> &f(${dc_x2}, ${dc_y2}, ${dc_z2})");
+}
+
+// ~dg corners x1 y1 z1 x2 y2 z2: top-left and bottom-right corner as seen by the player
+function dg_cmd_corners() {
+  dc_x1 = variable::convert_text_to_number(cm_a2, 10);
+  dc_y1 = variable::convert_text_to_number(cm_a3, 10);
+  dc_z1 = variable::convert_text_to_number(cm_a4, 10);
+  dc_x2 = variable::convert_text_to_number(variable::get_list_value(cm_a, 5, ""), 10);
+  dc_y2 = variable::convert_text_to_number(variable::get_list_value(cm_a, 6, ""), 10);
+  dc_z2 = variable::convert_text_to_number(variable::get_list_value(cm_a, 7, ""), 10);
+  dg_set_corners();
+  if (dc_ok.equals(1)) {
+    dg_build();
+    player::message("&9[Digits] &aCanvas ${s`dg.w`} x ${s`dg.h`} built.");
+  } else {
+    player::message("&cThe canvas may be at most ${DG_MAX} x ${DG_MAX} blocks and must be a flat wall.");
+  }
+}
+
+// is the event block on the canvas? -> di_ok
+function dg_in_canvas() {
+  di_ok = 0;
+  di_loc = value::event_block_location;
+  di_x = variable::get_coordinate(di_loc, "X");
+  di_y = variable::get_coordinate(di_loc, "Y");
+  di_z = variable::get_coordinate(di_loc, "Z");
+  di_r = variable::subtract([s`dg.y1`, di_y]);
+  if (s`dg.cx`.equals(0)) {
+    di_plane = variable::subtract([di_x, s`dg.x1`]);
+    di_c = variable::multiply([variable::subtract([di_z, s`dg.z1`]), s`dg.cz`]);
+  } else {
+    di_plane = variable::subtract([di_z, s`dg.z1`]);
+    di_c = variable::multiply([variable::subtract([di_x, s`dg.x1`]), s`dg.cx`]);
+  }
+  if (di_plane.equals(0)) {
+    if (variable::number_in_range(di_r, 0, variable::subtract([s`dg.h`, 1]), "INCLUDE_ALL")) {
+      if (variable::number_in_range(di_c, 0, variable::subtract([s`dg.w`, 1]), "INCLUDE_ALL")) {
+        di_ok = 1;
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// reading and normalizing the drawing (same integer arithmetic as tools/digits/digits_data.py)
+// ---------------------------------------------------------------------
+// canvas -> dg_cells (row after row, 1 = block, 0 = air), bounding box dg_r0..dg_r1, dg_c0..dg_c1
+function dg_read() {
+  dg_cells = [];
+  dg_r0 = 1000;
+  dg_r1 = -1;
+  dg_c0 = 1000;
+  dg_c1 = -1;
+  dl_f = 0;
+  dl_r = 0;
+  repeat::while(dl_r.less(s`dg.h`)) {
+    dl_c = 0;
+    repeat::while(dl_c.less(s`dg.w`)) {
+      dg_read_cell();
+      dl_c = variable::add([dl_c, 1]);
+    }
+    dl_r = variable::add([dl_r, 1]);
+    ml_yield(variable::multiply([s`dg.w`, 12]));
+  }
+}
+
+function dg_read_cell() {
+  dg_cell_location();
+  if (world::block_equals("minecraft:air", dl_loc)) {
+    dg_cells.append_value(0);
+  } else {
+    dg_cells.append_value(1);
+    dg_r0 = variable::min([dg_r0, dl_r]);
+    dg_r1 = variable::max([dg_r1, dl_r]);
+    dg_c0 = variable::min([dg_c0, dl_c]);
+    dg_c1 = variable::max([dg_c1, dl_c]);
+  }
+}
+
+// dg_cells -> dg_pic (DG_N x DG_N values 0 / 1, row after row): the bounding box is fitted into the
+// picture keeping its aspect ratio and centered; a picture cell is 1 if any of its source blocks is 1
+function dg_normalize() {
+  dn_h = variable::add([variable::subtract([dg_r1, dg_r0]), 1]);
+  dn_w = variable::add([variable::subtract([dg_c1, dg_c0]), 1]);
+  dn_s = variable::max([dn_h, dn_w]);
+  dn_s2 = variable::multiply([dn_s, 2]);
+  dn_oh = variable::divide([variable::add([variable::multiply([dn_h, 2, DG_N]), dn_s]), dn_s2], "FLOOR");
+  dn_ow = variable::divide([variable::add([variable::multiply([dn_w, 2, DG_N]), dn_s]), dn_s2], "FLOOR");
+  dn_oh = variable::max([1, dn_oh]);
+  dn_ow = variable::max([1, dn_ow]);
+  dn_oy = variable::divide([variable::subtract([DG_N, dn_oh]), 2], "FLOOR");
+  dn_ox = variable::divide([variable::subtract([DG_N, dn_ow]), 2], "FLOOR");
+  dg_pic = [];
+  dn_i = 0;
+  dn_nn = variable::multiply([DG_N, DG_N]);
+  repeat::while(dn_i.less(dn_nn)) {
+    dg_pic.append_value(0);
+    dn_i = variable::add([dn_i, 1]);
+  }
+  dn_r = 0;
+  repeat::while(dn_r.less(dn_oh)) {
+    dg_normalize_row();
+    dn_r = variable::add([dn_r, 1]);
+    ml_yield(variable::multiply([dn_ow, 20]));
+  }
+}
+
+// picture row dn_r: source rows dn_a..dn_b, every column of the box
+function dg_normalize_row() {
+  dn_a = variable::divide([variable::multiply([dn_r, dn_h]), dn_oh], "FLOOR");
+  dn_b = variable::divide([variable::subtract([variable::multiply([variable::add([dn_r, 1]), dn_h]), 1]), dn_oh], "FLOOR");
+  dn_c = 0;
+  repeat::while(dn_c.less(dn_ow)) {
+    dn_p = variable::divide([variable::multiply([dn_c, dn_w]), dn_ow], "FLOOR");
+    dn_q = variable::divide([variable::subtract([variable::multiply([variable::add([dn_c, 1]), dn_w]), 1]), dn_ow], "FLOOR");
+    dg_normalize_cell();
+    if (dn_v.equals(1)) {
+      dn_idx = variable::add([variable::multiply([variable::add([dn_oy, dn_r]), DG_N]), dn_ox, dn_c]);
+      dg_pic = variable::set_list_value(dg_pic, dn_idx, 1);
+    }
+    dn_c = variable::add([dn_c, 1]);
+  }
+}
+
+// OR of the source blocks rows dn_a..dn_b, columns dn_p..dn_q of the box -> dn_v
+function dg_normalize_cell() {
+  dn_v = 0;
+  dn_rr = dn_a;
+  repeat::while(dn_rr.less_or_equals(dn_b)) {
+    dn_base = variable::multiply([variable::add([dg_r0, dn_rr]), s`dg.w`]);
+    dn_cc = dn_p;
+    repeat::while(dn_cc.less_or_equals(dn_q)) {
+      dn_k = variable::add([dn_base, dg_c0, dn_cc]);
+      if (variable::get_list_value(dg_cells, dn_k).equals(1)) {
+        dn_v = 1;
+      }
+      dn_cc = variable::add([dn_cc, 1]);
+    }
+    dn_rr = variable::add([dn_rr, 1]);
+  }
+}
+
+// ---------------------------------------------------------------------
+// recognition: the ten models one after another
+// ---------------------------------------------------------------------
+// make the saved model "digit<dg_k>" the current one (all ten share one architecture, so only the
+// weight vectors are copied)
+function dg_use_model() {
+  du_names = s`mlm.digit${dg_k}.names`;
+  repeat::for_each_in_list(du_names) { du_i, du_n ->
+    s`${du_n}` = s`mlm.digit${dg_k}.w.${du_n}`;
+    ml_yield(3);
+  }
+}
+
+// dg_pic -> dg_probs (10 probabilities), dg_best, dg_best_p, dg_second, dg_second_p
+function dg_classify() {
+  if (not s`ml.im`.equals(3)) {
+    sm_name = "digit0";
+    ml_model_load();
+  }
+  if (not s`ml.in`.equals(DG_N)) {
+    sm_name = "digit0";
+    ml_model_load();
+  }
+  dg_probs = [];
+  dg_k = 0;
+  repeat::while(dg_k.less(10)) {
+    dg_use_model();
+    ck_ys = dg_pic;
+    ck_ps = dg_pic;
+    ml_check_data();
+    dg_probs.append_value(ck_prob);
+    dg_k = variable::add([dg_k, 1]);
+  }
+  dg_best_p = variable::max(dg_probs);
+  dg_best = variable::get_list_index_of_value(dg_probs, dg_best_p, "FIRST");
+  dc_rest = variable::set_list_value(dg_probs, dg_best, -1);
+  dg_second_p = variable::max(dc_rest);
+  dg_second = variable::get_list_index_of_value(dc_rest, dg_second_p, "FIRST");
+}
+
+// read, normalize, classify, show
+function dg_guess() {
+  dg_read();
+  if (dg_r1.less(0)) {
+    player::send_action_bar("&7The canvas is empty");
+  } elif (not s`mlm.digit9.cfg`.exists()) {
+    player::message("&9[Digits] &cThe digit models are not installed: &e~dg install");
+  } else {
+    dg_normalize();
+    controller::measure_time(dg_ms, "MILLISECONDS") {
+      dg_classify();
+    }
+    dg_show();
+  }
+}
+
+// result: a title for the player who drew, a chat line for everybody
+function dg_show() {
+  dw_p = variable::round(variable::multiply([dg_best_p, 100]), 1, "ROUND");
+  dw_p2 = variable::round(variable::multiply([dg_second_p, 100]), 1, "ROUND");
+  if (dg_best_p.greater_or_equals(0.5)) {
+    player::send_title("&a${dg_best}", "&f${dw_p}% &7| next: ${dg_second} (${dw_p2}%)", 5, 50, 10);
+  } else {
+    player::send_title("&e${dg_best}?", "&7not sure: ${dw_p}% | next: ${dg_second} (${dw_p2}%)", 5, 50, 10);
+  }
+  dw_all = [];
+  repeat::for_each_in_list(dg_probs) { dw_k, dw_v ->
+    dw_all.append_value("${dw_k}: ${variable::round(variable::multiply([dw_v, 100]), 0, "ROUND")}%");
+  }
+  player::message<all_players>("&9[Digits] &fIt is &a${dg_best} &f(${dw_p}%) &7| ${variable::join_text(dw_all, ", ")} &8(${dg_ms} ms)");
+}
+
+// a guess runs in a process (it yields ticks); changes made meanwhile start one more guess after it
+process dg_guess_process() {
+  g`dg.busy` = 1;
+  g`dg.again` = 0;
+  dg_guess();
+  g`dg.busy` = 0;
+  if (g`dg.again`.equals(1)) {
+    dg_schedule();
+  }
+}
+
+// auto mode: wait until the drawing has been quiet for DG_IDLE_MS, then guess
+process dg_wait_process() {
+  repeat::while(g`dg.waiting`.equals(1)) {
+    code::wait(5, "TICKS");
+    dt_quiet = variable::subtract([value::timestamp, g`dg.changed`]);
+    if (dt_quiet.greater_or_equals(DG_IDLE_MS)) {
+      g`dg.waiting` = 0;
+    }
+  }
+  if (g`dg.busy`.equals(1)) {
+    g`dg.again` = 1;
+  } else {
+    code::start_process("dg_guess_process", "DONT_COPY", "CURRENT_TARGET");
+  }
+}
+
+function dg_schedule() {
+  g`dg.changed` = value::timestamp;
+  if (not g`dg.waiting`.equals(1)) {
+    g`dg.waiting` = 1;
+    code::start_process("dg_wait_process", "DONT_COPY", "CURRENT_TARGET");
+  }
+}
+
+// event<player_place_block> / <player_break_block>
+function dg_on_block_change() {
+  if (s`dg.auto`.equals(1)) {
+    dg_in_canvas();
+    if (di_ok.equals(1)) {
+      dg_schedule();
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// chat: "~dg ..."
+// ---------------------------------------------------------------------
+function dg_on_chat() {
+  cm_msg = value::event_chat_message;
+  if (cm_msg.text_starts_with(DG_CMD_PREFIX)) {
+    world::cancel_event();
+    cm_a = variable::split_text(cm_msg, " ");
+    cm_sub = variable::get_list_value(cm_a, 1, "help");
+    cm_a2 = variable::get_list_value(cm_a, 2, "");
+    cm_a3 = variable::get_list_value(cm_a, 3, "");
+    cm_a4 = variable::get_list_value(cm_a, 4, "");
+    if (cm_sub.equals(["guess", "clear", "help", "status"])) {
+      dg_dispatch_public();
+    } else {
+      ad_u = value::uuid;
+      ad_name = value::name;
+      ml_is_admin();
+      if (ad_ok.equals(0)) {
+        player::message("&cNo permission.");
+      } else {
+        dg_dispatch_admin();
+      }
+    }
+  }
+}
+
+// commands for everybody
+function dg_dispatch_public() {
+  if (cm_sub.equals("guess")) {
+    if (g`dg.busy`.equals(1)) {
+      player::send_action_bar("&7Still thinking...");
+    } else {
+      code::start_process("dg_guess_process", "DONT_COPY", "CURRENT_TARGET");
+    }
+  } elif (cm_sub.equals("clear")) {
+    dl_f = 0;
+    dg_corner_locations();
+    world::set_region("minecraft:air", db_p1, db_p2);
+    player::send_action_bar("&7Canvas cleared");
+  } elif (cm_sub.equals("status")) {
+    dg_cmd_status();
+  } else {
+    dg_cmd_help();
+  }
+}
+
+// commands for the owner and the admins of the library
+function dg_dispatch_admin() {
+  if (cm_sub.equals("install")) {
+    cm_sub = "model";
+    cm_a2 = "import";
+    cm_a3 = DG_WEIGHTS;
+    ml_admin_command();
+  } elif (cm_sub.equals("canvas")) {
+    dg_cmd_canvas();
+  } elif (cm_sub.equals("corners")) {
+    dg_cmd_corners();
+  } elif (cm_sub.equals("auto")) {
+    s`dg.auto` = variable::subtract([1, s`dg.auto`]);
+    player::message("&9[Digits] &fAuto guess: ${s`dg.auto`}");
+  } else {
+    dg_cmd_help();
+  }
+}
+
+function dg_cmd_status() {
+  ds_n = 0;
+  repeat::for_each_in_list([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) { ds_k, ds_d ->
+    if (s`mlm.digit${ds_d}.cfg`.exists()) {
+      ds_n = variable::add([ds_n, 1]);
+    }
+  }
+  player::message("&9[Digits] &fmodels installed: ${ds_n}/10, auto guess: ${s`dg.auto`}");
+  player::message("&9[Digits] &fcanvas ${s`dg.w`} x ${s`dg.h`}, top-left (${s`dg.x1`}, ${s`dg.y1`}, ${s`dg.z1`}), columns step (${s`dg.cx`}, 0, ${s`dg.cz`})");
+}
+
+function dg_cmd_help() {
+  player::message("&9[Digits] &e~dg guess &7- recognize now | &e~dg clear &7- clear the canvas | &e~dg status");
+  player::message("&9[Digits] &7admins: &e~dg install &7- download the 10 models | &e~dg canvas &7- build a canvas in front of you");
+  player::message("&9[Digits] &e~dg corners x1 y1 z1 x2 y2 z2 &7- canvas by its top-left and bottom-right corner | &e~dg auto &7- auto guess on/off");
+}

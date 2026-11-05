@@ -246,10 +246,10 @@ function ml_param_set_number() {
 function ml_param_set_mode() {
   mp_up = variable::set_text_case(mp_v, "UPPER");
   if (mp_p.equals("im")) {
-    mp_i = variable::get_list_index_of_value(["RAW_SEQUENCE", "STATISTICAL_FEATURES", "HYBRID"], mp_up, "FIRST");
+    mp_i = variable::get_list_index_of_value(["RAW_SEQUENCE", "STATISTICAL_FEATURES", "HYBRID", "GRID"], mp_up, "FIRST");
     if (mp_i.less(0)) {
       mp_known = 2;
-      player::message("&cUse RAW_SEQUENCE, STATISTICAL_FEATURES or HYBRID");
+      player::message("&cUse RAW_SEQUENCE, STATISTICAL_FEATURES, HYBRID or GRID");
     } else {
       s`ml.im` = mp_i;
     }
@@ -471,6 +471,10 @@ process ml_import_process() {
   ml_import_json();
   if (io_ok.equals(2)) {
     ml_import_queue_manifest();
+  } elif (io_ok.equals(3)) {
+    sm_name = io_name;
+    ml_model_save();
+    ml_log("Model saved as '${sm_name}' (ready=${s`ml.ready`})");
   } elif (io_ok.equals(1)) {
     g`mlg.import_done` = variable::add([g`mlg.import_done`, 1]);
     ip_mod = variable::remainder(g`mlg.import_done`, 10, "REMAINDER");
