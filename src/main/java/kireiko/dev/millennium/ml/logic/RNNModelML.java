@@ -462,10 +462,12 @@ public final class RNNModelML implements Millennium {
             ModelIO.writeArr(out, head.V);
             out.writeDouble(head.bias);
             out.writeDouble(decisionThreshold);
-        } catch (Exception ignored) {}
+        } catch (Throwable t) {
+            Logger.error("Failed to save model to " + fileName + ": " + t);
+        }
     }
 
-    public void load(InputStream in) {
+    public boolean load(InputStream in) {
         try (DataInputStream dis = new DataInputStream(new BufferedInputStream(in))) {
             int magic = dis.readInt();
             int ver = dis.readInt();
@@ -514,7 +516,11 @@ public final class RNNModelML implements Millennium {
             } catch (EOFException ignored) {
                 decisionThreshold = CHECKPOINT_DECISION_THRESHOLD;
             }
-        } catch (Exception ignored) {}
+            return true;
+        } catch (Throwable t) {
+            Logger.error("Failed to load model: " + t);
+            return false;
+        }
     }
 
     private static int clamp(int v, int n) {
@@ -560,7 +566,7 @@ public final class RNNModelML implements Millennium {
     }
 
     private static void readInto(DataInputStream in, double[] dst) throws Exception {
-        double[] a = ModelIO.readArr(in);
+        double[] a = ModelIO.readArr(in, dst.length);
         if (a == null) return;
         System.arraycopy(a, 0, dst, 0, Math.min(a.length, dst.length));
     }

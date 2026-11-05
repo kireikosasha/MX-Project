@@ -6,8 +6,8 @@ import kireiko.dev.millennium.ml.data.ResultML;
 import kireiko.dev.millennium.ml.data.statistic.StatisticML;
 import kireiko.dev.millennium.vectors.Pair;
 import lombok.Data;
-import lombok.SneakyThrows;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -25,11 +25,10 @@ public class ModelML implements Serializable, Millennium {
             this.table.add(new DataML(stackSize));
     }
 
-    @SneakyThrows
     @Override
     public ResultML checkData(final List<ObjectML> o) {
         if (o.size() != this.table.size()) {
-            throw new Exception("The number of tables in the input data should be" +
+            throw new IllegalArgumentException("The number of tables in the input data should be" +
                             " equal to what is specified in the model");
         }
         final ResultML result = new ResultML();
@@ -43,12 +42,11 @@ public class ModelML implements Serializable, Millennium {
         }
         return result;
     }
-    @SneakyThrows
     @Override
     public void learnByData(List<ObjectML> o, boolean isMustBeBlocked) {
         Logger.info("Training a model...");
         if (o.size() != this.table.size()) {
-            throw new Exception("The number of tables in the input data should be" +
+            throw new IllegalArgumentException("The number of tables in the input data should be" +
                             " equal to what is specified in the model");
         }
         for (int i = 0; i < this.table.size(); i++) {
@@ -69,12 +67,13 @@ public class ModelML implements Serializable, Millennium {
         Logger.info("Fixed " + fixed + " false positives.");
     }
 
-    @SneakyThrows
     @Override
     public void saveToFile(String fileName) {
         try (ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(Paths.get(fileName)))) {
             oos.writeObject(this);
             Logger.info("ModelML was successfully saved to " + fileName);
+        } catch (IOException e) {
+            Logger.error("Failed to save ModelML to " + fileName + ": " + e.getMessage());
         }
     }
 

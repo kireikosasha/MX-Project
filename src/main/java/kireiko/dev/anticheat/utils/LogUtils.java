@@ -2,7 +2,6 @@ package kireiko.dev.anticheat.utils;
 
 import kireiko.dev.anticheat.MX;
 import kireiko.dev.anticheat.core.AsyncScheduler;
-import lombok.SneakyThrows;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -19,10 +18,15 @@ public final class LogUtils {
         }
     }
 
-    @SneakyThrows
     public static boolean createLog(String playerName) {
         File logFile = new File(LOGS_FOLDER, playerName + ".log");
-        if (!logFile.exists()) return logFile.createNewFile();
+        if (!logFile.exists()) {
+            try {
+                return logFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return false;
     }
 
@@ -37,7 +41,7 @@ public final class LogUtils {
     }
 
     public static void overwriteLog(String playerName, String logMessage) {
-        AsyncScheduler.run(() -> {
+        AsyncScheduler.runIO(() -> {
             File logFile = new File(LOGS_FOLDER, playerName + ".log");
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, false))) {
                 writer.write(logMessage);

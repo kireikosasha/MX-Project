@@ -7,10 +7,10 @@ import kireiko.dev.anticheat.api.events.UseEntityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.managers.CheckManager;
 import kireiko.dev.millennium.math.Statistics;
+import kireiko.dev.millennium.types.ConcurrentEvictingList;
 import kireiko.dev.millennium.vectors.Vec2f;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 public final class AimStatisticsCheck implements PacketCheckHandler {
@@ -23,10 +23,10 @@ public final class AimStatisticsCheck implements PacketCheckHandler {
 
     public AimStatisticsCheck(PlayerProfile profile) {
         this.profile = profile;
-        this.rawRotations = new CopyOnWriteArrayList<>();
+        this.rawRotations = new ConcurrentEvictingList<>(32);
         this.lastAttack = 0L;
-        this.buffer = new CopyOnWriteArrayList<>();
-        this.shannonAnalysis = new CopyOnWriteArrayList<>();
+        this.buffer = new ConcurrentEvictingList<>(16);
+        this.shannonAnalysis = new ConcurrentEvictingList<>(16);
         for (int i = 0; i < 16; i++) this.buffer.add(0.0f);
         if (CheckManager.classCheck(this.getClass()))
             this.localCfg = CheckManager.getConfig(this.getClass());
