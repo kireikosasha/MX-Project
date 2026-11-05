@@ -5,7 +5,8 @@
 //  bounding box and fitted into a 10 x 10 picture (so the size and the place of the digit do not
 //  matter: a 3 x 3 digit in a corner and a 20-block digit are read the same way). Ten Millennium
 //  models (one per digit, input mode GRID, one row of the picture per time step) give the
-//  probability "this is my digit"; the highest one wins.
+//  probability "this is my digit"; the highest one wins. The models share one encoder, so a guess
+//  costs one LSTM pass plus ten heads.
 //
 //  Install the models once:   ~dg install
 //  Build a canvas in front:   ~dg canvas
@@ -354,6 +355,9 @@ function dg_use_model() {
 }
 
 // dg_pic -> dg_probs (10 probabilities), dg_best, dg_best_p, dg_second, dg_second_p
+// The installed digit models share the encoder (LSTM + attention) and differ in the head, so the
+// encoder runs once and the ten heads after it. A model with its own encoder (fine-tuned in the world)
+// is recognized by its attention row and run in full.
 function dg_classify() {
   if (not s`ml.im`.equals(3)) {
     sm_name = "digit0";
@@ -363,14 +367,16 @@ function dg_classify() {
     sm_name = "digit0";
     ml_model_load();
   }
+  ck_ys = dg_pic;
+  ck_ps = dg_pic;
+  ml_check_data();
+  dg_pool1 = variable::append_list(g`mlg.one`, fw_pooled);
+  dg_attn = s`ml.attn`;
+  dg_attn2 = variable::mathematical_expectation(dg_attn, dg_attn);
   dg_probs = [];
   dg_k = 0;
   repeat::while(dg_k.less(10)) {
-    dg_use_model();
-    ck_ys = dg_pic;
-    ck_ps = dg_pic;
-    ml_check_data();
-    dg_probs.append_value(ck_prob);
+    dg_head_probability();
     dg_k = variable::add([dg_k, 1]);
   }
   dg_best_p = variable::max(dg_probs);
@@ -378,6 +384,29 @@ function dg_classify() {
   dc_rest = variable::set_list_value(dg_probs, dg_best, -1);
   dg_second_p = variable::max(dc_rest);
   dg_second = variable::get_list_index_of_value(dc_rest, dg_second_p, "FIRST");
+}
+
+// probability of digit dg_k: its head on the pooled vector when it shares the encoder, else a full run
+function dg_head_probability() {
+  dh_a = s`mlm.digit${dg_k}.w.ml.attn`;
+  dh_x = variable::mathematical_expectation(dh_a, dg_attn);
+  dh_y = variable::mathematical_expectation(dh_a, dh_a);
+  dh_same = 0;
+  if (dh_x.equals(dg_attn2)) {
+    if (dh_y.equals(dg_attn2)) {
+      dh_same = 1;
+    }
+  }
+  if (dh_same.equals(1)) {
+    dh_logit = variable::mathematical_expectation(s`mlm.digit${dg_k}.w.ml.head`, dg_pool1);
+    dg_probs.append_value(mli_sigm500(dh_logit));
+  } else {
+    dg_use_model();
+    ck_ys = dg_pic;
+    ck_ps = dg_pic;
+    ml_check_data();
+    dg_probs.append_value(ck_prob);
+  }
 }
 
 // read, normalize, classify, show
