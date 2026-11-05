@@ -53,7 +53,7 @@ public final class Statistics {
     }
 
     public static double getMax(final Collection<? extends Number> collection) {
-        double max = Double.MIN_VALUE;
+        double max = -Double.MAX_VALUE;
 
         for (final Number number : collection) {
             max = Math.max(max, number.doubleValue());

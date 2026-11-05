@@ -5,11 +5,6 @@ import lombok.Getter;
 @Getter
 public class Vec3i implements Comparable {
     /**
-     * The Null vector constant (0, 0, 0)
-     */
-    public static final Vec3i NULL_VECTOR = new Vec3i(0, 0, 0);
-
-    /**
      * X coordinate
      * -- GETTER --
      * Get the X coordinate

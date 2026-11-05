@@ -15,11 +15,11 @@ import kireiko.dev.millennium.ml.data.ResultML;
 import kireiko.dev.millennium.ml.data.module.FlagType;
 import kireiko.dev.millennium.ml.data.module.ModuleML;
 import kireiko.dev.millennium.ml.data.module.ModuleResultML;
+import kireiko.dev.millennium.types.ConcurrentEvictingList;
 import kireiko.dev.millennium.vectors.Vec2f;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class AimMLCheck implements PacketCheckHandler {
 
@@ -34,8 +34,8 @@ public final class AimMLCheck implements PacketCheckHandler {
 
     public AimMLCheck(PlayerProfile profile) {
         this.profile = profile;
-        this.rawRotations = new CopyOnWriteArrayList<>();
-        this.rnnRotations = new CopyOnWriteArrayList<>();
+        this.rawRotations = new ConcurrentEvictingList<>(600);
+        this.rnnRotations = new ConcurrentEvictingList<>(150);
         this.lastAttack = 0L;
         if (CheckManager.classCheck(this.getClass()))
             this.localCfg = CheckManager.getConfig(this.getClass());
