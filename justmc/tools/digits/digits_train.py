@@ -5,10 +5,11 @@ Trains the ten digit models of the Millennium digit demo and writes them in the 
 Every digit d gets its own Millennium RNN (one-vs-rest): input mode GRID (one row of the N x N
 picture per time step), one bidirectional LSTM layer with LayerNorm, attention pooling and the
 sigmoid head - the same forward pass as ml_net.jc, so the weights run unchanged in JustMC.
-The ten models are trained together (batched) with softmax cross-entropy over their ten logits
-plus the binary loss of every model.
+By default the ten models share the encoder (LSTM + attention) and differ in the head: JustMC
+then runs the encoder once and the ten heads after it (--separate: ten independent models).
+Loss: softmax cross-entropy over the ten logits plus the binary loss of every model.
 
-    python digits_train.py --data data.npz --out weights/digits --hidden 24 --epochs 30
+    python digits_train.py --data data.npz --out weights/digits --hidden 32 --epochs 30 --batch 512 --lr 4e-3
 """
 import argparse
 import json
@@ -22,11 +23,14 @@ GATES = "fico"   # row order of the library: forget, input, candidate (c), outpu
 
 
 class DigitModels(torch.nn.Module):
-    """K independent Millennium models (1 layer, bidirectional) evaluated in one pass."""
+    """K Millennium models (1 layer, bidirectional) evaluated in one pass. With shared=True they
+    have one encoder (LSTM + attention) and K heads."""
 
-    def __init__(self, k, n_in, hid):
+    def __init__(self, k, n_in, hid, shared=False):
         super().__init__()
-        self.k, self.n_in, self.hid = k, n_in, hid
+        self.heads, self.n_in, self.hid, self.shared = k, n_in, hid, shared
+        k = 1 if shared else k
+        self.k = k
         s_in = math.sqrt(6.0 / (n_in + hid))
         s_h = math.sqrt(1.0 / hid)
         self.Wx = torch.nn.Parameter(torch.empty(k, 2, 4, hid, n_in).uniform_(-s_in, s_in))
@@ -39,8 +43,8 @@ class DigitModels(torch.nn.Module):
         out = 2 * hid
         self.aW = torch.nn.Parameter(torch.empty(k, out).uniform_(-0.1, 0.1))
         self.aB = torch.nn.Parameter(torch.zeros(k))
-        self.hV = torch.nn.Parameter(torch.empty(k, out).uniform_(-0.1, 0.1))
-        self.hB = torch.nn.Parameter(torch.zeros(k))
+        self.hV = torch.nn.Parameter(torch.empty(self.heads, out).uniform_(-0.1, 0.1))
+        self.hB = torch.nn.Parameter(torch.zeros(self.heads))
 
     def forward(self, x, dropout=0.0):
         """x: [B, T, n_in] -> logits [K, B]   (models and directions are batched as KD = K*2)"""
@@ -84,6 +88,8 @@ class DigitModels(torch.nn.Module):
         e = torch.exp(sc - sc.max(-1, keepdim=True).values)
         a = e / (e.sum(-1, keepdim=True) + 1e-10)
         pooled = torch.matmul(a.unsqueeze(2), H).squeeze(2)            # [K, B, 2H]
+        if self.shared:
+            return torch.matmul(self.hV, pooled[0].t()) + self.hB[:, None]   # [heads, B]
         return torch.matmul(pooled, self.hV[:, :, None]).squeeze(-1) + self.hB[:, None]
 
 
@@ -108,9 +114,11 @@ def fmt(v):
     return float("%.10g" % float(v))
 
 
-def model_files(m, k, n_in, prefix, max_chars=24000):
-    """Millennium JSON files (header, LayerNorm, gate rows) of model k -> list of (name, text)"""
+def model_parts(m, k, n_in, max_chars=24000):
+    """Millennium JSON texts of model k: header (config, embedding, attention, head), LayerNorm,
+    gate rows"""
     hid = m.hid
+    e = 0 if m.shared else k
     P = {name: p.detach().double().numpy() for name, p in m.named_parameters()}
     cfg = {"inputSize": n_in, "hiddenSize": hid, "numLayers": 1, "bidirectional": 1, "inputMode": 3,
            "poolingMode": 3, "learningRate": 0.001, "dropoutRate": 0.1, "recurrentDropoutRate": 0.0,
@@ -118,38 +126,48 @@ def model_files(m, k, n_in, prefix, max_chars=24000):
            "step": 0, "optT": 0, "decisionThreshold": 0.5}
     head = {"format": "millennium", "version": 6, "config": cfg,
             "embWy": [0.0] * n_in, "embWp": [0.0] * n_in, "embB": [0.0] * n_in,
-            "attnW": [fmt(v) for v in P["aW"][k]], "attnB": fmt(P["aB"][k]),
+            "attnW": [fmt(v) for v in P["aW"][e]], "attnB": fmt(P["aB"][e]),
             "headV": [fmt(v) for v in P["hV"][k]], "headBias": fmt(P["hB"][k])}
-    ln = {"format": "millennium", "ln": {str(d): {"g": [fmt(v) for v in P["gam"][k, d]],
-                                                   "b": [fmt(v) for v in P["bet"][k, d]]} for d in (0, 1)}}
+    ln = {"format": "millennium", "ln": {str(d): {"g": [fmt(v) for v in P["gam"][e, d]],
+                                                   "b": [fmt(v) for v in P["bet"][e, d]]} for d in (0, 1)}}
     rows = []
     for d in (0, 1):
         for n in range(hid):
             for gi, g in enumerate(GATES):
-                row = [P["b"][k, d, gi, n]] + list(P["Wx"][k, d, gi, n]) + list(P["Wh"][k, d, gi, n])
+                row = [P["b"][e, d, gi, n]] + list(P["Wx"][e, d, gi, n]) + list(P["Wh"][e, d, gi, n])
                 rows.append([d, g, n, [fmt(v) for v in row]])
-    texts = [json.dumps(head, separators=(",", ":")), json.dumps(ln, separators=(",", ":"))]
+    enc = [json.dumps(ln, separators=(",", ":"))]
     cur = []
     for r in rows:
         if cur and len(json.dumps({"format": "millennium", "rows": cur + [r]}, separators=(",", ":"))) > max_chars:
-            texts.append(json.dumps({"format": "millennium", "rows": cur}, separators=(",", ":")))
+            enc.append(json.dumps({"format": "millennium", "rows": cur}, separators=(",", ":")))
             cur = []
         cur.append(r)
-    texts.append(json.dumps({"format": "millennium", "rows": cur}, separators=(",", ":")))
-    return [(f"{prefix}{k}-{i:03d}.json", t) for i, t in enumerate(texts)]
+    enc.append(json.dumps({"format": "millennium", "rows": cur}, separators=(",", ":")))
+    return json.dumps(head, separators=(",", ":")), enc
 
 
 def export(m, n_in, out_dir, name="digits"):
+    """manifest: (header + encoder files of model k) + save entry for k = 0..9; with a shared encoder
+    the encoder files are written once (the import keeps them while the headers change)"""
     os.makedirs(out_dir, exist_ok=True)
+    for f in os.listdir(out_dir):
+        if f.endswith(".json"):
+            os.remove(os.path.join(out_dir, f))
     manifest = []
-    for k in range(m.k):
-        for fname, text in model_files(m, k, n_in, "digit"):
-            assert len(text) <= 24000, (fname, len(text))
-            open(os.path.join(out_dir, fname), "w").write(text)
-            manifest.append(fname)
-        sname = f"save-digit{k}.json"
-        open(os.path.join(out_dir, sname), "w").write(json.dumps({"format": "millennium", "save": f"digit{k}"}))
-        manifest.append(sname)
+
+    def put(fname, text):
+        assert len(text) <= 24000, (fname, len(text))
+        open(os.path.join(out_dir, fname), "w").write(text)
+        manifest.append(fname)
+
+    for k in range(m.heads):
+        head, enc = model_parts(m, k, n_in)
+        put(f"digit{k}-head.json", head)
+        if k == 0 or not m.shared:
+            for i, t in enumerate(enc):
+                put(f"{'encoder' if m.shared else f'digit{k}'}-{i:03d}.json", t)
+        put(f"save-digit{k}.json", json.dumps({"format": "millennium", "save": f"digit{k}"}))
     open(os.path.join(out_dir, name + ".json"), "w").write(
         json.dumps({"format": "millennium", "manifest": manifest}, separators=(",", ":")))
     print(f"written {out_dir}/{name}.json (manifest) + {len(manifest)} files")
@@ -165,6 +183,7 @@ def main():
     ap.add_argument("--lr", type=float, default=3e-3)
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--threads", type=int, default=2)
+    ap.add_argument("--separate", action="store_true", help="ten independent encoders")
     a = ap.parse_args()
     torch.set_num_threads(a.threads)
     torch.manual_seed(a.seed)
@@ -173,8 +192,9 @@ def main():
     xtr, ytr = D["xtr"].reshape(len(D["xtr"]), -1), D["ytr"].astype(np.int64)
     xva, yva, sva = D["xva"].reshape(len(D["xva"]), -1), D["yva"].astype(np.int64), D["sva"]
     n = int(round(math.sqrt(xtr.shape[1])))
-    m = DigitModels(10, n, a.hidden)
-    print("parameters per model:", sum(p.numel() for p in m.parameters()) // 10 + 3 * n)
+    m = DigitModels(10, n, a.hidden, shared=not a.separate)
+    enc = sum(p.numel() for name, p in m.named_parameters() if name not in ("hV", "hB")) // m.k
+    print("parameters per digit model:", enc + 2 * a.hidden * 2 + 1 + 3 * n, "(shared encoder)" if m.shared else "")
     opt = torch.optim.AdamW(m.parameters(), lr=a.lr, weight_decay=1e-4)
     steps = a.epochs * math.ceil(len(xtr) / a.batch)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=a.lr, total_steps=steps, pct_start=0.1)
@@ -215,7 +235,8 @@ def main():
     print("confusion (rows = true digit):")
     for d in range(10):
         print(d, " ".join(f"{v:5d}" for v in conf[d]))
-    torch.save(m.state_dict(), os.path.join(os.path.dirname(a.data), "digits_model.pt"))
+    torch.save({"state": m.state_dict(), "hidden": a.hidden, "shared": m.shared, "n": n},
+               os.path.join(os.path.dirname(os.path.abspath(a.data)), "digits_model.pt"))
     export(m, n, a.out)
 
 

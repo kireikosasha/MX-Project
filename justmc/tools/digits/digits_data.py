@@ -24,7 +24,7 @@ from multiprocessing import Pool
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-N = 10        # normalized picture: N x N, one row per time step
+N = 14        # normalized picture: N x N, one row per time step
 CANVAS = 20   # the canvas in the world is CANVAS x CANVAS blocks
 
 

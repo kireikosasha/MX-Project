@@ -2,7 +2,7 @@
 //  demo_digits.jc — demo 2 of the Millennium library: recognition of drawn digits 0-9.
 //
 //  A 20 x 20 wall of blocks is the canvas: a block is 1, air is 0. The drawing is cut to its
-//  bounding box and fitted into a 10 x 10 picture (so the size and the place of the digit do not
+//  bounding box and fitted into a 14 x 14 picture (so the size and the place of the digit do not
 //  matter: a 3 x 3 digit in a corner and a 20-block digit are read the same way). Ten Millennium
 //  models (one per digit, input mode GRID, one row of the picture per time step) give the
 //  probability "this is my digit"; the highest one wins. The models share one encoder, so a guess
@@ -15,7 +15,7 @@
 import "./ml_admin.jc";
 
 inline var DG_CMD_PREFIX = "~dg";
-inline var DG_N = 10;                 // picture side = s`ml.in` of the digit models
+inline var DG_N = 14;                 // picture side = s`ml.in` of the digit models
 inline var DG_MAX = 32;               // largest canvas side accepted by ~dg corners
 inline var DG_WEIGHTS = "https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/weights/digits/digits.json";
 inline var DG_BACK = "minecraft:white_concrete";   // wall behind the canvas
