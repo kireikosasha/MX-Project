@@ -28,7 +28,9 @@ def load(path):
 
 def translate(sents, pair, cache_dir, dev, batch):
     import torch
+    import transformers
     from transformers import MarianMTModel, MarianTokenizer
+    transformers.logging.set_verbosity_error()             # no warning per batch
     cache_path = os.path.join(cache_dir, f"cache_{pair[0]}_{pair[1]}.jsonl")
     done = {}
     if os.path.exists(cache_path):
@@ -47,7 +49,7 @@ def translate(sents, pair, cache_dir, dev, batch):
             for i in range(0, len(todo), batch):
                 src = todo[i:i + batch]
                 b = tok(src, return_tensors="pt", padding=True, truncation=True, max_length=96).to(dev)
-                gen = m.generate(**b, num_beams=1, max_new_tokens=80)
+                gen = m.generate(**b, num_beams=1, max_length=96)
                 for s, t in zip(src, tok.batch_decode(gen, skip_special_tokens=True)):
                     done[s] = t
                     out.write(json.dumps({"s": s, "t": t}, ensure_ascii=False) + "\n")
