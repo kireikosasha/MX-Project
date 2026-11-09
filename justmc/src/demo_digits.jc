@@ -8,7 +8,8 @@
 //  probability "this is my digit"; the highest one wins. The models share one encoder, so a guess
 //  costs one LSTM pass plus ten heads.
 //
-//  Install the models once:   ~dg install
+//  Install the models once:   ~dg install          (small: BiLSTM 32, faster)
+//                             ~dg install huge     (huge: BiLSTM 48, more accurate, big digits)
 //  Build a canvas in front:   ~dg canvas
 //  Draw with any block; the guess appears ~1 s after the last block (or ~dg guess).
 // =====================================================================
@@ -18,6 +19,8 @@ inline var DG_CMD_PREFIX = "~dg";
 inline var DG_N = 14;                 // picture side = s`ml.in` of the digit models
 inline var DG_MAX = 32;               // largest canvas side accepted by ~dg corners
 inline var DG_WEIGHTS = "https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/weights/digits/digits.json";
+inline var DG_WEIGHTS_HUGE = "https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/weights/digits-huge/digits.json";
+// the small pack is saved as digit0 .. digit9, the huge one as digithuge0 .. digithuge9
 inline var DG_BACK = "minecraft:white_concrete";   // wall behind the canvas
 inline var DG_IDLE_MS = 1200;         // auto guess after this pause in drawing
 
@@ -80,6 +83,9 @@ function dg_boot() {
   if (not s`dg.auto`.exists()) {
     s`dg.auto` = 1;
   }
+  if (not s`dg.pack`.exists()) {
+    s`dg.pack` = "digit";
+  }
   g`dg.busy` = 0;
   g`dg.again` = 0;
   g`dg.waiting` = 0;
@@ -91,8 +97,9 @@ function dg_on_join() {
   player::allow_placing_breaking_blocks("minecraft:black_concrete", "TRUE");
   player::give_items([item("minecraft:black_concrete", count=64)], 1);
   player::message("&9[Digits] &fDraw a digit 0-9 on the canvas with blocks, then wait a second. &7~dg help");
-  if (not s`mlm.digit9.cfg`.exists()) {
-    player::message("&9[Digits] &cThe digit models are not installed: &e~dg install");
+  dg_pk = s`dg.pack`;
+  if (not s`mlm.${dg_pk}9.cfg`.exists()) {
+    player::message("&9[Digits] &cThe digit models are not installed: &e~dg install &7or &e~dg install huge");
   }
 }
 
@@ -344,13 +351,39 @@ function dg_normalize_cell() {
 // ---------------------------------------------------------------------
 // recognition: the ten models one after another
 // ---------------------------------------------------------------------
-// make the saved model "digit<dg_k>" the current one (all ten share one architecture, so only the
+// make the saved model "<pack><dg_k>" the current one (all ten share one architecture, so only the
 // weight vectors are copied)
 function dg_use_model() {
-  du_names = s`mlm.digit${dg_k}.names`;
+  du_names = s`mlm.${dg_pk}${dg_k}.names`;
   repeat::for_each_in_list(du_names) { du_i, du_n ->
-    s`${du_n}` = s`mlm.digit${dg_k}.w.${du_n}`;
+    s`${du_n}` = s`mlm.${dg_pk}${dg_k}.w.${du_n}`;
     ml_yield(3);
+  }
+}
+
+// the current model must be model 0 of the pack: same architecture and the same encoder (attention
+// row); otherwise model 0 is loaded (switching between small and huge, or after ~ml model load)
+function dg_ensure_pack() {
+  de_cfg = s`mlm.${dg_pk}0.cfg`;
+  de_ok = 0;
+  if (s`ml.im`.equals(3)) {
+    if (s`ml.in`.equals(variable::get_list_value(de_cfg, 0))) {
+      if (s`ml.hid`.equals(variable::get_list_value(de_cfg, 1))) {
+        de_ok = 1;
+      }
+    }
+  }
+  if (de_ok.equals(1)) {
+    de_a = s`mlm.${dg_pk}0.w.ml.attn`;
+    de_x = variable::mathematical_expectation(de_a, s`ml.attn`);
+    de_y = variable::mathematical_expectation(de_a, de_a);
+    if (not de_x.equals(de_y)) {
+      de_ok = 0;
+    }
+  }
+  if (de_ok.equals(0)) {
+    sm_name = "${dg_pk}0";
+    ml_model_load();
   }
 }
 
@@ -359,14 +392,7 @@ function dg_use_model() {
 // encoder runs once and the ten heads after it. A model with its own encoder (fine-tuned in the world)
 // is recognized by its attention row and run in full.
 function dg_classify() {
-  if (not s`ml.im`.equals(3)) {
-    sm_name = "digit0";
-    ml_model_load();
-  }
-  if (not s`ml.in`.equals(DG_N)) {
-    sm_name = "digit0";
-    ml_model_load();
-  }
+  dg_ensure_pack();
   ck_ys = dg_pic;
   ck_ps = dg_pic;
   ml_check_data();
@@ -388,7 +414,7 @@ function dg_classify() {
 
 // probability of digit dg_k: its head on the pooled vector when it shares the encoder, else a full run
 function dg_head_probability() {
-  dh_a = s`mlm.digit${dg_k}.w.ml.attn`;
+  dh_a = s`mlm.${dg_pk}${dg_k}.w.ml.attn`;
   dh_x = variable::mathematical_expectation(dh_a, dg_attn);
   dh_y = variable::mathematical_expectation(dh_a, dh_a);
   dh_same = 0;
@@ -398,7 +424,7 @@ function dg_head_probability() {
     }
   }
   if (dh_same.equals(1)) {
-    dh_logit = variable::mathematical_expectation(s`mlm.digit${dg_k}.w.ml.head`, dg_pool1);
+    dh_logit = variable::mathematical_expectation(s`mlm.${dg_pk}${dg_k}.w.ml.head`, dg_pool1);
     dg_probs.append_value(mli_sigm500(dh_logit));
   } else {
     dg_use_model();
@@ -411,11 +437,12 @@ function dg_head_probability() {
 
 // read, normalize, classify, show
 function dg_guess() {
+  dg_pk = s`dg.pack`;
   dg_read();
   if (dg_r1.less(0)) {
     player::send_action_bar("&7The canvas is empty");
-  } elif (not s`mlm.digit9.cfg`.exists()) {
-    player::message("&9[Digits] &cThe digit models are not installed: &e~dg install");
+  } elif (not s`mlm.${dg_pk}9.cfg`.exists()) {
+    player::message("&9[Digits] &cThe ${s`dg.pack`} models are not installed: &e~dg install &7(small) or &e~dg install huge");
   } else {
     dg_normalize();
     controller::measure_time(dg_ms, "MILLISECONDS") {
@@ -536,10 +563,9 @@ function dg_dispatch_public() {
 // commands for the owner and the admins of the library
 function dg_dispatch_admin() {
   if (cm_sub.equals("install")) {
-    cm_sub = "model";
-    cm_a2 = "import";
-    cm_a3 = DG_WEIGHTS;
-    ml_admin_command();
+    dg_cmd_install();
+  } elif (cm_sub.equals("model")) {
+    dg_cmd_model();
   } elif (cm_sub.equals("canvas")) {
     dg_cmd_canvas();
   } elif (cm_sub.equals("corners")) {
@@ -552,19 +578,59 @@ function dg_dispatch_admin() {
   }
 }
 
-function dg_cmd_status() {
+// ~dg install [huge]: download a pack of ten models and use it
+function dg_cmd_install() {
+  if (cm_a2.equals("huge")) {
+    s`dg.pack` = "digithuge";
+    cm_a3 = DG_WEIGHTS_HUGE;
+  } else {
+    s`dg.pack` = "digit";
+    cm_a3 = DG_WEIGHTS;
+  }
+  cm_sub = "model";
+  cm_a2 = "import";
+  ml_admin_command();
+}
+
+// ~dg model small|huge: which installed pack the guesses use
+function dg_cmd_model() {
+  if (cm_a2.equals("huge")) {
+    s`dg.pack` = "digithuge";
+  } elif (cm_a2.equals("small")) {
+    s`dg.pack` = "digit";
+  } else {
+    player::message("&cUse: ~dg model small | huge");
+  }
+  dg_pk = s`dg.pack`;
+  if (s`mlm.${dg_pk}9.cfg`.exists()) {
+    player::message("&9[Digits] &fGuesses use the &e${dg_pk} &fmodels.");
+  } else {
+    player::message("&9[Digits] &cThe ${dg_pk} models are not installed yet: &e~dg install &7(small) or &e~dg install huge");
+  }
+}
+
+// how many models of a pack (ds_pk) are installed -> ds_n
+function dg_count_pack() {
   ds_n = 0;
   repeat::for_each_in_list([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) { ds_k, ds_d ->
-    if (s`mlm.digit${ds_d}.cfg`.exists()) {
+    if (s`mlm.${ds_pk}${ds_d}.cfg`.exists()) {
       ds_n = variable::add([ds_n, 1]);
     }
   }
-  player::message("&9[Digits] &fmodels installed: ${ds_n}/10, auto guess: ${s`dg.auto`}");
+}
+
+function dg_cmd_status() {
+  ds_pk = "digit";
+  dg_count_pack();
+  ds_small = ds_n;
+  ds_pk = "digithuge";
+  dg_count_pack();
+  player::message("&9[Digits] &fmodels: small ${ds_small}/10, huge ${ds_n}/10; guesses use &e${s`dg.pack`}&f; auto guess: ${s`dg.auto`}");
   player::message("&9[Digits] &fcanvas ${s`dg.w`} x ${s`dg.h`}, top-left (${s`dg.x1`}, ${s`dg.y1`}, ${s`dg.z1`}), columns step (${s`dg.cx`}, 0, ${s`dg.cz`})");
 }
 
 function dg_cmd_help() {
   player::message("&9[Digits] &e~dg guess &7- recognize now | &e~dg clear &7- clear the canvas | &e~dg status");
-  player::message("&9[Digits] &7admins: &e~dg install &7- download the 10 models | &e~dg canvas &7- build a canvas in front of you");
+  player::message("&9[Digits] &7admins: &e~dg install [huge] &7- download the 10 models | &e~dg model small|huge &7- which ones to use | &e~dg canvas &7- build a canvas in front of you");
   player::message("&9[Digits] &e~dg corners x1 y1 z1 x2 y2 z2 &7- canvas by its top-left and bottom-right corner | &e~dg auto &7- auto guess on/off");
 }
