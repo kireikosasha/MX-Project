@@ -1,9 +1,11 @@
 // =====================================================================
 //  probe_ai.jc — checks of the JustMC world before the Millennium reader ("mini LLM with search"):
-//    ~pr web            requests to Wikipedia (ru / uk / en), Open-Meteo, DuckDuckGo: codes, sizes,
-//                       parsed titles and texts, Cyrillic in URLs (percent-encoded and raw)
+//    ~pr web            requests one by one (GitHub as the control, Wikipedia ru / uk / en, Open-Meteo,
+//                       DuckDuckGo; with and without a User-Agent header): code, size, parsed text,
+//                       or "no answer" after 6 s
 //    ~pr text           Cyrillic / Ukrainian text operations and the URL encoder
-//    ~pr speed          actions per second at several yield budgets, TPS and CPU of the world
+//    ~pr speed          light actions per second and multiply-adds per second (dot products of
+//                       1000 numbers), with the CPU of the world kept under PR_CPU_MAX
 //    ~pr store <n>      write n numbers into save variables (lists of 1000), checksums kept
 //    ~pr check          read them back and compare (run it after a restart of the world)
 //    ~pr clear          delete them
@@ -12,12 +14,16 @@
 
 inline var PR_UA = "MillenniumJustMC/0.1 (Minecraft JustMC world module; https://github.com/kireikosasha/MX-Project)";
 inline var PR_HEX = "0123456789ABCDEF";
+inline var PR_CPU_MAX = 60;   // the code waits while the CPU usage of the world is above this (%)
 
 event<world_start> {
-  g`pr.urls` = [];
-  g`pr.tags` = [];
+  g`pr.answered` = 0;
+  g`pr.cur_tag` = "";
   g`pr.acc` = 0;
-  g`pr.budget` = 4000;
+  g`pr.budget` = 2000;
+  g`pr.throttle` = 0;
+  g`pr.cpu_peak` = 0;
+  g`pr.busy` = 0;
 }
 
 event<player_chat> {
@@ -35,12 +41,32 @@ event<world_web_exception> {
 // ---------------------------------------------------------------------
 // helpers
 // ---------------------------------------------------------------------
-// one tick is yielded every g`pr.budget` estimated actions
+// one tick is yielded every g`pr.budget` units of work (an action = 1, a dot product of n numbers = n),
+// then more ticks while the CPU usage of the world is above PR_CPU_MAX (counted in g`pr.throttle`)
 function pr_yield(py_cost: number) {
   g`pr.acc` = variable::add([g`pr.acc`, py_cost]);
   if (g`pr.acc`.greater_or_equals(g`pr.budget`)) {
     g`pr.acc` = 0;
     code::wait(1, "TICKS");
+    pr_cpu_wait();
+  }
+}
+
+function pr_cpu_wait() {
+  py_n = 0;
+  py_go = 1;
+  repeat::while(py_go.equals(1)) {
+    py_go = 0;
+    py_cpu = value::cpu_usage;
+    g`pr.cpu_peak` = variable::max([g`pr.cpu_peak`, py_cpu]);
+    if (py_cpu.greater(PR_CPU_MAX)) {
+      if (py_n.less(400)) {
+        code::wait(1, "TICKS");
+        py_n = variable::add([py_n, 1]);
+        g`pr.throttle` = variable::add([g`pr.throttle`, 1]);
+        py_go = 1;
+      }
+    }
   }
 }
 
@@ -114,61 +140,99 @@ function pr_urlencode_three_bytes() {
 // ---------------------------------------------------------------------
 // ~pr web
 // ---------------------------------------------------------------------
-// send one GET request (pw_tag, pw_url) with a User-Agent and remember it
-function pr_request() {
-  g`pr.urls`.append_value(pw_url);
-  g`pr.tags`.append_value(pw_tag);
-  world::send_web_request(pw_url, "", {"User-Agent": PR_UA, "Api-User-Agent": PR_UA}, "GET", "TEXT_PLAIN");
-  pr_say("&7-> ${pw_tag}");
+// queue one request: tag, url, 1 = with a User-Agent header
+function pr_queue() {
+  g`pr.q_tags`.append_value(pw_tag);
+  g`pr.q_urls`.append_value(pw_url);
+  g`pr.q_hdr`.append_value(pw_hdr);
 }
 
 function pr_cmd_web() {
-  g`pr.urls` = [];
-  g`pr.tags` = [];
+  g`pr.q_tags` = [];
+  g`pr.q_urls` = [];
+  g`pr.q_hdr` = [];
+  pw_hdr = 0;
+  pw_tag = "github (control, no header)";
+  pw_url = "https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/weights/digits/save-digit0.json";
+  pr_queue();
+  pw_hdr = 1;
+  pw_tag = "github (control, User-Agent)";
+  pr_queue();
   pe_text = "столица Франции";
   pr_urlencode();
-  pw_tag = "ru-search (encoded)";
+  pw_hdr = 0;
+  pw_tag = "ru-wiki search (no header)";
   pw_url = "https://ru.wikipedia.org/w/api.php?action=query&list=search&format=json&utf8=1&srlimit=3&srsearch=${pe_out}";
-  pr_request();
-  pw_tag = "ru-search (raw Cyrillic)";
-  pw_url = "https://ru.wikipedia.org/w/api.php?action=query&list=search&format=json&utf8=1&srlimit=3&srsearch=столица Франции";
-  pr_request();
-  pe_text = "Київ";
-  pr_urlencode();
-  pw_tag = "uk-extract";
-  pw_url = "https://uk.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&redirects=1&format=json&utf8=1&titles=${pe_out}";
-  pr_request();
-  pw_tag = "en-extract";
-  pw_url = "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&redirects=1&format=json&titles=Paris";
-  pr_request();
-  pe_text = "Париж";
-  pr_urlencode();
-  pw_tag = "ru-summary (REST)";
-  pw_url = "https://ru.wikipedia.org/api/rest_v1/page/summary/${pe_out}";
-  pr_request();
-  pw_tag = "ru-full-article (long)";
-  pw_url = "https://ru.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&redirects=1&format=json&utf8=1&titles=${pe_out}";
-  pr_request();
-  pr_cmd_web_other();
+  pr_queue();
+  pw_hdr = 1;
+  pw_tag = "ru-wiki search (User-Agent)";
+  pr_queue();
+  pr_cmd_web_more();
 }
 
-function pr_cmd_web_other() {
+function pr_cmd_web_more() {
+  pw_hdr = 0;
+  pw_tag = "ru-wiki search (raw Cyrillic)";
+  pw_url = "https://ru.wikipedia.org/w/api.php?action=query&list=search&format=json&utf8=1&srlimit=3&srsearch=столица Франции";
+  pr_queue();
+  pe_text = "Київ";
+  pr_urlencode();
+  pw_tag = "uk-wiki extract";
+  pw_url = "https://uk.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&redirects=1&format=json&utf8=1&titles=${pe_out}";
+  pr_queue();
+  pw_tag = "en-wiki REST summary";
+  pw_url = "https://en.wikipedia.org/api/rest_v1/page/summary/Paris";
+  pr_queue();
   pw_tag = "open-meteo";
   pw_url = "https://api.open-meteo.com/v1/forecast?latitude=50.45&longitude=30.52&current_weather=true";
-  pr_request();
+  pr_queue();
   pw_tag = "duckduckgo";
   pw_url = "https://api.duckduckgo.com/?q=Paris&format=json&no_html=1";
-  pr_request();
+  pr_queue();
+  code::start_process("pr_web_process", "DONT_COPY", "NO_TARGET");
+}
+
+// sends the queued requests one by one; each waits up to 6 s for its answer or exception
+process pr_web_process() {
+  pq_n = variable::get_list_length(g`pr.q_urls`);
+  pq_i = 0;
+  repeat::while(pq_i.less(pq_n)) {
+    pr_web_send();
+    pq_t = 0;
+    repeat::while(pq_t.less(60)) {
+      code::wait(2, "TICKS");
+      pq_t = variable::add([pq_t, 1]);
+      if (g`pr.answered`.equals(1)) {
+        pq_t = 100;
+      }
+    }
+    if (g`pr.answered`.equals(0)) {
+      pr_say("&c<- ${g`pr.cur_tag`}: no answer and no exception in 6 s");
+    }
+    pq_i = variable::add([pq_i, 1]);
+  }
+  pr_say("web probe finished");
+}
+
+function pr_web_send() {
+  g`pr.cur_tag` = variable::get_list_value(g`pr.q_tags`, pq_i);
+  pq_url = variable::get_list_value(g`pr.q_urls`, pq_i);
+  g`pr.answered` = 0;
+  pr_say("&7-> ${g`pr.cur_tag`}");
+  if (variable::get_list_value(g`pr.q_hdr`, pq_i).equals(1)) {
+    world::send_web_request(pq_url, "", {"User-Agent": PR_UA}, "GET", "TEXT_PLAIN");
+  } else {
+    world::send_web_request(pq_url, "", {}, "GET", "TEXT_PLAIN");
+  }
 }
 
 // event<world_web_response>: code, size, content type, preview, parsed content
 function pr_on_web_response() {
-  pr_url = value::url;
+  g`pr.answered` = 1;
   pr_text = value::url_response;
   pr_code = value::url_response_code;
   pr_len = variable::get_text_length(pr_text);
-  pr_i = variable::get_list_index_of_value(g`pr.urls`, pr_url, "FIRST");
-  pr_tag = variable::get_list_value(g`pr.tags`, pr_i, pr_url);
+  pr_tag = g`pr.cur_tag`;
   pr_hdr = value::response_headers;
   pr_ct = variable::get_map_value(pr_hdr, "content-type", "?");
   pr_say("&a<- ${pr_tag}: HTTP ${pr_code}, ${pr_len} chars, ${pr_ct}");
@@ -220,10 +284,8 @@ function pr_show_query() {
 }
 
 function pr_on_web_exception() {
-  px_url = value::url;
-  px_i = variable::get_list_index_of_value(g`pr.urls`, px_url, "FIRST");
-  px_tag = variable::get_list_value(g`pr.tags`, px_i, px_url);
-  pr_say("&c<- ${px_tag}: web exception (no answer)");
+  g`pr.answered` = 1;
+  pr_say("&c<- ${g`pr.cur_tag`}: web exception");
 }
 
 // ---------------------------------------------------------------------
@@ -247,31 +309,60 @@ function pr_cmd_text() {
 }
 
 // ---------------------------------------------------------------------
-// ~pr speed: one action per loop step + loop overhead, measured at three budgets
-// ---------------------------------------------------------------------
+// ~pr speed: light actions per second, then multiply-adds per second (dot products of 1000 numbers)
 process pr_speed_process() {
+  g`pr.busy` = 1;
   pr_say("TPS ${value::server_tps}, CPU ${value::cpu_usage}% before the test");
-  repeat::for_each_in_list([2000, 5000, 10000]) { ps_k, ps_b ->
-    g`pr.budget` = ps_b;
-    ps_n = 0;
-    ps_x = 0;
-    controller::measure_time(ps_ms, "MILLISECONDS") {
-      repeat::while(ps_n.less(30000)) {
-        ps_x = variable::mathematical_expectation([ps_x, ps_n], [1, 1]);
-        ps_n = variable::add([ps_n, 1]);
-        pr_yield(4);
-      }
+  g`pr.budget` = 2000;
+  g`pr.throttle` = 0;
+  g`pr.cpu_peak` = 0;
+  ps_n = 0;
+  ps_x = 0;
+  controller::measure_time(ps_ms, "MILLISECONDS") {
+    repeat::while(ps_n.less(20000)) {
+      ps_x = variable::mathematical_expectation([ps_x, ps_n], [1, 1]);
+      ps_n = variable::add([ps_n, 1]);
+      pr_yield(5);
     }
-    ps_rate = variable::round(variable::divide([120000, variable::max([ps_ms, 1])]), 1, "ROUND");
-    pr_say("budget ${ps_b}: 30000 loop steps (~120000 actions) in ${ps_ms} ms -> ~${ps_rate} thousand actions/s; TPS ${value::server_tps}, CPU ${value::cpu_usage}%");
   }
-  g`pr.budget` = 4000;
+  pr_say("light: 20000 loop steps (~100000 actions) in ${ps_ms} ms; CPU peak ${g`pr.cpu_peak`}%, ${g`pr.throttle`} ticks waited for the CPU; TPS ${value::server_tps}");
+  pr_speed_dot();
+  g`pr.budget` = 2000;
+  g`pr.busy` = 0;
+}
+
+// 2000 dot products of two 1000-number lists = 2 million multiply-adds
+function pr_speed_dot() {
+  pd_a = [];
+  pd_i = 0;
+  repeat::while(pd_i.less(1000)) {
+    pd_a.append_value(variable::random_number(-1, 1, "FALSE"));
+    pd_i = variable::add([pd_i, 1]);
+    pr_yield(3);
+  }
+  g`pr.budget` = 20000;
+  g`pr.throttle` = 0;
+  g`pr.cpu_peak` = 0;
+  pd_n = 0;
+  controller::measure_time(pd_ms, "MILLISECONDS") {
+    repeat::while(pd_n.less(2000)) {
+      pd_x = variable::mathematical_expectation(pd_a, pd_a);
+      pd_n = variable::add([pd_n, 1]);
+      pr_yield(1000);
+    }
+  }
+  pd_rate = variable::round(variable::divide([2000, variable::max([pd_ms, 1])]), 2, "ROUND");
+  pr_say("dot products: 2 000 000 multiply-adds in ${pd_ms} ms -> ~${pd_rate} million per second; CPU peak ${g`pr.cpu_peak`}%, ${g`pr.throttle`} ticks waited for the CPU");
 }
 
 // ---------------------------------------------------------------------
 // ~pr store <n> / check / clear: n numbers in lists of 1000 (save variables s`pr.w.<i>`)
 // ---------------------------------------------------------------------
 process pr_store_process() {
+  g`pr.busy` = 1;
+  g`pr.budget` = 20000;
+  g`pr.throttle` = 0;
+  g`pr.cpu_peak` = 0;
   pr_base = [];
   pr_ones = [];
   ps_n = 0;
@@ -279,6 +370,7 @@ process pr_store_process() {
     pr_base.append_value(variable::random_number(-1, 1, "FALSE"));
     pr_ones.append_value(1);
     ps_n = variable::add([ps_n, 1]);
+    pr_yield(30);
   }
   s`pr.ones` = pr_ones;
   s`pr.sums` = [];
@@ -290,17 +382,23 @@ process pr_store_process() {
     }
   }
   s`pr.lists` = pr_lists;
-  pr_say("&astored ${pr_lists} lists x 1000 = ${variable::multiply([pr_lists, 1000])} numbers in ${ps_ms} ms. Restart the world (/play) and run ~pr check.");
+  pr_say("&astored ${pr_lists} lists x 1000 = ${variable::multiply([pr_lists, 1000])} numbers in ${ps_ms} ms; CPU peak ${g`pr.cpu_peak`}%, ${g`pr.throttle`} ticks waited for the CPU. Restart the world (/play) and run ~pr check.");
+  g`pr.budget` = 2000;
+  g`pr.busy` = 0;
 }
 
 function pr_store_list() {
   pr_l = variable::set_list_value(pr_base, 0, ps_i);
   s`pr.w.${ps_i}` = pr_l;
   s`pr.sums`.append_value(variable::mathematical_expectation(pr_l, pr_ones));
-  pr_yield(8);
+  pr_yield(3000);
 }
 
 process pr_check_process() {
+  g`pr.busy` = 1;
+  g`pr.budget` = 20000;
+  g`pr.throttle` = 0;
+  g`pr.cpu_peak` = 0;
   pc_ok = 0;
   pc_bad = 0;
   pc_missing = 0;
@@ -312,7 +410,9 @@ process pr_check_process() {
       pc_i = variable::add([pc_i, 1]);
     }
   }
-  pr_say("&acheck: ${pc_ok} lists ok, ${pc_bad} changed, ${pc_missing} missing of ${pc_n} (${variable::multiply([pc_n, 1000])} numbers), read in ${pc_ms} ms");
+  pr_say("&acheck: ${pc_ok} lists ok, ${pc_bad} changed, ${pc_missing} missing of ${pc_n} (${variable::multiply([pc_n, 1000])} numbers), read in ${pc_ms} ms; CPU peak ${g`pr.cpu_peak`}%, ${g`pr.throttle`} ticks waited for the CPU");
+  g`pr.budget` = 2000;
+  g`pr.busy` = 0;
 }
 
 function pr_check_list() {
@@ -326,7 +426,7 @@ function pr_check_list() {
   } else {
     pc_missing = variable::add([pc_missing, 1]);
   }
-  pr_yield(8);
+  pr_yield(1000);
 }
 
 // ---------------------------------------------------------------------
@@ -349,6 +449,14 @@ function pr_on_chat() {
 }
 
 function pr_dispatch() {
+  if (g`pr.busy`.equals(1)) {
+    player::message("&cA probe is still running, wait for its result.");
+  } else {
+    pr_dispatch_run();
+  }
+}
+
+function pr_dispatch_run() {
   if (pr_sub.equals("web")) {
     pr_cmd_web();
   } elif (pr_sub.equals("text")) {
