@@ -22,6 +22,9 @@ from reader_ref import dot, sigm, tanh, LN_EPS, E  # noqa: E402
 
 I_RE = re.compile(r"(?<![^\W\d_'])i(?![^\W\d_])")       # the English "i" alone -> "I"
 LOW = -1000000.0
+TYPN = 16                         # candidates looked at when a token is drawn
+KS_K = 8                          # candidates of the predictability measure
+SAMP, TYP, KS = 1, 0.9, 0.75      # defaults: typical sampling, its mass, the "predictable" threshold
 REP = 1.0                         # logit penalty per earlier use of a token in the reply
 NB = 251
 NOSPACE = {".", ",", "!", "?", ";", ":", ")", "»", "%", "…"}
@@ -146,25 +149,75 @@ class Chat:
                 ei = e
         return ei * math.pow(tot, -1)
 
-    @staticmethod
-    def sample(ls, k, temp, rng):
-        """top-k sampling: the k best logits, weights exp((l - best) / temp); temp 0 = the best one"""
-        top = sorted(ls, reverse=True)[:max(1, k)]
-        v = top[0]
-        if temp > 0 and len(top) > 1:
-            inv = math.pow(temp, -1)
-            w = [math.pow(E, (x - top[0]) * inv) for x in top]
+    def setting(self, name, default):
+        """a sampling setting: the user's value (ch.<name>), else the one exported with the model, else the default"""
+        s = self.s
+        return s.get(f"ch.{name}", s.get(f"ch.{name}0", default))
+
+    def sample(self, ls, k, temp, rng):
+        """One token (or class) out of the logits ls -> its index.
+        temp 0: the best one. Otherwise the TYPN best candidates are looked at:
+          - predictability: the Kolmogorov-Smirnov distance of the best KS_K probabilities from the uniform
+            distribution (how the library measures it: max |empirical cdf - reference|); at ks or more the best
+            candidate is taken at once - nothing to choose from, and no time spent on choosing;
+          - typical sampling (samp 1): the candidates whose information -ln p is closest to the entropy H of the
+            distribution, until they cover the mass typ. With ln p = d - ln S (d = logit - best logit) this is
+            |d - sum(p d)|: no logarithm needed. One of them is drawn with the weights p^(1/temp);
+          - top-k sampling (samp 0): one of the k best with the weights p^(1/temp)."""
+        srt = sorted(ls, reverse=True)
+        v = srt[0]
+        if temp > 0 and len(ls) > 1:
+            top = srt[:min(TYPN, len(ls))]
+            e = [math.pow(E, x - v) for x in top]
+            kk = min(KS_K, len(top))
+            inv_k = math.pow(kk, -1)
             tot = 0.0
-            for x in w:
+            for x in e[:kk]:
                 tot += x
-            r = rng.random() * tot
-            acc = 0.0
-            for x, wx in zip(top, w):
-                acc += wx
-                v = x
-                if acc >= r:
-                    break
+            inv = math.pow(tot, -1)
+            D, cum = 0.0, 0.0
+            for j, x in enumerate(e[:kk]):
+                cum += x
+                D = max(D, cum * inv - (j + 1) * inv_k)
+            if D < self.setting("ks", KS):
+                inv_t = math.pow(temp, -1)
+                if self.setting("samp", SAMP) == 1:
+                    vals, w = self.typical_set(top, e, inv_t)
+                else:
+                    kt = min(k, len(top))
+                    vals, w = top[:kt], [math.pow(x, inv_t) for x in e[:kt]]
+                tot = 0.0
+                for x in w:
+                    tot += x
+                r = rng.random() * tot
+                acc = 0.0
+                for x, wx in zip(vals, w):
+                    acc += wx
+                    v = x
+                    if acc >= r:
+                        break
         return ls.index(v)
+
+    def typical_set(self, top, e, inv_t):
+        tot = 0.0
+        for x in e:
+            tot += x
+        inv = math.pow(tot, -1)
+        p = [x * inv for x in e]
+        d = [x - top[0] for x in top]
+        m = dot(p, d)                                  # = -H - ln S: the mean of ln p up to a constant
+        sc = [abs(x - m) for x in d]
+        mass = self.setting("typ", TYP)
+        vals, w, cum = [], [], 0.0
+        for x in sorted(sc):
+            if cum >= mass:
+                break
+            i = sc.index(x)
+            sc[i] = 1e9                                # taken
+            cum += p[i]
+            vals.append(top[i])
+            w.append(math.pow(p[i], inv_t))
+        return vals, w
 
     @staticmethod
     def detok(text, t):
@@ -181,12 +234,12 @@ class Chat:
     def text_of(self, tid):
         return self.s[f"ch.t.{tid // 1000}"][tid % 1000]
 
-    def reply(self, message, temp=None, wiki=None, seed=1, state=None):
+    def reply(self, message, temp=None, wiki=None, seed=1, state=None, rng=None):
         """state: what the previous reply returned in "state" (the conversation goes on) or None"""
         s = self.s
         temp = s["ch.temp0"] if temp is None else temp
         wiki = s["ch.wiki0"] if wiki is None else wiki
-        rng = random.Random(seed)
+        rng = rng or random.Random(seed)
         if state:                                      # the conversation goes on: ... [E] [U]
             h, c = self.step(self.cps(self.sp["E"]), state["h"], state["c"])
             h, c = self.step(self.cps(self.sp["U"]), h, c)

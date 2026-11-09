@@ -1281,6 +1281,24 @@ META.update({
     "ch_memory_save": ("chest", "Keeps the LSTM state after the reply for the next message of this player.",
                        "Сохраняет состояние LSTM после ответа для следующего сообщения этого игрока."),
 })
+# demo 3: how a token is drawn
+META.update({
+    "ch_sampling_settings": ("comparator", "Sampling settings: the user's, else the model's, else the defaults.",
+                             "Настройки выборки: пользователя, иначе из модели, иначе по умолчанию."),
+    "ch_sample_random": ("rabbit_foot", "Looks at the 16 best candidates: predictable -> the best one, else typical or top-k sampling.",
+                         "Смотрит на 16 лучших кандидатов: предсказуемо -> лучший, иначе typical или top-k выборка."),
+    "ch_predictability": ("target", "Kolmogorov-Smirnov distance of the best probabilities from the uniform distribution: how predictable the step is.",
+                          "Расстояние Колмогорова-Смирнова лучших вероятностей от равномерного распределения: насколько шаг предсказуем."),
+    "ch_topk_set": ("hopper", "The k best candidates with the weights p^(1/temp).", "k лучших кандидатов с весами p^(1/temp)."),
+    "ch_typical_set": ("amethyst_shard", "Typical set: candidates whose information is closest to the Shannon entropy of the distribution, up to the given mass.",
+                       "Типичное множество: кандидаты, чья информация ближе всего к энтропии Шеннона распределения, до заданной массы."),
+    "ch_typical_take": ("amethyst_cluster", "The next most typical candidate joins the set.", "Следующий самый типичный кандидат добавляется в множество."),
+    "ch_draw": ("ender_pearl", "One candidate of the set at random by its weight.", "Случайный кандидат из множества по его весу."),
+    "ai_cmd_sampling": ("brewing_stand", "~ai sampling typical [mass] | topk | reset: how the next token is drawn.",
+                        "~ai sampling typical [масса] | topk | reset: как выбирается следующий токен."),
+    "ai_cmd_ks": ("target", "~ai ks <0..1> | off | reset: from which Kolmogorov-Smirnov distance a step counts as predictable.",
+                  "~ai ks <0..1> | off | reset: с какого расстояния Колмогорова-Смирнова шаг считается предсказуемым."),
+})
 # a few ids above are not real items: replace them with real ones
 _FIX = {"mirror": "glass", "blueprint": "map"}
 for _k, (_i, _en, _ru) in list(META.items()):

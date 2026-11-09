@@ -1323,10 +1323,11 @@ function ai_on_chat() {
     world::cancel_event();
     cm_sub = variable::get_list_value(cm_a, 1, "help");
     cm_a2 = variable::get_list_value(cm_a, 2, "");
-    cm_short = variable::get_list_length(cm_a).less_or_equals(3);
+    cm_a3 = variable::get_list_value(cm_a, 3, "");
+    cm_short = variable::get_list_length(cm_a).less_or_equals(4);
     cm_kind = "ask";
     if (cm_short.equals(1)) {
-      if (cm_sub.equals(["install", "tau", "temp"])) {
+      if (cm_sub.equals(["install", "tau", "temp", "sampling", "ks"])) {
         cm_kind = "admin";
       }
       if (cm_sub.equals(["help", "status", "about"])) {
@@ -1353,6 +1354,10 @@ function ai_on_admin_command() {
     ai_cmd_install();
   } elif (cm_sub.equals("temp")) {
     ai_cmd_temp();
+  } elif (cm_sub.equals("sampling")) {
+    ai_cmd_sampling();
+  } elif (cm_sub.equals("ks")) {
+    ai_cmd_ks();
   } else {
     ai_cmd_tau();
   }
@@ -1433,6 +1438,43 @@ function ai_cmd_temp() {
   player::message("&9[AI] &fTemperature = &e${at_t} &7(higher = wilder replies, 0 = always the same)");
 }
 
+// ~ai sampling typical [mass] | topk | reset: how the next token is drawn
+function ai_cmd_sampling() {
+  if (cm_a2.equals("typical")) {
+    s`ch.samp` = 1;
+    if (not cm_a3.equals("")) {
+      s`ch.typ` = variable::clamp(variable::convert_text_to_number(cm_a3, 10), 0.05, 1);
+    }
+  } elif (cm_a2.equals("topk")) {
+    s`ch.samp` = 0;
+  } elif (cm_a2.equals("reset")) {
+    variable::purge(["ch.samp", "ch.typ"], "SAVE", "EQUALS");
+  } else {
+    as_x = 0;
+  }
+  ch_sampling_settings();
+  if (ch_samp.equals(1)) {
+    player::message("&9[AI] &fSampling: &etypical&f, mass ${ch_typ} &7(~ai sampling typical <0.05..1> | topk | reset)");
+  } else {
+    player::message("&9[AI] &fSampling: &etop-k &7(~ai sampling typical <0.05..1> | topk | reset)");
+  }
+}
+
+// ~ai ks <0..1> | off | reset: from which Kolmogorov-Smirnov distance a step is predictable (the best token at once)
+function ai_cmd_ks() {
+  if (cm_a2.equals("off")) {
+    s`ch.ks` = 2;
+  } elif (cm_a2.equals("reset")) {
+    variable::purge(["ch.ks"], "SAVE", "EQUALS");
+  } elif (not cm_a2.equals("")) {
+    s`ch.ks` = variable::clamp(variable::convert_text_to_number(cm_a2, 10), 0, 1);
+  } else {
+    as_x = 0;
+  }
+  ch_sampling_settings();
+  player::message("&9[AI] &fPredictable from KS distance &e${ch_ks} &7(lower = the best token is taken more often: faster and more of the same; ~ai ks <0..1> | off | reset)");
+}
+
 // ~ai tau <0..1> | reset: how sure the reader must be to answer
 function ai_cmd_tau() {
   if (cm_a2.equals("reset")) {
@@ -1469,7 +1511,7 @@ function ai_cmd_about() {
 
 function ai_cmd_help() {
   player::message("&9[AI] &e~ai <message> &7- talk (English, русский, українська) | &e~ai wiki <question> &7- straight to Wikipedia | &e~ai status &7| &e~ai about");
-  player::message("&9[AI] &7admins: &e~ai install &7- download the models | &e~ai temp <0..2>|reset &7- how wild the replies are | &e~ai tau <0..1>|reset &7- how sure the reader must be");
+  player::message("&9[AI] &7admins: &e~ai install &7- download the models | &e~ai temp <0..2>|reset &7- how wild the replies are | &e~ai sampling typical|topk &7| &e~ai ks <0..1>|off &7| &e~ai tau <0..1>|reset &7- how sure the reader must be");
 }
 
 // =====================================================================
@@ -1490,6 +1532,11 @@ inline var CH_LOW = -1000000;
 inline var CH_REP = 1.0;          // logit penalty per earlier use of a token in the reply
 inline var CH_BAR = 48;           // characters of the reply shown in the action bar
 inline var CH_MEM_MS = 180000;    // a conversation is continued within this time
+inline var CH_TYPN = 16;          // candidates looked at when a token is drawn
+inline var CH_KS_K = 8;           // candidates of the predictability measure
+inline var CH_SAMP = 1;           // default sampling: 1 typical, 0 top-k
+inline var CH_TYP = 0.9;          // default mass of the typical set
+inline var CH_KS = 0.75;          // default Kolmogorov-Smirnov distance from which a step counts as predictable
 
 // is the chat model (version 2) installed? -> ci_ok
 function ch_installed() {
@@ -1538,12 +1585,39 @@ function ch_settings() {
   if (s`ch.temp`.exists()) {
     ch_temp = s`ch.temp`;
   }
+  ch_sampling_settings();
   cs_c = s`ch.cW`;
   cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
   ch_one_W = cs_n.equals(1);
   cs_c = s`ch.cE`;
   cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
   ch_one_E = cs_n.equals(1);
+}
+
+// how a token is drawn: the user's setting (~ai sampling, ~ai ks), else the one stored with the model, else
+// the default -> ch_samp, ch_typ, ch_ks
+function ch_sampling_settings() {
+  ch_samp = CH_SAMP;
+  if (s`ch.samp0`.exists()) {
+    ch_samp = s`ch.samp0`;
+  }
+  if (s`ch.samp`.exists()) {
+    ch_samp = s`ch.samp`;
+  }
+  ch_typ = CH_TYP;
+  if (s`ch.typ0`.exists()) {
+    ch_typ = s`ch.typ0`;
+  }
+  if (s`ch.typ`.exists()) {
+    ch_typ = s`ch.typ`;
+  }
+  ch_ks = CH_KS;
+  if (s`ch.ks0`.exists()) {
+    ch_ks = s`ch.ks0`;
+  }
+  if (s`ch.ks`.exists()) {
+    ch_ks = s`ch.ks`;
+  }
 }
 
 function ch_build_lists() {
@@ -1753,40 +1827,130 @@ function ch_softmax_at() {
   sm_p = mli_mul(sm_ei, mli_inv(sm_tot));
 }
 
-// top-k sampling of the logits sp_l with temperature ch_temp (0 = always the best) -> sp_i
+// One token (or class) out of the logits sp_l -> its index sp_i.
+// Temperature 0: the best one. Otherwise the CH_TYPN best candidates are looked at:
+//   predictability   the Kolmogorov-Smirnov distance of the best CH_KS_K probabilities from the uniform
+//                    distribution (max |empirical cdf - reference|, as in ml_feature_kolmogorov); at ch_ks or
+//                    more the best candidate is taken at once: nothing to choose from, no time spent on it
+//   typical sampling the candidates whose information -ln p is closest to the entropy of the distribution,
+//                    until they cover the mass ch_typ; one of them is drawn with the weights p^(1/temp)
+//   top-k sampling   (ch_samp = 0) one of the sp_k best with the weights p^(1/temp)
 function ch_sample() {
   sp_sorted = variable::sort_list(sp_l, "DESCENDING");
   sp_v = variable::get_list_value(sp_sorted, 0);
+  sp_len = variable::get_list_length(sp_l);
   if (ch_temp.greater(0)) {
-    if (sp_k.greater(1)) {
-      ch_sample_top();
+    if (sp_len.greater(1)) {
+      ch_sample_random();
     }
   }
   sp_i = variable::get_list_index_of_value(sp_l, sp_v, "FIRST");
 }
 
-// the sp_k best logits, weights e^((l - best) / temp), a random one of them by weight -> sp_v
-function ch_sample_top() {
-  sp_n = variable::min([sp_k, variable::get_list_length(sp_l)]);
+function ch_sample_random() {
+  sp_n = variable::min([CH_TYPN, sp_len]);
   sp_top = mli_slice(sp_sorted, 0, sp_n);
   sp_max = sp_v;
-  sp_inv = mli_inv(ch_temp);
-  sp_w = [];
-  sp_tot = 0;
+  sp_e = [];
   repeat::for_each_in_list(sp_top) { sp_j, sp_x ->
-    sp_e = variable::pow(ML_E, mli_mul(mli_sub2(sp_x, sp_max), sp_inv));
-    sp_w.append_value(sp_e);
-    sp_tot = mli_add2(sp_tot, sp_e);
+    sp_e.append_value(variable::pow(ML_E, mli_sub2(sp_x, sp_max)));
   }
-  sp_r = mli_mul(variable::random_number(0, 1, "FALSE"), sp_tot);
-  sp_acc = 0;
-  sp_found = 0;
-  repeat::for_each_in_list(sp_w) { sp_j, sp_e ->
-    if (sp_found.equals(0)) {
-      sp_acc = mli_add2(sp_acc, sp_e);
-      sp_v = variable::get_list_value(sp_top, sp_j);
-      if (sp_acc.greater_or_equals(sp_r)) {
-        sp_found = 1;
+  ch_predictability();
+  if (ks_D.less(ch_ks)) {
+    sp_inv = mli_inv(ch_temp);
+    if (ch_samp.equals(1)) {
+      ch_typical_set();
+    } else {
+      ch_topk_set();
+    }
+    ch_draw();
+  }
+}
+
+// Kolmogorov-Smirnov distance of the best CH_KS_K candidates from the uniform distribution -> ks_D (0 .. 1)
+function ch_predictability() {
+  ks_k = variable::min([CH_KS_K, sp_n]);
+  ks_e = mli_slice(sp_e, 0, ks_k);
+  ks_step = mli_mul(mli_inv(ks_k), -1);
+  ks_tot = 0;
+  repeat::for_each_in_list(ks_e) { ks_j, ks_x ->
+    ks_tot = mli_add2(ks_tot, ks_x);
+  }
+  ks_inv = mli_inv(ks_tot);
+  ks_D = 0;
+  ks_cum = 0;
+  repeat::for_each_in_list(ks_e) { ks_j, ks_x ->
+    ks_cum = mli_add2(ks_cum, ks_x);
+    ks_j1 = variable::add([ks_j, 1]);
+    ks_gap = variable::mathematical_expectation([ks_cum, ks_j1], [ks_inv, ks_step]);
+    ks_D = variable::max([ks_D, ks_gap]);
+  }
+}
+
+// the sp_k best candidates with the weights p^(1/temp) -> dr_vals, dr_w
+function ch_topk_set() {
+  tk_k = variable::min([sp_k, sp_n]);
+  dr_vals = mli_slice(sp_top, 0, tk_k);
+  dr_w = [];
+  repeat::for_each_in_list(mli_slice(sp_e, 0, tk_k)) { tk_j, tk_x ->
+    dr_w.append_value(variable::pow(tk_x, sp_inv));
+  }
+}
+
+// typical set: |ln p - mean ln p| = |d - sum(p d)| with d = logit - best logit; the closest candidates until
+// their mass reaches ch_typ, with the weights p^(1/temp) -> dr_vals, dr_w
+function ch_typical_set() {
+  ty_tot = 0;
+  repeat::for_each_in_list(sp_e) { ty_j, ty_x ->
+    ty_tot = mli_add2(ty_tot, ty_x);
+  }
+  ty_inv = mli_inv(ty_tot);
+  ty_p = [];
+  ty_d = [];
+  repeat::for_each_in_list(sp_top) { ty_j, ty_x ->
+    ty_p.append_value(mli_mul(variable::get_list_value(sp_e, ty_j), ty_inv));
+    ty_d.append_value(mli_sub2(ty_x, sp_max));
+  }
+  ty_m = variable::mathematical_expectation(ty_p, ty_d);
+  ty_sc = [];
+  repeat::for_each_in_list(ty_d) { ty_j, ty_x ->
+    ty_sc.append_value(variable::absolute(mli_sub2(ty_x, ty_m)));
+  }
+  ty_cum = 0;
+  dr_vals = [];
+  dr_w = [];
+  repeat::for_each_in_list(variable::sort_list(ty_sc, "ASCENDING")) { ty_j, ty_s ->
+    if (ty_cum.less(ch_typ)) {
+      ch_typical_take();
+    }
+  }
+}
+
+// the candidate with typicality distance ty_s joins the set
+function ch_typical_take() {
+  ty_i = variable::get_list_index_of_value(ty_sc, ty_s, "FIRST");
+  ty_sc = variable::set_list_value(ty_sc, ty_i, 1000000000);
+  ty_pi = variable::get_list_value(ty_p, ty_i);
+  ty_cum = mli_add2(ty_cum, ty_pi);
+  dr_vals.append_value(variable::get_list_value(sp_top, ty_i));
+  dr_w.append_value(variable::pow(ty_pi, sp_inv));
+}
+
+// one of dr_vals at random by the weights dr_w -> sp_v
+function ch_draw() {
+  dr_tot = 0;
+  repeat::for_each_in_list(dr_w) { dr_j, dr_x ->
+    dr_tot = mli_add2(dr_tot, dr_x);
+  }
+  dr_r = mli_mul(variable::random_number(0, 1, "FALSE"), dr_tot);
+  dr_acc = 0;
+  dr_found = 0;
+  repeat::for_each_in_list(dr_w) { dr_j, dr_x ->
+    if (dr_found.equals(0)) {
+      dr_acc = mli_add2(dr_acc, dr_x);
+      sp_v = variable::get_list_value(dr_vals, dr_j);
+      if (dr_acc.greater_or_equals(dr_r)) {
+        dr_found = 1;
       }
     }
   }
@@ -1924,12 +2088,18 @@ function ch_next_token() {
   sp_k = s`ch.topc`;
   ch_sample();
   cw_c = sp_i;
-  ch_word_logits();
-  ch_adjust_words();
-  sp_l = cw_l;
-  sp_k = s`ch.topw`;
-  ch_sample();
-  cg_id = variable::get_list_value(cw_ids, sp_i);
+  cw_ids = s`ch.k.${cw_c}`;
+  if (variable::get_list_length(cw_ids).equals(1)) {
+    // a frequent token alone in its class: nothing to score
+    cg_id = variable::get_list_value(cw_ids, 0);
+  } else {
+    ch_word_logits();
+    ch_adjust_words();
+    sp_l = cw_l;
+    sp_k = s`ch.topw`;
+    ch_sample();
+    cg_id = variable::get_list_value(cw_ids, sp_i);
+  }
   cg_n = variable::add([cg_n, 1]);
   if (cg_id.equals(s`ch.E`)) {
     cg_go = 0;
