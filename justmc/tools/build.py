@@ -27,6 +27,7 @@ TARGETS = {
     "ml_trainer.jc": "millennium_trainer.json",
     "demo_mx_aim.jc": "millennium_mx_demo.json",
     "demo_digits.jc": "millennium_digits_demo.json",
+    "probe_ai.jc": "millennium_probe.json",
 }
 
 

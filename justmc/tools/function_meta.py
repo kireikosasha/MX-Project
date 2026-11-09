@@ -849,6 +849,74 @@ META = {
         "~dg help: the commands of the digits demo.",
         "~dg help: команды демо цифр."),
 
+    # ======================= probe for the reader (mini LLM with search) =======================
+    "pr_yield": ("clock",
+        "Yields one tick every g`pr.budget` estimated actions.",
+        "Уступает тик каждые g`pr.budget` оценочных действий."),
+    "pr_say": ("oak_sign",
+        "A probe line in the chat of every player.",
+        "Строка пробы в чат всем игрокам."),
+    "pr_percent_byte": ("name_tag",
+        "Appends byte pb_b as %XX to pe_out.",
+        "Добавляет байт pb_b в виде %XX к pe_out."),
+    "pr_urlencode": ("paper",
+        "Percent-encodes the text pe_text as UTF-8 -> pe_out (letters, digits and - _ . ~ stay), so Cyrillic can go into a URL.",
+        "Кодирует текст pe_text в UTF-8 с процентами -> pe_out (буквы, цифры и - _ . ~ остаются), чтобы кириллица могла идти в URL."),
+    "pr_urlencode_char": ("feather",
+        "Encodes one code point pe_cp: as it is, one, two or three UTF-8 bytes.",
+        "Кодирует один код символа pe_cp: как есть, одним, двумя или тремя байтами UTF-8."),
+    "pr_urlencode_two_bytes": ("string",
+        "Two UTF-8 bytes of a code point U+0080..U+07FF (Cyrillic).",
+        "Два байта UTF-8 для кода U+0080..U+07FF (кириллица)."),
+    "pr_urlencode_three_bytes": ("tripwire_hook",
+        "Three UTF-8 bytes of a code point U+0800..U+FFFF.",
+        "Три байта UTF-8 для кода U+0800..U+FFFF."),
+    "pr_request": ("ender_pearl",
+        "Sends a GET request pw_url with a User-Agent and remembers its tag pw_tag.",
+        "Отправляет GET-запрос pw_url с User-Agent и запоминает его метку pw_tag."),
+    "pr_cmd_web": ("compass",
+        "~pr web: requests to Wikipedia in Russian, Ukrainian and English (search, start of an article, REST summary, a long article; Cyrillic encoded and raw).",
+        "~pr web: запросы к Википедии на русском, украинском и английском (поиск, начало статьи, сводка REST, длинная статья; кириллица закодированная и как есть)."),
+    "pr_cmd_web_other": ("recovery_compass",
+        "~pr web: Open-Meteo weather and the DuckDuckGo instant answer API.",
+        "~pr web: погода Open-Meteo и API мгновенных ответов DuckDuckGo."),
+    "pr_on_web_response": ("lightning_rod",
+        "Call from event<world_web_response>: tag, HTTP code, size, content type and the start of the answer.",
+        "Вызывать в event<world_web_response>: метка, код HTTP, размер, тип содержимого и начало ответа."),
+    "pr_show_parsed": ("spyglass",
+        "Parses a JSON answer: Wikipedia query, REST summary, or the list of keys.",
+        "Разбирает JSON-ответ: запрос Википедии, сводку REST или список ключей."),
+    "pr_show_query": ("filled_map",
+        "Titles of a Wikipedia search and the beginning of every returned article text.",
+        "Заголовки поиска Википедии и начало текста каждой вернувшейся статьи."),
+    "pr_on_web_exception": ("fire_charge",
+        "Call from event<world_web_exception>: which request got no answer.",
+        "Вызывать в event<world_web_exception>: какой запрос остался без ответа."),
+    "pr_cmd_text": ("writable_book",
+        "~pr text: lower case, code points, splitting and hashing of Russian and Ukrainian text; the URL encoder against the expected result.",
+        "~pr text: нижний регистр, коды символов, разбиение и хеш русского и украинского текста; кодировщик URL против ожидаемого результата."),
+    "pr_speed_process": ("rabbit_foot",
+        "~pr speed: actions per second at yield budgets 2000, 5000 and 10000, with TPS and CPU of the world.",
+        "~pr speed: действий в секунду при бюджетах 2000, 5000 и 10000, с TPS и CPU мира."),
+    "pr_store_process": ("chest",
+        "~pr store <n>: writes n numbers into save variables as lists of 1000 and keeps a checksum of every list.",
+        "~pr store <n>: записывает n чисел в save-переменные списками по 1000 и хранит контрольную сумму каждого списка."),
+    "pr_store_list": ("barrel",
+        "Writes one list of 1000 numbers and its checksum.",
+        "Записывает один список из 1000 чисел и его контрольную сумму."),
+    "pr_check_process": ("observer",
+        "~pr check: reads the stored lists back (after a restart) and compares their checksums.",
+        "~pr check: читает сохранённые списки (после перезапуска) и сравнивает контрольные суммы."),
+    "pr_check_list": ("comparator",
+        "Checks one stored list: missing, changed or ok.",
+        "Проверяет один сохранённый список: нет, изменился или в порядке."),
+    "pr_on_chat": ("book",
+        "Handles the ~pr commands of the owner of the world.",
+        "Обрабатывает команды ~pr владельца мира."),
+    "pr_dispatch": ("command_block",
+        "~pr text | web | speed | store <n> | check | clear.",
+        "~pr text | web | speed | store <n> | check | clear."),
+
     # ======================= MX aim demo =======================
     "mx_vl_decay": ("clock",
         "Demo process: every minute lowers the violation level of every player by mx.vl_reset.",
@@ -990,7 +1058,18 @@ for _k, (_i, _en, _ru) in list(META.items()):
 
 
 # every function gets its own icon: repeated ones are replaced from a pool of other items
-_POOL = """turtle_scute armadillo_scute copper_ingot gold_ingot iron_ingot netherite_ingot lapis_lazuli quartz echo_shard blaze_rod blaze_powder breeze_rod ghast_tear magma_cream phantom_membrane rabbit_foot nautilus_shell sculk_sensor calibrated_sculk_sensor sculk_shrieker tinted_glass crying_obsidian lodestone end_crystal dragon_breath shulker_shell chorus_fruit popped_chorus_fruit glow_berries sweet_berries glow_ink_sac ink_sac honey_bottle beehive campfire soul_lantern lantern sea_lantern jack_o_lantern glowstone shroomlight ochre_froglight verdant_froglight pearlescent_froglight copper_bulb redstone_lamp note_block jukebox goat_horn trident heavy_core mace wind_charge trial_spawner vault decorated_pot flower_pot armor_stand saddle lead minecart tnt_minecart furnace_minecart oak_boat bamboo_raft cartography_table fletching_table smoker blast_furnace brewing_stand cauldron composter lectern loom barrel iron_door iron_trapdoor oak_trapdoor sculk_catalyst respawn_anchor ender_chest shulker_box hopper dropper clay_ball brick nether_brick prismarine_crystals amethyst_cluster budding_amethyst calcite tuff deepslate obsidian bedrock sponge wet_sponge slime_block honey_block magma_block soul_sand soul_campfire emerald redstone_block coal charcoal diamond_block gold_block iron_block copper_block lapis_block apple golden_carrot carrot potato baked_potato bread cookie pumpkin_pie melon_slice glistering_melon_slice spider_eye fermented_spider_eye sugar egg turtle_egg sniffer_egg axolotl_bucket tadpole_bucket cod salmon tropical_fish pufferfish kelp dried_kelp seagrass sea_pickle brain_coral fire_coral cactus bamboo vine glow_lichen moss_block azalea flowering_azalea spore_blossom big_dripleaf small_dripleaf torchflower pitcher_plant sunflower lilac peony rose_bush cornflower lily_of_the_valley wither_rose red_dye blue_dye cyan_dye purple_dye magenta_dye yellow_dye green_dye light_blue_dye black_dye white_dye iron_hoe golden_hoe stone_axe golden_axe diamond_axe netherite_axe iron_shovel golden_shovel fishing_rod carrot_on_a_stick warped_fungus_on_a_stick flint_and_steel bow shield elytra leather_horse_armor""".split()
+_POOL = """turtle_scute armadillo_scute copper_ingot gold_ingot iron_ingot netherite_ingot lapis_lazuli quartz echo_shard blaze_rod blaze_powder breeze_rod ghast_tear magma_cream phantom_membrane rabbit_foot nautilus_shell sculk_sensor calibrated_sculk_sensor sculk_shrieker tinted_glass crying_obsidian lodestone end_crystal dragon_breath shulker_shell chorus_fruit popped_chorus_fruit glow_berries sweet_berries glow_ink_sac ink_sac honey_bottle beehive campfire soul_lantern lantern sea_lantern jack_o_lantern glowstone shroomlight ochre_froglight verdant_froglight pearlescent_froglight copper_bulb redstone_lamp note_block jukebox goat_horn trident heavy_core mace wind_charge trial_spawner vault decorated_pot flower_pot armor_stand saddle lead minecart tnt_minecart furnace_minecart oak_boat bamboo_raft cartography_table fletching_table smoker blast_furnace brewing_stand cauldron composter lectern loom barrel iron_door iron_trapdoor oak_trapdoor sculk_catalyst respawn_anchor ender_chest shulker_box hopper dropper clay_ball brick nether_brick prismarine_crystals amethyst_cluster budding_amethyst calcite tuff deepslate obsidian bedrock sponge wet_sponge slime_block honey_block magma_block soul_sand soul_campfire emerald redstone_block coal charcoal diamond_block gold_block iron_block copper_block lapis_block apple golden_carrot carrot potato baked_potato bread cookie pumpkin_pie melon_slice glistering_melon_slice spider_eye fermented_spider_eye sugar egg turtle_egg sniffer_egg axolotl_bucket tadpole_bucket cod salmon tropical_fish pufferfish kelp dried_kelp seagrass sea_pickle brain_coral fire_coral cactus bamboo vine glow_lichen moss_block azalea flowering_azalea spore_blossom big_dripleaf small_dripleaf torchflower pitcher_plant sunflower lilac peony rose_bush cornflower lily_of_the_valley wither_rose red_dye blue_dye cyan_dye purple_dye magenta_dye yellow_dye green_dye light_blue_dye black_dye white_dye iron_hoe golden_hoe stone_axe golden_axe diamond_axe netherite_axe iron_shovel golden_shovel fishing_rod carrot_on_a_stick warped_fungus_on_a_stick flint_and_steel bow shield elytra leather_horse_armor
+oak_log spruce_log birch_log jungle_log acacia_log dark_oak_log mangrove_log cherry_log crimson_stem warped_stem
+oak_leaves birch_leaves cherry_leaves azalea_leaves stone granite diorite andesite cobblestone mossy_cobblestone
+sandstone red_sandstone gravel clay terracotta white_wool orange_wool magenta_wool light_blue_wool yellow_wool lime_wool
+pink_wool gray_wool cyan_wool purple_wool blue_wool brown_wool green_wool red_wool black_wool glass_bottle potion
+experience_bottle firework_star feather leather rabbit_hide string slime_ball gunpowder bone bone_meal arrow
+spectral_arrow snowball egg nether_star heart_of_the_sea totem_of_undying iron_nugget gold_nugget raw_iron raw_gold
+raw_copper amethyst_shard quartz_block purpur_block end_stone netherrack basalt blackstone cobbled_deepslate
+polished_andesite smooth_stone bricks mud_bricks packed_ice blue_ice snow_block ice pumpkin melon hay_block
+dried_kelp_block bookshelf note_block target crafter dispenser daylight_detector tripwire_hook lever stone_button
+oak_door oak_fence oak_stairs ladder chain lantern torch soul_torch redstone_torch candle cake beacon conduit
+bell anvil grindstone stonecutter smithing_table chiseled_bookshelf lodestone respawn_anchor""".split()
 _used = set()
 for _k in list(META):
     _i, _en, _ru = META[_k]

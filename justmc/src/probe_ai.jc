@@ -1,0 +1,371 @@
+// =====================================================================
+//  probe_ai.jc — checks of the JustMC world before the Millennium reader ("mini LLM with search"):
+//    ~pr web            requests to Wikipedia (ru / uk / en), Open-Meteo, DuckDuckGo: codes, sizes,
+//                       parsed titles and texts, Cyrillic in URLs (percent-encoded and raw)
+//    ~pr text           Cyrillic / Ukrainian text operations and the URL encoder
+//    ~pr speed          actions per second at several yield budgets, TPS and CPU of the world
+//    ~pr store <n>      write n numbers into save variables (lists of 1000), checksums kept
+//    ~pr check          read them back and compare (run it after a restart of the world)
+//    ~pr clear          delete them
+//  Only the owner of the world may run the commands. Results go to the chat; copy the client log.
+// =====================================================================
+
+inline var PR_UA = "MillenniumJustMC/0.1 (Minecraft JustMC world module; https://github.com/kireikosasha/MX-Project)";
+inline var PR_HEX = "0123456789ABCDEF";
+
+event<world_start> {
+  g`pr.urls` = [];
+  g`pr.tags` = [];
+  g`pr.acc` = 0;
+  g`pr.budget` = 4000;
+}
+
+event<player_chat> {
+  pr_on_chat();
+}
+
+event<world_web_response> {
+  pr_on_web_response();
+}
+
+event<world_web_exception> {
+  pr_on_web_exception();
+}
+
+// ---------------------------------------------------------------------
+// helpers
+// ---------------------------------------------------------------------
+// one tick is yielded every g`pr.budget` estimated actions
+function pr_yield(py_cost: number) {
+  g`pr.acc` = variable::add([g`pr.acc`, py_cost]);
+  if (g`pr.acc`.greater_or_equals(g`pr.budget`)) {
+    g`pr.acc` = 0;
+    code::wait(1, "TICKS");
+  }
+}
+
+function pr_say(ps_msg: text) {
+  player::message<all_players>("&5[probe] &f${ps_msg}");
+}
+
+// byte pb_b (0..255) as %XX appended to pe_out
+function pr_percent_byte() {
+  pb_hi = variable::divide([pb_b, 16], "FLOOR");
+  pb_lo = variable::remainder(pb_b, 16, "REMAINDER");
+  pb_h1 = variable::get_char_at(PR_HEX, pb_hi);
+  pb_h2 = variable::get_char_at(PR_HEX, pb_lo);
+  pe_out = "${pe_out}%${pb_h1}${pb_h2}";
+}
+
+// pe_text -> pe_out: percent-encoded UTF-8 (letters, digits and - _ . ~ stay as they are)
+function pr_urlencode() {
+  pe_out = "";
+  pe_cps = variable::text_to_chars(pe_text, "CODEPOINTS");
+  repeat::for_each_in_list(pe_cps) { pe_k, pe_cp ->
+    pr_urlencode_char();
+  }
+}
+
+function pr_urlencode_char() {
+  pe_plain = 0;
+  if (variable::number_in_range(pe_cp, 48, 57, "INCLUDE_ALL")) {
+    pe_plain = 1;
+  }
+  if (variable::number_in_range(pe_cp, 65, 90, "INCLUDE_ALL")) {
+    pe_plain = 1;
+  }
+  if (variable::number_in_range(pe_cp, 97, 122, "INCLUDE_ALL")) {
+    pe_plain = 1;
+  }
+  if (pe_cp.equals([45, 46, 95, 126])) {
+    pe_plain = 1;
+  }
+  if (pe_plain.equals(1)) {
+    pe_out = "${pe_out}${variable::to_char(pe_cp)}";
+  } elif (pe_cp.less(128)) {
+    pb_b = pe_cp;
+    pr_percent_byte();
+  } elif (pe_cp.less(2048)) {
+    pr_urlencode_two_bytes();
+  } else {
+    pr_urlencode_three_bytes();
+  }
+}
+
+// U+0080..U+07FF (Cyrillic): 110xxxxx 10xxxxxx
+function pr_urlencode_two_bytes() {
+  pb_b = variable::add([192, variable::divide([pe_cp, 64], "FLOOR")]);
+  pr_percent_byte();
+  pb_b = variable::add([128, variable::remainder(pe_cp, 64, "REMAINDER")]);
+  pr_percent_byte();
+}
+
+// U+0800..U+FFFF: 1110xxxx 10xxxxxx 10xxxxxx
+function pr_urlencode_three_bytes() {
+  pb_b = variable::add([224, variable::divide([pe_cp, 4096], "FLOOR")]);
+  pr_percent_byte();
+  p3_mid = variable::divide([pe_cp, 64], "FLOOR");
+  pb_b = variable::add([128, variable::remainder(p3_mid, 64, "REMAINDER")]);
+  pr_percent_byte();
+  pb_b = variable::add([128, variable::remainder(pe_cp, 64, "REMAINDER")]);
+  pr_percent_byte();
+}
+
+// ---------------------------------------------------------------------
+// ~pr web
+// ---------------------------------------------------------------------
+// send one GET request (pw_tag, pw_url) with a User-Agent and remember it
+function pr_request() {
+  g`pr.urls`.append_value(pw_url);
+  g`pr.tags`.append_value(pw_tag);
+  world::send_web_request(pw_url, "", {"User-Agent": PR_UA, "Api-User-Agent": PR_UA}, "GET", "TEXT_PLAIN");
+  pr_say("&7-> ${pw_tag}");
+}
+
+function pr_cmd_web() {
+  g`pr.urls` = [];
+  g`pr.tags` = [];
+  pe_text = "столица Франции";
+  pr_urlencode();
+  pw_tag = "ru-search (encoded)";
+  pw_url = "https://ru.wikipedia.org/w/api.php?action=query&list=search&format=json&utf8=1&srlimit=3&srsearch=${pe_out}";
+  pr_request();
+  pw_tag = "ru-search (raw Cyrillic)";
+  pw_url = "https://ru.wikipedia.org/w/api.php?action=query&list=search&format=json&utf8=1&srlimit=3&srsearch=столица Франции";
+  pr_request();
+  pe_text = "Київ";
+  pr_urlencode();
+  pw_tag = "uk-extract";
+  pw_url = "https://uk.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&redirects=1&format=json&utf8=1&titles=${pe_out}";
+  pr_request();
+  pw_tag = "en-extract";
+  pw_url = "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&redirects=1&format=json&titles=Paris";
+  pr_request();
+  pe_text = "Париж";
+  pr_urlencode();
+  pw_tag = "ru-summary (REST)";
+  pw_url = "https://ru.wikipedia.org/api/rest_v1/page/summary/${pe_out}";
+  pr_request();
+  pw_tag = "ru-full-article (long)";
+  pw_url = "https://ru.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&redirects=1&format=json&utf8=1&titles=${pe_out}";
+  pr_request();
+  pr_cmd_web_other();
+}
+
+function pr_cmd_web_other() {
+  pw_tag = "open-meteo";
+  pw_url = "https://api.open-meteo.com/v1/forecast?latitude=50.45&longitude=30.52&current_weather=true";
+  pr_request();
+  pw_tag = "duckduckgo";
+  pw_url = "https://api.duckduckgo.com/?q=Paris&format=json&no_html=1";
+  pr_request();
+}
+
+// event<world_web_response>: code, size, content type, preview, parsed content
+function pr_on_web_response() {
+  pr_url = value::url;
+  pr_text = value::url_response;
+  pr_code = value::url_response_code;
+  pr_len = variable::get_text_length(pr_text);
+  pr_i = variable::get_list_index_of_value(g`pr.urls`, pr_url, "FIRST");
+  pr_tag = variable::get_list_value(g`pr.tags`, pr_i, pr_url);
+  pr_hdr = value::response_headers;
+  pr_ct = variable::get_map_value(pr_hdr, "content-type", "?");
+  pr_say("&a<- ${pr_tag}: HTTP ${pr_code}, ${pr_len} chars, ${pr_ct}");
+  pr_cut = variable::min([pr_len, 220]);
+  pr_say("&7   ${variable::trim_text(pr_text, 0, pr_cut)}");
+  if (pr_code.equals(200)) {
+    if (pr_len.less(24900)) {
+      pr_show_parsed();
+    } else {
+      pr_say("&e   (cut at ${pr_len} characters, not parsed)");
+    }
+  }
+}
+
+// titles of a search, the start of an extract, or the summary of the REST answer
+function pr_show_parsed() {
+  pj = variable::parse_json(pr_text);
+  if (pj.is_type("MAP")) {
+    pj_q = variable::get_map_value(pj, "query", 0);
+    pj_ex = variable::get_map_value(pj, "extract", 0);
+    if (pj_q.is_type("MAP")) {
+      pr_show_query();
+    } elif (pj_ex.is_type("TEXT")) {
+      pr_say("&b   summary: ${variable::trim_text(pj_ex, 0, variable::min([variable::get_text_length(pj_ex), 300]))}");
+    } else {
+      pr_say("&b   keys: ${variable::get_map_keys(pj)}");
+    }
+  }
+}
+
+function pr_show_query() {
+  pj_s = variable::get_map_value(pj_q, "search", 0);
+  pj_p = variable::get_map_value(pj_q, "pages", 0);
+  if (pj_s.is_type("ARRAY")) {
+    pj_titles = [];
+    repeat::for_each_in_list(pj_s) { pj_k, pj_hit ->
+      pj_titles.append_value(variable::get_map_value(pj_hit, "title", "?"));
+    }
+    pr_say("&b   search titles: ${pj_titles}");
+  }
+  if (pj_p.is_type("MAP")) {
+    repeat::for_each_in_list(variable::get_map_keys(pj_p)) { pj_k, pj_id ->
+      pj_page = variable::get_map_value(pj_p, pj_id);
+      pj_e = variable::get_map_value(pj_page, "extract", "");
+      pj_el = variable::get_text_length(pj_e);
+      pr_say("&b   ${variable::get_map_value(pj_page, "title", "?")} (${pj_el} chars): ${variable::trim_text(pj_e, 0, variable::min([pj_el, 300]))}");
+    }
+  }
+}
+
+function pr_on_web_exception() {
+  px_url = value::url;
+  px_i = variable::get_list_index_of_value(g`pr.urls`, px_url, "FIRST");
+  px_tag = variable::get_list_value(g`pr.tags`, px_i, px_url);
+  pr_say("&c<- ${px_tag}: web exception (no answer)");
+}
+
+// ---------------------------------------------------------------------
+// ~pr text
+// ---------------------------------------------------------------------
+function pr_cmd_text() {
+  pt_s = "ПРИВІТ, Їжак! ҐЄ Hello. Москва — столица России. Київ - столиця України.";
+  pr_say("lower: ${variable::set_text_case(pt_s, "LOWER")}");
+  pr_say("codepoints of 'їґЁ': ${variable::text_to_chars("їґЁ", "CODEPOINTS")} &7(expected [1111, 1169, 1025])");
+  pr_say("chars of 'Київ': ${variable::text_to_chars("Київ", "CHARS")}, length ${variable::get_text_length("Київ")} &7(4)");
+  pr_say("split by '. ': ${variable::split_text(pt_s, ". ")}");
+  pe_text = "столица Франции";
+  pr_urlencode();
+  pr_say("urlencode: ${pe_out}");
+  pr_say("&7expected: %D1%81%D1%82%D0%BE%D0%BB%D0%B8%D1%86%D0%B0%20%D0%A4%D1%80%D0%B0%D0%BD%D1%86%D0%B8%D0%B8");
+  pe_text = "Їжак ґанок";
+  pr_urlencode();
+  pr_say("urlencode: ${pe_out}");
+  pr_say("&7expected: %D0%87%D0%B6%D0%B0%D0%BA%20%D2%91%D0%B0%D0%BD%D0%BE%D0%BA");
+  pr_say("md5('Київ'): ${variable::get_text_hash("Київ", "MD5")} &7(expected 74ecc6c2166b27291213f09ff598bd01)");
+}
+
+// ---------------------------------------------------------------------
+// ~pr speed: one action per loop step + loop overhead, measured at three budgets
+// ---------------------------------------------------------------------
+process pr_speed_process() {
+  pr_say("TPS ${value::server_tps}, CPU ${value::cpu_usage}% before the test");
+  repeat::for_each_in_list([2000, 5000, 10000]) { ps_k, ps_b ->
+    g`pr.budget` = ps_b;
+    ps_n = 0;
+    ps_x = 0;
+    controller::measure_time(ps_ms, "MILLISECONDS") {
+      repeat::while(ps_n.less(30000)) {
+        ps_x = variable::mathematical_expectation([ps_x, ps_n], [1, 1]);
+        ps_n = variable::add([ps_n, 1]);
+        pr_yield(4);
+      }
+    }
+    ps_rate = variable::round(variable::divide([120000, variable::max([ps_ms, 1])]), 1, "ROUND");
+    pr_say("budget ${ps_b}: 30000 loop steps (~120000 actions) in ${ps_ms} ms -> ~${ps_rate} thousand actions/s; TPS ${value::server_tps}, CPU ${value::cpu_usage}%");
+  }
+  g`pr.budget` = 4000;
+}
+
+// ---------------------------------------------------------------------
+// ~pr store <n> / check / clear: n numbers in lists of 1000 (save variables s`pr.w.<i>`)
+// ---------------------------------------------------------------------
+process pr_store_process() {
+  pr_base = [];
+  pr_ones = [];
+  ps_n = 0;
+  repeat::while(ps_n.less(1000)) {
+    pr_base.append_value(variable::random_number(-1, 1, "FALSE"));
+    pr_ones.append_value(1);
+    ps_n = variable::add([ps_n, 1]);
+  }
+  s`pr.ones` = pr_ones;
+  s`pr.sums` = [];
+  ps_i = 0;
+  controller::measure_time(ps_ms, "MILLISECONDS") {
+    repeat::while(ps_i.less(pr_lists)) {
+      pr_store_list();
+      ps_i = variable::add([ps_i, 1]);
+    }
+  }
+  s`pr.lists` = pr_lists;
+  pr_say("&astored ${pr_lists} lists x 1000 = ${variable::multiply([pr_lists, 1000])} numbers in ${ps_ms} ms. Restart the world (/play) and run ~pr check.");
+}
+
+function pr_store_list() {
+  pr_l = variable::set_list_value(pr_base, 0, ps_i);
+  s`pr.w.${ps_i}` = pr_l;
+  s`pr.sums`.append_value(variable::mathematical_expectation(pr_l, pr_ones));
+  pr_yield(8);
+}
+
+process pr_check_process() {
+  pc_ok = 0;
+  pc_bad = 0;
+  pc_missing = 0;
+  pc_i = 0;
+  pc_n = s`pr.lists`;
+  controller::measure_time(pc_ms, "MILLISECONDS") {
+    repeat::while(pc_i.less(pc_n)) {
+      pr_check_list();
+      pc_i = variable::add([pc_i, 1]);
+    }
+  }
+  pr_say("&acheck: ${pc_ok} lists ok, ${pc_bad} changed, ${pc_missing} missing of ${pc_n} (${variable::multiply([pc_n, 1000])} numbers), read in ${pc_ms} ms");
+}
+
+function pr_check_list() {
+  if (s`pr.w.${pc_i}`.exists()) {
+    pc_sum = variable::mathematical_expectation(s`pr.w.${pc_i}`, s`pr.ones`);
+    if (pc_sum.equals(variable::get_list_value(s`pr.sums`, pc_i))) {
+      pc_ok = variable::add([pc_ok, 1]);
+    } else {
+      pc_bad = variable::add([pc_bad, 1]);
+    }
+  } else {
+    pc_missing = variable::add([pc_missing, 1]);
+  }
+  pr_yield(8);
+}
+
+// ---------------------------------------------------------------------
+// chat
+// ---------------------------------------------------------------------
+function pr_on_chat() {
+  pr_msg = value::event_chat_message;
+  if (pr_msg.text_starts_with("~pr")) {
+    world::cancel_event();
+    pr_a = variable::split_text(pr_msg, " ");
+    pr_sub = variable::get_list_value(pr_a, 1, "help");
+    pr_arg = variable::get_list_value(pr_a, 2, "");
+    pr_u = value::uuid;
+    if (pr_u.equals(value::owner_uuid)) {
+      pr_dispatch();
+    } else {
+      player::message("&cOnly the owner of the world can run the probes.");
+    }
+  }
+}
+
+function pr_dispatch() {
+  if (pr_sub.equals("web")) {
+    pr_cmd_web();
+  } elif (pr_sub.equals("text")) {
+    pr_cmd_text();
+  } elif (pr_sub.equals("speed")) {
+    code::start_process("pr_speed_process", "DONT_COPY", "NO_TARGET");
+  } elif (pr_sub.equals("store")) {
+    pr_lists = variable::divide([variable::convert_text_to_number(pr_arg, 10), 1000], "FLOOR");
+    pr_lists = variable::max([1, pr_lists]);
+    pr_say("writing ${pr_lists} lists of 1000 numbers...");
+    code::start_process("pr_store_process", "COPY", "NO_TARGET");
+  } elif (pr_sub.equals("check")) {
+    code::start_process("pr_check_process", "DONT_COPY", "NO_TARGET");
+  } elif (pr_sub.equals("clear")) {
+    variable::purge(["pr.w.", "pr.sums", "pr.lists", "pr.ones"], "SAVE", "STARTS_WITH");
+    pr_say("probe numbers deleted");
+  } else {
+    player::message("&5[probe] &f~pr text | ~pr web | ~pr speed | ~pr store <n> | ~pr check | ~pr clear");
+  }
+}
