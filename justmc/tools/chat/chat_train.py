@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """
-The Millennium chat model: a word-piece language model that writes the reply token by token.
+The Millennium chat model (v2): a word-piece language model that writes the reply token by token.
 
-    x_t = E[token]                          embedding, 96 numbers (8-bit in JustMC, tied with the output)
-    h_t = LSTM(x_t, h_t-1)                  the Millennium cell with LayerNorm (the library LSTM in JustMC)
-    o_t = Wp h_t + bp                       96 numbers
+    x_t   = E[token]                               embedding (8-bit in JustMC), tied with the output
+    h_t   = LSTM(x_t, h_t-1)                       the Millennium cell with LayerNorm (library step in JustMC)
+    ctx_t = sum_j a_j (Wv h_j),  a = softmax_j((Wq h_t) . (Wk h_j))   attention over the message token states
+    o_t   = Wp [1 | h_t | x_t | ctx_t]             output vector (the x_t part is a bigram shortcut)
     P(next) = P(class | o) * P(token | class, o)
-        class logits  Wc o + bc             ~200 classes of tokens grouped by frequency
-        token logits  E[token] . o + bw     only the tokens of that class (at most 128)
-So one generated token costs one LSTM step and ~300 short dot products instead of 20 000.
-Tokens that never occur in replies have no class and are never generated.
+        class logits  Wc o + bc                    classes of tokens by frequency (frequent tokens alone)
+        token logits  E[token] . o + bw            only the tokens of that class
+JustMC pays per action (about 50 per LSTM neuron and step), not per multiplication, so the rows are long
+(wide embedding, shortcut) and the number of rows is what is kept small.
 
-    python chat_train.py --data data --out out --hidden 128 --epochs 8 [--device cuda]
+    python chat_train.py --data data --out out --hidden 256 --dim 256 --epochs 10 [--device cuda]
 """
 import argparse
 import json
@@ -22,44 +23,70 @@ import time
 import numpy as np
 import torch
 
-CAP = 128            # tokens per class at most
+CAP = 160            # tokens per class at most
+MAX_M = 24           # message tokens = attention slots
+CLIP = 5.0           # 8-bit embeddings: one scale for the table, values clipped at CLIP standard deviations
 
 
-def make_classes(X, M, V, n_classes=160):
-    """frequency binning of the predicted tokens: frequent tokens in small classes"""
+def make_classes(X, M, V, alpha=2.0, beta=6.0):
+    """Frequency-ordered classes that minimise the JustMC actions per generated token:
+    alpha * (number of classes) + beta * (expected size of the class of the next token)."""
     tgt = X[:, 1:][M[:, :-1] == 1]
     freq = np.bincount(tgt, minlength=V).astype(np.float64)
-    order = [t for t in np.argsort(-freq, kind="stable") if freq[t] > 0]
-    target = freq.sum() / n_classes
-    classes, cur, mass = [], [], 0.0
-    for t in order:
-        cur.append(int(t))
-        mass += freq[t]
-        if mass >= target or len(cur) >= CAP:
-            classes.append(cur)
-            cur, mass = [], 0.0
-    if cur:
-        classes.append(cur)
-    return classes
+    order = [int(t) for t in np.argsort(-freq, kind="stable") if freq[t] > 0]
+    p = freq[order] / freq[order].sum()
+    P = np.concatenate([[0.0], np.cumsum(p)])
+    n = len(order)
+    best = np.full(n + 1, np.inf)
+    back = np.zeros(n + 1, np.int64)
+    best[0] = 0.0
+    for i in range(1, n + 1):
+        j = np.arange(max(0, i - CAP), i)
+        cost = best[j] + alpha + beta * (P[i] - P[j]) * (i - j)
+        k = int(np.argmin(cost))
+        best[i], back[i] = cost[k], j[k]
+    cuts, i = [], n
+    while i > 0:
+        cuts.append((int(back[i]), i))
+        i = int(back[i])
+    return [order[a:b] for a, b in reversed(cuts)]
+
+
+def roles(X, sp):
+    """per position: message token (between [U] and [B]), its attention slot, [U]"""
+    is_u = X == sp["[U]"]
+    is_b = X == sp["[B]"]
+    depth = np.cumsum(is_u, 1) - np.cumsum(is_b, 1)
+    is_msg = (depth == 1) & ~is_u & (X != 1)
+    pos = np.arange(X.shape[1])[None, :]
+    last_u = np.maximum.accumulate(np.where(is_u, pos, -1), 1)
+    slot = np.clip(pos - last_u - 1, 0, MAX_M - 1)
+    return is_u, is_msg, slot.astype(np.int64)
 
 
 class ChatLM(torch.nn.Module):
-    def __init__(self, V, classes, dim=96, hid=128):
+    def __init__(self, V, classes, dim=256, hid=256, da=64, dv=128):
         super().__init__()
-        self.V, self.D, self.H = V, dim, hid
-        self.emb = torch.nn.Parameter(torch.randn(V, dim) * 0.1)
-        s = math.sqrt(6.0 / (dim + hid))
-        self.Wx = torch.nn.Parameter(torch.empty(4, hid, dim).uniform_(-s, s))
-        self.Wh = torch.nn.Parameter(torch.empty(4, hid, hid).uniform_(-1 / math.sqrt(hid), 1 / math.sqrt(hid)))
-        b = torch.zeros(4, hid)
+        self.V, self.D, self.H, self.Da, self.Dv = V, dim, hid, da, dv
+        H, D = hid, dim
+        self.emb = torch.nn.Parameter(torch.randn(V, D) * 0.1)
+        s = math.sqrt(6.0 / (D + H))
+        self.Wx = torch.nn.Parameter(torch.empty(4 * H, D).uniform_(-s, s))
+        self.Wh = torch.nn.Parameter(torch.empty(4 * H, H).uniform_(-1 / math.sqrt(H), 1 / math.sqrt(H)))
+        b = torch.zeros(4, H)
         b[0] = 1.0
-        self.b = torch.nn.Parameter(b)
-        self.gam = torch.nn.Parameter(torch.ones(hid))
-        self.bet = torch.nn.Parameter(torch.zeros(hid))
-        self.Wp = torch.nn.Parameter(torch.randn(dim, hid) / math.sqrt(hid))
-        self.bp = torch.nn.Parameter(torch.zeros(dim))
+        self.b = torch.nn.Parameter(b.reshape(4 * H))
+        self.gam = torch.nn.Parameter(torch.ones(H))
+        self.bet = torch.nn.Parameter(torch.zeros(H))
+        self.Wp = torch.nn.Parameter(torch.randn(D, H) / math.sqrt(H))
+        self.bp = torch.nn.Parameter(torch.zeros(D))
+        self.Wq = torch.nn.Parameter(torch.randn(da, H) / math.sqrt(H))
+        self.Wk = torch.nn.Parameter(torch.randn(da, H) / math.sqrt(H))
+        self.Wv = torch.nn.Parameter(torch.randn(dv, H) / math.sqrt(H))
+        self.Wa = torch.nn.Parameter(torch.randn(D, dv) * (0.5 / math.sqrt(dv)))
+        self.Ws = torch.nn.Parameter(torch.randn(D, D) * (0.5 / math.sqrt(D)))
         C = len(classes)
-        self.Wc = torch.nn.Parameter(torch.randn(C, dim) * 0.05)
+        self.Wc = torch.nn.Parameter(torch.randn(C, D) * 0.05)
         self.bc = torch.nn.Parameter(torch.zeros(C))
         self.bw = torch.nn.Parameter(torch.zeros(V))
         cls_of = torch.full((V,), -1, dtype=torch.long)
@@ -72,54 +99,85 @@ class ChatLM(torch.nn.Module):
         self.register_buffer("pos_in", pos_in)
         self.members = [torch.tensor(t, dtype=torch.long) for t in classes]
 
-    def run(self, x, h=None, c=None, emb=None):
-        """x: (B, T) token ids -> o (B, T, D), last state"""
+    def run(self, x, is_u, is_msg, slot, is_dec, emb=None, drop=0.0):
+        """x: (B, T) tokens -> o (B, T, D): output vectors (meaningful at the is_dec positions)"""
         E = self.emb if emb is None else emb
         B, T = x.shape
         H = self.H
-        xe = E[x] @ self.Wx.reshape(4 * H, -1).t() + self.b.reshape(4 * H)
-        Wh = self.Wh.reshape(4 * H, H).t()
-        h = x.new_zeros(B, H, dtype=torch.float32) if h is None else h
-        c = x.new_zeros(B, H, dtype=torch.float32) if c is None else c
-        hs = []
+        xv = E[x]
+        if drop > 0 and self.training:
+            xv = torch.nn.functional.dropout(xv, drop)
+        xe = xv @ self.Wx.t() + self.b
+        Wh = self.Wh.t()
+        h = xv.new_zeros(B, H)
+        c = xv.new_zeros(B, H)
+        zero = xv.new_zeros(B, self.Dv)
+        Wkv = torch.cat([self.Wk, self.Wv], 0).t()             # keys and values of a message token state
+        mem = xv.new_zeros(B, MAX_M, self.Da + self.Dv)
+        filled = torch.zeros(B, MAX_M, dtype=torch.bool, device=x.device)
+        onehot = torch.nn.functional.one_hot(slot, MAX_M).bool() & is_msg[:, :, None]
+        hs, ctxs = [], []
         for t in range(T):
             z = xe[:, t] + h @ Wh
             f = torch.sigmoid(z[:, :H].clamp(-50, 50))
             i = torch.sigmoid(z[:, H:2 * H].clamp(-50, 50))
             g = torch.tanh(z[:, 2 * H:3 * H].clamp(-50, 50))
-            o = torch.sigmoid(z[:, 3 * H:].clamp(-50, 50))
+            og = torch.sigmoid(z[:, 3 * H:].clamp(-50, 50))
             c = f * c + i * g
-            pre = o * torch.tanh(c)
+            pre = og * torch.tanh(c)
             mu = pre.mean(-1, keepdim=True)
             var = ((pre - mu) ** 2).mean(-1, keepdim=True)
             h = self.gam * (pre - mu) / torch.sqrt(var + 1e-5) + self.bet
             hs.append(h)
-        hs = torch.stack(hs, 1)
-        return hs @ self.Wp.t() + self.bp, h, c
+            ctx = zero
+            u = is_u[:, t]
+            if bool(u.any()):                                    # a new message: the memory starts again
+                keep = (~u)[:, None]
+                mem = mem * keep[:, :, None]
+                filled = filled & keep
+            oh = onehot[:, t]
+            if bool(oh.any()):
+                mem = mem + oh[:, :, None] * (h @ Wkv)[:, None, :]
+                filled = filled | oh
+            d = is_dec[:, t]
+            if bool(d.any()):
+                q = h @ self.Wq.t()
+                sc = (mem[:, :, :self.Da] * q[:, None, :]).sum(-1).masked_fill(~filled, -1e30)
+                a = torch.softmax(sc, -1) * filled
+                ctx = (a[:, :, None] * mem[:, :, self.Da:]).sum(1) * d[:, None]
+            ctxs.append(ctx)
+        return torch.stack(hs, 1) @ self.Wp.t() + self.bp + xv @ self.Ws.t() + torch.stack(ctxs, 1) @ self.Wa.t()
 
-    def loss(self, x, m, emb=None):
-        """mean -log P of the tokens marked in m (position t predicts x[t + 1])"""
-        o, _, _ = self.run(x[:, :-1], emb=emb)
-        sel = m[:, :-1].bool()
-        o = o[sel]
-        y = x[:, 1:][sel]
+    def loss(self, x, m, r, emb=None, drop=0.0):
+        """mean -log P of the tokens marked in m (position t predicts x[t + 1]); r = roles of x"""
+        is_u, is_msg, slot = r
+        dec = m[:, :-1].bool()
+        o = self.run(x[:, :-1], is_u[:, :-1], is_msg[:, :-1], slot[:, :-1], dec, emb, drop)
+        o = o[dec]
+        if drop > 0 and self.training:
+            o = torch.nn.functional.dropout(o, drop)
+        y = x[:, 1:][dec]
         cy = self.cls_of[y]
         lc = torch.nn.functional.cross_entropy(o @ self.Wc.t() + self.bc, cy, reduction="sum")
         E = self.emb if emb is None else emb
         lw = o.new_zeros(())
         for c in torch.unique(cy).tolist():
-            idx = (cy == c).nonzero(as_tuple=True)[0]
             mem = self.members[c]
+            if len(mem) == 1:
+                continue
+            idx = (cy == c).nonzero(as_tuple=True)[0]
             logits = o[idx] @ E[mem].t() + self.bw[mem]
             lw = lw + torch.nn.functional.cross_entropy(logits, self.pos_in[y[idx]], reduction="sum")
         return (lc + lw) / max(1, len(y)), len(y)
 
 
-def quantize(emb):
-    m = emb.abs().max(1).values.clamp_min(1e-8)
-    scale = m / 127.0
-    codes = torch.clamp(torch.round(emb / scale[:, None]) + 128, 0, 255)
-    return codes, scale
+def emb_scale(emb):
+    return float(emb.detach().std()) * CLIP / 127.0
+
+
+def quantize(emb, scale):
+    """8-bit embeddings: value = scale * code, code = -127 .. 127 (one scale for the whole table)"""
+    return torch.clamp(torch.round(emb / scale), -127, 127) * scale
 
 
 def batches(idx, lengths, bs, rng):
@@ -130,15 +188,29 @@ def batches(idx, lengths, bs, rng):
     return out
 
 
-def evaluate(m, X, M, L, idx, emb=None, bs=512, dev="cpu"):
+class Data:
+    def __init__(self, path, sp, dev):
+        D = np.load(os.path.join(path, "chat_data.npz"))
+        self.X, self.M, self.split = D["X"], D["M"], D["split"]
+        self.L = (self.X != 1).sum(1)
+        self.sp, self.dev = sp, dev
+
+    def batch(self, b):
+        T = int(self.L[b].max())
+        X = self.X[b, :T]
+        is_u, is_msg, slot = roles(X, self.sp)
+        t = lambda a, dt=None: torch.as_tensor(a, dtype=dt, device=self.dev)  # noqa: E731
+        return t(X, torch.long), t(self.M[b, :T]), (t(is_u), t(is_msg), t(slot))
+
+
+def evaluate(m, data, idx, emb=None, bs=512):
     m.eval()
     tot, n = 0.0, 0
     with torch.no_grad():
         for i in range(0, len(idx), bs):
-            b = idx[i:i + bs]
-            T = int(L[b].max())
-            l, k = m.loss(torch.as_tensor(X[b, :T], dtype=torch.long, device=dev), torch.as_tensor(M[b, :T], device=dev), emb)
-            tot += float(l.detach()) * k
+            x, mk, r = data.batch(idx[i:i + bs])
+            l, k = m.loss(x, mk, r, emb)
+            tot += float(l) * k
             n += k
     m.train()
     return tot / max(1, n)
@@ -148,60 +220,88 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--hidden", type=int, default=128)
-    ap.add_argument("--dim", type=int, default=96)
-    ap.add_argument("--epochs", type=int, default=3)
+    ap.add_argument("--hidden", type=int, default=256)
+    ap.add_argument("--dim", type=int, default=256)
+    ap.add_argument("--epochs", type=int, default=10)
     ap.add_argument("--batch", type=int, default=256)
-    ap.add_argument("--lr", type=float, default=3e-3)
+    ap.add_argument("--lr", type=float, default=2e-3)
+    ap.add_argument("--dropout", type=float, default=0.1)
     ap.add_argument("--threads", type=int, default=4)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu", help="cuda / cpu")
     ap.add_argument("--qat", type=int, default=1, help="last epochs with 8-bit embeddings in the forward pass")
-    ap.add_argument("--init", help="checkpoint to fine-tune (its token classes are kept)")
+    ap.add_argument("--init", help="checkpoint to fine-tune (its token classes and sizes are kept)")
+    ap.add_argument("--limit", type=int, default=0, help="train on N random sequences only (quick tests)")
+    ap.add_argument("--resume", action="store_true", help="continue an interrupted run from <out>/chat.pt")
     a = ap.parse_args()
     torch.set_num_threads(a.threads)
     torch.manual_seed(1)
     rng = np.random.RandomState(1)
-    D = np.load(os.path.join(a.data, "chat_data.npz"))
-    meta = json.load(open(os.path.join(a.data, "chat_meta.json")))
-    X, M = D["X"], D["M"]
-    V = meta["n_vocab"] + len(meta["special"])
-    L = (X != 1).sum(1)
-    ck = torch.load(a.init, map_location="cpu") if a.init else None
-    classes = ck["classes"] if ck else make_classes(X, M, V)
-    m = ChatLM(V, classes, a.dim, a.hidden)
-    if ck:
-        m.load_state_dict(ck["state"])
     dev = a.device
+    meta = json.load(open(os.path.join(a.data, "chat_meta.json")))
+    sp = meta["special"]
+    data = Data(a.data, sp, dev)
+    V = meta["n_vocab"] + len(sp)
+    out_path = os.path.join(a.out, "chat.pt")
+    rs = torch.load(out_path, map_location="cpu", weights_only=False) if a.resume and os.path.exists(out_path) else None
+    if rs and rs.get("done"):
+        print(f"{out_path}: already trained")
+        return
+    if rs and rs.get("resume", {}).get("epochs") != a.epochs:
+        rs = None                                            # another schedule: start again
+    ck = torch.load(a.init, map_location="cpu", weights_only=False) if a.init else None
+    if rs or ck:
+        classes, arch = (rs or ck)["classes"], (rs or ck)["arch"]
+    else:
+        classes = make_classes(data.X, data.M, V)
+        arch = {"dim": a.dim, "hid": a.hidden, "da": 64, "dv": 128}
+    m = ChatLM(V, classes, **arch)
+    if rs or ck:
+        m.load_state_dict((rs or ck)["state"])
     m.to(dev)
     m.members = [t.to(dev) for t in m.members]
-    print(f"device {dev}", flush=True)
     n_par = sum(p.numel() for p in m.parameters())
-    mac = 4 * a.hidden * (a.dim + a.hidden + 1) + a.dim * (a.hidden + 1) + len(classes) * (a.dim + 1) + CAP * (a.dim + 1)
-    print(f"parameters {n_par}; {len(classes)} classes ({sum(len(c) for c in classes)} tokens can be generated); "
-          f"<= {mac / 1000:.0f} k multiply-adds per generated token", flush=True)
-    tr = np.where(D["split"] == 0)[0]
-    va = np.where(D["split"] == 1)[0]
+    sizes = np.array([len(c) for c in classes])
+    tgt = data.X[:, 1:][data.M[:, :-1] == 1]
+    exp_size = float(sizes[m.cls_of.cpu().numpy()[tgt]].mean())
+    print(f"device {dev}; parameters {n_par} (embeddings {m.emb.numel()}); LSTM {arch['hid']}, embedding {arch['dim']}; "
+          f"{len(classes)} classes over {int(sizes.sum())} tokens, {exp_size:.1f} tokens scored per step on average", flush=True)
+    tr = np.where(data.split == 0)[0]
+    va = np.where(data.split == 1)[0]
     if ck:
-        # fine-tuning keeps the token classes: sequences with a reply token outside them are left out
         cls = m.cls_of.cpu().numpy()
-        bad = ((M[:, :-1] == 1) & (cls[X[:, 1:]] < 0)).any(1)
+        bad = ((data.M[:, :-1] == 1) & (cls[data.X[:, 1:]] < 0)).any(1)
         print(f"fine-tuning: {int(bad.sum())} sequences with tokens outside the classes left out")
         tr, va = tr[~bad[tr]], va[~bad[va]]
+    if a.limit:
+        tr = tr[np.random.RandomState(7).permutation(len(tr))[:a.limit]]
     opt = torch.optim.AdamW(m.parameters(), lr=a.lr, weight_decay=1e-6)
     steps = a.epochs * math.ceil(len(tr) / a.batch)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=a.lr, total_steps=steps, pct_start=0.03)
-    for ep in range(a.epochs):
-        qat = ep >= a.epochs - a.qat
+    os.makedirs(a.out, exist_ok=True)
+    scale = ck.get("scale") if ck else None                  # set when the 8-bit training starts, then kept
+    first = 0
+    if rs:
+        opt.load_state_dict(rs["resume"]["opt"])
+        for st in opt.state.values():
+            for k, v in st.items():
+                if torch.is_tensor(v):
+                    st[k] = v.to(dev)
+        sched.load_state_dict(rs["resume"]["sched"])
+        first, scale = rs["resume"]["epoch"], rs["qscale"]
+        print(f"resuming after epoch {first}", flush=True)
+    for ep in range(first, a.epochs):
+        qat = ep >= a.epochs - a.qat or bool(ck)
+        if qat and scale is None:
+            scale = emb_scale(m.emb)
         t0 = time.time()
         tot, n = 0.0, 0
-        for bi, b in enumerate(batches(tr, L, a.batch, rng)):
-            T = int(L[b].max())
+        bl = batches(tr, data.L, a.batch, rng)
+        for bi, b in enumerate(bl):
+            x, mk, r = data.batch(b)
             emb = None
             if qat:
-                codes, scale = quantize(m.emb.detach())
-                q = scale[:, None] * (codes - 128)
-                emb = m.emb + (q - m.emb).detach()          # straight-through 8-bit embeddings
-            l, k = m.loss(torch.as_tensor(X[b, :T], dtype=torch.long, device=dev), torch.as_tensor(M[b, :T], device=dev), emb)
+                emb = m.emb + (quantize(m.emb.detach(), scale) - m.emb).detach()   # straight-through 8-bit embeddings
+            l, k = m.loss(x, mk, r, emb, a.dropout)
             opt.zero_grad()
             l.backward()
             torch.nn.utils.clip_grad_norm_(m.parameters(), 1.0)
@@ -210,15 +310,20 @@ def main():
             tot += float(l.detach()) * k
             n += k
             if bi % 200 == 0:
-                print(f"  epoch {ep + 1} batch {bi}: loss {tot / max(1, n):.3f} ({time.time() - t0:.0f} s)", flush=True)
-        codes, scale = quantize(m.emb.detach())
-        qemb = scale[:, None] * (codes - 128)
-        vl, vq = evaluate(m, X, M, L, va, dev=dev), evaluate(m, X, M, L, va, qemb, dev=dev)
+                el = time.time() - t0
+                eta = el / (bi + 1) * (len(bl) - bi - 1)
+                print(f"  epoch {ep + 1}/{a.epochs} batch {bi}/{len(bl)}: loss {tot / max(1, n):.3f} "
+                      f"({el:.0f} s, epoch ends in ~{eta / 60:.0f} min)", flush=True)
+        sc = scale if scale is not None else emb_scale(m.emb)
+        vl, vq = evaluate(m, data, va), evaluate(m, data, va, quantize(m.emb.detach(), sc))
         print(f"epoch {ep + 1}/{a.epochs} train {tot / n:.3f} | val {vl:.3f} (ppl {math.exp(vl):.1f}), 8-bit {vq:.3f} "
               f"(ppl {math.exp(vq):.1f}) ({time.time() - t0:.0f} s)", flush=True)
-        os.makedirs(a.out, exist_ok=True)
-        torch.save({"state": {k: v.cpu() for k, v in m.state_dict().items()}, "classes": classes, "hidden": a.hidden, "dim": a.dim, "V": V,
-                    "special": meta["special"]}, os.path.join(a.out, "chat.pt"))
+        save = {"state": {k: v.cpu() for k, v in m.state_dict().items()}, "classes": classes, "arch": arch,
+                "V": V, "special": sp, "scale": sc, "qscale": scale, "done": ep == a.epochs - 1}
+        if not save["done"]:
+            save["resume"] = {"epoch": ep + 1, "epochs": a.epochs, "opt": opt.state_dict(), "sched": sched.state_dict()}
+        torch.save(save, out_path + ".part")
+        os.replace(out_path + ".part", out_path)
 
 
 if __name__ == "__main__":

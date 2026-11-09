@@ -1,34 +1,33 @@
 #!/usr/bin/env python3
 """
-Dialogue pairs (message -> reply) for the Millennium chat model, from the downloaded datasets:
-  dd_train.zip        DailyDialog (roskoN/dailydialog)                 en, multi-turn
-  persona.parquet     PersonaChat (AlekseyKorshuk/persona-chat)        en, multi-turn
+Dialogues for the Millennium chat model from the downloaded datasets (download.py):
+  dd_train.zip        DailyDialog (roskoN/dailydialog)                 en, whole dialogues
+  persona.parquet     PersonaChat (AlekseyKorshuk/persona-chat)        en, whole dialogues
   everyday.parquet    everyday-conversations (HuggingFaceTB)           en, user <-> assistant
   rudialogues.jsonl   russian_dialogues (Den4ikAI), relevance = 1      ru, question -> answer
-  aya.parquet         Aya dataset (CohereLabs), Ukrainian part         uk
-Short pairs only; everything stays except paedophilia.
+  aya.parquet         Aya dataset (CohereLabs), Ukrainian part         uk, question -> answer
+An experiment for a server where rough talk is allowed: nothing is filtered but paedophilia.
 
-    python chat_sources.py --raw raw --out pairs
-writes pairs/<source>.jsonl  {"lang", "src", "m", "r"}
+    python chat_sources.py --raw raw --out src
+writes src/dialogs.jsonl  {"lang", "src", "turns": [...]}   (speakers alternate)
+       src/pairs.jsonl    {"lang", "src", "m", "r"}
 """
 import argparse
-import io
 import json
 import os
-import random
 import re
 import zipfile
 
 import pyarrow.parquet as pq
 
-# an experiment: rough talk, swearing and anything else stay; only paedophilia is dropped
 BAD = re.compile(r"(педоф|paedo|pedophil)", re.I)
 URL = re.compile(r"https?://|www\.|@\w|#\w")
+MAX_WORDS = 30
 
 
-def ok(text, max_words):
+def ok(text):
     t = text.strip()
-    return 0 < len(t.split()) <= max_words and not BAD.search(t) and not URL.search(t)
+    return 0 < len(t.split()) <= MAX_WORDS and not BAD.search(t) and not URL.search(t)
 
 
 def clean(t):
@@ -37,11 +36,10 @@ def clean(t):
     return t
 
 
-def first_sentences(t, max_words):
-    """the first sentences of a long assistant reply that fit in max_words"""
-    parts = re.split(r"(?<=[.!?])\s+", t.strip())
+def first_sentences(t, max_words=MAX_WORDS):
+    """the first sentences of a long reply that fit in max_words"""
     out = []
-    for p in parts:
+    for p in re.split(r"(?<=[.!?])\s+", t.strip()):
         if len(" ".join(out + [p]).split()) > max_words:
             break
         out.append(p)
@@ -50,28 +48,22 @@ def first_sentences(t, max_words):
 
 def dailydialog(raw):
     z = zipfile.ZipFile(os.path.join(raw, "dd_train.zip"))
-    text = z.read("train/dialogues_train.txt").decode("utf-8", "replace")
-    for line in text.splitlines():
-        turns = [clean(u) for u in line.split("__eou__") if u.strip()]
-        for a, b in zip(turns, turns[1:]):
-            yield a, b
+    for line in z.read("train/dialogues_train.txt").decode("utf-8", "replace").splitlines():
+        yield [clean(u) for u in line.split("__eou__") if u.strip()]
 
 
 def personachat(raw):
     for r in pq.read_table(os.path.join(raw, "persona.parquet")).to_pylist():
         last = r["utterances"][-1]
-        hist = last["history"] + [last["candidates"][-1]]
-        for a, b in zip(hist, hist[1:]):
-            if a != "__ SILENCE __":
-                yield clean(a), clean(b)
+        yield [clean(t) for t in last["history"] + [last["candidates"][-1]] if t != "__ SILENCE __"]
 
 
 def everyday(raw):
     for r in pq.read_table(os.path.join(raw, "everyday.parquet")).to_pylist():
-        msgs = r["messages"]
-        for a, b in zip(msgs, msgs[1:]):
-            if a["role"] == "user" and b["role"] == "assistant":
-                yield clean(a["content"]), clean(first_sentences(b["content"], 30))
+        turns = []
+        for m in r["messages"]:
+            turns.append(clean(m["content"] if m["role"] == "user" else first_sentences(m["content"])))
+        yield turns
 
 
 def rudialogues(raw):
@@ -89,33 +81,42 @@ def aya_uk(raw):
     t = pq.read_table(os.path.join(raw, "aya.parquet"), columns=["inputs", "targets", "language"])
     for r in t.to_pylist():
         if r["language"] == "Ukrainian":
-            yield clean(r["inputs"]), clean(first_sentences(r["targets"], 30))
-
-
-SOURCES = {"dailydialog": ("en", dailydialog), "personachat": ("en", personachat), "everyday": ("en", everyday),
-           "rudialogues": ("ru", rudialogues), "aya_uk": ("uk", aya_uk)}
+            yield clean(r["inputs"]), clean(first_sentences(r["targets"]))
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--raw", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--max-words", type=int, default=24)
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
-    for name, (lang, fn) in SOURCES.items():
-        seen, n = set(), 0
-        with open(os.path.join(a.out, name + ".jsonl"), "w", encoding="utf-8") as out:
+    n = {}
+    with open(os.path.join(a.out, "dialogs.jsonl"), "w", encoding="utf-8") as out:
+        for name, fn in (("dailydialog", dailydialog), ("personachat", personachat), ("everyday", everyday)):
+            seen = set()
+            for turns in fn(a.raw):
+                # a dialogue is cut where a turn is unusable; pieces of 2+ turns stay
+                piece = []
+                for t in turns + [""]:
+                    if t and ok(t):
+                        piece.append(t)
+                        continue
+                    key = "\n".join(piece).lower()
+                    if len(piece) >= 2 and key not in seen:
+                        seen.add(key)
+                        out.write(json.dumps({"lang": "en", "src": name, "turns": piece}, ensure_ascii=False) + "\n")
+                        n[name] = n.get(name, 0) + 1
+                    piece = []
+    with open(os.path.join(a.out, "pairs.jsonl"), "w", encoding="utf-8") as out:
+        for name, lang, fn in (("rudialogues", "ru", rudialogues), ("aya_uk", "uk", aya_uk)):
+            seen = set()
             for m, r in fn(a.raw):
-                if not (ok(m, a.max_words) and ok(r, a.max_words)):
-                    continue
                 key = (m.lower(), r.lower())
-                if key in seen:
-                    continue
-                seen.add(key)
-                out.write(json.dumps({"lang": lang, "src": name, "m": m, "r": r}, ensure_ascii=False) + "\n")
-                n += 1
-        print(f"{name}: {n} pairs")
+                if ok(m) and ok(r) and key not in seen:
+                    seen.add(key)
+                    out.write(json.dumps({"lang": lang, "src": name, "m": m, "r": r}, ensure_ascii=False) + "\n")
+                    n[name] = n.get(name, 0) + 1
+    print("; ".join(f"{k}: {v}" for k, v in n.items()))
 
 
 if __name__ == "__main__":

@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 """
-Ukrainian (and more Russian) dialogues by machine translation with the Opus-MT models (Marian):
-DailyDialog and everyday-conversations en -> ru, uk; part of russian_dialogues ru -> uk. Every sentence is
-translated once (consecutive pairs of a dialogue share sentences); a cache file makes the job resumable.
+More Russian and Ukrainian dialogues by machine translation with the Opus-MT models (Marian):
+DailyDialog and everyday-conversations en -> ru, uk (whole dialogues); part of russian_dialogues ru -> uk.
+Every sentence is translated once; a cache file makes the job resumable.
 
-    python chat_translate.py --pairs pairs --cache mt --ru-uk 25000
-writes pairs/<source>_<lang>.jsonl
+    python chat_translate.py --src src --cache mt [--device cuda]
+writes src/dialogs_ru.jsonl, src/dialogs_uk.jsonl, src/pairs_uk.jsonl
+
+The step is optional: if the models cannot be loaded (transformers needs a newer PyTorch, no network ...)
+it says so and exits with code 3; the data builder then works with the original languages and the
+synthetic dialogues only.
 """
 import argparse
 import json
 import os
 import random
+import sys
 import time
-
-import torch
-from transformers import MarianMTModel, MarianTokenizer
 
 MODELS = {("en", "ru"): "Helsinki-NLP/opus-mt-en-ru", ("en", "uk"): "Helsinki-NLP/opus-mt-en-uk",
           ("ru", "uk"): "Helsinki-NLP/opus-mt-ru-uk"}
@@ -24,12 +26,17 @@ def load(path):
     return [json.loads(l) for l in open(path, encoding="utf-8")]
 
 
-def translate(sents, pair, cache_dir, batch=48, dev="cpu"):
+def translate(sents, pair, cache_dir, dev, batch):
+    import torch
+    from transformers import MarianMTModel, MarianTokenizer
     cache_path = os.path.join(cache_dir, f"cache_{pair[0]}_{pair[1]}.jsonl")
     done = {}
     if os.path.exists(cache_path):
         for l in open(cache_path, encoding="utf-8"):
-            r = json.loads(l)
+            try:
+                r = json.loads(l)
+            except ValueError:
+                continue                      # a line cut off by an interrupted run
             done[r["s"]] = r["t"]
     todo = sorted({s for s in sents if s not in done}, key=len)
     if todo:
@@ -45,35 +52,52 @@ def translate(sents, pair, cache_dir, batch=48, dev="cpu"):
                     done[s] = t
                     out.write(json.dumps({"s": s, "t": t}, ensure_ascii=False) + "\n")
                 if (i // batch) % 50 == 0:
-                    print(f"  {pair}: {i + len(src)}/{len(todo)} ({(i + len(src)) / (time.time() - t0):.0f}/s)", flush=True)
+                    print(f"  {pair[0]} -> {pair[1]}: {i + len(src)}/{len(todo)} ({(i + len(src)) / (time.time() - t0):.0f}/s)", flush=True)
     return done
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--pairs", required=True)
+    ap.add_argument("--src", required=True)
     ap.add_argument("--cache", required=True)
     ap.add_argument("--ru-uk", type=int, default=25000)
     ap.add_argument("--threads", type=int, default=4)
-    ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--device", default=None)
     a = ap.parse_args()
+    try:
+        import torch
+        from transformers import MarianMTModel  # noqa: F401
+        MarianMTModel.from_pretrained               # raises when transformers has no usable PyTorch
+    except Exception as e:  # noqa: BLE001
+        print(f"translation skipped: {str(e).strip().splitlines()[0] if str(e).strip() else type(e).__name__}")
+        sys.exit(3)
+    dev = a.device or ("cuda" if torch.cuda.is_available() else "cpu")
     torch.set_num_threads(a.threads)
     os.makedirs(a.cache, exist_ok=True)
-    jobs = []
-    for name in ("everyday", "dailydialog"):
+    batch = 128 if dev.startswith("cuda") else 48
+    dialogs = [d for d in load(os.path.join(a.src, "dialogs.jsonl")) if d["src"] in ("dailydialog", "everyday")]
+    pairs = [p for p in load(os.path.join(a.src, "pairs.jsonl")) if p["src"] == "rudialogues"]
+    random.Random(4).shuffle(pairs)
+    pairs = pairs[:a.ru_uk]
+    try:
         for tgt in ("ru", "uk"):
-            jobs.append((name, load(os.path.join(a.pairs, name + ".jsonl")), ("en", tgt)))
-    ru = load(os.path.join(a.pairs, "rudialogues.jsonl"))
-    random.Random(4).shuffle(ru)
-    jobs.append(("rudialogues", ru[:a.ru_uk], ("ru", "uk")))
-    for name, rows, pair in jobs:
-        tr = translate([s for r in rows for s in (r["m"], r["r"])], pair, a.cache,
-                       batch=128 if a.device.startswith("cuda") else 48, dev=a.device)
-        with open(os.path.join(a.pairs, f"{name}_{pair[1]}.jsonl"), "w", encoding="utf-8") as out:
-            for r in rows:
-                out.write(json.dumps({"lang": pair[1], "src": f"{name}_{pair[1]}", "m": tr[r["m"]], "r": tr[r["r"]]},
+            tr = translate([t for d in dialogs for t in d["turns"]], ("en", tgt), a.cache, dev, batch)
+            with open(os.path.join(a.src, f"dialogs_{tgt}.jsonl.part"), "w", encoding="utf-8") as out:
+                for d in dialogs:
+                    out.write(json.dumps({"lang": tgt, "src": f"{d['src']}_{tgt}", "turns": [tr[t] for t in d["turns"]]},
+                                         ensure_ascii=False) + "\n")
+            os.replace(os.path.join(a.src, f"dialogs_{tgt}.jsonl.part"), os.path.join(a.src, f"dialogs_{tgt}.jsonl"))
+            print(f"dialogues -> {tgt}: {len(dialogs)}", flush=True)
+        tr = translate([s for p in pairs for s in (p["m"], p["r"])], ("ru", "uk"), a.cache, dev, batch)
+        with open(os.path.join(a.src, "pairs_uk.jsonl.part"), "w", encoding="utf-8") as out:
+            for p in pairs:
+                out.write(json.dumps({"lang": "uk", "src": "rudialogues_uk", "m": tr[p["m"]], "r": tr[p["r"]]},
                                      ensure_ascii=False) + "\n")
-        print(f"{name} -> {pair[1]}: {len(rows)} pairs", flush=True)
+        os.replace(os.path.join(a.src, "pairs_uk.jsonl.part"), os.path.join(a.src, "pairs_uk.jsonl"))
+        print(f"russian_dialogues -> uk: {len(pairs)}", flush=True)
+    except (ImportError, OSError, ValueError, RuntimeError) as e:
+        print(f"translation skipped: {str(e).strip().splitlines()[0] if str(e).strip() else type(e).__name__}")
+        sys.exit(3)
 
 
 if __name__ == "__main__":

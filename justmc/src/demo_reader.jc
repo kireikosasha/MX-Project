@@ -287,9 +287,9 @@ function rd_wordpiece_try() {
   }
   wp_b = variable::remainder(wp_c, RD_NB, "REMAINDER");
   if (wp_start.equals(0)) {
-    wp_map = "rd.v.${wp_b}";
+    wp_map = "${wp_pre}.v.${wp_b}";
   } else {
-    wp_map = "rd.c.${wp_b}";
+    wp_map = "${wp_pre}.c.${wp_b}";
   }
   if (s`${wp_map}`.exists()) {
     wp_id = variable::get_map_value(s`${wp_map}`, rs_out, -1);
@@ -353,7 +353,6 @@ function rd_question_info() {
   repeat::for_each_in_list(rw_list) { aq_k, aq_w ->
     rd_question_word();
   }
-  aq_all = aq_ids;
   aq_n = variable::get_list_length(aq_ids);
   if (aq_n.greater(RD_MAXQ)) {
     aq_ids = mli_slice(aq_ids, 0, RD_MAXQ);
@@ -379,6 +378,7 @@ function rd_question_word() {
   }
   wp_w = variable::set_text_case(aq_w, "LOWER");
   wp_ids = aq_ids;
+  wp_pre = "rd";
   rd_wordpiece();
   aq_ids = wp_ids;
 }
@@ -646,6 +646,7 @@ function rd_sentence_tokens() {
   repeat::for_each_in_list(sg_words) { sg_k, sg_w ->
     wp_w = variable::set_text_case(sg_w, "LOWER");
     wp_ids = [];
+    wp_pre = "rd";
     rd_wordpiece();
     sg_wt.append_value([wp_ids]);
     sg_n = variable::add([sg_n, variable::get_list_length(wp_ids)]);
@@ -1266,11 +1267,11 @@ function ai_say() {
 }
 
 // "I don't know" in the language of the question; ar_why: no_keys, net, nothing, unsure
-// (a message the chat model was not sure was a question for Wikipedia gets a chat reply instead)
+// (a message the chat model was not sure was a question for Wikipedia gets the reply it wrote before the search)
 function ai_refuse(ar_why: text) {
   if (ai_fallback.equals(1)) {
     ai_fallback = 0;
-    ch_reply_after_wiki();
+    ch_say();
   } else {
     ai_refuse_say();
   }
@@ -1389,6 +1390,7 @@ function ai_cmd_ask() {
     g`ai.t0` = value::timestamp;
     g`ai.q` = aq_q;
     g`ai.mode` = aq_mode;
+    g`ai.who` = value::name;
     player::message<all_players>("&9[AI] &7${value::name}: &f${aq_q}");
     code::start_process("ai_ask_process", "DONT_COPY", "CURRENT_TARGET");
   }
@@ -1397,16 +1399,17 @@ function ai_cmd_ask() {
 // ~ai install: the chat model, and the reader (vocabulary, Wikipedia answers) if it is not there yet
 function ai_cmd_install() {
   rd_installed();
+  variable::purge(["ch."], "SAVE", "STARTS_WITH");
   s`ch.ready` = 0;
   cm_sub = "model";
   cm_a2 = "import";
   if (ri_ok.equals(1)) {
     cm_a3 = AI_CHAT;
-    player::message("&9[AI] &fInstalling the chat model (~270 files, a few minutes). &e~ai status &fshows when it is ready.");
+    player::message("&9[AI] &fInstalling the chat model (several hundred files, 5-10 minutes). &e~ai status &fshows when it is ready.");
   } else {
     s`rd.ready` = 0;
     cm_a3 = AI_ALL;
-    player::message("&9[AI] &fInstalling the reader and the chat model (~560 files, several minutes). &e~ai status &fshows when it is ready.");
+    player::message("&9[AI] &fInstalling the reader and the chat model (about a thousand files, 10-15 minutes). &e~ai status &fshows when it is ready.");
   }
   ml_admin_command();
 }
@@ -1446,9 +1449,9 @@ function ai_cmd_tau() {
 function ai_cmd_status() {
   ch_installed();
   if (ci_ok.equals(1)) {
-    player::message("&9[AI] &fChat model installed: LSTM ${s`ch.hid`}, ${s`ch.C`} token classes, ${s`ch.params`} parameters");
+    player::message("&9[AI] &fChat model installed: LSTM ${s`ch.hid`}, embedding ${s`ch.dim`}, ${s`ch.V`} tokens in ${s`ch.C`} classes, ${s`ch.params`} parameters");
   } else {
-    player::message("&9[AI] &cChat model not installed &7(~ai install)");
+    player::message("&9[AI] &cChat model not installed or outdated &7(~ai install; library import: ${g`mlg.import_done`} files loaded, ${g`mlg.import_failed`} failed, ${variable::get_list_length(g`mlg.import_queue`)} queued)");
   }
   rd_installed();
   if (ri_ok.equals(1)) {
@@ -1460,7 +1463,7 @@ function ai_cmd_status() {
 }
 
 function ai_cmd_about() {
-  player::message("&9[AI] &fA chat model on the Millennium library: ~2 M parameters (8-bit embeddings of 20 000 tokens, the Millennium LSTM with LayerNorm) writes the reply token by token, trained on dialogues in English, Russian and Ukrainian.");
+  player::message("&9[AI] &fA chat model on the Millennium library: ~6 M parameters (8-bit embeddings of 20 000 tokens, the Millennium LSTM with LayerNorm, attention over the message) writes the reply token by token, trained on dialogues in English, Russian and Ukrainian.");
   player::message("&9[AI] &fWhen it does not know, it says so with a special token, and the reader (2.6 M parameters) looks the answer up in Wikipedia (CC BY-SA) and retells it.");
 }
 
@@ -1470,24 +1473,34 @@ function ai_cmd_help() {
 }
 
 // =====================================================================
-// the chat model (tools/chat): it writes the reply token by token
-//   x = 8-bit embedding of the token -> Millennium LSTM step (the library model "chat", LayerNorm)
-//   o = Wp h + bp -> class of the next token (top-k) -> token in that class (top-k) -> its text
-// The first step also gives P([W]): "I don't know, look it up" - then the reader answers from Wikipedia.
-// The text being written is shown in the action bar of the player who asked.
+// the chat model v2 (tools/chat): it writes the reply token by token
+//   input of a step   code points of the token's 8-bit embedding
+//                     -> Millennium LSTM step (the library model "chat", LayerNorm)
+//   message tokens    their LSTM states are remembered as keys and values (attention memory)
+//   a reply step      attention over the message -> ctx;  o = Wp [1 | h | code points | ctx]
+//                     -> class of the next token (top-k) -> token in that class (top-k) -> its text
+// The embedding table has one scale, folded into the weights at export, so the code points go into the
+// rows as they are. The first reply step also gives P([W]): "I don't know, look it up" - then the reader
+// answers from Wikipedia. The text being written is shown in the action bar of the player who asked, and
+// the next message of the same player continues the conversation (the LSTM state is kept for a while).
+// JustMC pays per action, not per multiplication: an LSTM step is ~50 actions per neuron whatever the row
+// length, so the rows are long (embedding 256) and everything around the LSTM is kept to few actions.
 // =====================================================================
 inline var CH_LOW = -1000000;
 inline var CH_REP = 1.0;          // logit penalty per earlier use of a token in the reply
-inline var CH_OFF = -384;         // code point = 256 + code, value = scale * (code - 128)
-inline var CH_MAXM = 24;          // message tokens read (the last ones)
 inline var CH_BAR = 48;           // characters of the reply shown in the action bar
+inline var CH_MEM_MS = 180000;    // a conversation is continued within this time
 
-// is the chat model installed? -> ci_ok
+// is the chat model (version 2) installed? -> ci_ok
 function ch_installed() {
   ci_ok = 0;
   if (s`ch.ready`.exists()) {
-    if (s`ch.ready`.equals(1)) {
-      ci_ok = 1;
+    if (s`ch.ver`.exists()) {
+      if (s`ch.ready`.equals(1)) {
+        if (s`ch.ver`.equals(2)) {
+          ci_ok = 1;
+        }
+      }
     }
   }
 }
@@ -1495,7 +1508,7 @@ function ch_installed() {
 // the chat LSTM as the current library model
 function ch_ensure_model() {
   ce_ok = 0;
-  if (s`ml.in`.equals(s`ch.dim`)) {
+  if (s`ml.in`.equals(s`ch.nin`)) {
     if (s`ml.hid`.equals(s`ch.hid`)) {
       if (s`ml.bi`.equals(0)) {
         ce_ok = s`ml.ready`;
@@ -1508,8 +1521,32 @@ function ch_ensure_model() {
   }
 }
 
-// index lists and settings of the chat model -> g`ch.idxD`, g`ch.idxC`, g`ch.onesD`, ch_temp, ch_wiki ...
+// index lists of the chat model (built once per installed model), settings of this reply
 function ch_settings() {
+  cs_mark = "${s`ch.params`}.${s`ch.C`}";
+  cs_ok = 0;
+  if (g`ch.mark`.exists()) {
+    if (g`ch.mark`.equals(cs_mark)) {
+      cs_ok = 1;
+    }
+  }
+  if (cs_ok.equals(0)) {
+    ch_build_lists();
+    g`ch.mark` = cs_mark;
+  }
+  ch_temp = s`ch.temp0`;
+  if (s`ch.temp`.exists()) {
+    ch_temp = s`ch.temp`;
+  }
+  cs_c = s`ch.cW`;
+  cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
+  ch_one_W = cs_n.equals(1);
+  cs_c = s`ch.cE`;
+  cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
+  ch_one_E = cs_n.equals(1);
+}
+
+function ch_build_lists() {
   mr_n = s`ch.dim`;
   ml_range();
   g`ch.idxD` = mr_list;
@@ -1520,24 +1557,36 @@ function ch_settings() {
   mr_n = s`ch.C`;
   ml_range();
   g`ch.idxC` = mr_list;
-  ch_temp = s`ch.temp0`;
-  if (s`ch.temp`.exists()) {
-    ch_temp = s`ch.temp`;
+  mr_n = s`ch.da`;
+  ml_range();
+  g`ch.idxA` = mr_list;
+  mr_n = s`ch.dv`;
+  ml_range();
+  g`ch.idxV` = mr_list;
+  g`ch.zv` = [];
+  repeat::for_each_in_list(mr_list) { cs_k, cs_v ->
+    g`ch.zv`.append_value(0);
   }
-  ch_wiki = s`ch.wiki0`;
-  if (s`ch.wiki`.exists()) {
-    ch_wiki = s`ch.wiki`;
-  }
-  ch_sure = s`ch.sure0`;
-  cs_c = s`ch.cW`;
-  cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
-  ch_one_W = cs_n.equals(1);
-  cs_c = s`ch.cE`;
-  cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
-  ch_one_E = cs_n.equals(1);
 }
 
-// codes of the embedding row of token ce_id -> ce_cp (code points), ce_s (scale)
+// the message as chat tokens (the chat vocabulary, the last s`ch.maxm` of them) -> cg_msg
+function ch_tokenize() {
+  rw_t = aq_text;
+  rd_words();
+  wp_ids = [];
+  wp_pre = "ch";
+  repeat::for_each_in_list(rw_list) { ct_k, ct_w ->
+    wp_w = variable::set_text_case(ct_w, "LOWER");
+    rd_wordpiece();
+  }
+  cg_msg = wp_ids;
+  ct_n = variable::get_list_length(cg_msg);
+  if (ct_n.greater(s`ch.maxm`)) {
+    cg_msg = mli_slice(cg_msg, variable::subtract([ct_n, s`ch.maxm`]), ct_n);
+  }
+}
+
+// code points of the embedding row of token ce_id -> ce_cp
 function ch_row() {
   ce_c = variable::divide([ce_id, s`ch.rows`], "FLOOR");
   ce_k = variable::subtract([ce_id, variable::multiply([ce_c, s`ch.rows`])]);
@@ -1546,23 +1595,16 @@ function ch_row() {
   rs_b = variable::add([rs_a, s`ch.dim`]);
   rd_sub();
   ce_cp = variable::text_to_chars(rs_out, "CODEPOINTS");
-  ce_s = variable::get_list_value(s`ch.es.${ce_c}`, ce_k);
 }
 
-// token ce_id -> ce_x: its embedding as numbers, scale * (code - 128)
-function ch_embed() {
-  ch_row();
-  ce_off = mli_mul(ce_s, CH_OFF);
-  ce_x = [];
-  repeat::for_each_in_list(ce_cp) { ce_j, ce_v ->
-    ce_x.append_value(variable::mathematical_expectation([ce_v, 1], [ce_s, ce_off]));
-  }
-}
-
-// one token through the library LSTM step (state in lf_*)
+// token ce_id through the library LSTM step (its input: the code points); the state is in lf_h, lf_c
 function ch_feed() {
-  ch_embed();
-  lf_X.append_value([ce_x]);
+  ch_row();
+  cf_x = ce_cp;
+  lf_X = [];
+  lf_X.append_value([ce_cp]);
+  lf_outS = [];
+  lf_s = 0;
   ml_lstm_step();
 }
 
@@ -1576,9 +1618,64 @@ function ch_reset() {
   ml_lstm_init_state();
 }
 
-// o = Wp h + bp -> ch_o, ch_oz = [1 | o], ch_so = sum(o)
+// the state of a message token joins the attention memory: its key, and its value column by column
+function ch_remember() {
+  rm_k = [];
+  repeat::for_each_in_list(g`ch.idxA`) { rm_i, rm_n ->
+    rm_k.append_value(variable::mathematical_expectation(s`ch.Wk.${rm_n}`, lf_h));
+  }
+  ck_keys.append_value([rm_k]);
+  repeat::for_each_in_list(g`ch.idxV`) { rm_i, rm_n ->
+    `cv.${rm_n}`.append_value(variable::mathematical_expectation(s`ch.Wv.${rm_n}`, lf_h));
+  }
+  ck_n = variable::add([ck_n, 1]);
+  ml_yield(variable::multiply([s`ch.dv`, 4]));
+}
+
+// attention of the current state over the message -> ch_ctx
+function ch_attend() {
+  if (ck_n.equals(0)) {
+    ch_ctx = g`ch.zv`;
+  } else {
+    ch_attend_weights();
+    ch_ctx = [];
+    repeat::for_each_in_list(g`ch.idxV`) { at_k, at_d ->
+      ch_ctx.append_value(variable::mathematical_expectation(`cv.${at_d}`, at_a));
+    }
+    ml_yield(variable::multiply([s`ch.dv`, 4]));
+  }
+}
+
+// softmax over the message tokens of (Wq h) . key -> at_a
+function ch_attend_weights() {
+  at_q = [];
+  repeat::for_each_in_list(g`ch.idxA`) { at_k, at_i ->
+    at_q.append_value(variable::mathematical_expectation(s`ch.Wq.${at_i}`, lf_h));
+  }
+  at_sc = [];
+  repeat::for_each_in_list(ck_keys) { at_k, at_key ->
+    at_sc.append_value(variable::mathematical_expectation(at_q, at_key));
+  }
+  at_mx = variable::max(at_sc);
+  at_e = [];
+  at_tot = 0;
+  repeat::for_each_in_list(at_sc) { at_k, at_v ->
+    at_x = variable::pow(ML_E, mli_sub2(at_v, at_mx));
+    at_e.append_value(at_x);
+    at_tot = mli_add2(at_tot, at_x);
+  }
+  at_inv = mli_inv(at_tot);
+  at_a = [];
+  repeat::for_each_in_list(at_e) { at_k, at_v ->
+    at_a.append_value(mli_mul(at_v, at_inv));
+  }
+}
+
+// o = Wp [1 | h | code points of the token | ctx] -> ch_o, ch_oz = [1 | o], ch_so = sum(o)
 function ch_out() {
   co_z = mli_cons(1, lf_h);
+  co_z = variable::append_list(co_z, cf_x);
+  co_z = variable::append_list(co_z, ch_ctx);
   ch_o = [];
   repeat::for_each_in_list(g`ch.idxD`) { co_k, co_j ->
     ch_o.append_value(variable::mathematical_expectation(s`ch.Wp.${co_j}`, co_z));
@@ -1586,6 +1683,13 @@ function ch_out() {
   ch_oz = mli_cons(1, ch_o);
   ch_so = variable::mathematical_expectation(ch_o, g`ch.onesD`);
   ml_yield(variable::multiply([s`ch.dim`, 3]));
+}
+
+// a reply step after token ce_id: LSTM, attention over the message, output vector
+function ch_decode_step() {
+  ch_feed();
+  ch_attend();
+  ch_out();
 }
 
 // logits of all classes -> cl_l
@@ -1597,35 +1701,48 @@ function ch_class_logits() {
   ml_yield(variable::multiply([s`ch.C`, 2]));
 }
 
-// logits of the tokens of class cw_c -> cw_ids, cw_l (repeated tokens penalised, cw_mask tokens excluded)
+// logits of the tokens of class cw_c -> cw_ids, cw_l:  s0 * (code points . o) + so * sum(o) + bias
 function ch_word_logits() {
   cw_ids = s`ch.k.${cw_c}`;
   cw_b = s`ch.kb.${cw_c}`;
   cw_l = [];
   repeat::for_each_in_list(cw_ids) { cw_k, ce_id ->
-    ch_word_logit();
-    cw_l.append_value(cw_lg);
+    ch_row();
+    cw_raw = variable::mathematical_expectation(ce_cp, ch_o);
+    cw_bk = variable::get_list_value(cw_b, cw_k);
+    cw_l.append_value(variable::mathematical_expectation([cw_raw, ch_so, cw_bk], [s`ch.s0`, s`ch.so`, 1]));
+  }
+  ml_yield(variable::multiply([variable::get_list_length(cw_ids), 10]));
+}
+
+// tokens said before are less likely; [W] is never written, [E] not as the first token
+function ch_adjust_words() {
+  repeat::for_each_in_list(cg_out) { aw_k, aw_id ->
+    if (cw_ids.list_contains_value(aw_id)) {
+      aw_i = variable::get_list_index_of_value(cw_ids, aw_id, "FIRST");
+      cw_l = variable::set_list_value(cw_l, aw_i, mli_sub2(variable::get_list_value(cw_l, aw_i), CH_REP));
+    }
+  }
+  aw_id = s`ch.W`;
+  ch_mask_word();
+  if (cg_n.equals(0)) {
+    aw_id = s`ch.E`;
+    ch_mask_word();
   }
 }
 
-function ch_word_logit() {
-  ch_row();
-  cw_raw = variable::mathematical_expectation(ce_cp, ch_o);
-  cw_off = mli_mul(ce_s, CH_OFF);
-  cw_lg = variable::mathematical_expectation([cw_raw, ch_so, variable::get_list_value(cw_b, cw_k)], [ce_s, cw_off, 1]);
-  if (cg_seen.map_has_key("${ce_id}")) {
-    cw_lg = mli_sub2(cw_lg, mli_mul(CH_REP, variable::get_map_value(cg_seen, "${ce_id}")));
+function ch_mask_word() {
+  if (cw_ids.list_contains_value(aw_id)) {
+    aw_i = variable::get_list_index_of_value(cw_ids, aw_id, "FIRST");
+    cw_l = variable::set_list_value(cw_l, aw_i, CH_LOW);
   }
-  if (cw_mask.list_contains_value(ce_id)) {
-    cw_lg = CH_LOW;
-  }
-  ml_yield(12);
 }
 
 // probability of item sm_i of the logits sm_l -> sm_p
 function ch_softmax_at() {
   sm_mx = variable::max(sm_l);
   sm_tot = 0;
+  sm_ei = 0;
   repeat::for_each_in_list(sm_l) { sm_k, sm_v ->
     sm_e = variable::pow(ML_E, mli_sub2(sm_v, sm_mx));
     sm_tot = mli_add2(sm_tot, sm_e);
@@ -1638,41 +1755,38 @@ function ch_softmax_at() {
 
 // top-k sampling of the logits sp_l with temperature ch_temp (0 = always the best) -> sp_i
 function ch_sample() {
-  sp_n = variable::get_list_length(sp_l);
   sp_sorted = variable::sort_list(sp_l, "DESCENDING");
-  sp_max = variable::get_list_value(sp_sorted, 0);
-  sp_i = variable::get_list_index_of_value(sp_l, sp_max, "FIRST");
+  sp_v = variable::get_list_value(sp_sorted, 0);
   if (ch_temp.greater(0)) {
     if (sp_k.greater(1)) {
       ch_sample_top();
     }
   }
+  sp_i = variable::get_list_index_of_value(sp_l, sp_v, "FIRST");
 }
 
+// the sp_k best logits, weights e^((l - best) / temp), a random one of them by weight -> sp_v
 function ch_sample_top() {
-  sp_thr = variable::get_list_value(sp_sorted, variable::subtract([variable::min([sp_k, sp_n]), 1]));
+  sp_n = variable::min([sp_k, variable::get_list_length(sp_l)]);
+  sp_top = mli_slice(sp_sorted, 0, sp_n);
+  sp_max = sp_v;
   sp_inv = mli_inv(ch_temp);
   sp_w = [];
   sp_tot = 0;
-  repeat::for_each_in_list(sp_l) { sp_j, sp_v ->
-    sp_x = 0;
-    if (sp_v.greater_or_equals(sp_thr)) {
-      sp_x = variable::pow(ML_E, mli_mul(mli_sub2(sp_v, sp_max), sp_inv));
-    }
-    sp_w.append_value(sp_x);
-    sp_tot = mli_add2(sp_tot, sp_x);
+  repeat::for_each_in_list(sp_top) { sp_j, sp_x ->
+    sp_e = variable::pow(ML_E, mli_mul(mli_sub2(sp_x, sp_max), sp_inv));
+    sp_w.append_value(sp_e);
+    sp_tot = mli_add2(sp_tot, sp_e);
   }
   sp_r = mli_mul(variable::random_number(0, 1, "FALSE"), sp_tot);
   sp_acc = 0;
   sp_found = 0;
-  repeat::for_each_in_list(sp_w) { sp_j, sp_x ->
+  repeat::for_each_in_list(sp_w) { sp_j, sp_e ->
     if (sp_found.equals(0)) {
-      sp_acc = mli_add2(sp_acc, sp_x);
+      sp_acc = mli_add2(sp_acc, sp_e);
+      sp_v = variable::get_list_value(sp_top, sp_j);
       if (sp_acc.greater_or_equals(sp_r)) {
-        if (sp_x.greater(0)) {
-          sp_i = sp_j;
-          sp_found = 1;
-        }
+        sp_found = 1;
       }
     }
   }
@@ -1684,50 +1798,80 @@ function ch_sample_top() {
 function ch_answer() {
   ch_ensure_model();
   ch_settings();
-  cg_in = [];
-  cg_in.append_value(s`ch.U`);
-  cg_n = variable::get_list_length(aq_all);
-  if (cg_n.greater(CH_MAXM)) {
-    cg_in = variable::append_list(cg_in, mli_slice(aq_all, variable::subtract([cg_n, CH_MAXM]), cg_n));
-  } else {
-    cg_in = variable::append_list(cg_in, aq_all);
-  }
-  cg_in.append_value(s`ch.B`);
+  ch_tokenize();
+  ch_start_state();
   ch_read_message();
-  ch_out();
-  cg_seen = {};
   ch_wiki_probability();
-  if (ch_pW.greater_or_equals(ch_wiki)) {
-    ai_fallback = 1;
-    if (ch_pW.greater_or_equals(ch_sure)) {
-      ai_fallback = 0;
-    }
+  if (ch_pW.greater_or_equals(s`ch.sure0`)) {
+    // an encyclopedic question for sure: the reader answers or says it does not know
+    cm_who = g`ai.who`;
+    g`ch.m.n.${cm_who}` = 2;
     ai_wiki_answer();
   } else {
     ch_generate();
-    ch_say();
+    ch_memory_save();
+    if (ch_pW.greater_or_equals(s`ch.wiki0`)) {
+      // maybe a question for Wikipedia: the reply is kept and said only if the reader finds nothing
+      ai_fallback = 1;
+      ai_wiki_answer();
+    } else {
+      ch_say();
+    }
   }
 }
 
-// the reader found nothing for a message the chat model was not sure about: the chat model replies
-function ch_reply_after_wiki() {
-  ch_ensure_model();
-  ch_settings();
-  ch_read_message();
-  ch_out();
-  cg_seen = {};
-  ch_generate();
-  ch_say();
-}
-
-// [U] message [B] through the LSTM, progress in the action bar
-function ch_read_message() {
+// the state the message is read from: after [U] from zero (stored with the model), or - when this player got
+// a reply less than CH_MEM_MS ago - the state after that reply, then [E] [U] (the conversation goes on)
+function ch_start_state() {
   ch_reset();
-  cg_total = variable::get_list_length(cg_in);
-  repeat::for_each_in_list(cg_in) { cg_k, ce_id ->
-    ch_feed();
-    player::send_action_bar("&7✎ &8${variable::add([cg_k, 1])}/${cg_total}");
+  cm_who = g`ai.who`;
+  cg_turn = 1;
+  if (g`ch.m.t.${cm_who}`.exists()) {
+    cm_age = variable::subtract([value::timestamp, g`ch.m.t.${cm_who}`]);
+    if (cm_age.less(CH_MEM_MS)) {
+      if (g`ch.m.n.${cm_who}`.equals(1)) {
+        cg_turn = 2;
+      }
+    }
   }
+  if (cg_turn.equals(2)) {
+    lf_h = g`ch.m.h.${cm_who}`;
+    lf_c = g`ch.m.c.${cm_who}`;
+    ce_id = s`ch.E`;
+    ch_feed();
+    ce_id = s`ch.U`;
+    ch_feed();
+  } else {
+    lf_h = s`ch.h0`;
+    lf_c = s`ch.c0`;
+  }
+}
+
+// the state after the reply, for the next message of this player
+function ch_memory_save() {
+  cm_who = g`ai.who`;
+  g`ch.m.h.${cm_who}` = lf_h;
+  g`ch.m.c.${cm_who}` = lf_c;
+  g`ch.m.t.${cm_who}` = value::timestamp;
+  g`ch.m.n.${cm_who}` = cg_turn;
+}
+
+// the message and [B] through the LSTM (the message states go into the attention memory); [B] is the first
+// reply step; progress in the action bar
+function ch_read_message() {
+  ck_keys = [];
+  ck_n = 0;
+  repeat::for_each_in_list(g`ch.idxV`) { cr_k, cr_d ->
+    `cv.${cr_d}` = [];
+  }
+  cr_total = variable::add([variable::get_list_length(cg_msg), 1]);
+  repeat::for_each_in_list(cg_msg) { cr_k, ce_id ->
+    ch_feed();
+    ch_remember();
+    player::send_action_bar("&7✎ &8${variable::add([cr_k, 1])}/${cr_total}");
+  }
+  ce_id = s`ch.B`;
+  ch_decode_step();
 }
 
 // P([W]) = P(class of [W]) * P([W] in its class), before anything is written
@@ -1738,7 +1882,6 @@ function ch_wiki_probability() {
   ch_softmax_at();
   cw_pc = sm_p;
   cw_c = s`ch.cW`;
-  cw_mask = [];
   ch_word_logits();
   sm_l = cw_l;
   sm_i = s`ch.pW`;
@@ -1749,18 +1892,28 @@ function ch_wiki_probability() {
 // tokens until [E] or s`ch.max` -> cg_text
 function ch_generate() {
   cg_text = "";
+  cg_out = [];
   cg_n = 0;
   cg_go = 1;
   repeat::while(cg_go.equals(1)) {
     ch_next_token();
   }
   if (not cg_text.equals("")) {
+    cg_text = variable::regex_replace_text(cg_text, "(?<![\\p{L}'])i(?![\\p{L}])", "I");
     rs_t = cg_text;
     rs_a = 0;
     rs_b = 1;
     rd_sub();
     cg_first = variable::set_text_case(rs_out, "UPPER");
-    cg_text = variable::regex_replace_text(cg_text, "^.", cg_first);
+    cg_len = variable::get_text_length(cg_text);
+    if (cg_len.greater(1)) {
+      rs_a = 1;
+      rs_b = cg_len;
+      rd_sub();
+      cg_text = "${cg_first}${rs_out}";
+    } else {
+      cg_text = cg_first;
+    }
   }
 }
 
@@ -1771,12 +1924,8 @@ function ch_next_token() {
   sp_k = s`ch.topc`;
   ch_sample();
   cw_c = sp_i;
-  cw_mask = [];
-  cw_mask.append_value(s`ch.W`);
-  if (cg_n.equals(0)) {
-    cw_mask.append_value(s`ch.E`);
-  }
   ch_word_logits();
+  ch_adjust_words();
   sp_l = cw_l;
   sp_k = s`ch.topw`;
   ch_sample();
@@ -1804,16 +1953,13 @@ function ch_mask_classes() {
   }
 }
 
-// the sampled token: text, progress, fed back into the LSTM
+// the sampled token: text, progress, and the next reply step with it
 function ch_take_token() {
-  cg_key = "${cg_id}";
-  cg_cnt = variable::get_map_value(cg_seen, cg_key, 0);
-  cg_seen = variable::set_map_value(cg_seen, cg_key, variable::add([cg_cnt, 1]));
+  cg_out.append_value(cg_id);
   ch_detok();
   ch_progress();
   ce_id = cg_id;
-  ch_feed();
-  ch_out();
+  ch_decode_step();
 }
 
 // the text of token cg_id joined to cg_text (word pieces glued, no space before punctuation)
@@ -1829,10 +1975,25 @@ function ch_detok() {
     cg_text = "${cg_text}${rs_out}";
   } elif (cg_text.equals("")) {
     cg_text = dt_t;
+  } elif (dt_t.equals(["то", "нибудь", "либо", "таки", "ка", "небудь", "но", "бо"])) {
+    ch_detok_particle();
   } elif (dt_t.equals([".", ",", "!", "?", ";", ":", ")", "»", "%", "…"])) {
     cg_text = "${cg_text}${dt_t}";
   } elif (cg_text.text_ends_with(["(", "«"])) {
     cg_text = "${cg_text}${dt_t}";
+  } else {
+    cg_text = "${cg_text} ${dt_t}";
+  }
+}
+
+// "что - то" -> "что-то": a particle after a hyphen is glued to the word before it
+function ch_detok_particle() {
+  if (cg_text.text_ends_with(" -")) {
+    rs_t = cg_text;
+    rs_a = 0;
+    rs_b = variable::subtract([variable::get_text_length(cg_text), 2]);
+    rd_sub();
+    cg_text = "${rs_out}-${dt_t}";
   } else {
     cg_text = "${cg_text} ${dt_t}";
   }

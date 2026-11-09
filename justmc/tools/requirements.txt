@@ -1,11 +1,12 @@
 # training tools (reader, chat model, digits)
-# PyTorch >= 2.6 (transformers loads the Opus-MT .bin weights only with it), CUDA build first:
-#   pip install torch --index-url https://download.pytorch.org/whl/cu126
-torch>=2.6
+# PyTorch first, the CUDA build:  pip install torch --index-url https://download.pytorch.org/whl/cu121
+torch
 numpy
 pyarrow
 pillow
 tokenizers
-transformers
+# machine translation step of the chat data (optional). 4.46.3 loads the Opus-MT weights with any PyTorch >= 2.2;
+# newer transformers need PyTorch >= 2.6 for them. run_all.py installs this version itself when needed.
+transformers==4.46.3
 sentencepiece
 sacremoses
