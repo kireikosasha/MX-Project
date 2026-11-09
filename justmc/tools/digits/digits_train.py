@@ -9,7 +9,8 @@ By default the ten models share the encoder (LSTM + attention) and differ in the
 then runs the encoder once and the ten heads after it (--separate: ten independent models).
 Loss: softmax cross-entropy over the ten logits plus the binary loss of every model.
 
-    python digits_train.py --data data.npz --out weights/digits --hidden 48 --epochs 40 --batch 512 --lr 3e-3
+    python digits_train.py --data data.npz --out weights/digits --hidden 32 --epochs 30 --batch 512 --lr 4e-3
+    python digits_train.py --data data.npz --out weights/digits-huge --pack digithuge --hidden 48 --epochs 40 --batch 512 --lr 3e-3
 """
 import argparse
 import json
@@ -147,7 +148,7 @@ def model_parts(m, k, n_in, max_chars=24000):
     return json.dumps(head, separators=(",", ":")), enc
 
 
-def export(m, n_in, out_dir, name="digits"):
+def export(m, n_in, out_dir, name="digits", pack="digit"):
     """manifest: (header + encoder files of model k) + save entry for k = 0..9; with a shared encoder
     the encoder files are written once (the import keeps them while the headers change)"""
     os.makedirs(out_dir, exist_ok=True)
@@ -167,7 +168,7 @@ def export(m, n_in, out_dir, name="digits"):
         if k == 0 or not m.shared:
             for i, t in enumerate(enc):
                 put(f"{'encoder' if m.shared else f'digit{k}'}-{i:03d}.json", t)
-        put(f"save-digit{k}.json", json.dumps({"format": "millennium", "save": f"digit{k}"}))
+        put(f"save-{pack}{k}.json", json.dumps({"format": "millennium", "save": f"{pack}{k}"}))
     open(os.path.join(out_dir, name + ".json"), "w").write(
         json.dumps({"format": "millennium", "manifest": manifest}, separators=(",", ":")))
     print(f"written {out_dir}/{name}.json (manifest) + {len(manifest)} files")
@@ -184,6 +185,8 @@ def main():
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--separate", action="store_true", help="ten independent encoders")
+    ap.add_argument("--pack", default="digit", help="the models are saved in the world as <pack>0 .. <pack>9")
+    ap.add_argument("--export-only", help="checkpoint (.pt) to export instead of training")
     a = ap.parse_args()
     torch.set_num_threads(a.threads)
     torch.manual_seed(a.seed)
@@ -196,6 +199,12 @@ def main():
     sub = np.random.RandomState(0).choice(len(xtr), min(20000, len(xtr)), replace=False)
     n = int(round(math.sqrt(xtr.shape[1])))
     m = DigitModels(10, n, a.hidden, shared=not a.separate)
+    if a.export_only:
+        ck = torch.load(a.export_only)
+        m = DigitModels(10, ck["n"], ck["hidden"], shared=ck["shared"])
+        m.load_state_dict(ck["state"])
+        export(m, ck["n"], a.out, pack=a.pack)
+        return
     enc = sum(p.numel() for name, p in m.named_parameters() if name not in ("hV", "hB")) // m.k
     print("parameters per digit model:", enc + 2 * a.hidden * 2 + 1 + 3 * n, "(shared encoder)" if m.shared else "")
     opt = torch.optim.AdamW(m.parameters(), lr=a.lr, weight_decay=1e-4)
@@ -246,7 +255,7 @@ def main():
         print(d, " ".join(f"{v:5d}" for v in conf[d]))
     torch.save({"state": m.state_dict(), "hidden": a.hidden, "shared": m.shared, "n": n},
                os.path.join(os.path.dirname(os.path.abspath(a.data)), "digits_model.pt"))
-    export(m, n, a.out)
+    export(m, n, a.out, pack=a.pack)
 
 
 if __name__ == "__main__":
