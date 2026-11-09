@@ -22,6 +22,8 @@ import "./ml_admin.jc";
 
 inline var AI_CMD_PREFIX = "~ai";
 inline var AI_WEIGHTS = "https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/weights/reader/reader.json";
+inline var AI_CHAT = "https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/weights/chat/chat.json";
+inline var AI_ALL = "https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/weights/chat/ai.json";
 inline var AI_TAU = 0.3;          // default confidence threshold (s`rd.tau` overrides it)
 inline var AI_WAIT = 100;         // search timeout in steps of 2 ticks (10 s)
 inline var AI_STUCK_MS = 120000;  // a question still "running" after this time is dropped
@@ -82,7 +84,7 @@ function ai_boot() {
 }
 
 function ai_on_join() {
-  player::message("&9[AI] &fAsk me anything: &e~ai <question> &7(English, русский, українська). &7~ai help");
+  player::message("&9[AI] &fTalk to me: &e~ai <message> &7(English, русский, українська). &7~ai help");
   rd_installed();
   if (ri_ok.equals(0)) {
     player::message("&9[AI] &cThe reader is not installed: &e~ai install");
@@ -351,6 +353,7 @@ function rd_question_info() {
   repeat::for_each_in_list(rw_list) { aq_k, aq_w ->
     rd_question_word();
   }
+  aq_all = aq_ids;
   aq_n = variable::get_list_length(aq_ids);
   if (aq_n.greater(RD_MAXQ)) {
     aq_ids = mli_slice(aq_ids, 0, RD_MAXQ);
@@ -1044,7 +1047,7 @@ process ai_ask_process() {
 }
 
 function ai_answer() {
-  ai_ensure_model();
+  ai_fallback = 0;
   rn_t = g`ai.q`;
   rn_t = variable::replace_text(rn_t, RD_MARK, "|");
   rd_normalize();
@@ -1054,6 +1057,24 @@ function ai_answer() {
   rd_question_info();
   rd_tau();
   ai_tau = rt_tau;
+  ch_installed();
+  if (g`ai.mode`.equals("wiki")) {
+    ai_wiki_answer();
+  } elif (ci_ok.equals(1)) {
+    ch_answer();
+  } else {
+    ai_wiki_answer();
+  }
+}
+
+// the reader: Wikipedia search, reading, retold sentence or "I don't know"
+function ai_wiki_answer() {
+  if (ai_lang.equals("en")) {
+    player::send_action_bar("&7⌕ Wikipedia...");
+  } else {
+    player::send_action_bar("&7⌕ Википедия...");
+  }
+  ai_ensure_model();
   if (aq_terms.list_is_empty()) {
     ai_refuse("no_keys");
   } else {
@@ -1245,7 +1266,17 @@ function ai_say() {
 }
 
 // "I don't know" in the language of the question; ar_why: no_keys, net, nothing, unsure
+// (a message the chat model was not sure was a question for Wikipedia gets a chat reply instead)
 function ai_refuse(ar_why: text) {
+  if (ai_fallback.equals(1)) {
+    ai_fallback = 0;
+    ch_reply_after_wiki();
+  } else {
+    ai_refuse_say();
+  }
+}
+
+function ai_refuse_say() {
   as_sec = variable::round(variable::divide([variable::subtract([value::timestamp, g`ai.t0`]), 1000]), 1, "ROUND");
   if (ai_lang.equals("uk")) {
     af_msg = "Не знаю — не знайшов надійної відповіді.";
@@ -1294,7 +1325,7 @@ function ai_on_chat() {
     cm_short = variable::get_list_length(cm_a).less_or_equals(3);
     cm_kind = "ask";
     if (cm_short.equals(1)) {
-      if (cm_sub.equals(["install", "tau"])) {
+      if (cm_sub.equals(["install", "tau", "temp"])) {
         cm_kind = "admin";
       }
       if (cm_sub.equals(["help", "status", "about"])) {
@@ -1319,6 +1350,8 @@ function ai_on_admin_command() {
     player::message("&cNo permission.");
   } elif (cm_sub.equals("install")) {
     ai_cmd_install();
+  } elif (cm_sub.equals("temp")) {
+    ai_cmd_temp();
   } else {
     ai_cmd_tau();
   }
@@ -1336,6 +1369,11 @@ function ai_dispatch_public() {
 
 function ai_cmd_ask() {
   aq_q = variable::regex_replace_text(cm_msg, "^~ai\\s+", "");
+  aq_mode = "chat";
+  if (cm_sub.equals("wiki")) {
+    aq_mode = "wiki";
+    aq_q = variable::regex_replace_text(aq_q, "^wiki\\s+", "");
+  }
   if (g`ai.busy`.equals(1)) {
     if (variable::subtract([value::timestamp, g`ai.t0`]).greater(AI_STUCK_MS)) {
       g`ai.busy` = 0;
@@ -1350,19 +1388,46 @@ function ai_cmd_ask() {
     g`ai.busy` = 1;
     g`ai.t0` = value::timestamp;
     g`ai.q` = aq_q;
+    g`ai.mode` = aq_mode;
     player::message<all_players>("&9[AI] &7${value::name}: &f${aq_q}");
-    code::start_process("ai_ask_process", "DONT_COPY", "NO_TARGET");
+    code::start_process("ai_ask_process", "DONT_COPY", "CURRENT_TARGET");
   }
 }
 
-// ~ai install: the reader (library model "reader" + vocabulary + embeddings) from the repository
+// ~ai install: the chat model, and the reader (vocabulary, Wikipedia answers) if it is not there yet
 function ai_cmd_install() {
-  s`rd.ready` = 0;
+  rd_installed();
+  s`ch.ready` = 0;
   cm_sub = "model";
   cm_a2 = "import";
-  cm_a3 = AI_WEIGHTS;
+  if (ri_ok.equals(1)) {
+    cm_a3 = AI_CHAT;
+    player::message("&9[AI] &fInstalling the chat model (~270 files, a few minutes). &e~ai status &fshows when it is ready.");
+  } else {
+    s`rd.ready` = 0;
+    cm_a3 = AI_ALL;
+    player::message("&9[AI] &fInstalling the reader and the chat model (~560 files, several minutes). &e~ai status &fshows when it is ready.");
+  }
   ml_admin_command();
-  player::message("&9[AI] &fInstalling the reader (~300 files, a few minutes). &e~ai status &fshows when it is ready.");
+}
+
+// ~ai temp <0..2> | reset: temperature of the chat model (0 = always the most likely token)
+function ai_cmd_temp() {
+  if (cm_a2.equals("reset")) {
+    variable::purge(["ch.temp"], "SAVE", "EQUALS");
+  } elif (not cm_a2.equals("")) {
+    s`ch.temp` = variable::clamp(variable::convert_text_to_number(cm_a2, 10), 0, 2);
+  } else {
+    at_t = 0;
+  }
+  at_t = 0.8;
+  if (s`ch.temp0`.exists()) {
+    at_t = s`ch.temp0`;
+  }
+  if (s`ch.temp`.exists()) {
+    at_t = s`ch.temp`;
+  }
+  player::message("&9[AI] &fTemperature = &e${at_t} &7(higher = wilder replies, 0 = always the same)");
 }
 
 // ~ai tau <0..1> | reset: how sure the reader must be to answer
@@ -1379,6 +1444,12 @@ function ai_cmd_tau() {
 }
 
 function ai_cmd_status() {
+  ch_installed();
+  if (ci_ok.equals(1)) {
+    player::message("&9[AI] &fChat model installed: LSTM ${s`ch.hid`}, ${s`ch.C`} token classes, ${s`ch.params`} parameters");
+  } else {
+    player::message("&9[AI] &cChat model not installed &7(~ai install)");
+  }
   rd_installed();
   if (ri_ok.equals(1)) {
     player::message("&9[AI] &fReader installed: ${s`rd.vocab`} tokens, BiLSTM ${s`rd.hid`}, ${s`rd.params`} parameters; busy: ${g`ai.busy`}");
@@ -1389,11 +1460,402 @@ function ai_cmd_status() {
 }
 
 function ai_cmd_about() {
-  player::message("&9[AI] &fA reader on the Millennium library: 2.6 M parameters (an 8-bit vocabulary of 20 000 tokens, a BiLSTM with LayerNorm, attention over the question).");
-  player::message("&9[AI] &fIt does not invent: it searches Wikipedia (CC BY-SA), reads the most relevant sentences and retells the one holding the answer - or says it does not know.");
+  player::message("&9[AI] &fA chat model on the Millennium library: ~2 M parameters (8-bit embeddings of 20 000 tokens, the Millennium LSTM with LayerNorm) writes the reply token by token, trained on dialogues in English, Russian and Ukrainian.");
+  player::message("&9[AI] &fWhen it does not know, it says so with a special token, and the reader (2.6 M parameters) looks the answer up in Wikipedia (CC BY-SA) and retells it.");
 }
 
 function ai_cmd_help() {
-  player::message("&9[AI] &e~ai <question> &7- ask (English, русский, українська) | &e~ai status &7| &e~ai about");
-  player::message("&9[AI] &7admins: &e~ai install &7- download the reader | &e~ai tau <0..1>|reset &7- how sure it must be to answer");
+  player::message("&9[AI] &e~ai <message> &7- talk (English, русский, українська) | &e~ai wiki <question> &7- straight to Wikipedia | &e~ai status &7| &e~ai about");
+  player::message("&9[AI] &7admins: &e~ai install &7- download the models | &e~ai temp <0..2>|reset &7- how wild the replies are | &e~ai tau <0..1>|reset &7- how sure the reader must be");
+}
+
+// =====================================================================
+// the chat model (tools/chat): it writes the reply token by token
+//   x = 8-bit embedding of the token -> Millennium LSTM step (the library model "chat", LayerNorm)
+//   o = Wp h + bp -> class of the next token (top-k) -> token in that class (top-k) -> its text
+// The first step also gives P([W]): "I don't know, look it up" - then the reader answers from Wikipedia.
+// The text being written is shown in the action bar of the player who asked.
+// =====================================================================
+inline var CH_LOW = -1000000;
+inline var CH_REP = 1.0;          // logit penalty per earlier use of a token in the reply
+inline var CH_OFF = -384;         // code point = 256 + code, value = scale * (code - 128)
+inline var CH_MAXM = 24;          // message tokens read (the last ones)
+inline var CH_BAR = 48;           // characters of the reply shown in the action bar
+
+// is the chat model installed? -> ci_ok
+function ch_installed() {
+  ci_ok = 0;
+  if (s`ch.ready`.exists()) {
+    if (s`ch.ready`.equals(1)) {
+      ci_ok = 1;
+    }
+  }
+}
+
+// the chat LSTM as the current library model
+function ch_ensure_model() {
+  ce_ok = 0;
+  if (s`ml.in`.equals(s`ch.dim`)) {
+    if (s`ml.hid`.equals(s`ch.hid`)) {
+      if (s`ml.bi`.equals(0)) {
+        ce_ok = s`ml.ready`;
+      }
+    }
+  }
+  if (not ce_ok.equals(1)) {
+    sm_name = "chat";
+    ml_model_load();
+  }
+}
+
+// index lists and settings of the chat model -> g`ch.idxD`, g`ch.idxC`, g`ch.onesD`, ch_temp, ch_wiki ...
+function ch_settings() {
+  mr_n = s`ch.dim`;
+  ml_range();
+  g`ch.idxD` = mr_list;
+  g`ch.onesD` = [];
+  repeat::for_each_in_list(mr_list) { cs_k, cs_v ->
+    g`ch.onesD`.append_value(1);
+  }
+  mr_n = s`ch.C`;
+  ml_range();
+  g`ch.idxC` = mr_list;
+  ch_temp = s`ch.temp0`;
+  if (s`ch.temp`.exists()) {
+    ch_temp = s`ch.temp`;
+  }
+  ch_wiki = s`ch.wiki0`;
+  if (s`ch.wiki`.exists()) {
+    ch_wiki = s`ch.wiki`;
+  }
+  ch_sure = s`ch.sure0`;
+  cs_c = s`ch.cW`;
+  cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
+  ch_one_W = cs_n.equals(1);
+  cs_c = s`ch.cE`;
+  cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
+  ch_one_E = cs_n.equals(1);
+}
+
+// codes of the embedding row of token ce_id -> ce_cp (code points), ce_s (scale)
+function ch_row() {
+  ce_c = variable::divide([ce_id, s`ch.rows`], "FLOOR");
+  ce_k = variable::subtract([ce_id, variable::multiply([ce_c, s`ch.rows`])]);
+  rs_t = s`ch.e.${ce_c}`;
+  rs_a = variable::multiply([ce_k, s`ch.dim`]);
+  rs_b = variable::add([rs_a, s`ch.dim`]);
+  rd_sub();
+  ce_cp = variable::text_to_chars(rs_out, "CODEPOINTS");
+  ce_s = variable::get_list_value(s`ch.es.${ce_c}`, ce_k);
+}
+
+// token ce_id -> ce_x: its embedding as numbers, scale * (code - 128)
+function ch_embed() {
+  ch_row();
+  ce_off = mli_mul(ce_s, CH_OFF);
+  ce_x = [];
+  repeat::for_each_in_list(ce_cp) { ce_j, ce_v ->
+    ce_x.append_value(variable::mathematical_expectation([ce_v, 1], [ce_s, ce_off]));
+  }
+}
+
+// one token through the library LSTM step (state in lf_*)
+function ch_feed() {
+  ch_embed();
+  lf_X.append_value([ce_x]);
+  ml_lstm_step();
+}
+
+// a fresh LSTM state
+function ch_reset() {
+  lf_X = [];
+  lf_train = 0;
+  lf_cache = 0;
+  lf_rev = 0;
+  lf_d = 0;
+  ml_lstm_init_state();
+}
+
+// o = Wp h + bp -> ch_o, ch_oz = [1 | o], ch_so = sum(o)
+function ch_out() {
+  co_z = mli_cons(1, lf_h);
+  ch_o = [];
+  repeat::for_each_in_list(g`ch.idxD`) { co_k, co_j ->
+    ch_o.append_value(variable::mathematical_expectation(s`ch.Wp.${co_j}`, co_z));
+  }
+  ch_oz = mli_cons(1, ch_o);
+  ch_so = variable::mathematical_expectation(ch_o, g`ch.onesD`);
+  ml_yield(variable::multiply([s`ch.dim`, 3]));
+}
+
+// logits of all classes -> cl_l
+function ch_class_logits() {
+  cl_l = [];
+  repeat::for_each_in_list(g`ch.idxC`) { cl_k, cl_c ->
+    cl_l.append_value(variable::mathematical_expectation(s`ch.Wc.${cl_c}`, ch_oz));
+  }
+  ml_yield(variable::multiply([s`ch.C`, 2]));
+}
+
+// logits of the tokens of class cw_c -> cw_ids, cw_l (repeated tokens penalised, cw_mask tokens excluded)
+function ch_word_logits() {
+  cw_ids = s`ch.k.${cw_c}`;
+  cw_b = s`ch.kb.${cw_c}`;
+  cw_l = [];
+  repeat::for_each_in_list(cw_ids) { cw_k, ce_id ->
+    ch_word_logit();
+    cw_l.append_value(cw_lg);
+  }
+}
+
+function ch_word_logit() {
+  ch_row();
+  cw_raw = variable::mathematical_expectation(ce_cp, ch_o);
+  cw_off = mli_mul(ce_s, CH_OFF);
+  cw_lg = variable::mathematical_expectation([cw_raw, ch_so, variable::get_list_value(cw_b, cw_k)], [ce_s, cw_off, 1]);
+  if (cg_seen.map_has_key("${ce_id}")) {
+    cw_lg = mli_sub2(cw_lg, mli_mul(CH_REP, variable::get_map_value(cg_seen, "${ce_id}")));
+  }
+  if (cw_mask.list_contains_value(ce_id)) {
+    cw_lg = CH_LOW;
+  }
+  ml_yield(12);
+}
+
+// probability of item sm_i of the logits sm_l -> sm_p
+function ch_softmax_at() {
+  sm_mx = variable::max(sm_l);
+  sm_tot = 0;
+  repeat::for_each_in_list(sm_l) { sm_k, sm_v ->
+    sm_e = variable::pow(ML_E, mli_sub2(sm_v, sm_mx));
+    sm_tot = mli_add2(sm_tot, sm_e);
+    if (sm_k.equals(sm_i)) {
+      sm_ei = sm_e;
+    }
+  }
+  sm_p = mli_mul(sm_ei, mli_inv(sm_tot));
+}
+
+// top-k sampling of the logits sp_l with temperature ch_temp (0 = always the best) -> sp_i
+function ch_sample() {
+  sp_n = variable::get_list_length(sp_l);
+  sp_sorted = variable::sort_list(sp_l, "DESCENDING");
+  sp_max = variable::get_list_value(sp_sorted, 0);
+  sp_i = variable::get_list_index_of_value(sp_l, sp_max, "FIRST");
+  if (ch_temp.greater(0)) {
+    if (sp_k.greater(1)) {
+      ch_sample_top();
+    }
+  }
+}
+
+function ch_sample_top() {
+  sp_thr = variable::get_list_value(sp_sorted, variable::subtract([variable::min([sp_k, sp_n]), 1]));
+  sp_inv = mli_inv(ch_temp);
+  sp_w = [];
+  sp_tot = 0;
+  repeat::for_each_in_list(sp_l) { sp_j, sp_v ->
+    sp_x = 0;
+    if (sp_v.greater_or_equals(sp_thr)) {
+      sp_x = variable::pow(ML_E, mli_mul(mli_sub2(sp_v, sp_max), sp_inv));
+    }
+    sp_w.append_value(sp_x);
+    sp_tot = mli_add2(sp_tot, sp_x);
+  }
+  sp_r = mli_mul(variable::random_number(0, 1, "FALSE"), sp_tot);
+  sp_acc = 0;
+  sp_found = 0;
+  repeat::for_each_in_list(sp_w) { sp_j, sp_x ->
+    if (sp_found.equals(0)) {
+      sp_acc = mli_add2(sp_acc, sp_x);
+      if (sp_acc.greater_or_equals(sp_r)) {
+        if (sp_x.greater(0)) {
+          sp_i = sp_j;
+          sp_found = 1;
+        }
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// a reply
+// ---------------------------------------------------------------------
+function ch_answer() {
+  ch_ensure_model();
+  ch_settings();
+  cg_in = [];
+  cg_in.append_value(s`ch.U`);
+  cg_n = variable::get_list_length(aq_all);
+  if (cg_n.greater(CH_MAXM)) {
+    cg_in = variable::append_list(cg_in, mli_slice(aq_all, variable::subtract([cg_n, CH_MAXM]), cg_n));
+  } else {
+    cg_in = variable::append_list(cg_in, aq_all);
+  }
+  cg_in.append_value(s`ch.B`);
+  ch_read_message();
+  ch_out();
+  cg_seen = {};
+  ch_wiki_probability();
+  if (ch_pW.greater_or_equals(ch_wiki)) {
+    ai_fallback = 1;
+    if (ch_pW.greater_or_equals(ch_sure)) {
+      ai_fallback = 0;
+    }
+    ai_wiki_answer();
+  } else {
+    ch_generate();
+    ch_say();
+  }
+}
+
+// the reader found nothing for a message the chat model was not sure about: the chat model replies
+function ch_reply_after_wiki() {
+  ch_ensure_model();
+  ch_settings();
+  ch_read_message();
+  ch_out();
+  cg_seen = {};
+  ch_generate();
+  ch_say();
+}
+
+// [U] message [B] through the LSTM, progress in the action bar
+function ch_read_message() {
+  ch_reset();
+  cg_total = variable::get_list_length(cg_in);
+  repeat::for_each_in_list(cg_in) { cg_k, ce_id ->
+    ch_feed();
+    player::send_action_bar("&7✎ &8${variable::add([cg_k, 1])}/${cg_total}");
+  }
+}
+
+// P([W]) = P(class of [W]) * P([W] in its class), before anything is written
+function ch_wiki_probability() {
+  ch_class_logits();
+  sm_l = cl_l;
+  sm_i = s`ch.cW`;
+  ch_softmax_at();
+  cw_pc = sm_p;
+  cw_c = s`ch.cW`;
+  cw_mask = [];
+  ch_word_logits();
+  sm_l = cw_l;
+  sm_i = s`ch.pW`;
+  ch_softmax_at();
+  ch_pW = mli_mul(cw_pc, sm_p);
+}
+
+// tokens until [E] or s`ch.max` -> cg_text
+function ch_generate() {
+  cg_text = "";
+  cg_n = 0;
+  cg_go = 1;
+  repeat::while(cg_go.equals(1)) {
+    ch_next_token();
+  }
+  if (not cg_text.equals("")) {
+    rs_t = cg_text;
+    rs_a = 0;
+    rs_b = 1;
+    rd_sub();
+    cg_first = variable::set_text_case(rs_out, "UPPER");
+    cg_text = variable::regex_replace_text(cg_text, "^.", cg_first);
+  }
+}
+
+function ch_next_token() {
+  ch_class_logits();
+  ch_mask_classes();
+  sp_l = cl_l;
+  sp_k = s`ch.topc`;
+  ch_sample();
+  cw_c = sp_i;
+  cw_mask = [];
+  cw_mask.append_value(s`ch.W`);
+  if (cg_n.equals(0)) {
+    cw_mask.append_value(s`ch.E`);
+  }
+  ch_word_logits();
+  sp_l = cw_l;
+  sp_k = s`ch.topw`;
+  ch_sample();
+  cg_id = variable::get_list_value(cw_ids, sp_i);
+  cg_n = variable::add([cg_n, 1]);
+  if (cg_id.equals(s`ch.E`)) {
+    cg_go = 0;
+  } else {
+    ch_take_token();
+  }
+  if (cg_n.greater_or_equals(s`ch.max`)) {
+    cg_go = 0;
+  }
+}
+
+// [W] never, [E] not as the first token: their class is closed when they are alone in it
+function ch_mask_classes() {
+  if (ch_one_W.equals(1)) {
+    cl_l = variable::set_list_value(cl_l, s`ch.cW`, CH_LOW);
+  }
+  if (cg_n.equals(0)) {
+    if (ch_one_E.equals(1)) {
+      cl_l = variable::set_list_value(cl_l, s`ch.cE`, CH_LOW);
+    }
+  }
+}
+
+// the sampled token: text, progress, fed back into the LSTM
+function ch_take_token() {
+  cg_key = "${cg_id}";
+  cg_cnt = variable::get_map_value(cg_seen, cg_key, 0);
+  cg_seen = variable::set_map_value(cg_seen, cg_key, variable::add([cg_cnt, 1]));
+  ch_detok();
+  ch_progress();
+  ce_id = cg_id;
+  ch_feed();
+  ch_out();
+}
+
+// the text of token cg_id joined to cg_text (word pieces glued, no space before punctuation)
+function ch_detok() {
+  dt_c = variable::divide([cg_id, 1000], "FLOOR");
+  dt_k = variable::remainder(cg_id, 1000, "REMAINDER");
+  dt_t = variable::get_list_value(s`ch.t.${dt_c}`, dt_k);
+  if (dt_t.text_starts_with("##")) {
+    rs_t = dt_t;
+    rs_a = 2;
+    rs_b = variable::get_text_length(dt_t);
+    rd_sub();
+    cg_text = "${cg_text}${rs_out}";
+  } elif (cg_text.equals("")) {
+    cg_text = dt_t;
+  } elif (dt_t.equals([".", ",", "!", "?", ";", ":", ")", "»", "%", "…"])) {
+    cg_text = "${cg_text}${dt_t}";
+  } elif (cg_text.text_ends_with(["(", "«"])) {
+    cg_text = "${cg_text}${dt_t}";
+  } else {
+    cg_text = "${cg_text} ${dt_t}";
+  }
+}
+
+// the end of the reply written so far, in the action bar
+function ch_progress() {
+  pg_n = variable::get_text_length(cg_text);
+  pg_t = cg_text;
+  if (pg_n.greater(CH_BAR)) {
+    rs_t = cg_text;
+    rs_a = variable::subtract([pg_n, CH_BAR]);
+    rs_b = pg_n;
+    rd_sub();
+    pg_t = "…${rs_out}";
+  }
+  player::send_action_bar("&7✎ &f${pg_t}");
+}
+
+function ch_say() {
+  as_sec = variable::round(variable::divide([variable::subtract([value::timestamp, g`ai.t0`]), 1000]), 1, "ROUND");
+  if (cg_text.equals("")) {
+    cg_text = "...";
+  }
+  player::message<all_players>("&9[AI] &f${cg_text} &8(${as_sec} s)");
 }
