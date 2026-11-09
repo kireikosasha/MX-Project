@@ -192,7 +192,9 @@ function ml_check_complete() {
 // a header (config, embedding, attention, head), "ln" (LayerNorm) and "rows" ([d, gate, n, row]),
 // listed in a manifest {"manifest": [file, ...]}. A manifest may also list {"save": "<name>"} files: the
 // model loaded so far is then saved under that name, so one manifest can install a pack of models.
-// Out: io_ok = 1 (loaded), 2 (manifest -> io_manifest), 3 (save -> io_name), 0 (error)
+// A file {"store": {"<name>": value, ...}} writes those save variables as they are (extra data of a
+// demo: vocabularies, embedding tables ...).
+// Out: io_ok = 1 (loaded), 2 (manifest -> io_manifest), 3 (save -> io_name), 4 (stored), 0 (error)
 function ml_import_json() {
   io_ok = 0;
   io_obj = variable::parse_json(io_text);
@@ -200,16 +202,29 @@ function ml_import_json() {
   if (io_obj.is_type("MAP")) {
     io_manifest = variable::get_map_value(io_obj, "manifest", 0);
     io_name = variable::get_map_value(io_obj, "save", 0);
+    io_store = variable::get_map_value(io_obj, "store", 0);
     if (io_manifest.is_type("ARRAY")) {
       io_ok = 2;
       io_msg = "manifest";
     } elif (io_name.is_type("TEXT")) {
       io_ok = 3;
       io_msg = "save";
+    } elif (io_store.is_type("MAP")) {
+      ml_import_store();
     } else {
       ml_import_object();
     }
   }
+}
+
+// {"store": {...}}: every key becomes a save variable with its value
+function ml_import_store() {
+  repeat::for_each_in_list(variable::get_map_keys(io_store)) { is_k, is_name ->
+    s`${is_name}` = variable::get_map_value(io_store, is_name);
+    ml_yield(20);
+  }
+  io_ok = 4;
+  io_msg = "stored";
 }
 
 // in: io_obj (parsed map) -> io_ok, io_msg

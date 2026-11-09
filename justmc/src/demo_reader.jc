@@ -1,0 +1,1399 @@
+// =====================================================================
+//  demo_reader.jc — demo 3 of the Millennium library: a reader that answers questions in English,
+//  Russian and Ukrainian with what it finds in Wikipedia, and says "I don't know" otherwise.
+//
+//  ~ai <question>
+//    1. language of the question: Ukrainian / Russian letters and stop words, otherwise English
+//    2. its key words -> Wikipedia search in that language (3 articles, their introductions)
+//    3. in every introduction: the sentence sharing most key words with the question and the next
+//       best one, at most 56 tokens (the same rules as tools/reader/reader_text.py, which built the
+//       training data)
+//    4. the reader points at the answer inside that text or says there is none:
+//         tokens -> 8-bit embeddings (20 000 x 128) -> projection to 32 numbers
+//         -> attention of every text token over the question tokens
+//         -> Millennium BiLSTM with LayerNorm (the library model "reader")
+//         -> attention pooling of the question -> start / end / "no answer" scores
+//    5. a span is accepted only if it beats "no answer" and its probability is at least tau;
+//       the answer is retold as the sentence it was found in, the found part highlighted
+//
+//  Install the model once: ~ai install
+// =====================================================================
+import "./ml_admin.jc";
+
+inline var AI_CMD_PREFIX = "~ai";
+inline var AI_WEIGHTS = "https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/weights/reader/reader.json";
+inline var AI_TAU = 0.3;          // default confidence threshold (s`rd.tau` overrides it)
+inline var AI_WAIT = 100;         // search timeout in steps of 2 ticks (10 s)
+inline var AI_STUCK_MS = 120000;  // a question still "running" after this time is dropped
+inline var RD_MAXC = 56;          // context tokens
+inline var RD_MAXC1 = 55;         // RD_MAXC - 1
+inline var RD_MAXQ = 16;          // question tokens
+inline var RD_MAX_TOKEN = 16;     // longest vocabulary entry
+inline var RD_PREFIX = 5;         // words are matched by their first 5 letters
+inline var RD_MAXLEN = 12;        // longest answer in tokens
+inline var RD_ROW = 128;          // embedding size = characters of one row of an embedding chunk
+inline var RD_NB = 251;           // vocabulary maps per kind
+inline var RD_LOW = -1000000;     // score of a position that cannot start / end an answer
+inline var RD_MARK = "¦";         // sentence cut marker
+inline var RD_HL_A = "⁅";         // answer markers inside the retold sentence
+inline var RD_HL_B = "⁆";
+inline var RD_HEX = "0123456789ABCDEF";
+inline var RD_WORD_RE = "(?:[\\p{L}\\p{N}]|')+|[^\\p{L}\\p{N}_\\s]|_";
+inline var RD_SENT_RE = '(?<![\\s(][a-zа-яёіїєґ][.!?…])(?<![\\s(][a-zа-яёіїєґ]{2}[.!?…])(?<![\\s(][A-ZА-ЯЁІЇЄҐ][.!?…])(?<=[.!?…])\\s+(?=[A-ZА-ЯЁІЇЄҐ0-9"«(])';
+inline var RD_WIKI = "wikipedia.org/w/api.php?action=query&format=json&utf8=1&redirects=1&generator=search&gsrnamespace=0&gsrlimit=3&prop=extracts&exintro=1&explaintext=1&exlimit=3";
+
+// ---------------------------------------------------------------------
+// events
+// ---------------------------------------------------------------------
+event<world_start> {
+  ml_admin_boot();
+  ai_boot();
+}
+
+event<player_join> {
+  ml_admin_join();
+  ai_on_join();
+}
+
+event<player_chat> {
+  ml_admin_chat();
+  if (cm_handled.equals(0)) {
+    ai_on_chat();
+  }
+}
+
+event<world_web_response> {
+  ml_admin_web_response();
+  ai_web_response();
+}
+
+event<world_web_exception> {
+  ml_admin_web_exception();
+  ai_web_exception();
+}
+
+function ai_boot() {
+  g`ai.busy` = 0;
+  g`ai.wait` = 0;
+  g`ai.got` = 0;
+  g`ai.t0` = 0;
+  rd_calibrate();
+  rd_runtime();
+}
+
+function ai_on_join() {
+  player::message("&9[AI] &fAsk me anything: &e~ai <question> &7(English, русский, українська). &7~ai help");
+  rd_installed();
+  if (ri_ok.equals(0)) {
+    player::message("&9[AI] &cThe reader is not installed: &e~ai install");
+  }
+}
+
+// trim_text and get_index_of_subtext index conventions, found once at start:
+// rd_sub must give characters a .. b-1 (0-based); g`rd.io` is the index base of get_index_of_subtext
+function rd_calibrate() {
+  rc_t = variable::trim_text("abcdef", 1, 3);
+  g`rd.ts` = 0;
+  g`rd.te` = 0;
+  if (rc_t.equals("bcd")) {
+    g`rd.te` = -1;
+  } elif (rc_t.equals("abc")) {
+    g`rd.ts` = 1;
+  } elif (rc_t.equals("ab")) {
+    g`rd.ts` = 1;
+    g`rd.te` = 1;
+  } else {
+    g`rd.te` = 0;
+  }
+  rc_i = variable::get_index_of_subtext("abcabc", "c", 0, "FIRST");
+  g`rd.io` = variable::subtract([rc_i, 2]);
+  rc_cp = variable::text_to_chars("A", "CODEPOINTS");
+  g`rd.cp_ok` = 0;
+  if (variable::get_list_value(rc_cp, 0, 0).equals(65)) {
+    g`rd.cp_ok` = 1;
+  }
+}
+
+// index lists and zero vectors of the reader (sizes from the installed model)
+function rd_runtime() {
+  rr_pd = 32;
+  if (s`rd.pd`.exists()) {
+    rr_pd = s`rd.pd`;
+  }
+  mr_n = rr_pd;
+  ml_range();
+  g`rd.idxP` = mr_list;
+  g`rd.zx` = [];
+  repeat::for_each_in_list(g`rd.idxP`) { rr_k, rr_v ->
+    g`rd.zx`.append_value(0);
+  }
+  repeat::for_each_in_list([0, 1, 2, 3]) { rr_k, rr_v ->
+    g`rd.zx`.append_value(0);
+  }
+}
+
+// characters rs_a .. rs_b-1 of rs_t -> rs_out
+function rd_sub() {
+  rs_a2 = variable::add([rs_a, g`rd.ts`]);
+  rs_b2 = variable::add([rs_b, g`rd.te`]);
+  rs_out = variable::trim_text(rs_t, rs_a2, rs_b2);
+}
+
+// ---------------------------------------------------------------------
+// text rules (tools/reader/reader_text.py)
+// ---------------------------------------------------------------------
+// Unicode spaces -> " ", stress marks removed, apostrophes unified     in/out: rn_t
+function rd_normalize() {
+  rn_t = variable::regex_replace_text(rn_t, "[  -​  　\\t\\r﻿]", " ");
+  rn_t = variable::regex_replace_text(rn_t, "[̀́]", "");
+  rn_t = variable::regex_replace_text(rn_t, "[’ʼ`´]", "'");
+}
+
+// brackets without digits (pronunciation, names in other languages, notes) eat the 56-token window:
+// [..] and (..) without digits are removed, twice for nested ones; dates in brackets stay   in/out: rn_t
+function rd_clean_brackets() {
+  rn_t = variable::regex_replace_text(rn_t, "\\s*\\[[^\\[\\]]*\\]", "");
+  rn_t = variable::regex_replace_text(rn_t, "\\s*\\([^()\\p{Nd}]*\\)", "");
+  rn_t = variable::regex_replace_text(rn_t, "\\s*\\([^()\\p{Nd}]*\\)", "");
+}
+
+// words of rw_t -> rw_list
+function rd_words() {
+  rw_list = variable::get_text_regex_groups(rw_t, RD_WORD_RE, "0", "ALL", "INDEX");
+}
+
+// does rk_w carry meaning (letters / digits, not a stop word)? -> rk_ok, rk_low (lower case)
+function rd_is_key() {
+  rk_low = variable::set_text_case(rk_w, "LOWER");
+  rk_ok = 0;
+  rk_rest = variable::regex_replace_text(rk_low, "[\\p{L}\\p{N}']", "");
+  if (rk_rest.equals("")) {
+    if (not s`rd.stop`.map_has_key(rk_low)) {
+      rk_ok = 1;
+    }
+  }
+}
+
+// first RD_PREFIX letters of rk_low -> rx_p
+function rd_prefix() {
+  rx_n = variable::get_text_length(rk_low);
+  rx_p = rk_low;
+  if (rx_n.greater(RD_PREFIX)) {
+    rs_t = rk_low;
+    rs_a = 0;
+    rs_b = RD_PREFIX;
+    rd_sub();
+    rx_p = rs_out;
+  }
+}
+
+// language of the question rn_t -> ai_lang (uk / ru / en)
+function rd_language() {
+  rl_low = variable::set_text_case(rn_t, "LOWER");
+  rl_cyr = variable::regex_replace_text(rl_low, "[а-яёіїєґ]", "");
+  rl_uk = variable::regex_replace_text(rl_low, "[іїєґ']", "");
+  rl_ru = variable::regex_replace_text(rl_low, "[ыэъё]", "");
+  if (rl_cyr.equals(rl_low)) {
+    ai_lang = "en";
+  } elif (not rl_uk.equals(rl_low)) {
+    ai_lang = "uk";
+  } elif (not rl_ru.equals(rl_low)) {
+    ai_lang = "ru";
+  } else {
+    rd_language_by_words();
+  }
+}
+
+// stop words only Ukrainian or only Russian has (ties -> ru)
+function rd_language_by_words() {
+  rw_t = rn_t;
+  rd_words();
+  rl_u = 0;
+  rl_r = 0;
+  repeat::for_each_in_list(rw_list) { rl_k, rl_w ->
+    rl_lw = variable::set_text_case(rl_w, "LOWER");
+    if (s`rd.uk_only`.map_has_key(rl_lw)) {
+      rl_u = variable::add([rl_u, 1]);
+    }
+    if (s`rd.ru_only`.map_has_key(rl_lw)) {
+      rl_r = variable::add([rl_r, 1]);
+    }
+  }
+  ai_lang = "ru";
+  if (rl_u.greater(rl_r)) {
+    ai_lang = "uk";
+  }
+}
+
+// sentences of rn_t (already normalized) -> rt_sents
+function rd_sentences() {
+  rt_m = variable::regex_replace_text(rn_t, RD_SENT_RE, RD_MARK);
+  rt_m = variable::regex_replace_text(rt_m, "\\n", RD_MARK);
+  rt_parts = variable::split_text(rt_m, RD_MARK);
+  rt_sents = [];
+  repeat::for_each_in_list(rt_parts) { rt_k, rt_p ->
+    rt_s = variable::strip_text(rt_p, "ALL");
+    if (not rt_s.equals("")) {
+      rt_sents.append_value(rt_s);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// tokenizer: greedy longest match in the vocabulary. s`rd.v.<b>` holds the pieces that start a word,
+// s`rd.c.<b>` the continuations (without "##"); b = (code of the 1st character + 37 * code of the 2nd) mod 251
+// ---------------------------------------------------------------------
+// lower-case word wp_w -> its token ids appended to wp_ids (one [UNK] = 0 when a part is not found)
+function rd_wordpiece() {
+  wp_n = variable::get_text_length(wp_w);
+  wp_start = 0;
+  wp_out = [];
+  wp_unk = 0;
+  repeat::while(wp_start.less(wp_n)) {
+    rd_wordpiece_step();
+  }
+  if (wp_unk.equals(1)) {
+    wp_out = [];
+    wp_out.append_value(0);
+  }
+  wp_ids = variable::append_list(wp_ids, wp_out);
+}
+
+// the longest vocabulary piece starting at wp_start
+function rd_wordpiece_step() {
+  wp_end = variable::min([wp_n, variable::add([wp_start, RD_MAX_TOKEN])]);
+  wp_id = -1;
+  repeat::while(wp_end.greater(wp_start)) {
+    rd_wordpiece_try();
+  }
+  if (wp_id.less(0)) {
+    wp_unk = 1;
+    wp_start = wp_n;
+  }
+}
+
+// is characters wp_start .. wp_end-1 a vocabulary piece? found: wp_id, next start; else wp_end - 1
+function rd_wordpiece_try() {
+  rs_t = wp_w;
+  rs_a = wp_start;
+  rs_b = wp_end;
+  rd_sub();
+  wp_c = variable::char_to_number(variable::get_char_at(rs_out, 0));
+  if (variable::subtract([wp_end, wp_start]).greater(1)) {
+    wp_c2 = variable::char_to_number(variable::get_char_at(rs_out, 1));
+    wp_c = variable::add([wp_c, variable::multiply([wp_c2, 37])]);
+  }
+  wp_b = variable::remainder(wp_c, RD_NB, "REMAINDER");
+  if (wp_start.equals(0)) {
+    wp_map = "rd.v.${wp_b}";
+  } else {
+    wp_map = "rd.c.${wp_b}";
+  }
+  if (s`${wp_map}`.exists()) {
+    wp_id = variable::get_map_value(s`${wp_map}`, rs_out, -1);
+  }
+  if (wp_id.greater(-1)) {
+    wp_out.append_value(wp_id);
+    wp_start = wp_end;
+    wp_end = wp_start;
+  } else {
+    wp_end = variable::subtract([wp_end, 1]);
+  }
+  ml_yield(8);
+}
+
+// ---------------------------------------------------------------------
+// projection of a token: p = P e + pb with e = scale * (code - 128). The 8-bit codes are stored as
+// the characters U+0100 + code, s`rd.rows` rows of RD_ROW characters per text s`rd.e.<chunk>`, and
+// P is applied to the code points directly: P e = scale * (P . cp) + scale * s`rd.PA` (PA = -384 * sum P)
+// in: rp_id   out: rp_p (list of PD numbers; kept in the local rpc.<id> for the question)
+// ---------------------------------------------------------------------
+function rd_project() {
+  if (`rpc.${rp_id}`.exists()) {
+    rp_p = `rpc.${rp_id}`;
+  } else {
+    rd_project_row();
+    `rpc.${rp_id}` = rp_p;
+  }
+}
+
+function rd_project_row() {
+  rp_c = variable::divide([rp_id, s`rd.rows`], "FLOOR");
+  rp_k = variable::subtract([rp_id, variable::multiply([rp_c, s`rd.rows`])]);
+  rs_t = s`rd.e.${rp_c}`;
+  rs_a = variable::multiply([rp_k, RD_ROW]);
+  rs_b = variable::add([rs_a, RD_ROW]);
+  rd_sub();
+  rp_cp = variable::text_to_chars(rs_out, "CODEPOINTS");
+  rp_sc = variable::get_list_value(s`rd.es.${rp_c}`, rp_k);
+  rp_p = [];
+  repeat::for_each_in_list(g`rd.idxP`) { rp_j, rp_jj ->
+    rp_raw = variable::mathematical_expectation(s`rd.P.${rp_j}`, rp_cp);
+    rp_pa = variable::get_list_value(s`rd.PA`, rp_j);
+    rp_pb = variable::get_list_value(s`rd.pb`, rp_j);
+    rp_p.append_value(variable::mathematical_expectation([rp_raw, rp_pa, rp_pb], [rp_sc, rp_sc, 1]));
+  }
+  ml_yield(variable::multiply([s`rd.pd`, 6]));
+}
+
+// ---------------------------------------------------------------------
+// the question: key words, search terms, tokens
+// in: aq_text (normalized)   out: aq_qk (map prefix -> 1), aq_qw (map key word -> 1),
+//     aq_terms (search words), aq_ids (at most RD_MAXQ token ids), aq_ones
+// ---------------------------------------------------------------------
+function rd_question_info() {
+  rw_t = aq_text;
+  rd_words();
+  aq_qk = {};
+  aq_qw = {};
+  aq_terms = [];
+  aq_ids = [];
+  repeat::for_each_in_list(rw_list) { aq_k, aq_w ->
+    rd_question_word();
+  }
+  aq_n = variable::get_list_length(aq_ids);
+  if (aq_n.greater(RD_MAXQ)) {
+    aq_ids = mli_slice(aq_ids, 0, RD_MAXQ);
+  }
+  aq_ones = [];
+  repeat::for_each_in_list(aq_ids) { aq_k, aq_v ->
+    aq_ones.append_value(1);
+  }
+}
+
+function rd_question_word() {
+  rk_w = aq_w;
+  rd_is_key();
+  if (rk_ok.equals(1)) {
+    aq_qw = variable::set_map_value(aq_qw, rk_low, 1);
+    rd_prefix();
+    aq_qk = variable::set_map_value(aq_qk, rx_p, 1);
+    if (not aq_terms.list_contains_value(aq_w)) {
+      if (variable::get_list_length(aq_terms).less(8)) {
+        aq_terms.append_value(aq_w);
+      }
+    }
+  }
+  wp_w = variable::set_text_case(aq_w, "LOWER");
+  wp_ids = aq_ids;
+  rd_wordpiece();
+  aq_ids = wp_ids;
+}
+
+// ---------------------------------------------------------------------
+// the reader network
+// ---------------------------------------------------------------------
+// the question: projections rq_P (+ their columns rq_cols), BiLSTM states, pooled vector, and the
+// start / end vectors rq_us = Ws q + bs, rq_ue = We q + be, "no answer" scores rq_ns, rq_ne
+function rd_encode_question() {
+  rq_P = [];
+  rq_X = [];
+  repeat::for_each_in_list(aq_ids) { rq_k, rp_id ->
+    rd_project();
+    rq_P.append_value([rp_p]);
+    rq_x = variable::append_list(rp_p, g`rd.zx`);
+    rq_X.append_value([rq_x]);
+  }
+  rq_cols = [];
+  repeat::for_each_in_list(g`rd.idxP`) { rq_j, rq_jj ->
+    rq_col = [];
+    repeat::for_each_in_list(rq_P) { rq_i, rq_v ->
+      rq_col.append_value(variable::get_list_value(rq_v, rq_j));
+    }
+    rq_cols.append_value([rq_col]);
+  }
+  rb_X = rq_X;
+  rd_bilstm();
+  po_H = rb_H;
+  po_M = aq_ones;
+  ml_pool_forward();
+  rd_heads();
+}
+
+// vectors of the answer heads from the pooled question po_v
+function rd_heads() {
+  rh_z = mli_cons(1, po_v);
+  rq_us = [];
+  rq_ue = [];
+  repeat::for_each_in_list(g`mlg.idxOut`) { rh_k, rh_n ->
+    rq_us.append_value(variable::mathematical_expectation(s`rd.Ws.${rh_n}`, rh_z));
+    rq_ue.append_value(variable::mathematical_expectation(s`rd.We.${rh_n}`, rh_z));
+  }
+  rq_ns = variable::mathematical_expectation(s`rd.ns`, rh_z);
+  rq_ne = variable::mathematical_expectation(s`rd.ne`, rh_z);
+}
+
+// library BiLSTM (layer 0, both directions) over rb_X -> rb_H (vectors [forward | backward])
+function rd_bilstm() {
+  lf_X = rb_X;
+  lf_train = 0;
+  lf_cache = 0;
+  lf_rev = 0;
+  lf_d = 0;
+  ml_lstm_forward();
+  rb_fo = lf_out;
+  lf_X = rb_X;
+  lf_rev = 1;
+  lf_d = 1;
+  ml_lstm_forward();
+  rb_H = [];
+  repeat::for_each_in_list(rb_fo) { rb_t, rb_v ->
+    rb_h = variable::append_list(rb_v, variable::get_list_value(lf_out, rb_t));
+    rb_H.append_value([rb_h]);
+  }
+}
+
+// question words seen by a text token (projection rp_p): softmax over the question of p . pq_i,
+// weighted sum of the question projections -> ra_al
+function rd_align() {
+  ra_sc = [];
+  repeat::for_each_in_list(rq_P) { ra_i, ra_v ->
+    ra_sc.append_value(variable::mathematical_expectation(rp_p, ra_v));
+  }
+  ra_max = variable::max(ra_sc);
+  ra_e = [];
+  repeat::for_each_in_list(ra_sc) { ra_i, ra_s ->
+    ra_e.append_value(variable::pow(ML_E, mli_sub2(ra_s, ra_max)));
+  }
+  ra_inv = mli_inv(variable::mathematical_expectation(ra_e, aq_ones));
+  ra_a = [];
+  repeat::for_each_in_list(ra_e) { ra_i, ra_x ->
+    ra_a.append_value(mli_mul(ra_x, ra_inv));
+  }
+  ra_al = [];
+  repeat::for_each_in_list(rq_cols) { ra_j, ra_col ->
+    ra_al.append_value(variable::mathematical_expectation(ra_col, ra_a));
+  }
+  ml_yield(variable::multiply([aq_n, 4]));
+}
+
+// the selected text (cx_*) -> start / end scores, best answer: rd_best (probability), rd_pn
+// (probability of "no answer"), rd_bs .. rd_be (tokens)
+function rd_read_context() {
+  rc_X = [];
+  repeat::for_each_in_list(cx_ids) { rc_t, rp_id ->
+    rd_project();
+    rd_align();
+    rc_x = variable::append_list(rp_p, ra_al);
+    rc_x = variable::append_list(rc_x, variable::get_list_value(cx_f, rc_t));
+    rc_X.append_value([rc_x]);
+  }
+  rb_X = rc_X;
+  rd_bilstm();
+  rc_st = [];
+  rc_en = [];
+  repeat::for_each_in_list(rb_H) { rc_t, rc_h ->
+    rd_scores_at();
+  }
+  rd_decode();
+}
+
+// start / end score of token rc_t (RD_LOW where a word does not start / end)
+function rd_scores_at() {
+  if (variable::get_list_value(cx_ws, rc_t).equals(1)) {
+    rc_st.append_value(variable::mathematical_expectation(rc_h, rq_us));
+  } else {
+    rc_st.append_value(RD_LOW);
+  }
+  if (variable::get_list_value(cx_we, rc_t).equals(1)) {
+    rc_en.append_value(variable::mathematical_expectation(rc_h, rq_ue));
+  } else {
+    rc_en.append_value(RD_LOW);
+  }
+}
+
+// softmax over ["no answer", tokens] for the start and the end, then the most probable span of at
+// most RD_MAXLEN tokens
+function rd_decode() {
+  sm_x0 = rq_ns;
+  sm_xs = rc_st;
+  rd_softmax();
+  rd_ps0 = sm_p0;
+  rd_ps = sm_p;
+  sm_x0 = rq_ne;
+  sm_xs = rc_en;
+  rd_softmax();
+  rd_pe = sm_p;
+  rd_pn = mli_mul(rd_ps0, sm_p0);
+  rd_pemax = variable::max(rd_pe);
+  rd_best = 0;
+  rd_bs = -1;
+  rd_be = -1;
+  rd_T = variable::get_list_length(rd_ps);
+  repeat::for_each_in_list(rd_ps) { rd_i, rd_psi ->
+    if (mli_mul(rd_psi, rd_pemax).greater(rd_best)) {
+      rd_span_from();
+    }
+  }
+}
+
+// best end for the start rd_i
+function rd_span_from() {
+  rd_j = rd_i;
+  rd_jmax = variable::min([rd_T, variable::add([rd_i, RD_MAXLEN])]);
+  repeat::while(rd_j.less(rd_jmax)) {
+    rd_p = mli_mul(rd_psi, variable::get_list_value(rd_pe, rd_j));
+    if (rd_p.greater(rd_best)) {
+      rd_best = rd_p;
+      rd_bs = rd_i;
+      rd_be = rd_j;
+    }
+    rd_j = variable::add([rd_j, 1]);
+  }
+  ml_yield(40);
+}
+
+// softmax of [sm_x0, sm_xs...] -> sm_p0, sm_p
+function rd_softmax() {
+  sm_max = variable::max([sm_x0, variable::max(sm_xs)]);
+  sm_e0 = variable::pow(ML_E, mli_sub2(sm_x0, sm_max));
+  sm_e = [];
+  repeat::for_each_in_list(sm_xs) { sm_k, sm_v ->
+    sm_e.append_value(variable::pow(ML_E, mli_sub2(sm_v, sm_max)));
+  }
+  sm_inv = mli_inv(mli_add2(sm_e0, variable::mathematical_expectation(sm_e, cx_ones)));
+  sm_p0 = mli_mul(sm_e0, sm_inv);
+  sm_p = [];
+  repeat::for_each_in_list(sm_e) { sm_k, sm_v ->
+    sm_p.append_value(mli_mul(sm_v, sm_inv));
+  }
+}
+
+// ---------------------------------------------------------------------
+// what the reader reads in a page (reader_text.select_context)
+// in: sp_text, aq_qk, aq_qw
+// out: sc_score (question keys in the best sentence; 0 = nothing to read), sc_sents, and the words
+//      cx_words with their sentence cx_sent, place in it cx_pos, tokens cx_wt; the token arrays
+//      cx_ids, cx_wi (word of a token), cx_ws / cx_we (first / last token of a word), cx_f, cx_ones
+// ---------------------------------------------------------------------
+function rd_select() {
+  rn_t = sp_text;
+  rd_normalize();
+  rd_clean_brackets();
+  rd_sentences();
+  sc_sents = rt_sents;
+  sc_score = 0;
+  if (not sc_sents.list_is_empty()) {
+    rd_score_sentences();
+    if (sc_score.greater(0)) {
+      rd_build_context();
+    }
+  }
+}
+
+// distinct question keys per sentence -> sc_score, sc_best, sc_second (-1: none)
+function rd_score_sentences() {
+  sc_scores = [];
+  repeat::for_each_in_list(sc_sents) { sc_i, sc_s ->
+    rd_sentence_score();
+    sc_scores.append_value(sc_n);
+  }
+  sc_score = variable::max(sc_scores);
+  sc_best = variable::get_list_index_of_value(sc_scores, sc_score, "FIRST");
+  sc_second = -1;
+  if (variable::get_list_length(sc_scores).greater(1)) {
+    sc_tmp = variable::set_list_value(sc_scores, sc_best, -1);
+    sc_m2 = variable::max(sc_tmp);
+    sc_second = variable::get_list_index_of_value(sc_tmp, sc_m2, "FIRST");
+  }
+}
+
+function rd_sentence_score() {
+  rw_t = sc_s;
+  rd_words();
+  sc_seen = {};
+  sc_n = 0;
+  repeat::for_each_in_list(rw_list) { sc_k, rk_w ->
+    rd_is_key();
+    if (rk_ok.equals(1)) {
+      rd_prefix();
+      if (aq_qk.map_has_key(rx_p)) {
+        if (not sc_seen.map_has_key(rx_p)) {
+          sc_seen = variable::set_map_value(sc_seen, rx_p, 1);
+          sc_n = variable::add([sc_n, 1]);
+        }
+      }
+    }
+  }
+  ml_yield(variable::multiply([variable::get_list_length(rw_list), 6]));
+}
+
+function rd_build_context() {
+  cx_words = [];
+  cx_sent = [];
+  cx_pos = [];
+  cx_wt = [];
+  sg_si = sc_best;
+  rd_sentence_tokens();
+  if (sg_n.greater(RD_MAXC)) {
+    rd_window();
+  } else {
+    rd_fill();
+  }
+  rd_context_tokens();
+}
+
+// words of sentence sg_si -> sg_words, their tokens sg_wt, sg_n tokens in all
+function rd_sentence_tokens() {
+  rw_t = variable::get_list_value(sc_sents, sg_si);
+  rd_words();
+  sg_words = rw_list;
+  sg_wt = [];
+  sg_n = 0;
+  repeat::for_each_in_list(sg_words) { sg_k, sg_w ->
+    wp_w = variable::set_text_case(sg_w, "LOWER");
+    wp_ids = [];
+    rd_wordpiece();
+    sg_wt.append_value([wp_ids]);
+    sg_n = variable::add([sg_n, variable::get_list_length(wp_ids)]);
+  }
+}
+
+// word sg_k of sentence sg_si joins the context
+function rd_keep_word() {
+  cx_words.append_value(variable::get_list_value(sg_words, sg_k));
+  cx_sent.append_value(sg_si);
+  cx_pos.append_value(sg_k);
+  kw_t = variable::get_list_value(sg_wt, sg_k);
+  cx_wt.append_value([kw_t]);
+}
+
+// the best sentence fits: all of it, then the second best fills the room left - its first whole
+// words when it comes after, its last whole words when it comes before
+function rd_fill() {
+  repeat::for_each_in_list(sg_words) { sg_k, sg_w ->
+    rd_keep_word();
+  }
+  fl_room = variable::subtract([RD_MAXC, sg_n]);
+  if (sc_second.greater(-1)) {
+    if (fl_room.greater(0)) {
+      sg_si = sc_second;
+      rd_sentence_tokens();
+      if (sc_second.greater(sc_best)) {
+        rd_keep_head();
+      } else {
+        rd_keep_tail();
+      }
+    }
+  }
+}
+
+function rd_keep_head() {
+  kh_used = 0;
+  repeat::for_each_in_list(sg_words) { sg_k, sg_w ->
+    kh_t = variable::get_list_value(sg_wt, sg_k);
+    kh_used = variable::add([kh_used, variable::get_list_length(kh_t)]);
+    if (kh_used.less_or_equals(fl_room)) {
+      rd_keep_word();
+    }
+  }
+}
+
+// last words of sentence sg_si that fit in fl_room tokens, put before the words kept so far
+function rd_keep_tail() {
+  kt_used = 0;
+  kt_from = variable::get_list_length(sg_words);
+  kt_go = 1;
+  repeat::for_each_in_list(variable::reverse_list(sg_wt)) { kt_k, kt_t ->
+    if (kt_go.equals(1)) {
+      kt_used = variable::add([kt_used, variable::get_list_length(kt_t)]);
+      if (kt_used.less_or_equals(fl_room)) {
+        kt_from = variable::subtract([kt_from, 1]);
+      } else {
+        kt_go = 0;
+      }
+    }
+  }
+  kt_words = cx_words;
+  kt_sent = cx_sent;
+  kt_pos = cx_pos;
+  kt_wt = cx_wt;
+  cx_words = [];
+  cx_sent = [];
+  cx_pos = [];
+  cx_wt = [];
+  repeat::for_each_in_list(sg_words) { sg_k, sg_w ->
+    if (sg_k.greater_or_equals(kt_from)) {
+      rd_keep_word();
+    }
+  }
+  cx_words = variable::append_list(cx_words, kt_words);
+  cx_sent = variable::append_list(cx_sent, kt_sent);
+  cx_pos = variable::append_list(cx_pos, kt_pos);
+  cx_wt = variable::append_list(cx_wt, kt_wt);
+}
+
+// the best sentence is too long: its RD_MAXC-token window with most key-word tokens (the earliest
+// on ties), whole words only
+function rd_window() {
+  wn_hit = [];
+  wn_first = [];
+  repeat::for_each_in_list(sg_words) { sg_k, rk_w ->
+    rd_window_word();
+  }
+  wn_run = 0;
+  repeat::for_each_in_list(wn_hit) { wn_t, wn_h ->
+    if (wn_t.less(RD_MAXC)) {
+      wn_run = variable::add([wn_run, wn_h]);
+    }
+  }
+  wn_bestv = wn_run;
+  wn_st = 0;
+  wn_s = 1;
+  wn_last = variable::subtract([sg_n, RD_MAXC]);
+  repeat::while(wn_s.less_or_equals(wn_last)) {
+    rd_window_slide();
+  }
+  wn_end = variable::add([wn_st, RD_MAXC]);
+  repeat::for_each_in_list(sg_words) { sg_k, sg_w ->
+    rd_window_keep();
+  }
+}
+
+// key-word flag of every token of word sg_k, index of its first token
+function rd_window_word() {
+  rd_is_key();
+  wn_h = 0;
+  if (rk_ok.equals(1)) {
+    rd_prefix();
+    if (aq_qk.map_has_key(rx_p)) {
+      wn_h = 1;
+    }
+  }
+  wn_first.append_value(variable::get_list_length(wn_hit));
+  repeat::for_each_in_list(variable::get_list_value(sg_wt, sg_k)) { wn_j, wn_id ->
+    wn_hit.append_value(wn_h);
+  }
+}
+
+function rd_window_slide() {
+  wn_in = variable::get_list_value(wn_hit, variable::add([wn_s, RD_MAXC1]));
+  wn_out = variable::get_list_value(wn_hit, variable::subtract([wn_s, 1]));
+  wn_run = variable::add([wn_run, variable::subtract([wn_in, wn_out])]);
+  if (wn_run.greater(wn_bestv)) {
+    wn_bestv = wn_run;
+    wn_st = wn_s;
+  }
+  wn_s = variable::add([wn_s, 1]);
+}
+
+function rd_window_keep() {
+  wk_a = variable::get_list_value(wn_first, sg_k);
+  wk_t = variable::get_list_value(sg_wt, sg_k);
+  wk_b = variable::add([wk_a, variable::get_list_length(wk_t)]);
+  if (wk_a.greater_or_equals(wn_st)) {
+    if (wk_b.less_or_equals(wn_end)) {
+      rd_keep_word();
+    }
+  }
+}
+
+// token arrays of the context words, with the features of their word:
+// [exact key match, prefix key match, has a digit, capitalized]
+function rd_context_tokens() {
+  cx_ids = [];
+  cx_wi = [];
+  cx_ws = [];
+  cx_we = [];
+  cx_f = [];
+  cx_ones = [];
+  repeat::for_each_in_list(cx_words) { ct_k, ct_w ->
+    rd_word_features();
+    ct_t = variable::get_list_value(cx_wt, ct_k);
+    ct_last = variable::subtract([variable::get_list_length(ct_t), 1]);
+    repeat::for_each_in_list(ct_t) { ct_j, ct_id ->
+      rd_context_token();
+    }
+  }
+}
+
+function rd_context_token() {
+  cx_ids.append_value(ct_id);
+  cx_wi.append_value(ct_k);
+  cx_f.append_value([ct_f]);
+  cx_ones.append_value(1);
+  if (ct_j.equals(0)) {
+    cx_ws.append_value(1);
+  } else {
+    cx_ws.append_value(0);
+  }
+  if (ct_j.equals(ct_last)) {
+    cx_we.append_value(1);
+  } else {
+    cx_we.append_value(0);
+  }
+}
+
+function rd_word_features() {
+  rk_w = ct_w;
+  rd_is_key();
+  ct_e = 0;
+  ct_p = 0;
+  if (rk_ok.equals(1)) {
+    if (aq_qw.map_has_key(rk_low)) {
+      ct_e = 1;
+    }
+    rd_prefix();
+    if (aq_qk.map_has_key(rx_p)) {
+      ct_p = 1;
+    }
+  }
+  ct_d = 0;
+  if (not variable::regex_replace_text(ct_w, "\\p{Nd}", "").equals(ct_w)) {
+    ct_d = 1;
+  }
+  ct_c = 0;
+  ct_ch = variable::get_char_at(ct_w, 0);
+  if (not variable::set_text_case(ct_ch, "LOWER").equals(ct_ch)) {
+    ct_c = 1;
+  }
+  ct_f = [];
+  ct_f.append_value(ct_e);
+  ct_f.append_value(ct_p);
+  ct_f.append_value(ct_d);
+  ct_f.append_value(ct_c);
+}
+
+// ---------------------------------------------------------------------
+// Wikipedia search (the request has no headers: JustMC drops requests with custom headers)
+// ---------------------------------------------------------------------
+// af_join between the search words (" " = all of them, " OR " = any), af_short = 1: intros cut at
+// 1200 characters (when the full ones do not fit in the 25000 characters of a JustMC response)
+function ai_search_send() {
+  pe_text = variable::join_text(aq_terms, af_join);
+  rd_urlencode();
+  as_url = "https://${ai_lang}.${RD_WIKI}&gsrsearch=${pe_out}";
+  if (af_short.equals(1)) {
+    as_url = "${as_url}&exchars=1200";
+  }
+  g`ai.got` = 0;
+  g`ai.resp` = "";
+  g`ai.wait` = 1;
+  world::send_web_request(as_url, "", {}, "GET", "TEXT_PLAIN");
+}
+
+// wait for the answer of the search -> g`ai.got`: 1 response, 2 web error, 3 timeout
+function ai_search_wait() {
+  aw_t = 0;
+  repeat::while(g`ai.got`.equals(0)) {
+    code::wait(2, "TICKS");
+    aw_t = variable::add([aw_t, 1]);
+    if (aw_t.greater(AI_WAIT)) {
+      g`ai.got` = 3;
+    }
+  }
+  g`ai.wait` = 0;
+}
+
+// the response -> ap_texts (intros in search order), ap_titles, ap_n (pages), ap_long (cut off)
+function ai_pages() {
+  ap_texts = [];
+  ap_titles = [];
+  ap_n = 0;
+  ap_long = 0;
+  aw_text = g`ai.resp`;
+  if (g`ai.got`.equals(1)) {
+    if (aw_text.text_ends_with("}")) {
+      ai_pages_parse();
+    } else {
+      ap_long = 1;
+    }
+  }
+}
+
+function ai_pages_parse() {
+  ap_q = variable::get_map_value(variable::parse_json(aw_text), "query", 0);
+  if (ap_q.is_type("MAP")) {
+    ap_pages = variable::get_map_value(ap_q, "pages", 0);
+    if (ap_pages.is_type("MAP")) {
+      ap_texts = ["", "", ""];
+      ap_titles = ["", "", ""];
+      repeat::for_each_in_list(variable::get_map_values(ap_pages)) { ap_k, ap_p ->
+        ai_page_put();
+      }
+    }
+  }
+}
+
+function ai_page_put() {
+  ap_i = variable::subtract([variable::get_map_value(ap_p, "index", 1), 1]);
+  ap_i = variable::clamp(ap_i, 0, 2);
+  ap_ex = variable::get_map_value(ap_p, "extract", "");
+  ap_ex = variable::replace_text(ap_ex, RD_MARK, "|");
+  ap_ex = variable::regex_replace_text(ap_ex, "[⁅⁆]", "");
+  ap_texts = variable::set_list_value(ap_texts, ap_i, ap_ex);
+  ap_titles = variable::set_list_value(ap_titles, ap_i, variable::get_map_value(ap_p, "title", ""));
+  if (not ap_ex.equals("")) {
+    ap_n = variable::add([ap_n, 1]);
+  }
+}
+
+// one search: send, wait, read; full intros first, cut ones if they do not fit
+function ai_fetch() {
+  af_short = 0;
+  ai_search_send();
+  if (rq_done.equals(0)) {
+    rd_encode_question();
+    rq_done = 1;
+  }
+  ai_search_wait();
+  ai_pages();
+  if (ap_long.equals(1)) {
+    af_short = 1;
+    ai_search_send();
+    ai_search_wait();
+    ai_pages();
+  }
+}
+
+// pe_text -> pe_out: percent-encoded UTF-8 (letters, digits and - _ . ~ stay as they are)
+function rd_urlencode() {
+  pe_out = "";
+  pe_cps = variable::text_to_chars(pe_text, "CODEPOINTS");
+  repeat::for_each_in_list(pe_cps) { pe_k, pe_cp ->
+    rd_urlencode_char();
+  }
+}
+
+function rd_urlencode_char() {
+  pe_plain = 0;
+  if (variable::number_in_range(pe_cp, 48, 57, "INCLUDE_ALL")) {
+    pe_plain = 1;
+  }
+  if (variable::number_in_range(pe_cp, 65, 90, "INCLUDE_ALL")) {
+    pe_plain = 1;
+  }
+  if (variable::number_in_range(pe_cp, 97, 122, "INCLUDE_ALL")) {
+    pe_plain = 1;
+  }
+  if (pe_cp.equals([45, 46, 95, 126])) {
+    pe_plain = 1;
+  }
+  if (pe_plain.equals(1)) {
+    pe_out = "${pe_out}${variable::to_char(pe_cp)}";
+  } elif (pe_cp.less(128)) {
+    pb_b = pe_cp;
+    rd_percent_byte();
+  } elif (pe_cp.less(2048)) {
+    rd_urlencode_two_bytes();
+  } else {
+    rd_urlencode_three_bytes();
+  }
+}
+
+// U+0080..U+07FF (Cyrillic): 110xxxxx 10xxxxxx
+function rd_urlencode_two_bytes() {
+  pb_b = variable::add([192, variable::divide([pe_cp, 64], "FLOOR")]);
+  rd_percent_byte();
+  pb_b = variable::add([128, variable::remainder(pe_cp, 64, "REMAINDER")]);
+  rd_percent_byte();
+}
+
+// U+0800..U+FFFF: 1110xxxx 10xxxxxx 10xxxxxx
+function rd_urlencode_three_bytes() {
+  pb_b = variable::add([224, variable::divide([pe_cp, 4096], "FLOOR")]);
+  rd_percent_byte();
+  p3_mid = variable::divide([pe_cp, 64], "FLOOR");
+  pb_b = variable::add([128, variable::remainder(p3_mid, 64, "REMAINDER")]);
+  rd_percent_byte();
+  pb_b = variable::add([128, variable::remainder(pe_cp, 64, "REMAINDER")]);
+  rd_percent_byte();
+}
+
+// byte pb_b (0..255) as %XX appended to pe_out
+function rd_percent_byte() {
+  pb_hi = variable::divide([pb_b, 16], "FLOOR");
+  pb_lo = variable::remainder(pb_b, 16, "REMAINDER");
+  pb_h1 = variable::get_char_at(RD_HEX, pb_hi);
+  pb_h2 = variable::get_char_at(RD_HEX, pb_lo);
+  pe_out = "${pe_out}%${pb_h1}${pb_h2}";
+}
+
+// event<world_web_response> / <world_web_exception>: the search answer (library imports are not ours)
+function ai_web_response() {
+  if (g`ai.wait`.equals(1)) {
+    ar_url = value::url;
+    if (ar_url.text_contains("wikipedia.org")) {
+      g`ai.wait` = 0;
+      g`ai.code` = value::url_response_code;
+      g`ai.resp` = value::url_response;
+      g`ai.got` = 1;
+      if (not g`ai.code`.equals(200)) {
+        g`ai.got` = 2;
+      }
+    }
+  }
+}
+
+function ai_web_exception() {
+  if (g`ai.wait`.equals(1)) {
+    ar_url = value::url;
+    if (ar_url.text_contains("wikipedia.org")) {
+      g`ai.wait` = 0;
+      g`ai.got` = 2;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// a question
+// ---------------------------------------------------------------------
+process ai_ask_process() {
+  ai_answer();
+  g`ai.busy` = 0;
+}
+
+function ai_answer() {
+  ai_ensure_model();
+  rn_t = g`ai.q`;
+  rn_t = variable::replace_text(rn_t, RD_MARK, "|");
+  rd_normalize();
+  aq_text = rn_t;
+  rd_language();
+  rq_done = 0;
+  rd_question_info();
+  rd_tau();
+  ai_tau = rt_tau;
+  if (aq_terms.list_is_empty()) {
+    ai_refuse("no_keys");
+  } else {
+    ai_search_and_read();
+  }
+}
+
+function ai_search_and_read() {
+  af_join = " ";
+  ai_fetch();
+  if (ap_n.equals(0)) {
+    if (g`ai.got`.equals(1)) {
+      if (variable::get_list_length(aq_terms).greater(1)) {
+        af_join = " OR ";
+        ai_fetch();
+      }
+    }
+  }
+  if (not g`ai.got`.equals(1)) {
+    ai_refuse("net");
+  } elif (ap_n.equals(0)) {
+    ai_refuse("nothing");
+  } else {
+    ai_read_pages();
+  }
+}
+
+// read the pages in search order; the first confident answer is told
+function ai_read_pages() {
+  ar_done = 0;
+  ar_top = 0;
+  repeat::for_each_in_list(ap_texts) { ar_k, sp_text ->
+    if (ar_done.equals(0)) {
+      if (not sp_text.equals("")) {
+        ai_read_page();
+      }
+    }
+  }
+  if (ar_done.equals(0)) {
+    ai_refuse("unsure");
+  }
+}
+
+function ai_read_page() {
+  rd_select();
+  if (sc_score.greater(0)) {
+    if (cx_ids.list_is_empty()) {
+      sc_score = 0;
+    }
+  }
+  if (sc_score.greater(0)) {
+    rd_read_context();
+    ar_top = variable::max([ar_top, rd_best]);
+    if (rd_best.greater(rd_pn)) {
+      if (rd_best.greater_or_equals(ai_tau)) {
+        ai_compose();
+        ai_check_answer();
+        if (ac_ok.equals(1)) {
+          ar_done = 1;
+          ai_say();
+        }
+      }
+    }
+  }
+}
+
+// the reader as the current library model (another one may have been loaded with ~ml model)
+function ai_ensure_model() {
+  ae_ok = 0;
+  if (s`ml.in`.equals(s`rd.nin`)) {
+    if (s`ml.hid`.equals(s`rd.hid`)) {
+      if (s`ml.ready`.equals(1)) {
+        ae_ok = 1;
+      }
+    }
+  }
+  if (ae_ok.equals(1)) {
+    ae_a = s`mlm.reader.w.ml.attn`;
+    if (not variable::mathematical_expectation(ae_a, s`ml.attn`).equals(variable::mathematical_expectation(ae_a, ae_a))) {
+      ae_ok = 0;
+    }
+  }
+  if (ae_ok.equals(0)) {
+    sm_name = "reader";
+    ml_model_load();
+  }
+}
+
+// ---------------------------------------------------------------------
+// the answer: the sentence it was found in, retold without brackets, the found part highlighted
+// in: rd_bs, rd_be, cx_*, sc_sents   out: ac_txt
+// ---------------------------------------------------------------------
+function ai_compose() {
+  ac_wa = variable::get_list_value(cx_wi, rd_bs);
+  ac_wb = variable::get_list_value(cx_wi, rd_be);
+  ac_si = variable::get_list_value(cx_sent, ac_wa);
+  ac_last = ac_wa;
+  repeat::for_each_in_list(cx_sent) { ac_k, ac_sk ->
+    if (ac_k.less_or_equals(ac_wb)) {
+      if (ac_sk.equals(ac_si)) {
+        ac_last = ac_k;
+      }
+    }
+  }
+  ac_wb = ac_last;
+  ac_pa = variable::get_list_value(cx_pos, ac_wa);
+  ac_pb = variable::get_list_value(cx_pos, ac_wb);
+  ac_s = variable::get_list_value(sc_sents, ac_si);
+  rw_t = ac_s;
+  rd_words();
+  ac_at = 0;
+  ac_a = 0;
+  ac_b = 0;
+  repeat::for_each_in_list(rw_list) { ac_k, ac_w ->
+    if (ac_k.less_or_equals(ac_pb)) {
+      ai_locate_word();
+    }
+  }
+  ai_highlight();
+}
+
+// a real answer has a key word the question does not have (not just the question's own words or
+// punctuation) -> ac_ok
+function ai_check_answer() {
+  ac_ok = 0;
+  rw_t = ac_ans;
+  rd_words();
+  repeat::for_each_in_list(rw_list) { ck_k, rk_w ->
+    rd_is_key();
+    if (rk_ok.equals(1)) {
+      rd_prefix();
+      if (not aq_qk.map_has_key(rx_p)) {
+        ac_ok = 1;
+      }
+    }
+  }
+}
+
+// where word ac_k (ac_w) is in the sentence, searching from ac_at
+function ai_locate_word() {
+  ac_i = variable::get_index_of_subtext(ac_s, ac_w, variable::add([ac_at, g`rd.io`]), "FIRST");
+  ac_i = variable::subtract([ac_i, g`rd.io`]);
+  if (ac_i.less(0)) {
+    ac_i = ac_at;
+  }
+  if (ac_k.equals(ac_pa)) {
+    ac_a = ac_i;
+  }
+  ac_at = variable::add([ac_i, variable::get_text_length(ac_w)]);
+  if (ac_k.equals(ac_pb)) {
+    ac_b = ac_at;
+  }
+}
+
+function ai_highlight() {
+  rs_t = ac_s;
+  ac_len = variable::get_text_length(ac_s);
+  ac_pre = "";
+  if (ac_a.greater(0)) {
+    rs_a = 0;
+    rs_b = ac_a;
+    rd_sub();
+    ac_pre = rs_out;
+  }
+  rs_a = ac_a;
+  rs_b = ac_b;
+  rd_sub();
+  ac_ans = rs_out;
+  ac_post = "";
+  if (ac_b.less(ac_len)) {
+    rs_a = ac_b;
+    rs_b = ac_len;
+    rd_sub();
+    ac_post = rs_out;
+  }
+  ac_txt = "${ac_pre}${RD_HL_A}${ac_ans}${RD_HL_B}${ac_post}";
+  ac_txt = variable::regex_replace_text(ac_txt, "\\s*\\([^()⁅⁆]*\\)", "");
+  ac_txt = variable::regex_replace_text(ac_txt, "\\s*\\([^()⁅⁆]*\\)", "");
+  ac_txt = variable::regex_replace_text(ac_txt, "\\s*\\[[^\\[\\]⁅⁆]*\\]", "");
+  ac_txt = variable::regex_replace_text(ac_txt, "\\s+(?=[,.;:])", "");
+  ac_txt = variable::replace_text(ac_txt, RD_HL_A, "&e");
+  ac_txt = variable::replace_text(ac_txt, RD_HL_B, "&f");
+}
+
+function ai_say() {
+  as_pct = variable::round(variable::multiply([rd_best, 100]), 0, "ROUND");
+  as_sec = variable::round(variable::divide([variable::subtract([value::timestamp, g`ai.t0`]), 1000]), 1, "ROUND");
+  player::message<all_players>("&9[AI] &f${ac_txt} &8(${as_pct}%, ${as_sec} s)");
+}
+
+// "I don't know" in the language of the question; ar_why: no_keys, net, nothing, unsure
+function ai_refuse(ar_why: text) {
+  as_sec = variable::round(variable::divide([variable::subtract([value::timestamp, g`ai.t0`]), 1000]), 1, "ROUND");
+  if (ai_lang.equals("uk")) {
+    af_msg = "Не знаю — не знайшов надійної відповіді.";
+  } elif (ai_lang.equals("ru")) {
+    af_msg = "Не знаю — не нашёл надёжного ответа.";
+  } else {
+    af_msg = "I don't know — I found no reliable answer.";
+  }
+  if (ar_why.equals("net")) {
+    af_msg = "${af_msg} &7(search is not available now)";
+  }
+  player::message<all_players>("&9[AI] &f${af_msg} &8(${ar_why}, ${as_sec} s)");
+}
+
+// is the reader installed (all files loaded)? -> ri_ok
+function rd_installed() {
+  ri_ok = 0;
+  if (s`rd.ready`.exists()) {
+    if (s`rd.ready`.equals(1)) {
+      ri_ok = 1;
+    }
+  }
+}
+
+// confidence threshold -> rt_tau: ~ai tau, else the one installed with the model, else AI_TAU
+function rd_tau() {
+  rt_tau = AI_TAU;
+  if (s`rd.tau0`.exists()) {
+    rt_tau = s`rd.tau0`;
+  }
+  if (s`rd.tau`.exists()) {
+    rt_tau = s`rd.tau`;
+  }
+}
+
+// ---------------------------------------------------------------------
+// chat: "~ai ..."
+// ---------------------------------------------------------------------
+function ai_on_chat() {
+  cm_msg = value::event_chat_message;
+  cm_a = variable::split_text(cm_msg, " ");
+  if (variable::get_list_value(cm_a, 0, "").equals(AI_CMD_PREFIX)) {
+    world::cancel_event();
+    cm_sub = variable::get_list_value(cm_a, 1, "help");
+    cm_a2 = variable::get_list_value(cm_a, 2, "");
+    cm_short = variable::get_list_length(cm_a).less_or_equals(3);
+    cm_kind = "ask";
+    if (cm_short.equals(1)) {
+      if (cm_sub.equals(["install", "tau"])) {
+        cm_kind = "admin";
+      }
+      if (cm_sub.equals(["help", "status", "about"])) {
+        cm_kind = "public";
+      }
+    }
+    if (cm_kind.equals("admin")) {
+      ai_on_admin_command();
+    } elif (cm_kind.equals("public")) {
+      ai_dispatch_public();
+    } else {
+      ai_cmd_ask();
+    }
+  }
+}
+
+function ai_on_admin_command() {
+  ad_u = value::uuid;
+  ad_name = value::name;
+  ml_is_admin();
+  if (ad_ok.equals(0)) {
+    player::message("&cNo permission.");
+  } elif (cm_sub.equals("install")) {
+    ai_cmd_install();
+  } else {
+    ai_cmd_tau();
+  }
+}
+
+function ai_dispatch_public() {
+  if (cm_sub.equals("status")) {
+    ai_cmd_status();
+  } elif (cm_sub.equals("about")) {
+    ai_cmd_about();
+  } else {
+    ai_cmd_help();
+  }
+}
+
+function ai_cmd_ask() {
+  aq_q = variable::regex_replace_text(cm_msg, "^~ai\\s+", "");
+  if (g`ai.busy`.equals(1)) {
+    if (variable::subtract([value::timestamp, g`ai.t0`]).greater(AI_STUCK_MS)) {
+      g`ai.busy` = 0;
+    }
+  }
+  rd_installed();
+  if (ri_ok.equals(0)) {
+    player::message("&9[AI] &cThe reader is not installed yet: &e~ai install &7(admins)");
+  } elif (g`ai.busy`.equals(1)) {
+    player::send_action_bar("&7Still thinking about the previous question...");
+  } else {
+    g`ai.busy` = 1;
+    g`ai.t0` = value::timestamp;
+    g`ai.q` = aq_q;
+    player::message<all_players>("&9[AI] &7${value::name}: &f${aq_q}");
+    code::start_process("ai_ask_process", "DONT_COPY", "NO_TARGET");
+  }
+}
+
+// ~ai install: the reader (library model "reader" + vocabulary + embeddings) from the repository
+function ai_cmd_install() {
+  s`rd.ready` = 0;
+  cm_sub = "model";
+  cm_a2 = "import";
+  cm_a3 = AI_WEIGHTS;
+  ml_admin_command();
+  player::message("&9[AI] &fInstalling the reader (~300 files, a few minutes). &e~ai status &fshows when it is ready.");
+}
+
+// ~ai tau <0..1> | reset: how sure the reader must be to answer
+function ai_cmd_tau() {
+  if (cm_a2.equals("reset")) {
+    variable::purge(["rd.tau"], "SAVE", "EQUALS");
+  } elif (not cm_a2.equals("")) {
+    s`rd.tau` = variable::clamp(variable::convert_text_to_number(cm_a2, 10), 0, 1);
+  } else {
+    rt_tau = AI_TAU;
+  }
+  rd_tau();
+  player::message("&9[AI] &fConfidence threshold tau = &e${rt_tau} &7(higher = answers less often, but is right more often)");
+}
+
+function ai_cmd_status() {
+  rd_installed();
+  if (ri_ok.equals(1)) {
+    player::message("&9[AI] &fReader installed: ${s`rd.vocab`} tokens, BiLSTM ${s`rd.hid`}, ${s`rd.params`} parameters; busy: ${g`ai.busy`}");
+  } else {
+    player::message("&9[AI] &cReader not installed &7(library import: ${g`mlg.import_done`} files loaded, ${g`mlg.import_failed`} failed, ${variable::get_list_length(g`mlg.import_queue`)} queued)");
+  }
+  player::message("&9[AI] &7text checks: trim ${g`rd.ts`}/${g`rd.te`}, index base ${g`rd.io`}, code points ${g`rd.cp_ok`}");
+}
+
+function ai_cmd_about() {
+  player::message("&9[AI] &fA reader on the Millennium library: 2.6 M parameters (an 8-bit vocabulary of 20 000 tokens, a BiLSTM with LayerNorm, attention over the question).");
+  player::message("&9[AI] &fIt does not invent: it searches Wikipedia (CC BY-SA), reads the most relevant sentences and retells the one holding the answer - or says it does not know.");
+}
+
+function ai_cmd_help() {
+  player::message("&9[AI] &e~ai <question> &7- ask (English, русский, українська) | &e~ai status &7| &e~ai about");
+  player::message("&9[AI] &7admins: &e~ai install &7- download the reader | &e~ai tau <0..1>|reset &7- how sure it must be to answer");
+}

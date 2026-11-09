@@ -28,6 +28,7 @@ TARGETS = {
     "demo_mx_aim.jc": "millennium_mx_demo.json",
     "demo_digits.jc": "millennium_digits_demo.json",
     "probe_ai.jc": "millennium_probe.json",
+    "demo_reader.jc": "millennium_reader_demo.json",
 }
 
 
@@ -134,7 +135,10 @@ def main():
         sys.exit("JMCC folder not found: pass --jmcc <dir> or set JMCC_DIR")
     os.makedirs(OUT, exist_ok=True)
     ok = True
+    only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else None
     for src, out in TARGETS.items():
+        if only and only != src:
+            continue
         s = os.path.abspath(os.path.join(SRC, src))
         o = os.path.abspath(os.path.join(OUT, out))
         if os.path.exists(o):

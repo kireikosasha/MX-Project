@@ -475,7 +475,7 @@ process ml_import_process() {
     sm_name = io_name;
     ml_model_save();
     ml_log("Model saved as '${sm_name}' (ready=${s`ml.ready`})");
-  } elif (io_ok.equals(1)) {
+  } elif (io_ok.equals([1, 4])) {
     g`mlg.import_done` = variable::add([g`mlg.import_done`, 1]);
     ip_mod = variable::remainder(g`mlg.import_done`, 10, "REMAINDER");
     if (ip_mod.equals(0)) {
