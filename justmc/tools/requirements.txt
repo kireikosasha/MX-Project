@@ -1,5 +1,7 @@
-# training tools (reader, chat model, digits); PyTorch with CUDA: see https://pytorch.org/get-started/locally/
-torch
+# training tools (reader, chat model, digits)
+# PyTorch >= 2.6 (transformers loads the Opus-MT .bin weights only with it), CUDA build first:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu126
+torch>=2.6
 numpy
 pyarrow
 pillow

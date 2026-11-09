@@ -214,7 +214,7 @@ python tools/digits/digits_train.py --data data.npz --out weights/digits-huge --
 ```bash
 git clone https://github.com/kireikosasha/MX-Project
 cd MX-Project
-pip install torch --index-url https://download.pytorch.org/whl/cu121
+pip install torch --index-url https://download.pytorch.org/whl/cu126
 pip install -r justmc/tools/requirements.txt
 python justmc/tools/chat/run_all.py --work ../millennium-chat --hidden 128 --epochs 8
 git add justmc/weights/chat
