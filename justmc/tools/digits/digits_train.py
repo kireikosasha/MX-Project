@@ -9,7 +9,7 @@ By default the ten models share the encoder (LSTM + attention) and differ in the
 then runs the encoder once and the ten heads after it (--separate: ten independent models).
 Loss: softmax cross-entropy over the ten logits plus the binary loss of every model.
 
-    python digits_train.py --data data.npz --out weights/digits --hidden 32 --epochs 20
+    python digits_train.py --data data.npz --out weights/digits --hidden 48 --epochs 40 --batch 512 --lr 3e-3
 """
 import argparse
 import json
