@@ -11,7 +11,7 @@ The Millennium chat model: a word-piece language model that writes the reply tok
 So one generated token costs one LSTM step and ~300 short dot products instead of 20 000.
 Tokens that never occur in replies have no class and are never generated.
 
-    python chat_train.py --data data --out out --hidden 128 --epochs 3
+    python chat_train.py --data data --out out --hidden 128 --epochs 8 [--device cuda]
 """
 import argparse
 import json
@@ -130,14 +130,14 @@ def batches(idx, lengths, bs, rng):
     return out
 
 
-def evaluate(m, X, M, L, idx, emb=None, bs=512):
+def evaluate(m, X, M, L, idx, emb=None, bs=512, dev="cpu"):
     m.eval()
     tot, n = 0.0, 0
     with torch.no_grad():
         for i in range(0, len(idx), bs):
             b = idx[i:i + bs]
             T = int(L[b].max())
-            l, k = m.loss(torch.as_tensor(X[b, :T], dtype=torch.long), torch.as_tensor(M[b, :T]), emb)
+            l, k = m.loss(torch.as_tensor(X[b, :T], dtype=torch.long, device=dev), torch.as_tensor(M[b, :T], device=dev), emb)
             tot += float(l.detach()) * k
             n += k
     m.train()
@@ -154,6 +154,7 @@ def main():
     ap.add_argument("--batch", type=int, default=256)
     ap.add_argument("--lr", type=float, default=3e-3)
     ap.add_argument("--threads", type=int, default=4)
+    ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu", help="cuda / cpu")
     ap.add_argument("--qat", type=int, default=1, help="last epochs with 8-bit embeddings in the forward pass")
     ap.add_argument("--init", help="checkpoint to fine-tune (its token classes are kept)")
     a = ap.parse_args()
@@ -170,6 +171,10 @@ def main():
     m = ChatLM(V, classes, a.dim, a.hidden)
     if ck:
         m.load_state_dict(ck["state"])
+    dev = a.device
+    m.to(dev)
+    m.members = [t.to(dev) for t in m.members]
+    print(f"device {dev}", flush=True)
     n_par = sum(p.numel() for p in m.parameters())
     mac = 4 * a.hidden * (a.dim + a.hidden + 1) + a.dim * (a.hidden + 1) + len(classes) * (a.dim + 1) + CAP * (a.dim + 1)
     print(f"parameters {n_par}; {len(classes)} classes ({sum(len(c) for c in classes)} tokens can be generated); "
@@ -178,7 +183,7 @@ def main():
     va = np.where(D["split"] == 1)[0]
     if ck:
         # fine-tuning keeps the token classes: sequences with a reply token outside them are left out
-        cls = m.cls_of.numpy()
+        cls = m.cls_of.cpu().numpy()
         bad = ((M[:, :-1] == 1) & (cls[X[:, 1:]] < 0)).any(1)
         print(f"fine-tuning: {int(bad.sum())} sequences with tokens outside the classes left out")
         tr, va = tr[~bad[tr]], va[~bad[va]]
@@ -196,7 +201,7 @@ def main():
                 codes, scale = quantize(m.emb.detach())
                 q = scale[:, None] * (codes - 128)
                 emb = m.emb + (q - m.emb).detach()          # straight-through 8-bit embeddings
-            l, k = m.loss(torch.as_tensor(X[b, :T], dtype=torch.long), torch.as_tensor(M[b, :T]), emb)
+            l, k = m.loss(torch.as_tensor(X[b, :T], dtype=torch.long, device=dev), torch.as_tensor(M[b, :T], device=dev), emb)
             opt.zero_grad()
             l.backward()
             torch.nn.utils.clip_grad_norm_(m.parameters(), 1.0)
@@ -208,11 +213,11 @@ def main():
                 print(f"  epoch {ep + 1} batch {bi}: loss {tot / max(1, n):.3f} ({time.time() - t0:.0f} s)", flush=True)
         codes, scale = quantize(m.emb.detach())
         qemb = scale[:, None] * (codes - 128)
-        vl, vq = evaluate(m, X, M, L, va), evaluate(m, X, M, L, va, qemb)
+        vl, vq = evaluate(m, X, M, L, va, dev=dev), evaluate(m, X, M, L, va, qemb, dev=dev)
         print(f"epoch {ep + 1}/{a.epochs} train {tot / n:.3f} | val {vl:.3f} (ppl {math.exp(vl):.1f}), 8-bit {vq:.3f} "
               f"(ppl {math.exp(vq):.1f}) ({time.time() - t0:.0f} s)", flush=True)
         os.makedirs(a.out, exist_ok=True)
-        torch.save({"state": m.state_dict(), "classes": classes, "hidden": a.hidden, "dim": a.dim, "V": V,
+        torch.save({"state": {k: v.cpu() for k, v in m.state_dict().items()}, "classes": classes, "hidden": a.hidden, "dim": a.dim, "V": V,
                     "special": meta["special"]}, os.path.join(a.out, "chat.pt"))
 
 

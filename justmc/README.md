@@ -209,22 +209,33 @@ python tools/digits/digits_train.py --data data.npz --out weights/digits-huge --
 | `~ai temp <0..2>` / `~ai temp reset` | температура (админы): 0 — всегда один и тот же ответ, выше — бредовее |
 | `~ai tau <0..1>` / `~ai tau reset` | порог уверенности читателя (админы) |
 
-Обучение:
+Обучение (на видеокарте — минуты на эпоху, на процессоре ~9 минут):
 
 ```bash
-python tools/chat/chat_sources.py --raw <папка с датасетами> --out pairs
-python tools/chat/chat_translate.py --pairs pairs --cache mt --ru-uk 25000
-python tools/chat/chat_data.py --pairs pairs --mt pairs --qa <датасеты читателя> --vocab <vocab.json читателя> --out data
-python tools/chat/chat_train.py --data data --out out --hidden 128 --epochs 8
-python tools/chat/chat_data.py ... --out data_ft --self-reps 250 --sample 0.15
-python tools/chat/chat_train.py --data data_ft --out out_ft --init out/chat.pt --epochs 1 --lr 1e-3
-python tools/chat/chat_export.py --model out_ft/chat.pt --vocab <vocab.json> --out weights/chat
+git clone https://github.com/kireikosasha/MX-Project
+cd MX-Project
+pip install torch --index-url https://download.pytorch.org/whl/cu121
+pip install -r justmc/tools/requirements.txt
+python justmc/tools/chat/run_all.py --work ../millennium-chat --hidden 128 --epochs 8
+git add justmc/weights/chat
+git commit -m "chat model"
+git push
 ```
+
+`run_all.py` скачивает датасеты, собирает пары, переводит, строит обучающие последовательности, учит,
+дообучает репликам о себе и экспортирует файлы в `justmc/weights/chat`. Каждый шаг пропускается, если его
+результат уже есть, поэтому второй запуск с другим размером (`--hidden 256 --epochs 12 --tag h256`) только
+учит и экспортирует. После `git push` в мире — `~ai install`. Модуль JustMC менять не нужно: размер LSTM и
+число классов он берёт из установленной модели. Каждые +128 нейронов LSTM — примерно в 2 раза дольше ответ.
+
+Шаги по отдельности: `download.py`, `chat_sources.py`, `chat_translate.py` (`--device cuda`),
+`chat_data.py`, `chat_train.py` (`--device cuda`, `--init` для дообучения), `chat_export.py`.
 
 Данные: DailyDialog, PersonaChat, everyday-conversations (английский); russian_dialogues (русский,
 как есть); DailyDialog и everyday-conversations, переведённые на русский и украинский, и часть русских
 диалогов, переведённая на украинский (Opus-MT); украинская часть Aya; вопросы SQuAD 2.0, SberQuAD,
-UA-SQuAD с ответом `[W]`; немного реплик о себе. `tools/chat/chat_ref.py` — тот же алгоритм генерации
+UA-SQuAD и короткие «что такое X / кто такой X / what is X» про их названия с ответом `[W]`;
+немного реплик о себе. `tools/chat/chat_ref.py` — тот же алгоритм генерации
 на экспортированных файлах; с температурой 0 модуль JustMC пишет ровно тот же ответ.
 
 ### Читатель (Википедия)

@@ -2,8 +2,9 @@
 """
 Training sequences of the Millennium chat model:   [U] message [B] reply [E]
   - dialogue pairs (chat_sources.py, chat_translate.py) in English, Russian and Ukrainian;
-  - questions of the QA datasets (SQuAD 2.0, SberQuAD, UA-SQuAD) with the reply [W]: "look it up in
-    Wikipedia" - the model itself says when it does not know, the reader of demo 3 then answers;
+  - questions of the QA datasets (SQuAD 2.0, SberQuAD, UA-SQuAD) and short "what is X / who is X" questions
+    about their names with the reply [W]: "look it up in Wikipedia" - the model itself says when it does not
+    know, the reader of demo 3 then answers;
   - a few lines about itself (who / what it is), repeated.
 Tokens: the WordPiece vocabulary of the reader (lower case), plus [U] [B] [E] [W].
 
@@ -76,6 +77,41 @@ SELF = {
 }
 
 
+# short "what is X" questions also go to Wikipedia (the QA datasets have long questions only)
+TEMPLATES = {
+    "ru": ["что такое {}", "кто такой {}", "кто такая {}", "где находится {}", "расскажи про {}", "что за {}",
+           "кто такие {}", "что ты знаешь про {}"],
+    "uk": ["що таке {}", "хто такий {}", "хто така {}", "де знаходиться {}", "розкажи про {}", "що за {}"],
+    "en": ["what is {}", "who is {}", "where is {}", "tell me about {}", "what's {}", "who was {}", "what do you know about {}"],
+}
+
+
+def entities(qa):
+    """names for the templates: SQuAD article titles, short capitalised answers of the QA datasets"""
+    out = {"en": set(), "ru": set(), "uk": set()}
+    t = pq.read_table(os.path.join(qa, "squad_train.parquet"), columns=["title"]).column("title").to_pylist()
+    out["en"].update(x.replace("_", " ") for x in set(t))
+    for name, lang in (("squad_train", "en"), ("sber_train", "ru"), ("uahplt_train", "uk")):
+        for r in pq.read_table(os.path.join(qa, name + ".parquet"), columns=["answers"]).to_pylist():
+            for x in r["answers"]["text"][:1]:
+                if 1 <= len(x.split()) <= 3 and len(x) <= 30 and x[:1].isupper() and not any(ch.isdigit() for ch in x):
+                    out[lang].add(x.strip(" .,"))
+    return {k: sorted(v) for k, v in out.items()}
+
+
+def wiki_templates(qa, rng, n_per_lang):
+    ents = entities(qa)
+    out = []
+    for lang, names in ents.items():
+        for _ in range(n_per_lang):
+            q = rng.choice(TEMPLATES[lang]).format(rng.choice(names))
+            q = q.lower() if rng.random() < 0.5 else q
+            if rng.random() < 0.5:
+                q += "?"
+            out.append((lang, q))
+    return out
+
+
 def load_jsonl(path):
     return [json.loads(l) for l in open(path, encoding="utf-8")] if os.path.exists(path) else []
 
@@ -115,6 +151,7 @@ def main():
     ap.add_argument("--vocab", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--wiki", type=float, default=0.12, help="share of [W] sequences")
+    ap.add_argument("--templates", type=int, default=12000, help="short 'what is X' [W] questions per language")
     ap.add_argument("--self-reps", type=int, default=40, help="sequences per group of lines about itself")
     ap.add_argument("--sample", type=float, default=1.0, help="share of the dialogue pairs kept (fine-tuning sets)")
     a = ap.parse_args()
@@ -143,7 +180,7 @@ def main():
     qs = qa_questions(a.qa)
     rng.shuffle(qs)
     n_w = int(n_chat * a.wiki)
-    for lang, q in qs[:n_w]:
+    for lang, q in qs[:n_w] + wiki_templates(a.qa, rng, a.templates):
         mt = tok(q)[-MAX_M:]
         if mt:
             seqs.append(([S["[U]"]] + mt + [S["[B]"]], [S["[W]"]]))

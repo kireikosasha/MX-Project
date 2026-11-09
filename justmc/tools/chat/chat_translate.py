@@ -24,7 +24,7 @@ def load(path):
     return [json.loads(l) for l in open(path, encoding="utf-8")]
 
 
-def translate(sents, pair, cache_dir, batch=48):
+def translate(sents, pair, cache_dir, batch=48, dev="cpu"):
     cache_path = os.path.join(cache_dir, f"cache_{pair[0]}_{pair[1]}.jsonl")
     done = {}
     if os.path.exists(cache_path):
@@ -34,12 +34,12 @@ def translate(sents, pair, cache_dir, batch=48):
     todo = sorted({s for s in sents if s not in done}, key=len)
     if todo:
         tok = MarianTokenizer.from_pretrained(MODELS[pair], cache_dir=cache_dir)
-        m = MarianMTModel.from_pretrained(MODELS[pair], cache_dir=cache_dir).eval()
+        m = MarianMTModel.from_pretrained(MODELS[pair], cache_dir=cache_dir).eval().to(dev)
         t0 = time.time()
         with open(cache_path, "a", encoding="utf-8") as out, torch.no_grad():
             for i in range(0, len(todo), batch):
                 src = todo[i:i + batch]
-                b = tok(src, return_tensors="pt", padding=True, truncation=True, max_length=96)
+                b = tok(src, return_tensors="pt", padding=True, truncation=True, max_length=96).to(dev)
                 gen = m.generate(**b, num_beams=1, max_new_tokens=80)
                 for s, t in zip(src, tok.batch_decode(gen, skip_special_tokens=True)):
                     done[s] = t
@@ -55,6 +55,7 @@ def main():
     ap.add_argument("--cache", required=True)
     ap.add_argument("--ru-uk", type=int, default=25000)
     ap.add_argument("--threads", type=int, default=4)
+    ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     a = ap.parse_args()
     torch.set_num_threads(a.threads)
     os.makedirs(a.cache, exist_ok=True)
@@ -66,7 +67,8 @@ def main():
     random.Random(4).shuffle(ru)
     jobs.append(("rudialogues", ru[:a.ru_uk], ("ru", "uk")))
     for name, rows, pair in jobs:
-        tr = translate([s for r in rows for s in (r["m"], r["r"])], pair, a.cache)
+        tr = translate([s for r in rows for s in (r["m"], r["r"])], pair, a.cache,
+                       batch=128 if a.device.startswith("cuda") else 48, dev=a.device)
         with open(os.path.join(a.pairs, f"{name}_{pair[1]}.jsonl"), "w", encoding="utf-8") as out:
             for r in rows:
                 out.write(json.dumps({"lang": pair[1], "src": f"{name}_{pair[1]}", "m": tr[r["m"]], "r": tr[r["r"]]},
