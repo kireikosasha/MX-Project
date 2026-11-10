@@ -87,7 +87,9 @@ def main():
     ap.add_argument("--model", required=True)
     ap.add_argument("--vocab", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--temp", type=float, default=0.7)
+    ap.add_argument("--temp", type=float, default=0.5)
+    ap.add_argument("--typ", type=float, default=0.9, help="mass of the typical set (typical sampling)")
+    ap.add_argument("--ks", type=float, default=0.6, help="Kolmogorov-Smirnov distance from which a step is predictable")
     ap.add_argument("--topc", type=int, default=4)
     ap.add_argument("--topw", type=int, default=8)
     ap.add_argument("--wiki", type=float, default=0.1, help="P([W]) from which the reader answers")
@@ -117,7 +119,7 @@ def main():
     where = {t: (c, k) for c, toks in enumerate(classes) for k, t in enumerate(toks)}
     meta = [("ch.ver", 2), ("ch.hid", H), ("ch.dim", D), ("ch.dv", Dv), ("ch.da", Da), ("ch.nin", D), ("ch.V", V),
             ("ch.C", len(classes)), ("ch.rows", rows), ("ch.params", n_par), ("ch.s0", fmt(s0, 9)), ("ch.so", fmt(-OFF * s0, 9)),
-            ("ch.temp0", a.temp), ("ch.topc", a.topc), ("ch.topw", a.topw), ("ch.wiki0", a.wiki), ("ch.sure0", a.sure),
+            ("ch.temp0", a.temp), ("ch.samp0", 1), ("ch.typ0", a.typ), ("ch.ks0", a.ks), ("ch.topc", a.topc), ("ch.topw", a.topw), ("ch.wiki0", a.wiki), ("ch.sure0", a.sure),
             ("ch.max", 36), ("ch.maxm", 24)]
     for name in ("U", "B", "E", "W"):
         i = sp[f"[{name}]"]
