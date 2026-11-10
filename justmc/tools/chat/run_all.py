@@ -33,7 +33,7 @@ PRESETS = {
     "6m": {"hidden": 256, "dim": 256, "da": 64, "dv": 128, "vocab": "vocab.json", "builder": "chat_data.py", "sub": "v2",
            "name": "chat", "batch": 384, "flags": [], "temp": "0.5"},
     "13m": {"hidden": 512, "dim": 512, "da": 128, "dv": 256, "vocab": "vocab_big.json", "builder": "chat_data_big.py", "sub": "big",
-            "name": "chat13m", "batch": 384, "flags": [], "temp": "0.3"},
+            "name": "chat13m", "batch": 384, "flags": ["--emb-levels", "12", "--emb-clip", "2.5"], "temp": "0.3"},
 }
 
 

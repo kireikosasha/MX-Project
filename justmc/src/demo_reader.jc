@@ -1571,6 +1571,16 @@ function ai_cmd_status() {
   }
   player::message("&9[AI] &7text checks: trim ${g`rd.ts`}/${g`rd.te`}, index base ${g`rd.io`}, code points ${g`rd.cp_ok`}");
   player::message("&9[AI] &7load: ${g`mlg.pace`} of ${s`ml.work`} actions per tick, CPU ${value::cpu_usage}% (aim ${s`ml.cpu_aim`}%)");
+  if (s`ch.pr.a.ok`.exists()) {
+    if (s`ch.pr.b.ok`.exists()) {
+      player::message("&9[AI] &7text probes (1 = arrived whole): punctuation ${s`ch.pr.a.ok`} (${s`ch.pr.a.len`} of ${s`ch.pr.a.n`} characters), long text ${s`ch.pr.b.ok`} (${s`ch.pr.b.len`} of ${s`ch.pr.b.n`})");
+    }
+  }
+  if (g`ch.bad`.exists()) {
+    if (g`ch.bad`.greater(0)) {
+      player::message("&9[AI] &cchat model damaged: ${g`ch.bad`} texts, first ${g`ch.bad1`}");
+    }
+  }
 }
 
 function ai_cmd_about() {
@@ -2194,7 +2204,7 @@ function ch_answer() {
   ch_settings();
   ch_ensure_model();
   if (g`ch.bad`.greater(0)) {
-    cg_text = "The chat model is damaged in this world (${g`ch.bad`} of its texts differ from the published ones). Admins: ~ai install";
+    cg_text = "The chat model is damaged in this world (${g`ch.bad`} of its texts differ from the published ones; first ${g`ch.bad1`}). Admins: ~ai install";
     ch_say();
   } else {
     ch_answer_checked();
@@ -2498,8 +2508,24 @@ function ch_check_text() {
     }
   }
   if (dm_ok.equals(0)) {
+    if (g`ch.bad`.equals(0)) {
+      ch_bad_details();
+    }
     g`ch.bad` = variable::add([g`ch.bad`, 1]);
   }
+}
+
+// what is wrong with the first damaged text (for the message): its name, its length and the length sent
+function ch_bad_details() {
+  bd_len = "missing";
+  if (s`${dm_name}`.exists()) {
+    bd_len = variable::get_text_length(s`${dm_name}`);
+  }
+  bd_exp = "?";
+  if (s`${dm_name}.n`.exists()) {
+    bd_exp = s`${dm_name}.n`;
+  }
+  g`ch.bad1` = "${dm_name}: ${bd_len} of ${bd_exp} characters";
 }
 
 function ch_decode_text() {

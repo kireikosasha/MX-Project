@@ -219,12 +219,53 @@ function ml_import_json() {
 
 // {"store": {...}}: every key becomes a save variable with its value
 function ml_import_store() {
-  repeat::for_each_in_list(variable::get_map_keys(io_store)) { is_k, is_name ->
+  is_keys = variable::get_map_keys(io_store);
+  repeat::for_each_in_list(is_keys) { is_k, is_name ->
     s`${is_name}` = variable::get_map_value(io_store, is_name);
     ml_yield(20);
   }
+  // a text that comes with its md5 (<name>.h) is checked as stored: a server that changes texts is noticed
+  // at the first file, not after the whole import
+  repeat::for_each_in_list(is_keys) { is_k, is_name ->
+    if (is_name.text_ends_with(".h")) {
+      ml_import_check_text();
+    }
+  }
   io_ok = 4;
   io_msg = "stored";
+}
+
+function ml_import_check_text() {
+  is_var = variable::regex_replace_text(is_name, "\\.h(?![\\s\\S])", "");
+  if (s`${is_var}`.exists()) {
+    is_t = s`${is_var}`;
+    is_h = variable::get_text_hash(is_t, "MD5");
+    if (s`${is_var}.soft`.exists()) {
+      // a probe text: only the result is kept (1 whole / 0 changed, and its length), the text itself is dropped
+      s`${is_var}.ok` = 0;
+      if (is_h.equals(s`${is_name}`)) {
+        s`${is_var}.ok` = 1;
+      }
+      s`${is_var}.len` = variable::get_text_length(is_t);
+      s`${is_var}` = "";
+    } elif (not is_h.equals(s`${is_name}`)) {
+      if (not g`mlg.import_bad`.exists()) {
+        g`mlg.import_bad` = 0;
+      }
+      g`mlg.import_bad` = variable::add([g`mlg.import_bad`, 1]);
+      if (g`mlg.import_bad`.equals(1)) {
+        is_len = variable::get_text_length(is_t);
+        is_exp = "?";
+        if (s`${is_var}.n`.exists()) {
+          is_exp = s`${is_var}.n`;
+        }
+        ml_log("&cImport stopped: the text ${is_var} arrived changed (${is_len} characters, ${is_exp} sent).");
+        g`mlg.import_queue` = [];
+      }
+    } else {
+      is_ok = 1;
+    }
+  }
 }
 
 // in: io_obj (parsed map) -> io_ok, io_msg

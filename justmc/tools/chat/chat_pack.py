@@ -6,12 +6,18 @@ JustMC keeps the save variables of a world in one file with a size limit ("Varia
 the model on 13 M parameters as lists of numbers, with the library copy of its LSTM, was about 70 MB and
 did not fit. Here every weight is one character of a text, and nothing is stored twice:
 
-  ch.e.<c>            embeddings, ASCII: 61 levels, code point 96 + code (-30 .. 30), value = se * (cp - 96)
+  ch.e.<c>            embeddings: letters A .. Y only, 25 levels, code point 77 + code (-12 .. 12),
+                      value = se * (cp - 77)
   ch.XL.<g>.<c>       LSTM rows of gate g (f i c o): 1024 characters [x part | h part], U+0180 + code (-127 .. 127)
   ch.XP.<c>           output rows [h | x | context]
   ch.XQ / XK / XV / XC.<c>   attention query / key / value rows and class rows (over 512 values)
   ch.BL.<g>, ch.BP, ch.BC    the biases of those rows, already divided by the scale of the matrix
-  <text variable>.h   md5 of every text: demo_reader.jc checks them, a damaged model does not answer
+  <text variable>.h   md5 of every text and .n its length: the import and demo_reader.jc check them, a
+                      damaged model does not answer
+No text is longer than 11776 characters (the longest that is known to arrive whole in JustMC), and the
+embeddings use letters only: texts of 22500 characters with punctuation (backslash, braces, tilde ...)
+arrived changed. Which of the two it was is tested by two probe texts at the start of the import
+(ch.pr.a: punctuation, ch.pr.b: a long text): ~ai status shows whether they arrived whole.
 
 One scale per matrix, and no multiplication by it at run time:
   - the state of the LSTM is kept as K * h (LayerNorm gains are stored times K), so the x part and the h part
@@ -20,7 +26,7 @@ One scale per matrix, and no multiplication by it at run time:
     product is  bias / q + sum((cp - 384) * input)  = (true value) / q;
   - the gates use the bases e^-q and e^2q, i.e. sigmoid(q * v) = 1 / (1 + (e^-q)^v);
   - the scales that are left are folded into constants (ch.s0, ch.so, ch.qs, ch.cc, ch.qc).
-Measured on the published model: 61-level embeddings +0.3 % perplexity, 8-bit matrices +0.2 %.
+Measured on the published model: 25-level embeddings +1.5 % perplexity, 8-bit matrices +0.2 %.
 
     python chat_pack.py --src ../../weights/chat13m --out ../../weights/chat13m     (re-pack an exported model)
 """
@@ -38,7 +44,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "reader"))
 from reader_export import Packer, dumps, fmt, size, MAX_BYTES, write_manifest  # noqa: E402
 
-E_OFF, E_LEV, E_CLIP = 96, 30, 3.0        # embeddings: ASCII 66 .. 126
+E_OFF, E_LEV, E_CLIP = 77, 12, 2.5        # embeddings: the letters A .. Y
+MAX_TEXT = 11776                          # characters of one text variable
 M_OFF, M_LEV = 384, 127                   # matrices: U+0101 .. U+01FF
 GATES = "fico"
 
@@ -54,12 +61,16 @@ def text(codes, off):
     return "".join(map(chr, (codes.reshape(-1) + off).tolist()))
 
 
-def pack(A):
+def pack(A, emb_scale=None):
     """A: the parameters as float arrays (emb, Wx, Wh, b, gam, bet, Wp, Ws, Wa, bp, Wq, Wk, Wv, Wc, bc, bw)
-    -> Q: codes, biases and constants of the compact model; Q["eff"]: the float parameters it really computes"""
+    -> Q: codes, biases and constants of the compact model; Q["eff"]: the float parameters it really computes.
+    emb_scale: the scale of embeddings that were trained on the 25-level grid (they are kept as they are)"""
     H, D = A["Wh"].shape[1], A["emb"].shape[1]
     Q = {}
-    ce, se = quant(A["emb"], E_LEV, E_CLIP)
+    if emb_scale:
+        ce, se = np.clip(np.round(A["emb"] / emb_scale), -E_LEV, E_LEV).astype(np.int64), float(emb_scale)
+    else:
+        ce, se = quant(A["emb"], E_LEV, E_CLIP)
     K = float(A["Wh"].std() / (se * A["Wx"].std()))
     Q.update(e=ce, se=se, K=K, gam=A["gam"] * K, bet=A["bet"] * K)
     eff = {"emb": ce * se}
@@ -141,15 +152,18 @@ def decode(S):
 class QPacker(Packer):
     """one text variable per file, with its md5 next to it"""
 
-    def texts(self, prefix, name, rows_text, per):
-        """rows_text: the text of every row -> variables <name>.<c> of `per` rows, files <prefix>-NNN.json"""
-        n = 0
+    def texts(self, prefix, name, rows_text, per, group=1):
+        """rows_text: the text of every row -> variables <name>.<c> of `per` rows, `group` of them in a file"""
+        store, n = {}, 0
         for c in range(0, len(rows_text), per):
             t = "".join(rows_text[c:c + per])
+            assert len(t) <= MAX_TEXT, (name, len(t))
             var = f"{name}.{c // per}"
-            self.put(f"{prefix}-{n:03d}.json", dumps({"store": {var: t, var + ".h": hashlib.md5(t.encode("utf-8")).hexdigest()}}))
+            store.update({var: t, var + ".h": hashlib.md5(t.encode("utf-8")).hexdigest(), var + ".n": len(t)})
             self.sums.append(var)
-            n += 1
+            if len(store) == 3 * group or c + per >= len(rows_text):
+                self.put(f"{prefix}-{n:03d}.json", dumps({"store": store}))
+                store, n = {}, n + 1
 
     def __init__(self, out):
         super().__init__(out)
@@ -157,7 +171,7 @@ class QPacker(Packer):
 
 
 def per_file(width, bytes_per_char):
-    return max(1, (MAX_BYTES - 200) // (width * bytes_per_char))
+    return max(1, min(MAX_TEXT // width, (MAX_BYTES - 200) // (width * bytes_per_char)))
 
 
 def write(out, Q, meta, classes, vocab, texts_of, name):
@@ -171,7 +185,7 @@ def write(out, Q, meta, classes, vocab, texts_of, name):
     H, D = Q["Lf"].shape[0], Q["e"].shape[1]
     V = Q["e"].shape[0]
     Dv, Da, C = Q["Wv"].shape[0], Q["Wq"].shape[0], Q["C"].shape[0]
-    nE = (MAX_BYTES - 400) // (D + D // 20)                    # a backslash takes two bytes in the file
+    nE = MAX_TEXT // D
     nL, nP, nA = per_file(D + H, 2), per_file(H + D + Dv, 2), per_file(max(H, D), 2)
     n = lambda v, d=12: [fmt(x, d) for x in v]                 # noqa: E731
     # the state after [U] from zero, with the compact model itself
@@ -190,6 +204,14 @@ def write(out, Q, meta, classes, vocab, texts_of, name):
             ("ch.K", fmt(Q["K"], 12))] + meta
     for g in GATES:
         meta += [(f"ch.B{g}", fmt(S[f"ch.B{g}"], 15)), (f"ch.X{g}", fmt(S[f"ch.X{g}"], 12))]
+    # two probe texts (their check does not stop the import): punctuation, and a text twice as long as the others
+    rs = np.random.RandomState(5)
+    for key, t in (("a", text(rs.randint(-30, 31, MAX_TEXT), 96)), ("b", text(rs.randint(-12, 13, 2 * MAX_TEXT - 1024), E_OFF))):
+        v = f"ch.pr.{key}"
+        pk.put(f"ch-probe-{key}.json", dumps({"store": {v: t, v + ".h": hashlib.md5(t.encode("utf-8")).hexdigest(),
+                                                        v + ".n": len(t), v + ".soft": 1}}))
+    # the embeddings first: a text the server changes is noticed by the import at its first file
+    pk.texts("ch-emb", "ch.e", [text(r, E_OFF) for r in Q["e"]], nE, group=2)
     pk.store("ch-meta", meta + [("ch.h0", n(h0)), ("ch.c0", n(c0)), ("ch.gam", n(Q["gam"])), ("ch.bet", n(Q["bet"])),
                                 ("ch.BP", n(Q["bP"])), ("ch.BC", n(Q["bC"]))] + [(f"ch.BL.{g}", n(Q["b" + g])) for g in GATES])
     net = []
@@ -210,7 +232,6 @@ def write(out, Q, meta, classes, vocab, texts_of, name):
     pk.texts("ch-p", "ch.XP", [text(r, M_OFF) for r in Q["P"]], nP)
     for key, var in (("Wq", "XQ"), ("Wk", "XK"), ("Wv", "XV"), ("C", "XC")):
         pk.texts("ch-" + var.lower(), "ch." + var, [text(r, M_OFF) for r in Q[key]], nA)
-    pk.texts("ch-emb", "ch.e", [text(r, E_OFF) for r in Q["e"]], nE)
     pk.put("ch-ready.json", dumps({"store": {"ch.ready": 1}}))
     count = pk.finish("chat")
     base = "https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/weights"

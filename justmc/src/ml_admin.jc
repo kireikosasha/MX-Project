@@ -378,6 +378,7 @@ function ml_cmd_model_import() {
     ml_listen_add(cm_u);
     g`mlg.imports` = [];
     g`mlg.import_queue` = [];
+    g`mlg.import_bad` = 0;
     g`mlg.import_queue`.append_value(cm_a3);
     g`mlg.import_done` = 0;
     g`mlg.import_failed` = 0;

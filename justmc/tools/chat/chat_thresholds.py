@@ -44,6 +44,7 @@ def main():
     va = np.where(data.split == 1)[0]
     cls = m.cls_of.cpu().numpy()
     va = va[~((data.M[va, :-1] == 1) & (cls[data.X[va, 1:]] < 0)).any(1)][:a.limit]
+    CT.LEVELS = ck.get("levels", 127)
     emb = CT.quantize(m.emb.detach(), float(ck["scale"]))
     W, B = sp["[W]"], sp["[B]"]
     p_w, lab, conf = [], [], []

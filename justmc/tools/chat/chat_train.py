@@ -201,13 +201,16 @@ def log_probs(m, x, mk, r, emb, w_id):
     return lp, pw, dec
 
 
+LEVELS = 127         # levels of the embedding codes on each side of zero (--emb-levels)
+
+
 def emb_scale(emb):
-    return float(emb.detach().std()) * CLIP / 127.0
+    return float(emb.detach().std()) * CLIP / LEVELS
 
 
 def quantize(emb, scale):
     """8-bit embeddings: value = scale * code, code = -127 .. 127 (one scale for the whole table)"""
-    return torch.clamp(torch.round(emb / scale), -127, 127) * scale
+    return torch.clamp(torch.round(emb / scale), -LEVELS, LEVELS) * scale
 
 
 def batches(idx, lengths, bs, rng):
@@ -259,6 +262,9 @@ def main():
     ap.add_argument("--rdrop", type=float, default=0.0, help="recurrent dropout (one mask of the state for all steps)")
     ap.add_argument("--smooth", type=float, default=0.0, help="label smoothing")
     ap.add_argument("--wd", type=float, default=1e-6, help="weight decay (AdamW); above 1e-4: matrices only, not the embeddings")
+    ap.add_argument("--emb-levels", type=int, default=127, help="embedding codes -N .. N in the quantized epochs (the big model is "
+                                                                 "stored with the letters A .. Y: 12)")
+    ap.add_argument("--emb-clip", type=float, default=5.0, help="the embedding codes cover this many standard deviations")
     ap.add_argument("--da", type=int, default=64, help="attention: size of the query / key")
     ap.add_argument("--dv", type=int, default=128, help="attention: size of the value")
     ap.add_argument("--threads", type=int, default=4)
@@ -318,7 +324,11 @@ def main():
     steps = a.epochs * math.ceil(len(tr) / a.batch)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=a.lr, total_steps=steps, pct_start=0.03)
     os.makedirs(a.out, exist_ok=True)
-    scale = ck.get("scale") if ck else None                  # set when the 8-bit training starts, then kept
+    global CLIP, LEVELS
+    CLIP, LEVELS = a.emb_clip, a.emb_levels
+    scale = ck.get("scale") if ck else None                  # set when the quantized training starts, then kept
+    if ck and ck.get("levels", 127) != a.emb_levels:
+        scale = None                                         # another grid: its scale is set anew
     first = 0
     if rs:
         opt.load_state_dict(rs["resume"]["opt"])
@@ -359,7 +369,7 @@ def main():
         print(f"epoch {ep + 1}/{a.epochs} train {tot / n:.3f} | val {vl:.3f} (ppl {math.exp(vl):.1f}), 8-bit {vq:.3f} "
               f"(ppl {math.exp(vq):.1f}) ({time.time() - t0:.0f} s)", flush=True)
         save = {"state": {k: v.cpu() for k, v in m.state_dict().items()}, "classes": classes, "arch": arch,
-                "V": V, "special": sp, "scale": sc, "qscale": scale, "done": ep == a.epochs - 1}
+                "V": V, "special": sp, "scale": sc, "qscale": scale, "levels": LEVELS, "done": ep == a.epochs - 1}
         if not save["done"]:
             save["resume"] = {"epoch": ep + 1, "epochs": a.epochs, "opt": opt.state_dict(), "sched": sched.state_dict()}
         torch.save(save, out_path + ".part")

@@ -148,9 +148,10 @@ def main():
     if big:                                     # the compact files (chat_pack.py): one character per weight
         import chat_pack
         A = dict(P)
-        A["emb"] = (codes.double().numpy() - 128.0) * s0
+        grid = ck.get("levels", 127) == chat_pack.E_LEV    # trained on the grid of the stored embeddings
+        A["emb"] = st["emb"].detach().double().numpy() if grid else (codes.double().numpy() - 128.0) * s0
         os.makedirs(a.out, exist_ok=True)
-        n, stored = chat_pack.write(a.out, chat_pack.pack(A), meta, classes, vocab, texts, a.name)
+        n, stored = chat_pack.write(a.out, chat_pack.pack(A, s0 if grid else None), meta, classes, vocab, texts, a.name)
         print(f"written {a.out}/chat.json (manifest) + {n} files, {stored / 1e6:.1f} MB, ai.json (reader + chat); {n_par} parameters")
         return
     meta += [("ch.h0", [fmt(v, 12) for v in h0]), ("ch.c0", [fmt(v, 12) for v in c0])]
