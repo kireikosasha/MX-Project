@@ -31,9 +31,9 @@ j = os.path.join
 # hidden / dim / attention sizes, vocabulary, data builder, folder under <work>, folder under weights/, training flags
 PRESETS = {
     "6m": {"hidden": 256, "dim": 256, "da": 64, "dv": 128, "vocab": "vocab.json", "builder": "chat_data.py", "sub": "v2",
-           "name": "chat", "batch": 384, "flags": []},
+           "name": "chat", "batch": 384, "flags": [], "temp": "0.5"},
     "13m": {"hidden": 512, "dim": 512, "da": 128, "dv": 256, "vocab": "vocab_big.json", "builder": "chat_data_big.py", "sub": "big",
-            "name": "chat13m", "batch": 384, "flags": []},
+            "name": "chat13m", "batch": 384, "flags": [], "temp": "0.3"},
 }
 
 
@@ -128,7 +128,8 @@ def main():
     if not trained(j(out_ft, "chat.pt")):
         run([j(HERE, "chat_train.py"), "--data", j(v2, "data_ft"), "--out", out_ft, "--init", j(out, "chat.pt"),
              "--epochs", str(a.ft_epochs), "--lr", "8e-4", "--resume"] + size + dev)
-    export = [j(HERE, "chat_export.py"), "--model", j(out_ft, "chat.pt"), "--vocab", VOCAB, "--out", a.out, "--name", P["name"]]
+    export = [j(HERE, "chat_export.py"), "--model", j(out_ft, "chat.pt"), "--vocab", VOCAB, "--out", a.out, "--name", P["name"],
+              "--temp", P["temp"]]
     if a.model != "6m":                         # decision thresholds chosen on the validation set
         run([j(HERE, "chat_thresholds.py"), "--model", j(out_ft, "chat.pt"), "--data", j(v2, "data"),
              "--out", j(out_ft, "thresholds.json")] + dev)

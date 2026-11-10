@@ -5,8 +5,11 @@ decision threshold: on validation data, not recalibrated on the training set).
 
   wiki   P([W]) from which the question goes to the Wikipedia reader: the threshold with the best F1
   sure   P([W]) from which a failed search ends in "I don't know": the lowest threshold with precision >= 0.97
-  conf   mean log-probability of the tokens of a reply below which the model says it is not sure:
-         the 1st percentile of the replies of the validation set (8-bit embeddings, as in JustMC)
+  conf   mean log-probability of the tokens of a reply below which the model says it is not sure. It is a
+         setting, not measured here: the replies the model writes itself are more likely than the replies of
+         the validation set, so their percentiles say little. -2.5 comes from 220 replies of the published
+         model (chat_ref.py): below it the replies were nonsense, about a fifth of the replies to real-life
+         questions. The percentiles of the validation replies are printed for reference.
 
     python chat_thresholds.py --model out_ft/chat.pt --data data --out out_ft/thresholds.json
 """
@@ -29,6 +32,7 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--limit", type=int, default=20000)
+    ap.add_argument("--conf", type=float, default=-2.5)
     a = ap.parse_args()
     ck = torch.load(a.model, map_location="cpu", weights_only=False)
     sp = ck["special"]
@@ -68,7 +72,8 @@ def main():
         sure = float(t)
         if tp / max(1, tp + fp) >= 0.97:
             break
-    out = {"wiki": round(wiki, 2), "sure": round(max(sure, wiki), 2), "conf": round(float(np.percentile(conf, 1)), 3) if conf else -1000,
+    out = {"wiki": round(wiki, 2), "sure": round(max(sure, wiki), 2), "conf": a.conf,
+           "val_conf_p1_p50": [round(float(np.percentile(conf, q)), 3) for q in (1, 50)] if conf else [],
            "f1": round(float(best), 4), "n": int(len(lab)), "wiki_share": round(float(lab.mean()), 4)}
     json.dump(out, open(a.out, "w"))
     print("thresholds chosen on the validation set:", out)

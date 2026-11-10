@@ -23,6 +23,7 @@ import chat_text as T  # noqa: E402
 from reader_ref import dot, sigm, tanh, LN_EPS, E  # noqa: E402
 
 I_RE = re.compile(r"(?<![^\W\d_'])i(?![^\W\d_])")       # the English "i" alone -> "I"
+LETTER = re.compile(r"[^\W\d_]")
 LOW = -1000000.0
 TYPN = 16                         # candidates looked at when a token is drawn
 KS_K = 8                          # candidates of the predictability measure
@@ -345,6 +346,9 @@ class Chat:
                 h, c = self.step(x, h, c)
             ctx = self.attend(h, keys, vals)
             o, so = self.out(h, x, ctx)
+        if self.big and steps and len(LETTER.findall(R.normalize(message.replace("¦", "|")))) < 2:
+            o3 = steps[-1][3]                          # no words in the message: the result itself
+            text = T.fmt(o3[1]) if o3[0] == "R" else "✔" if o3[0] == "T" else "✘"
         if text:
             text = I_RE.sub("I", text)
             text = text[0].upper() + text[1:]

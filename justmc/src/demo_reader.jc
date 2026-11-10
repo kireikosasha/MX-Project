@@ -2246,11 +2246,15 @@ function ch_generate() {
   cg_res = [];
   cg_lp = 0;
   cg_lpn = 0;
+  cg_steps = 0;
   cg_temp = ch_temp;
   repeat::while(cg_go.equals(1)) {
     ch_next_token();
   }
   ch_temp = cg_temp;
+  if (ch_big.equals(1)) {
+    ch_plain_answer();
+  }
   if (not cg_text.equals("")) {
     cg_text = variable::regex_replace_text(cg_text, "(?<![\\p{L}'])i(?![\\p{L}])", "I");
     rs_t = cg_text;
@@ -2414,6 +2418,25 @@ function ch_take_big() {
   }
 }
 
+// A message without words ("12*12", "(2+3)*4 = ?") does not say in which language to answer: the reply is
+// the result itself (or a mark for a comparison / an impossible step), not the model's phrase around it.
+function ch_plain_answer() {
+  if (cg_steps.greater(0)) {
+    pa_l = variable::regex_replace_text(aq_text, "[^\\p{L}]", "");
+    if (variable::get_text_length(pa_l).less(2)) {
+      if (cg_lastk.equals(0)) {
+        nf_v = cg_lastv;
+        ch_num_text();
+        cg_text = nf_t;
+      } elif (cg_lastk.equals(1)) {
+        cg_text = "✔";
+      } else {
+        cg_text = "✘";
+      }
+    }
+  }
+}
+
 // operand cg_id of the step; after the second one the outcome is computed and fed as the next token
 function ch_take_operand() {
   ch_operand();
@@ -2425,6 +2448,9 @@ function ch_take_operand() {
   if (cg_need.equals(0)) {
     ch_feed();
     ch_step_outcome();
+    cg_steps = variable::add([cg_steps, 1]);
+    cg_lastk = so_k;
+    cg_lastv = so_v;
     ch_temp = cg_temp;
     ce_id = cg_forced;
     ch_decode_step();

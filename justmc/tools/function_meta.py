@@ -1330,6 +1330,8 @@ META.update({
                     "Добавляет ln(cf_p) выбранного токена к сумме уверенности ответа."),
     "ch_unsure_check": ("barrier", "A reply whose tokens were unlikely on average (below ch_conf) is replaced by 'not sure' in the language of the message.",
                         "Ответ, токены которого в среднем были маловероятны (ниже ch_conf), заменяется на «не уверена» на языке сообщения."),
+    "ch_plain_answer": ("paper", "A message without words (12*12) does not say in which language to answer: the reply is the result itself, or a mark for a comparison.",
+                        "Сообщение без слов (12*12) не говорит, на каком языке отвечать: ответ — сам результат или отметка для сравнения."),
     "ch_take_big": ("repeater", "The big model: the chosen token is text, the start of a calculation step (hidden) or an operand of it.",
                     "Большая модель: выбранный токен — текст, начало шага вычисления (скрыто) или его операнд."),
     "ch_take_operand": ("repeater", "An operand of the calculation step; after the second one the outcome is computed and fed to the model as the next token.",
