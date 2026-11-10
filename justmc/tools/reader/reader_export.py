@@ -86,8 +86,27 @@ class Packer:
             self.put(f"{prefix}-{i:03d}.json", dumps({"store": f}))
 
     def finish(self, name="reader"):
-        open(os.path.join(self.out, name + ".json"), "w").write(dumps({"format": "millennium", "manifest": self.manifest}))
-        return len(self.manifest)
+        return write_manifest(self.out, name, self.manifest)
+
+
+def write_manifest(out, name, files):
+    """<name>.json: the list of files. JustMC cuts a response at 25000 characters, so a list that is longer
+    becomes a manifest of manifests <name>-list-<i>.json (the importer queues their files in order)."""
+    text = dumps({"format": "millennium", "manifest": files})
+    if size(text) > MAX_BYTES:
+        parts, cur = [], []
+        for f in files:
+            if cur and size(dumps({"format": "millennium", "manifest": cur + [f]})) > MAX_BYTES:
+                parts.append(cur)
+                cur = []
+            cur.append(f)
+        parts.append(cur)
+        names = [f"{name}-list-{i}.json" for i in range(len(parts))]
+        for pn, p in zip(names, parts):
+            open(os.path.join(out, pn), "w").write(dumps({"format": "millennium", "manifest": p}))
+        text = dumps({"format": "millennium", "manifest": names})
+    open(os.path.join(out, name + ".json"), "w").write(text)
+    return len(files)
 
 
 def library_parts(P, pd, hid):

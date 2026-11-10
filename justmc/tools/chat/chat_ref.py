@@ -52,11 +52,13 @@ def lstm_step(rows, ln, H, x, h, c):
 
 
 def load(wdir):
-    man = json.load(open(os.path.join(wdir, "chat.json"), encoding="utf-8"))["manifest"]
+    man = list(json.load(open(os.path.join(wdir, "chat.json"), encoding="utf-8"))["manifest"])
     save, rows, ln = {}, {}, None
-    for f in man:
-        obj = json.load(open(os.path.join(wdir, f), encoding="utf-8"))
-        if "store" in obj:
+    while man:
+        obj = json.load(open(os.path.join(wdir, man.pop(0)), encoding="utf-8"))
+        if "manifest" in obj:                          # a long list of files comes as a manifest of manifests
+            man += obj["manifest"]
+        elif "store" in obj:
             save.update(obj["store"])
         elif "ln" in obj:
             ln = obj["ln"]["0"]
