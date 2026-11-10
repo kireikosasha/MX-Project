@@ -301,7 +301,7 @@ function rd_wordpiece_try() {
   } else {
     wp_end = variable::subtract([wp_end, 1]);
   }
-  ml_yield(8);
+  ml_yield(26);
 }
 
 // ---------------------------------------------------------------------
@@ -335,7 +335,7 @@ function rd_project_row() {
     rp_pb = variable::get_list_value(s`rd.pb`, rp_j);
     rp_p.append_value(variable::mathematical_expectation([rp_raw, rp_pa, rp_pb], [rp_sc, rp_sc, 1]));
   }
-  ml_yield(variable::multiply([s`rd.pd`, 10]));
+  ml_yield(variable::multiply([s`rd.pd`, 7]));
 }
 
 // ---------------------------------------------------------------------
@@ -381,6 +381,7 @@ function rd_question_word() {
   wp_pre = "rd";
   rd_wordpiece();
   aq_ids = wp_ids;
+  ml_yield(20);
 }
 
 // ---------------------------------------------------------------------
@@ -398,12 +399,14 @@ function rd_encode_question() {
     rq_X.append_value([rq_x]);
   }
   rq_cols = [];
+  rq_cc = variable::add([variable::multiply([variable::get_list_length(rq_P), 2]), 3]);
   repeat::for_each_in_list(g`rd.idxP`) { rq_j, rq_jj ->
     rq_col = [];
     repeat::for_each_in_list(rq_P) { rq_i, rq_v ->
       rq_col.append_value(variable::get_list_value(rq_v, rq_j));
     }
     rq_cols.append_value([rq_col]);
+    ml_yield(rq_cc);
   }
   rb_X = rq_X;
   rd_bilstm();
@@ -424,6 +427,7 @@ function rd_heads() {
   }
   rq_ns = variable::mathematical_expectation(s`rd.ns`, rh_z);
   rq_ne = variable::mathematical_expectation(s`rd.ne`, rh_z);
+  ml_yield(variable::multiply([g`mlg.out`, 4]));
 }
 
 // library BiLSTM (layer 0, both directions) over rb_X -> rb_H (vectors [forward | backward])
@@ -444,6 +448,7 @@ function rd_bilstm() {
     rb_h = variable::append_list(rb_v, variable::get_list_value(lf_out, rb_t));
     rb_H.append_value([rb_h]);
   }
+  ml_yield(variable::multiply([variable::get_list_length(rb_fo), 3]));
 }
 
 // question words seen by a text token (projection rp_p): softmax over the question of p . pq_i,
@@ -467,7 +472,7 @@ function rd_align() {
   repeat::for_each_in_list(rq_cols) { ra_j, ra_col ->
     ra_al.append_value(variable::mathematical_expectation(ra_col, ra_a));
   }
-  ml_yield(variable::multiply([aq_n, 4]));
+  ml_yield(variable::add([variable::multiply([aq_n, 6]), 90]));
 }
 
 // the selected text (cx_*) -> start / end scores, best answer: rd_best (probability), rd_pn
@@ -488,6 +493,7 @@ function rd_read_context() {
   repeat::for_each_in_list(rb_H) { rc_t, rc_h ->
     rd_scores_at();
   }
+  ml_yield(variable::multiply([variable::get_list_length(rb_H), 7]));
   rd_decode();
 }
 
@@ -518,6 +524,7 @@ function rd_decode() {
   rd_softmax();
   rd_pe = sm_p;
   rd_pn = mli_mul(rd_ps0, sm_p0);
+  ml_yield(variable::multiply([variable::get_list_length(rc_st), 12]));
   rd_pemax = variable::max(rd_pe);
   rd_best = 0;
   rd_bs = -1;
@@ -543,7 +550,7 @@ function rd_span_from() {
     }
     rd_j = variable::add([rd_j, 1]);
   }
-  ml_yield(40);
+  ml_yield(variable::multiply([variable::subtract([rd_jmax, rd_i]), 6]));
 }
 
 // softmax of [sm_x0, sm_xs...] -> sm_p0, sm_p
@@ -618,7 +625,7 @@ function rd_sentence_score() {
       }
     }
   }
-  ml_yield(variable::multiply([variable::get_list_length(rw_list), 6]));
+  ml_yield(variable::multiply([variable::get_list_length(rw_list), 15]));
 }
 
 function rd_build_context() {
@@ -650,6 +657,7 @@ function rd_sentence_tokens() {
     rd_wordpiece();
     sg_wt.append_value([wp_ids]);
     sg_n = variable::add([sg_n, variable::get_list_length(wp_ids)]);
+    ml_yield(10);
   }
 }
 
@@ -668,6 +676,7 @@ function rd_fill() {
   repeat::for_each_in_list(sg_words) { sg_k, sg_w ->
     rd_keep_word();
   }
+  ml_yield(variable::multiply([variable::get_list_length(sg_words), 7]));
   fl_room = variable::subtract([RD_MAXC, sg_n]);
   if (sc_second.greater(-1)) {
     if (fl_room.greater(0)) {
@@ -691,6 +700,7 @@ function rd_keep_head() {
       rd_keep_word();
     }
   }
+  ml_yield(variable::multiply([variable::get_list_length(sg_words), 10]));
 }
 
 // last words of sentence sg_si that fit in fl_room tokens, put before the words kept so far
@@ -725,6 +735,7 @@ function rd_keep_tail() {
   cx_sent = variable::append_list(cx_sent, kt_sent);
   cx_pos = variable::append_list(cx_pos, kt_pos);
   cx_wt = variable::append_list(cx_wt, kt_wt);
+  ml_yield(variable::multiply([variable::get_list_length(sg_words), 13]));
 }
 
 // the best sentence is too long: its RD_MAXC-token window with most key-word tokens (the earliest
@@ -749,9 +760,11 @@ function rd_window() {
     rd_window_slide();
   }
   wn_end = variable::add([wn_st, RD_MAXC]);
+  ml_yield(variable::multiply([variable::get_list_length(wn_hit), 3]));
   repeat::for_each_in_list(sg_words) { sg_k, sg_w ->
     rd_window_keep();
   }
+  ml_yield(variable::multiply([variable::get_list_length(sg_words), 9]));
 }
 
 // key-word flag of every token of word sg_k, index of its first token
@@ -768,6 +781,7 @@ function rd_window_word() {
   repeat::for_each_in_list(variable::get_list_value(sg_wt, sg_k)) { wn_j, wn_id ->
     wn_hit.append_value(wn_h);
   }
+  ml_yield(24);
 }
 
 function rd_window_slide() {
@@ -779,6 +793,7 @@ function rd_window_slide() {
     wn_st = wn_s;
   }
   wn_s = variable::add([wn_s, 1]);
+  ml_yield(17);
 }
 
 function rd_window_keep() {
@@ -808,6 +823,7 @@ function rd_context_tokens() {
     repeat::for_each_in_list(ct_t) { ct_j, ct_id ->
       rd_context_token();
     }
+    ml_yield(46);
   }
 }
 
@@ -957,6 +973,7 @@ function rd_urlencode() {
   repeat::for_each_in_list(pe_cps) { pe_k, pe_cp ->
     rd_urlencode_char();
   }
+  ml_yield(variable::multiply([variable::get_list_length(pe_cps), 22]));
 }
 
 function rd_urlencode_char() {
@@ -1327,7 +1344,7 @@ function ai_on_chat() {
     cm_short = variable::get_list_length(cm_a).less_or_equals(4);
     cm_kind = "ask";
     if (cm_short.equals(1)) {
-      if (cm_sub.equals(["install", "tau", "temp", "sampling", "ks"])) {
+      if (cm_sub.equals(["install", "tau", "temp", "sampling", "ks", "pace"])) {
         cm_kind = "admin";
       }
       if (cm_sub.equals(["help", "status", "about"])) {
@@ -1358,6 +1375,8 @@ function ai_on_admin_command() {
     ai_cmd_sampling();
   } elif (cm_sub.equals("ks")) {
     ai_cmd_ks();
+  } elif (cm_sub.equals("pace")) {
+    ml_cmd_pace();
   } else {
     ai_cmd_tau();
   }
@@ -1502,6 +1521,7 @@ function ai_cmd_status() {
     player::message("&9[AI] &cReader not installed &7(library import: ${g`mlg.import_done`} files loaded, ${g`mlg.import_failed`} failed, ${variable::get_list_length(g`mlg.import_queue`)} queued)");
   }
   player::message("&9[AI] &7text checks: trim ${g`rd.ts`}/${g`rd.te`}, index base ${g`rd.io`}, code points ${g`rd.cp_ok`}");
+  player::message("&9[AI] &7load: ${g`mlg.pace`} of ${s`ml.work`} actions per tick, CPU ${value::cpu_usage}% (aim ${s`ml.cpu_aim`}%)");
 }
 
 function ai_cmd_about() {
@@ -1511,7 +1531,7 @@ function ai_cmd_about() {
 
 function ai_cmd_help() {
   player::message("&9[AI] &e~ai <message> &7- talk (English, русский, українська) | &e~ai wiki <question> &7- straight to Wikipedia | &e~ai status &7| &e~ai about");
-  player::message("&9[AI] &7admins: &e~ai install &7- download the models | &e~ai temp <0..2>|reset &7- how wild the replies are | &e~ai sampling typical|topk &7| &e~ai ks <0..1>|off &7| &e~ai tau <0..1>|reset &7- how sure the reader must be");
+  player::message("&9[AI] &7admins: &e~ai install &7- download the models | &e~ai temp <0..2>|reset &7- how wild the replies are | &e~ai sampling typical|topk &7| &e~ai ks <0..1>|off &7| &e~ai tau <0..1>|reset &7- how sure the reader must be | &e~ai pace <actions per tick> [cpu %]|reset &7- load on the world");
 }
 
 // =====================================================================
@@ -1534,6 +1554,9 @@ inline var CH_BAR = 48;           // characters of the reply shown in the action
 inline var CH_MEM_MS = 180000;    // a conversation is continued within this time
 inline var CH_TYPN = 16;          // candidates looked at when a token is drawn
 inline var CH_KS_K = 8;           // candidates of the predictability measure
+inline var CH_WORDS_RUN = 10;     // tokens of a class scored between two ml_yield calls
+inline var CH_WORDS_COST = 260;   // their estimated cost in actions
+inline var CH_DRAW_COST = 260;    // estimated cost of drawing a class or a token
 inline var CH_SAMP = 1;           // default sampling: 1 typical, 0 top-k
 inline var CH_TYP = 0.9;          // default mass of the typical set
 inline var CH_KS = 0.75;          // default Kolmogorov-Smirnov distance from which a step counts as predictable
@@ -1580,7 +1603,6 @@ function ch_settings() {
   if (cs_ok.equals(0)) {
     ch_build_lists();
     g`ch.mark` = cs_mark;
-    ml_yield(3000);
   }
   ch_temp = s`ch.temp0`;
   if (s`ch.temp`.exists()) {
@@ -1625,29 +1647,16 @@ function ch_build_lists() {
   mr_n = s`ch.dim`;
   ml_range();
   g`ch.idxD` = mr_list;
+  ml_yield(variable::multiply([s`ch.dim`, 3]));
   g`ch.onesD` = [];
   repeat::for_each_in_list(mr_list) { cs_k, cs_v ->
     g`ch.onesD`.append_value(1);
   }
-  // output rows in chunks with a pause between them (a line may not run too long without a wait)
-  cs_unit = variable::add([2, variable::divide([variable::add([s`ch.hid`, s`ch.dim`, s`ch.dv`]), 40])]);
-  cs_per = variable::max([4, variable::divide([ML_CHUNK_WORK, cs_unit], "FLOOR")]);
-  g`ch.chunk_cost` = variable::round(variable::multiply([cs_per, cs_unit]), 0, "CEIL");
-  g`ch.chunksD` = [];
-  cs_chunk = [];
-  repeat::for_each_in_list(g`ch.idxD`) { cs_k, cs_v ->
-    cs_chunk.append_value(cs_v);
-    if (variable::get_list_length(cs_chunk).greater_or_equals(cs_per)) {
-      g`ch.chunksD`.append_value([cs_chunk]);
-      cs_chunk = [];
-    }
-  }
-  if (not cs_chunk.list_is_empty()) {
-    g`ch.chunksD`.append_value([cs_chunk]);
-  }
+  ml_yield(variable::multiply([s`ch.dim`, 2]));
   mr_n = s`ch.C`;
   ml_range();
   g`ch.idxC` = mr_list;
+  ml_yield(variable::multiply([s`ch.C`, 3]));
   mr_n = s`ch.da`;
   ml_range();
   g`ch.idxA` = mr_list;
@@ -1658,6 +1667,31 @@ function ch_build_lists() {
   repeat::for_each_in_list(mr_list) { cs_k, cs_v ->
     g`ch.zv`.append_value(0);
   }
+  ml_yield(variable::multiply([variable::add([s`ch.da`, s`ch.dv`]), 4]));
+  ch_build_chunks();
+}
+
+// loops over rows of weights go chunk by chunk with ml_yield between (an even load in every tick):
+// a row costs ~3 actions + its dot product, a chunk about ML_CHUNK_WORK actions.
+// g`ch.chunksD`: output rows (cost of a chunk g`ch.chunk_cost`); g`ch.chunksC`: classes, g`ch.chunksV`:
+// attention values (3 actions a row)
+function ch_build_chunks() {
+  cs_unit = variable::add([2.2, variable::divide([variable::add([s`ch.hid`, s`ch.dim`, s`ch.dv`]), 400])]);
+  mc_per = variable::max([4, variable::divide([ML_CHUNK_WORK, cs_unit], "FLOOR")]);
+  g`ch.chunk_cost` = variable::round(variable::multiply([mc_per, cs_unit]), 0, "CEIL");
+  mc_list = g`ch.idxD`;
+  ml_chunks();
+  g`ch.chunksD` = mc_out;
+  ml_yield(variable::multiply([s`ch.dim`, 3]));
+  // rows over h or over [1 | o]: ~3 actions each
+  mc_per = variable::divide([ML_CHUNK_WORK, 3], "FLOOR");
+  mc_list = g`ch.idxC`;
+  ml_chunks();
+  g`ch.chunksC` = mc_out;
+  mc_list = g`ch.idxV`;
+  ml_chunks();
+  g`ch.chunksV` = mc_out;
+  ml_yield(variable::multiply([variable::add([s`ch.C`, s`ch.dv`]), 3]));
 }
 
 // the message as chat tokens (the chat vocabulary, the last s`ch.maxm` of them) -> cg_msg
@@ -1671,7 +1705,7 @@ function ch_tokenize() {
     rd_wordpiece();
   }
   cg_msg = wp_ids;
-  ml_yield(variable::multiply([variable::get_list_length(rw_list), 12]));
+  ml_yield(10);
   ct_n = variable::get_list_length(cg_msg);
   if (ct_n.greater(s`ch.maxm`)) {
     cg_msg = mli_slice(cg_msg, variable::subtract([ct_n, s`ch.maxm`]), ct_n);
@@ -1717,11 +1751,14 @@ function ch_remember() {
     rm_k.append_value(variable::mathematical_expectation(s`ch.Wk.${rm_n}`, lf_h));
   }
   ck_keys.append_value([rm_k]);
-  repeat::for_each_in_list(g`ch.idxV`) { rm_i, rm_n ->
-    `cv.${rm_n}`.append_value(variable::mathematical_expectation(s`ch.Wv.${rm_n}`, lf_h));
+  ml_yield(variable::multiply([s`ch.da`, 3]));
+  repeat::for_each_in_list(g`ch.chunksV`) { rm_ck, rm_chunk ->
+    repeat::for_each_in_list(rm_chunk) { rm_i, rm_n ->
+      `cv.${rm_n}`.append_value(variable::mathematical_expectation(s`ch.Wv.${rm_n}`, lf_h));
+    }
+    ml_yield(variable::multiply([variable::get_list_length(rm_chunk), 3]));
   }
   ck_n = variable::add([ck_n, 1]);
-  ml_yield(variable::multiply([variable::add([s`ch.da`, s`ch.dv`]), 9]));
 }
 
 // attention of the current state over the message -> ch_ctx
@@ -1730,11 +1767,12 @@ function ch_attend() {
     ch_ctx = g`ch.zv`;
   } else {
     ch_attend_weights();
+    ml_yield(variable::add([variable::multiply([s`ch.da`, 3]), variable::multiply([ck_n, 9])]));
     ch_ctx = [];
     repeat::for_each_in_list(g`ch.idxV`) { at_k, at_d ->
       ch_ctx.append_value(variable::mathematical_expectation(`cv.${at_d}`, at_a));
     }
-    ml_yield(variable::add([variable::multiply([s`ch.da`, 9]), variable::multiply([s`ch.dv`, 3])]));
+    ml_yield(variable::multiply([s`ch.dv`, 3]));
   }
 }
 
@@ -1789,10 +1827,12 @@ function ch_decode_step() {
 // logits of all classes -> cl_l
 function ch_class_logits() {
   cl_l = [];
-  repeat::for_each_in_list(g`ch.idxC`) { cl_k, cl_c ->
-    cl_l.append_value(variable::mathematical_expectation(s`ch.Wc.${cl_c}`, ch_oz));
+  repeat::for_each_in_list(g`ch.chunksC`) { cl_ck, cl_chunk ->
+    repeat::for_each_in_list(cl_chunk) { cl_k, cl_c ->
+      cl_l.append_value(variable::mathematical_expectation(s`ch.Wc.${cl_c}`, ch_oz));
+    }
+    ml_yield(variable::multiply([variable::get_list_length(cl_chunk), 3]));
   }
-  ml_yield(variable::multiply([s`ch.C`, 9]));
 }
 
 // logits of the tokens of class cw_c -> cw_ids, cw_l:  s0 * (code points . o) + so * sum(o) + bias
@@ -1800,13 +1840,19 @@ function ch_word_logits() {
   cw_ids = s`ch.k.${cw_c}`;
   cw_b = s`ch.kb.${cw_c}`;
   cw_l = [];
+  cw_run = 0;
   repeat::for_each_in_list(cw_ids) { cw_k, ce_id ->
     ch_row();
     cw_raw = variable::mathematical_expectation(ce_cp, ch_o);
     cw_bk = variable::get_list_value(cw_b, cw_k);
     cw_l.append_value(variable::mathematical_expectation([cw_raw, ch_so, cw_bk], [s`ch.s0`, s`ch.so`, 1]));
+    cw_run = variable::add([cw_run, 1]);
+    if (cw_run.greater_or_equals(CH_WORDS_RUN)) {
+      cw_run = 0;
+      ml_yield(CH_WORDS_COST);
+    }
   }
-  ml_yield(variable::multiply([variable::get_list_length(cw_ids), 18]));
+  ml_yield(variable::multiply([cw_run, 26]));
 }
 
 // tokens said before are less likely; [W] is never written, [E] not as the first token
@@ -2064,6 +2110,7 @@ function ch_wiki_probability() {
   sm_l = cl_l;
   sm_i = s`ch.cW`;
   ch_softmax_at();
+  ml_yield(variable::multiply([s`ch.C`, 5]));
   cw_pc = sm_p;
   cw_c = s`ch.cW`;
   ch_word_logits();
@@ -2071,7 +2118,7 @@ function ch_wiki_probability() {
   sm_i = s`ch.pW`;
   ch_softmax_at();
   ch_pW = mli_mul(cw_pc, sm_p);
-  ml_yield(variable::multiply([s`ch.C`, 5]));
+  ml_yield(variable::multiply([variable::get_list_length(cw_l), 5]));
 }
 
 // tokens until [E] or s`ch.max` -> cg_text
@@ -2108,6 +2155,7 @@ function ch_next_token() {
   sp_l = cl_l;
   sp_k = s`ch.topc`;
   ch_sample();
+  ml_yield(CH_DRAW_COST);
   cw_c = sp_i;
   cw_ids = s`ch.k.${cw_c}`;
   if (variable::get_list_length(cw_ids).equals(1)) {
@@ -2119,6 +2167,7 @@ function ch_next_token() {
     sp_l = cw_l;
     sp_k = s`ch.topw`;
     ch_sample();
+    ml_yield(CH_DRAW_COST);
     cg_id = variable::get_list_value(cw_ids, sp_i);
   }
   cg_n = variable::add([cg_n, 1]);

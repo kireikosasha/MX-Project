@@ -532,7 +532,7 @@ function ml_model_save() {
   s`mlm.${sm_name}.names` = sm_all;
   repeat::for_each_in_list(sm_all) { sm_k, sm_v ->
     s`mlm.${sm_name}.w.${sm_v}` = s`${sm_v}`;
-    ml_yield(12);
+    ml_yield(6);
   }
   if (not s`mlm.list`.list_contains_value(sm_name)) {
     s`mlm.list`.append_value(sm_name);
@@ -547,7 +547,7 @@ function ml_model_load() {
     variable::purge(["ml.L.", "ml.emb", "ml.attn", "ml.head"], "SAVE", "STARTS_WITH");
     repeat::for_each_in_list(s`mlm.${sm_name}.names`) { sm_k, sm_v ->
       s`${sm_v}` = s`mlm.${sm_name}.w.${sm_v}`;
-      ml_yield(12);
+      ml_yield(6);
     }
     variable::purge(["mla.", "mlt."], "GAME", "STARTS_WITH");
     ml_check_complete();

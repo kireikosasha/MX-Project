@@ -1029,8 +1029,17 @@ META.update({
 # entries written separately (longer texts)
 META.update({
     "ml_yield": ("clock",
-        "Throttling: adds the cost to the tick budget; when ml.budget is spent it waits one tick and keeps waiting while the world CPU usage is above ml.cpu_max.",
-        "Троттлинг: добавляет стоимость к бюджету тика; когда ml.budget исчерпан, ждёт один тик и продолжает ждать, пока загрузка CPU мира выше ml.cpu_max."),
+        "Throttling: adds the estimated cost (actions) of the piece of work just done; when the pace of the tick is reached, ml_pause waits.",
+        "Троттлинг: добавляет оценку стоимости (в действиях) только что сделанного куска работы; когда набран темп на тик, ml_pause ждёт."),
+    "ml_pause": ("clock",
+        "The wait of ml_yield: one tick or more if the piece was bigger than the pace; then the pace follows the world CPU usage (grows up to ml.work actions per tick under ml.cpu_aim percent).",
+        "Пауза для ml_yield: один тик или больше, если кусок был крупнее темпа; затем темп подстраивается под загрузку CPU мира (растёт до ml.work действий за тик, пока она ниже ml.cpu_aim процентов)."),
+    "ml_pause_hot": ("magma_cream",
+        "CPU usage above the aim: the pace shrinks by 2 % per percent of the excess; far above the aim no work is done until the usage is back.",
+        "Загрузка CPU выше цели: темп снижается на 2 % за каждый процент превышения; при сильном превышении работа стоит, пока загрузка не вернётся."),
+    "ml_chunks": ("chain",
+        "Splits the list mc_list into lists of mc_per items -> mc_out; loops over them call ml_yield after every chunk, so the load is even.",
+        "Делит список mc_list на списки по mc_per элементов -> mc_out; циклы по ним вызывают ml_yield после каждого куска, и нагрузка получается ровной."),
     "ml_pool_forward": ("hopper",
         "Pooling.forward for the mode in ml.pm (LAST_HIDDEN, MEAN, MAX, ATTENTION): po_H, po_M -> pooled vector po_v.",
         "Pooling.forward для режима ml.pm (LAST_HIDDEN, MEAN, MAX, ATTENTION): po_H, po_M -> вектор po_v."),
@@ -1067,8 +1076,8 @@ META["ml_build_transposed_weights"] = ("mirror",
     "Builds W^T of every layer-direction (gate-interleaved like the Java loop) used by backpropagation.",
     "Строит W^T каждого слоя-направления (с чередованием гейтов, как в цикле Java) для обратного прохода.")
 META["ml_build_gate_chunks"] = ("chain",
-    "Splits the neurons of a layer into chunks: gate rows are computed chunk by chunk with a pause between, because JustMC stops a line that runs too long without a wait.",
-    "Делит нейроны слоя на куски: строки гейтов считаются кусками с паузой между ними, потому что JustMC останавливает строку, которая слишком долго работает без «Ждать».")
+    "Splits the neurons of a layer into chunks of about 300 actions: gates, cell update and LayerNorm go chunk by chunk with ml_yield between, because JustMC stops long lines without a wait and bursts of CPU load.",
+    "Делит нейроны слоя на куски примерно по 300 действий: гейты, обновление ячейки и LayerNorm считаются кусками с ml_yield между ними, потому что JustMC останавливает долгие строки без «Ждать» и скачки нагрузки на процессор.")
 META["ml_import_architecture"] = ("map",
     META["ml_import_architecture"][1], META["ml_import_architecture"][2])
 # demo 3: the reader (~ai)
@@ -1299,6 +1308,10 @@ META.update({
     "ch_draw": ("ender_pearl", "One candidate of the set at random by its weight.", "Случайный кандидат из множества по его весу."),
     "ai_cmd_sampling": ("brewing_stand", "~ai sampling typical [mass] | topk | reset: how the next token is drawn.",
                         "~ai sampling typical [масса] | topk | reset: как выбирается следующий токен."),
+    "ch_build_chunks": ("chain", "Chunks of the output rows, classes and attention values (about 300 actions each) for loops with ml_yield between.",
+                        "Куски строк выхода, классов и значений внимания (примерно по 300 действий) для циклов с ml_yield между ними."),
+    "ml_cmd_pace": ("clock", "~ml pace <actions per tick> [cpu %] | reset: how hard the models load the world; lower is safer against CPU errors and slower.",
+                    "~ml pace <действий за тик> [cpu %] | reset: насколько сильно модели грузят мир; меньше — безопаснее для ошибок CPU и медленнее."),
     "ai_cmd_ks": ("target", "~ai ks <0..1> | off | reset: from which Kolmogorov-Smirnov distance a step counts as predictable.",
                   "~ai ks <0..1> | off | reset: с какого расстояния Колмогорова-Смирнова шаг считается предсказуемым."),
 })

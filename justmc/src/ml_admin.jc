@@ -16,6 +16,7 @@
 //    ~ml dataset info|clear|undo
 //    ~ml model reset | import <url> | export <url>
 //    ~ml admin add|remove <name> | ~ml selftest
+//    ~ml pace <actions per tick> [cpu %] | reset     load on the world
 // =====================================================================
 import "./millennium.jc";
 import "./ml_selftest_data.jc";
@@ -106,6 +107,8 @@ function ml_admin_dispatch() {
     ml_cmd_train();
   } elif (cm_sub.equals("stop")) {
     ml_cmd_stop();
+  } elif (cm_sub.equals("pace")) {
+    ml_cmd_pace();
   } else {
     ml_admin_dispatch_model_commands();
   }
@@ -175,10 +178,29 @@ function ml_cmd_admins() {
   }
 }
 
+// ~ml pace <actions per tick> [cpu percent] | reset: how hard the models load the world (ml_yield):
+// lower = safer against the CPU errors of JustMC (high_cpu, high_cpu_boost) and slower
+function ml_cmd_pace() {
+  if (cm_a2.equals("reset")) {
+    s`ml.work` = ML_WORK;
+    s`ml.cpu_aim` = ML_CPU_AIM;
+  } elif (not cm_a2.equals("")) {
+    s`ml.work` = variable::clamp(variable::convert_text_to_number(cm_a2, 10), 200, 4000);
+    if (not cm_a3.equals("")) {
+      s`ml.cpu_aim` = variable::clamp(variable::convert_text_to_number(cm_a3, 10), 20, 90);
+    }
+  } else {
+    mp_x = 0;
+  }
+  g`mlg.pace` = variable::min([g`mlg.pace`, s`ml.work`]);
+  player::message("&9[ML] &fUp to &e${s`ml.work`} &factions per tick, CPU aim &e${s`ml.cpu_aim`}% &7(now: ${g`mlg.pace`} per tick, CPU ${value::cpu_usage}%)");
+  player::message("&7~ml pace <actions> [cpu %] | reset; lower = safer and slower");
+}
+
 // ~ml help
 function ml_cmd_help() {
   player::message("&9[ML] &fMillennium for JustMC — commands:");
-  player::message("&e~ml info &7| &e~ml log &7| &e~ml selftest");
+  player::message("&e~ml info &7| &e~ml log &7| &e~ml selftest &7| &e~ml pace <actions per tick> [cpu %]|reset");
   player::message("&e~ml param info &7| &e~ml param <lr|dr|rdr|wd|gc|ls|th|bs|im|pm> <value>");
   player::message("&e~ml train <epochs> &7| &e~ml stop &7| &e~ml dataset info|clear|undo");
   player::message("&e~ml model reset &7| &e~ml model import <url> &7| &e~ml model export <url>");

@@ -110,7 +110,7 @@ function ml_lstm_step() {
   lf_h = lf_hn;
   lf_c = lf_cn;
   lf_s = variable::add([lf_s, 1]);
-  ml_yield(variable::multiply([lf_H, 9]));
+  ml_yield(10);
 }
 
 // trace of the first step of a layer-direction: x, z = [1 | x | h] and the first forget-gate row
@@ -163,7 +163,7 @@ function ml_lstm_candidate_gate() {
       lf_a = variable::clamp(variable::mathematical_expectation(s`ml.L.${lf_d}.c.${lf_n}`, lf_z), -50, 50);
       lf_gg.append_value(mli_tanh(lf_a));
     }
-    ml_yield(g`mlg.chunk_cost`);
+    ml_yield(g`mlg.chunk_cand`);
   }
 }
 
@@ -180,7 +180,7 @@ function ml_lstm_cell_update() {
       lf_tc.append_value(lf_tk);
       lf_pre.append_value(mli_mul(variable::get_list_value(lf_go, lf_n), lf_tk));
     }
-    ml_yield(variable::multiply([variable::get_list_length(lf_chunk), 15]));
+    ml_yield(g`mlg.chunk_cell`);
   }
 }
 
@@ -189,17 +189,23 @@ function ml_layer_norm_forward() {
   lf_invH = mli_inv(lf_H);
   lf_mean = mli_mul(variable::mathematical_expectation(lf_pre, g`mlg.onesH`), lf_invH);
   lf_dl = [];
-  repeat::for_each_in_list(lf_pre) { lf_k, lf_p ->
-    lf_dl.append_value(mli_sub2(lf_p, lf_mean));
+  repeat::for_each_in_list(g`mlg.chunksH`) { lf_ck, lf_chunk ->
+    repeat::for_each_in_list(lf_chunk) { lf_k, lf_n ->
+      lf_dl.append_value(mli_sub2(variable::get_list_value(lf_pre, lf_n), lf_mean));
+    }
+    ml_yield(g`mlg.chunk_ln`);
   }
   lf_var = mli_mul(variable::mathematical_expectation(lf_dl, lf_dl), lf_invH);
   lf_inv = variable::pow(mli_add2(lf_var, ML_LN_EPS), -0.5);
   lf_xh = [];
   lf_hn = [];
-  repeat::for_each_in_list(lf_dl) { lf_k, lf_dk ->
-    lf_xk = mli_mul(lf_dk, lf_inv);
-    lf_xh.append_value(lf_xk);
-    lf_hn.append_value(variable::mathematical_expectation([variable::get_list_value(lf_gam, lf_k), 1], [lf_xk, variable::get_list_value(lf_bet, lf_k)]));
+  repeat::for_each_in_list(g`mlg.chunksH`) { lf_ck, lf_chunk ->
+    repeat::for_each_in_list(lf_chunk) { lf_k, lf_n ->
+      lf_xk = mli_mul(variable::get_list_value(lf_dl, lf_n), lf_inv);
+      lf_xh.append_value(lf_xk);
+      lf_hn.append_value(variable::mathematical_expectation([variable::get_list_value(lf_gam, lf_n), 1], [lf_xk, variable::get_list_value(lf_bet, lf_n)]));
+    }
+    ml_yield(g`mlg.chunk_ln`);
   }
 }
 
@@ -342,6 +348,7 @@ function ml_pool_forward() {
       }
     }
   }
+  ml_yield(variable::add([variable::multiply([po_T, 9]), variable::multiply([g`mlg.out`, 3])]));
   ml_trace_pooled();
 }
 
@@ -359,11 +366,14 @@ function ml_pool_valid_columns() {
   repeat::for_each_in_list(g`mlg.idxOut`) { po_k, po_i ->
     `po.col.${po_i}` = [];
   }
+  po_cc = variable::add([g`mlg.out`, 3]);
+  ml_yield(po_cc);
   repeat::for_each_in_list(po_H) { po_t, po_h ->
     if (po_t.less(po_valid)) {
       repeat::for_each_in_list(po_h) { po_i, po_x ->
         `po.col.${po_i}`.append_value(po_x);
       }
+      ml_yield(po_cc);
     }
   }
   ml_trace_columns();

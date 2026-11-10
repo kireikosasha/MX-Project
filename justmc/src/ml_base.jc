@@ -29,7 +29,11 @@ inline var ML_CHECKPOINT_THRESHOLD = 0.6;    // CHECKPOINT_DECISION_THRESHOLD
 inline var ML_MIN_RECALL = 0.75;             // CHECKPOINT_MIN_RECALL
 inline var ML_CHUNK = 150;                   // trainOneEpoch chunk size
 inline var ML_FORMAT_VERSION = 6;            // RNNModelML.VERSION
-inline var ML_CHUNK_WORK = 1300;             // estimated cost of the gate rows computed between two ml_yield calls
+inline var ML_CHUNK_WORK = 300;              // estimated actions of a piece of work between two ml_yield calls
+inline var ML_WORK = 800;                    // default s`ml.work`: the most actions in one tick
+inline var ML_WORK_MIN = 150;                // the pace never falls below it
+inline var ML_WORK_START = 300;              // the pace a world starts with
+inline var ML_CPU_AIM = 60;                  // default s`ml.cpu_aim`: CPU usage (percent) the pace is held at
 
 // ---------- elementary functions (one place = one implementation) ----------
 // sigmoid with the LSTM gate clamp (+-50): 1 / (1 + exp(-x))
@@ -98,27 +102,73 @@ inline function mli_slice(lst, start, end_excl) -> array {
   return variable::trim_list(lst, start, _sl_e);
 }
 
-// ---------- throttling: never let one tick run too much code ----------
-// ml_yield(cost) adds an estimated cost (JustMC actions); when the budget is spent it waits one tick,
-// and keeps waiting while the world CPU usage is above s`ml.cpu_max` percent.
+// ---------- throttling: an even, small load in every tick ----------
+// JustMC stops the code of a world for a line that runs too long without a wait (line_lifetime), for a CPU
+// usage that stays too high (high_cpu) and for a load that comes in bursts (high_cpu_boost). So heavy work
+// is cut into pieces of a few hundred actions, and ml_yield(cost) is called after each piece with its
+// estimated cost in actions. When g`mlg.pace` actions are done the line waits: one tick, or more if the
+// piece was bigger than the pace. The pace follows the CPU usage of the world: it grows up to s`ml.work`
+// actions per tick while the usage is under s`ml.cpu_aim` percent and shrinks when it is above.
 function ml_yield(yl_cost: number) {
   g`mlg.yield_acc` = variable::add([g`mlg.yield_acc`, yl_cost]);
-  if (g`mlg.yield_acc`.greater_or_equals(s`ml.budget`)) {
-    g`mlg.yield_acc` = 0;
+  if (g`mlg.yield_acc`.greater_or_equals(g`mlg.pace`)) {
+    ml_pause();
+  }
+}
+
+function ml_pause() {
+  yl_t = variable::clamp(variable::divide([g`mlg.yield_acc`, g`mlg.pace`], "FLOOR"), 1, 8);
+  g`mlg.yield_acc` = 0;
+  yl_i = 0;
+  repeat::while(yl_i.less(yl_t)) {
     code::wait(1, "TICKS");
-    yl_n = 0;
-    yl_go = 1;
-    repeat::while(yl_go.equals(1)) {
-      yl_go = 0;
-      yl_cpu = value::cpu_usage;
-      if (yl_cpu.greater(s`ml.cpu_max`)) {
-        if (yl_n.less(200)) {
-          code::wait(1, "TICKS");
-          yl_n = variable::add([yl_n, 1]);
-          yl_go = 1;
-        }
+    yl_i = variable::add([yl_i, 1]);
+  }
+  yl_cpu = value::cpu_usage;
+  if (yl_cpu.greater(s`ml.cpu_aim`)) {
+    ml_pause_hot();
+  } else {
+    yl_low = variable::subtract([s`ml.cpu_aim`, 10]);
+    if (yl_cpu.less(yl_low)) {
+      g`mlg.pace` = variable::min([s`ml.work`, variable::add([g`mlg.pace`, 20])]);
+    }
+  }
+}
+
+// above the aim: slower by 2 % for every percent of the excess; far above it no work at all until it is back
+function ml_pause_hot() {
+  yl_over = variable::subtract([yl_cpu, s`ml.cpu_aim`]);
+  yl_k = variable::clamp(variable::subtract([1, variable::multiply([yl_over, 0.02])]), 0.6, 1);
+  g`mlg.pace` = variable::max([ML_WORK_MIN, variable::round(variable::multiply([g`mlg.pace`, yl_k]), 0, "FLOOR")]);
+  yl_top = variable::add([s`ml.cpu_aim`, 10]);
+  yl_n = 0;
+  yl_go = 1;
+  repeat::while(yl_go.equals(1)) {
+    yl_go = 0;
+    if (yl_cpu.greater(yl_top)) {
+      if (yl_n.less(200)) {
+        code::wait(1, "TICKS");
+        yl_n = variable::add([yl_n, 1]);
+        yl_cpu = value::cpu_usage;
+        yl_go = 1;
       }
     }
+  }
+}
+
+// mc_list split into lists of mc_per items -> mc_out (loops over them call ml_yield after every chunk)
+function ml_chunks() {
+  mc_out = [];
+  mc_cur = [];
+  repeat::for_each_in_list(mc_list) { mc_k, mc_v ->
+    mc_cur.append_value(mc_v);
+    if (variable::get_list_length(mc_cur).greater_or_equals(mc_per)) {
+      mc_out.append_value([mc_cur]);
+      mc_cur = [];
+    }
+  }
+  if (not mc_cur.list_is_empty()) {
+    mc_out.append_value([mc_cur]);
   }
 }
 
@@ -226,24 +276,25 @@ function ml_trace_values() {
 // mlg.dirs    = [0] or [0, 1]
 // mlg.gates   = ["f", "i", "c", "o"]
 function ml_rebuild_runtime() {
-  if (not s`ml.budget`.exists()) {
-    s`ml.budget` = 4000;
+  if (not s`ml.work`.exists()) {
+    s`ml.work` = ML_WORK;
   }
-  if (not s`ml.cpu_max`.exists()) {
-    s`ml.cpu_max` = 75;
+  if (not s`ml.cpu_aim`.exists()) {
+    s`ml.cpu_aim` = ML_CPU_AIM;
   }
   if (not g`mlg.yield_acc`.exists()) {
     g`mlg.yield_acc` = 0;
   }
+  if (not g`mlg.pace`.exists()) {
+    g`mlg.pace` = variable::min([ML_WORK_START, s`ml.work`]);
+  }
   ml_calibrate_trim();
   ml_build_index_lists();
   // a wide model has thousands of names and indices: pauses between the parts
-  mb_cost = variable::multiply([variable::add([s`ml.in`, s`ml.hid`, g`mlg.out`]), 4]);
-  ml_yield(mb_cost);
+  ml_yield(variable::multiply([s`ml.hid`, 3]));
   ml_build_parameter_names();
-  ml_yield(variable::multiply([s`ml.hid`, s`ml.layers`, 24]));
   ml_build_zero_vectors();
-  ml_yield(mb_cost);
+  ml_yield(variable::multiply([variable::add([s`ml.in`, s`ml.hid`, g`mlg.out`]), 2]));
   g`mlg.big` = variable::pow(10, 308);
   g`mlg.meta_ok` = 1;
 }
@@ -265,9 +316,11 @@ function ml_build_index_lists() {
   mr_n = s`ml.in`;
   ml_range();
   g`mlg.idxIn` = mr_list;
+  ml_yield(variable::multiply([mr_n, 3]));
   mr_n = s`ml.hid`;
   ml_range();
   g`mlg.idxH` = mr_list;
+  ml_yield(variable::multiply([mr_n, 3]));
   if (s`ml.bi`.equals(1)) {
     g`mlg.out` = variable::multiply([s`ml.hid`, 2]);
     g`mlg.dirs` = [0, 1];
@@ -278,37 +331,38 @@ function ml_build_index_lists() {
   mr_n = g`mlg.out`;
   ml_range();
   g`mlg.idxOut` = mr_list;
+  ml_yield(variable::multiply([mr_n, 3]));
   mr_n = s`ml.layers`;
   ml_range();
   g`mlg.layers` = mr_list;
   ml_build_gate_chunks();
 }
 
-// JustMC stops a line of code that runs too long without a wait, and a gate of a wide layer is hundreds of
-// long dot products. So the neurons are processed in chunks with ml_yield between them:
-// g`mlg.chunksH` = lists of neuron indices, g`mlg.chunk_cost` = estimated cost of one chunk of one gate
-// (per neuron: the activation, ~5 actions, + the dot product over [1 | x | h], counted as length / 40)
+// The neurons of a layer in chunks, with ml_yield after each: g`mlg.chunksH` = lists of neuron indices.
+// A chunk is about ML_CHUNK_WORK actions of the most expensive loop over the neurons (the cell update,
+// ~15 actions a neuron; a gate is the activation, ~6 actions, + the dot product over [1 | x | h]).
+// Estimated cost of one chunk: g`mlg.chunk_cost` of a sigmoid gate, g`mlg.chunk_cand` of the candidate gate,
+// g`mlg.chunk_cell` of the cell update, g`mlg.chunk_ln` of a LayerNorm loop.
 function ml_build_gate_chunks() {
   mb_row = s`ml.in`;
   if (s`ml.layers`.greater(1)) {
     mb_row = variable::max([mb_row, g`mlg.out`]);
   }
   mb_row = variable::add([mb_row, s`ml.hid`, 1]);
-  mb_unit = variable::add([5, variable::divide([mb_row, 40])]);
-  mb_per = variable::max([4, variable::divide([ML_CHUNK_WORK, mb_unit], "FLOOR")]);
-  g`mlg.chunk_cost` = variable::round(variable::multiply([mb_per, mb_unit]), 0, "CEIL");
-  g`mlg.chunksH` = [];
-  mb_chunk = [];
-  repeat::for_each_in_list(g`mlg.idxH`) { mb_k, mb_v ->
-    mb_chunk.append_value(mb_v);
-    if (variable::get_list_length(mb_chunk).greater_or_equals(mb_per)) {
-      g`mlg.chunksH`.append_value([mb_chunk]);
-      mb_chunk = [];
-    }
-  }
-  if (not mb_chunk.list_is_empty()) {
-    g`mlg.chunksH`.append_value([mb_chunk]);
-  }
+  mb_unit = variable::add([6.3, variable::divide([mb_row, 400])]);
+  mb_most = variable::max([mb_unit, 15]);
+  mc_per = variable::max([4, variable::divide([ML_CHUNK_WORK, mb_most], "FLOOR")]);
+  // chunks of equal size (the estimated costs are those of a full chunk)
+  mb_k = variable::round(variable::divide([s`ml.hid`, mc_per]), 0, "CEIL");
+  mc_per = variable::round(variable::divide([s`ml.hid`, mb_k]), 0, "CEIL");
+  mc_list = g`mlg.idxH`;
+  ml_chunks();
+  g`mlg.chunksH` = mc_out;
+  mb_n = mc_per;
+  g`mlg.chunk_cost` = variable::round(variable::multiply([mb_n, mb_unit]), 0, "CEIL");
+  g`mlg.chunk_cand` = variable::add([g`mlg.chunk_cost`, variable::multiply([mb_n, 2])]);
+  g`mlg.chunk_cell` = variable::multiply([mb_n, 15]);
+  g`mlg.chunk_ln` = variable::multiply([mb_n, 5.5]);
 }
 
 // [0, 1, ..., mr_n - 1] -> mr_list
@@ -330,10 +384,13 @@ function ml_build_parameter_names() {
     repeat::for_each_in_list(g`mlg.dirs`) { mb_di, mb_dir ->
       mb_d = variable::add([variable::multiply([mb_l, 2]), mb_dir]);
       g`mlg.lnnames`.append_value(["ml.L.${mb_d}.g", "ml.L.${mb_d}.b"]);
-      repeat::for_each_in_list(g`mlg.idxH`) { mb_ni, mb_n ->
-        repeat::for_each_in_list(g`mlg.gates`) { mb_gi, mb_gt ->
-          g`mlg.rownames`.append_value("ml.L.${mb_d}.${mb_gt}.${mb_n}");
+      repeat::for_each_in_list(g`mlg.chunksH`) { mb_ci, mb_chunk ->
+        repeat::for_each_in_list(mb_chunk) { mb_ni, mb_n ->
+          repeat::for_each_in_list(g`mlg.gates`) { mb_gi, mb_gt ->
+            g`mlg.rownames`.append_value("ml.L.${mb_d}.${mb_gt}.${mb_n}");
+          }
         }
+        ml_yield(g`mlg.chunk_ln`);
       }
     }
   }
