@@ -15,6 +15,9 @@ Export of the Millennium chat model v2 (chat_train.py) for JustMC, one manifest 
       ch.v.<b>, ch.c.<b>    vocabulary maps of the tokenizer (word starts / continuations), as in the reader
       ch.h0, ch.c0          the LSTM state after [U] from zero (a reply starts from it: one step less)
       settings, special tokens; ch.ready = 1 last
+      the big model (ch.ver 3, chat_text.py) also: ch.op0 (the first of the 9 operation tokens), ch.n0 / ch.r0
+      (the first slot / result token), ch.T, ch.F, ch.numi / ch.numv (tokens that are whole numbers and their
+      values: constants of calculation steps), thresholds chosen on the validation set (chat_thresholds.py)
   ai.json            reader + chat in one manifest (for a world without the reader)
 Every file has at most 24000 bytes.
 
@@ -22,6 +25,7 @@ Every file has at most 24000 bytes.
 """
 import argparse
 import json
+import re
 import os
 import sys
 
@@ -95,7 +99,11 @@ def main():
     ap.add_argument("--wiki", type=float, default=0.1, help="P([W]) from which the reader answers")
     ap.add_argument("--sure", type=float, default=0.4, help="P([W]) from which a failed search ends in 'I don't know' "
                                                             "(below it the chat model replies after all)")
+    ap.add_argument("--name", default="chat", help="folder of the model under weights/ (in the ai.json manifest)")
+    ap.add_argument("--thresholds", help="chat_thresholds.py output: wiki / sure / conf chosen on the validation set")
     a = ap.parse_args()
+    th = json.load(open(a.thresholds)) if a.thresholds and os.path.exists(a.thresholds) else {}
+    a.wiki, a.sure = th.get("wiki", a.wiki), th.get("sure", a.sure)
     ck = torch.load(a.model, map_location="cpu", weights_only=False)
     st, classes, sp, arch, s0 = ck["state"], ck["classes"], ck["special"], ck["arch"], float(ck["scale"])
     P = {k: v.detach().double().numpy() for k, v in st.items() if k not in ("emb", "cls_of", "pos_in")}
@@ -117,10 +125,18 @@ def main():
     h0, c0 = lstm_step(rows_lstm, lnv, H, cps_u, [0.0] * H, [0.0] * H)
     pk.put("save-chat.json", dumps({"format": "millennium", "save": "chat"}))
     where = {t: (c, k) for c, toks in enumerate(classes) for k, t in enumerate(toks)}
-    meta = [("ch.ver", 2), ("ch.hid", H), ("ch.dim", D), ("ch.dv", Dv), ("ch.da", Da), ("ch.nin", D), ("ch.V", V),
+    big = "[+]" in sp
+    meta = [("ch.ver", 3 if big else 2), ("ch.hid", H), ("ch.dim", D), ("ch.dv", Dv), ("ch.da", Da), ("ch.nin", D), ("ch.V", V),
             ("ch.C", len(classes)), ("ch.rows", rows), ("ch.params", n_par), ("ch.s0", fmt(s0, 9)), ("ch.so", fmt(-OFF * s0, 9)),
             ("ch.temp0", a.temp), ("ch.samp0", 1), ("ch.typ0", a.typ), ("ch.ks0", a.ks), ("ch.topc", a.topc), ("ch.topw", a.topw), ("ch.wiki0", a.wiki), ("ch.sure0", a.sure),
-            ("ch.max", 36), ("ch.maxm", 24)]
+            ("ch.max", 48 if big else 36), ("ch.maxm", 24)]
+    if big:
+        import chat_text as T
+        nums = sorted((i, int(t)) for t, i in vocab.items() if re.fullmatch("[0-9]{1,9}", t))
+        meta += [("ch.op0", sp["[+]"]), ("ch.n0", sp["[N1]"]), ("ch.r0", sp["[R1]"]), ("ch.T", sp["[T]"]), ("ch.F", sp["[F]"]),
+                 ("ch.nops", len(T.OPS)), ("ch.nslots", T.N_SLOTS), ("ch.rslots", T.R_SLOTS),
+                 ("ch.numi", [i for i, _ in nums]), ("ch.numv", [v for _, v in nums]), ("ch.conf0", th.get("conf", -1000))]
+        assert [sp[t] for t in T.OP_TOKENS] == list(range(sp["[+]"], sp["[+]"] + len(T.OPS)))
     for name in ("U", "B", "E", "W"):
         i = sp[f"[{name}]"]
         c, k = where.get(i, (-1, -1))
@@ -153,7 +169,7 @@ def main():
     pk.put("ch-ready.json", dumps({"store": {"ch.ready": 1}}))
     n = pk.finish("chat")
     open(os.path.join(a.out, "ai.json"), "w").write(dumps({"format": "millennium", "manifest": [
-        f"{BASE}/reader/reader.json", f"{BASE}/chat/chat.json"]}))
+        f"{BASE}/reader/reader.json", f"{BASE}/{a.name}/chat.json"]}))
     print(f"written {a.out}/chat.json (manifest) + {n} files, ai.json (reader + chat); {n_par} parameters")
 
 

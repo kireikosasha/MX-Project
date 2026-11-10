@@ -18,6 +18,8 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "reader"))
 import reader_text as R  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import chat_text as T  # noqa: E402
 from reader_ref import dot, sigm, tanh, LN_EPS, E  # noqa: E402
 
 I_RE = re.compile(r"(?<![^\W\d_'])i(?![^\W\d_])")       # the English "i" alone -> "I"
@@ -67,7 +69,8 @@ class Chat:
     def __init__(self, chat_dir):
         self.s, self.rows, self.ln = load(chat_dir)
         s = self.s
-        assert s["ch.ver"] == 2
+        assert s["ch.ver"] in (2, 3)
+        self.big = s["ch.ver"] == 3              # numbers as slots, calculation steps (chat_text.py)
         self.D, self.H, self.C, self.R = int(s["ch.dim"]), int(s["ch.hid"]), int(s["ch.C"]), int(s["ch.rows"])
         self.Da, self.Dv = int(s["ch.da"]), int(s["ch.dv"])
         self.sp = {k: int(s[f"ch.{k}"]) for k in "UBEW"}
@@ -96,10 +99,39 @@ class Chat:
         return out
 
     def message_tokens(self, text):
-        ids = []
-        for w, _, _ in R.words(R.normalize(text.replace("¦", "|"))):
-            ids += self.wordpiece(w.lower())
-        return ids[-int(self.s["ch.maxm"]):]
+        """-> tokens, the values of the number slots (the big model only)"""
+        ids, vals = [], []
+        text = R.normalize(text.replace("¦", "|"))
+        for w, _, _ in R.words(T.prepare(text) if self.big else text):
+            v = T.number(w) if self.big else None
+            if v is not None and len(vals) < int(self.s["ch.nslots"]):
+                ids.append(int(self.s["ch.n0"]) + len(vals))
+                vals.append(v)
+            else:
+                ids += self.wordpiece(w.lower())
+        return ids[-int(self.s["ch.maxm"]):], vals
+
+    def operand(self, tid, vals, results):
+        """the value of an operand token of a calculation step, None if it has none"""
+        s = self.s
+        n0, r0 = int(s["ch.n0"]), int(s["ch.r0"])
+        if n0 <= tid < n0 + int(s["ch.nslots"]):
+            return vals[tid - n0] if tid - n0 < len(vals) else None
+        if r0 <= tid < r0 + int(s["ch.rslots"]):
+            return results[tid - r0] if tid - r0 < len(results) else None
+        if tid in s["ch.numi"]:
+            return float(s["ch.numv"][s["ch.numi"].index(tid)])
+        return None
+
+    def shown(self, tid, vals, results):
+        """the text of a token in the reply: slots and results are written as their numbers"""
+        if self.big:
+            s = self.s
+            n0, r0 = int(s["ch.n0"]), int(s["ch.r0"])
+            if n0 <= tid < n0 + int(s["ch.nslots"]) or r0 <= tid < r0 + int(s["ch.rslots"]):
+                v = self.operand(tid, vals, results)
+                return "?" if v is None else T.fmt(v)
+        return self.text_of(tid)
 
     # ---- network
     def cps(self, tid):
@@ -245,7 +277,7 @@ class Chat:
             h, c = self.step(self.cps(self.sp["U"]), h, c)
         else:                                          # the state after [U] from zero, computed at export
             h, c = list(s["ch.h0"]), list(s["ch.c0"])
-        msg = self.message_tokens(message)
+        msg, nums = self.message_tokens(message)
         keys, vals = [], []
         for t in msg:
             h, c = self.step(self.cps(t), h, c)
@@ -261,6 +293,9 @@ class Chat:
         p_w = self.softmax_at(cl, cW) * self.softmax_at(wl, pW)
         res = {"mode": "wiki" if p_w >= wiki else "chat", "sure": p_w >= s["ch.sure0"], "pW": p_w, "tokens": msg}
         out, text = [], ""
+        op0 = int(s["ch.op0"]) if self.big else -1
+        need, op, args, results, steps = 0, None, [], [], []      # a calculation step in progress, its results
+        lp_sum, lp_n = 0.0, 0
         for n in range(int(s["ch.max"])):
             cl = self.class_logits(o)
             cE = self.cls["E"][0]
@@ -268,27 +303,53 @@ class Chat:
                 cl[cW] = LOW
             if n == 0 and len(s[f"ch.k.{cE}"]) == 1:
                 cl[cE] = LOW
-            cc = self.sample(cl, int(s["ch.topc"]), temp, rng)
-            ids, wl = self.word_logits(cc, o, so)
+            tt = 0 if need else temp                   # the operands of a step: always the most likely token
+            ci = self.sample(cl, int(s["ch.topc"]), tt, rng)
+            ids, wl = self.word_logits(ci, o, so)
             for t in out:                              # a token said before is less likely
                 if t in ids:
                     wl[ids.index(t)] -= REP
             for t in [self.sp["W"]] + ([self.sp["E"]] if n == 0 else []):
                 if t in ids:
                     wl[ids.index(t)] = LOW
-            tid = ids[self.sample(wl, int(s["ch.topw"]), temp, rng)]
+            wi = self.sample(wl, int(s["ch.topw"]), tt, rng)
+            tid = ids[wi]
+            if self.big:                               # confidence: the mean log-probability of the chosen tokens
+                lp_sum += math.log(max(1e-12, self.softmax_at(cl, ci) * self.softmax_at(wl, wi)))
+                lp_n += 1
             if tid == self.sp["E"]:
                 break
-            out.append(tid)
-            text = self.detok(text, self.text_of(tid))
             x = self.cps(tid)
             h, c = self.step(x, h, c)
+            forced = None
+            if need:                                   # an operand of the step
+                args.append(self.operand(tid, nums, results))
+                need -= 1
+                if need == 0:
+                    o3 = ("F",) if None in args else T.calc(T.OPS[op], args[0], args[1])
+                    if o3[0] == "R" and len(results) >= int(s["ch.rslots"]):
+                        o3 = ("F",)
+                    if o3[0] == "R":
+                        results.append(o3[1])
+                        forced = int(s["ch.r0"]) + len(results) - 1
+                    else:
+                        forced = int(s["ch.T"] if o3[0] == "T" else s["ch.F"])
+                    steps.append((T.OPS[op], args[0], args[1], o3))
+            elif op0 <= tid < op0 + len(T.OPS) and self.big:
+                need, op, args = 2, tid - op0, []
+            else:
+                out.append(tid)
+                text = self.detok(text, self.shown(tid, nums, results))
+            if forced is not None:                     # the outcome of the step is fed, not chosen
+                x = self.cps(forced)
+                h, c = self.step(x, h, c)
             ctx = self.attend(h, keys, vals)
             o, so = self.out(h, x, ctx)
         if text:
             text = I_RE.sub("I", text)
             text = text[0].upper() + text[1:]
-        res.update(reply=out, text=text, state={"h": h, "c": c})
+        res.update(reply=out, text=text, state={"h": h, "c": c}, steps=steps, conf=lp_sum / max(1, lp_n))
+        res["unsure"] = self.big and lp_n > 0 and res["conf"] < self.setting("conf", -1000)
         return res
 
 
@@ -305,7 +366,9 @@ def main():
     for i, m in enumerate(a.message):
         r = ch.reply(m, a.temp, seed=a.seed, state=None if a.fresh or i % 2 == 0 else state)
         state = r["state"]
-        print(f"> {m}\n  [{r['mode']}, P(W) {r['pW']:.2f}] {r['text']}")
+        calc = "".join(f" {{{T.fmt(x) if x is not None else '?'} {o} {T.fmt(y) if y is not None else '?'} -> "
+                       f"{T.fmt(z[1]) if z[0] == 'R' else z[0]}}}" for o, x, y, z in r["steps"])
+        print(f"> {m}\n  [{r['mode']}, P(W) {r['pW']:.2f}, conf {r['conf']:.2f}]{calc} {r['text']}")
 
 
 if __name__ == "__main__":

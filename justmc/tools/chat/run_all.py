@@ -2,7 +2,9 @@
 """
 The whole chat model in one command:
 
-    python justmc/tools/chat/run_all.py --work ../millennium-chat
+    python justmc/tools/chat/run_all.py --work ../millennium-chat                 (the 6 M model)
+    python justmc/tools/chat/run_all.py --work ../millennium-chat --model 13m     (the big one: LSTM 512,
+        embedding 512, numbers as slots and step-by-step calculation, three exchanges; -> weights/chat13m)
 
   1. download.py        datasets -> <work>/raw
   2. chat_sources.py    dialogues -> <work>/v2/src
@@ -25,8 +27,14 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 ROOT = os.path.abspath(os.path.join(REPO, ".."))
-VOCAB = os.path.join(HERE, "vocab.json")
 j = os.path.join
+# hidden / dim / attention sizes, vocabulary, data builder, folder under <work>, folder under weights/, training flags
+PRESETS = {
+    "6m": {"hidden": 256, "dim": 256, "da": 64, "dv": 128, "vocab": "vocab.json", "builder": "chat_data.py", "sub": "v2",
+           "name": "chat", "batch": 384, "flags": []},
+    "13m": {"hidden": 512, "dim": 512, "da": 128, "dv": 256, "vocab": "vocab_big.json", "builder": "chat_data_big.py", "sub": "big",
+            "name": "chat13m", "batch": 384, "flags": []},
+}
 
 
 def run(args, ok=(0,)):
@@ -71,11 +79,12 @@ def git(*args):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--work", required=True, help="folder for datasets, translations, checkpoints (several GB)")
-    ap.add_argument("--hidden", type=int, default=256)
-    ap.add_argument("--dim", type=int, default=256)
+    ap.add_argument("--model", default="6m", choices=sorted(PRESETS), help="which model to train")
+    ap.add_argument("--hidden", type=int)
+    ap.add_argument("--dim", type=int)
     ap.add_argument("--epochs", type=int, default=8)
     ap.add_argument("--ft-epochs", type=int, default=2)
-    ap.add_argument("--batch", type=int, default=384)
+    ap.add_argument("--batch", type=int)
     ap.add_argument("--device", default=None)
     ap.add_argument("--tag", default="", help="suffix of the checkpoint folders (several models side by side)")
     ap.add_argument("--ru-mb", type=int, default=200)
@@ -83,11 +92,15 @@ def main():
     ap.add_argument("--limit", type=int, default=0, help="train on N random sequences only (a quick trial run)")
     ap.add_argument("--no-pip", action="store_true", help="do not install anything")
     ap.add_argument("--no-push", action="store_true", help="do not commit and push the exported model")
-    ap.add_argument("--out", default=j(REPO, "weights", "chat"))
+    ap.add_argument("--out")
     a = ap.parse_args()
+    P = PRESETS[a.model]
+    VOCAB = j(HERE, P["vocab"])
+    a.out = a.out or j(REPO, "weights", P["name"])
+    a.hidden, a.dim, a.batch = a.hidden or P["hidden"], a.dim or P["dim"], a.batch or P["batch"]
     w = os.path.abspath(a.work)
-    v2 = j(w, "v2")
-    src = j(v2, "src")
+    src = j(w, "v2", "src")                     # the dialogues and their translations are shared by the models
+    v2 = j(w, P["sub"])
     dev = ["--device", a.device] if a.device else []
     run([j(HERE, "download.py"), "--out", j(w, "raw"), "--ru-mb", str(a.ru_mb)])
     if not (os.path.exists(j(src, "dialogs.jsonl")) and os.path.exists(j(src, "pairs.jsonl"))):
@@ -95,7 +108,7 @@ def main():
     if not a.no_translate and not os.path.exists(j(src, "pairs_uk.jsonl")):
         if not a.no_pip:
             ensure_translation_packages()
-        if run([j(HERE, "chat_translate.py"), "--src", src, "--cache", j(v2, "mt")] + dev, ok=(0, 3)) == 3:
+        if run([j(HERE, "chat_translate.py"), "--src", src, "--cache", j(w, "v2", "mt")] + dev, ok=(0, 3)) == 3:
             print(">> going on without the translated dialogues", flush=True)
     # the data is rebuilt when the translations appear later
     mark = "mt" if os.path.exists(j(src, "pairs_uk.jsonl")) else "nomt"
@@ -103,10 +116,11 @@ def main():
     for name, extra in (("data", []), ("data_ft", ["--ft"])):
         d = j(v2, name)
         if not (os.path.exists(j(d, "chat_data.npz")) and os.path.exists(j(d, mark))):
-            run([j(HERE, "chat_data.py")] + common + ["--out", d] + extra)
+            run([j(HERE, P["builder"])] + common + ["--out", d] + extra)
             open(j(d, mark), "w").close()
     out, out_ft = j(v2, "out" + a.tag), j(v2, "out_ft" + a.tag)
-    size = ["--hidden", str(a.hidden), "--dim", str(a.dim), "--batch", str(a.batch)]
+    size = ["--hidden", str(a.hidden), "--dim", str(a.dim), "--da", str(P["da"]), "--dv", str(P["dv"]),
+            "--batch", str(a.batch)] + P["flags"]
     if a.limit:
         size += ["--limit", str(a.limit)]
     if not trained(j(out, "chat.pt")):
@@ -114,13 +128,18 @@ def main():
     if not trained(j(out_ft, "chat.pt")):
         run([j(HERE, "chat_train.py"), "--data", j(v2, "data_ft"), "--out", out_ft, "--init", j(out, "chat.pt"),
              "--epochs", str(a.ft_epochs), "--lr", "8e-4", "--resume"] + size + dev)
-    run([j(HERE, "chat_export.py"), "--model", j(out_ft, "chat.pt"), "--vocab", VOCAB, "--out", a.out])
+    export = [j(HERE, "chat_export.py"), "--model", j(out_ft, "chat.pt"), "--vocab", VOCAB, "--out", a.out, "--name", P["name"]]
+    if a.model != "6m":                         # decision thresholds chosen on the validation set
+        run([j(HERE, "chat_thresholds.py"), "--model", j(out_ft, "chat.pt"), "--data", j(v2, "data"),
+             "--out", j(out_ft, "thresholds.json")] + dev)
+        export += ["--thresholds", j(out_ft, "thresholds.json")]
+    run(export)
     rel = os.path.relpath(a.out, ROOT).replace("\\", "/")
     if a.no_push:
         print(f"done: {a.out}\nnow: git add {rel} && git commit -m \"chat model\" && git push, then ~ai install in the world")
         return
     git("add", "-A", rel)
-    c = git("commit", "-m", "JustMC chat: trained model", "--", rel)
+    c = git("commit", "-m", "JustMC chat: trained model" + ("" if a.model == "6m" else f" ({a.model})"), "--", rel)
     git("pull", "--rebase", "--autostash")
     p = git("push")
     if p.returncode == 0:

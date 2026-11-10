@@ -1367,7 +1367,7 @@ function ai_on_chat() {
     cm_short = variable::get_list_length(cm_a).less_or_equals(4);
     cm_kind = "ask";
     if (cm_short.equals(1)) {
-      if (cm_sub.equals(["install", "tau", "temp", "sampling", "ks", "pace"])) {
+      if (cm_sub.equals(["install", "tau", "temp", "sampling", "ks", "pace", "conf"])) {
         cm_kind = "admin";
       }
       if (cm_sub.equals(["help", "status", "about"])) {
@@ -1400,6 +1400,8 @@ function ai_on_admin_command() {
     ai_cmd_ks();
   } elif (cm_sub.equals("pace")) {
     ml_cmd_pace();
+  } elif (cm_sub.equals("conf")) {
+    ai_cmd_conf();
   } else {
     ai_cmd_tau();
   }
@@ -1480,6 +1482,26 @@ function ai_cmd_temp() {
   player::message("&9[AI] &fTemperature = &e${at_t} &7(higher = wilder replies, 0 = always the same)");
 }
 
+// ~ai conf <value> | off | reset: the mean log-probability of the tokens of a reply below which the big
+// model says it is not sure (the default was chosen on the validation set and comes with the model)
+function ai_cmd_conf() {
+  if (cm_a2.equals("off")) {
+    s`ch.conf` = -1000;
+  } elif (cm_a2.equals("reset")) {
+    variable::purge(["ch.conf"], "SAVE", "EQUALS");
+  } elif (not cm_a2.equals("")) {
+    s`ch.conf` = variable::clamp(variable::convert_text_to_number(cm_a2, 10), -1000, 0);
+  } else {
+    as_x = 0;
+  }
+  ch_big_settings();
+  ac_last = 0;
+  if (g`ch.last_conf`.exists()) {
+    ac_last = g`ch.last_conf`;
+  }
+  player::message("&9[AI] &fNot sure below &e${ch_conf} &7(the big model only; the last reply had ${ac_last}; closer to 0 = says it more often; ~ai conf <value> | off | reset)");
+}
+
 // ~ai sampling typical [mass] | topk | reset: how the next token is drawn
 function ai_cmd_sampling() {
   if (cm_a2.equals("typical")) {
@@ -1554,7 +1576,7 @@ function ai_cmd_about() {
 
 function ai_cmd_help() {
   player::message("&9[AI] &e~ai <message> &7- talk (English, русский, українська) | &e~ai wiki <question> &7- straight to Wikipedia | &e~ai status &7| &e~ai about");
-  player::message("&9[AI] &7admins: &e~ai install &7- download the models | &e~ai temp <0..2>|reset &7- how wild the replies are | &e~ai sampling typical|topk &7| &e~ai ks <0..1>|off &7| &e~ai tau <0..1>|reset &7- how sure the reader must be | &e~ai pace <actions per tick> [cpu %]|reset &7- load on the world");
+  player::message("&9[AI] &7admins: &e~ai install &7- download the models | &e~ai temp <0..2>|reset &7- how wild the replies are | &e~ai sampling typical|topk &7| &e~ai ks <0..1>|off &7| &e~ai tau <0..1>|reset &7- how sure the reader must be | &e~ai pace <actions per tick> [cpu %]|reset &7- load on the world | &e~ai conf <value>|off|reset &7- when the big model says it is not sure");
 }
 
 // =====================================================================
@@ -1582,6 +1604,10 @@ inline var CH_WORDS_COST = 260;   // their estimated cost in actions
 inline var CH_DRAW_COST = 260;    // estimated cost of drawing a class or a token
 inline var CH_SAMP = 1;           // default sampling: 1 typical, 0 top-k
 inline var CH_TYP = 0.9;          // default mass of the typical set
+inline var CH_NUM_RE = "(?<![\\s\\S])[0-9]{1,12}(d[0-9]{1,6})?(?![\\s\\S])";      // a whole word that is a number
+inline var CH_TIMES_RE = "(?<=[0-9])[xXхХ](?=[0-9])";                                 // 5x3
+inline var CH_DEC_RE = "(?<=(?<![0-9.,])[0-9]{1,12})[.,](?=[0-9]{1,6}(?![.,]?[0-9]))";  // the separator of 2,5
+inline var CH_CONF_COST = 60;     // estimated cost of the confidence of one token (without the class softmax)
 inline var CH_KS = 0.75;          // default Kolmogorov-Smirnov distance from which a step counts as predictable
 
 // is the chat model (version 2) installed? -> ci_ok
@@ -1590,7 +1616,7 @@ function ch_installed() {
   if (s`ch.ready`.exists()) {
     if (s`ch.ver`.exists()) {
       if (s`ch.ready`.equals(1)) {
-        if (s`ch.ver`.equals(2)) {
+        if (s`ch.ver`.equals([2, 3])) {
           ci_ok = 1;
         }
       }
@@ -1633,12 +1659,32 @@ function ch_settings() {
     ch_temp = s`ch.temp`;
   }
   ch_sampling_settings();
+  ch_big_settings();
   cs_c = s`ch.cW`;
   cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
   ch_one_W = cs_n.equals(1);
   cs_c = s`ch.cE`;
   cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
   ch_one_E = cs_n.equals(1);
+}
+
+// The big model (ch.ver 3): the numbers of a message are slot tokens, the reply can start with calculation
+// steps (operation, two operands; the outcome is computed here and fed), a conversation has three exchanges,
+// and a reply whose tokens were unlikely on average is replaced by "not sure" (ch_conf, ~ai conf).
+function ch_big_settings() {
+  ch_big = 0;
+  ch_chain = 2;
+  ch_conf = -1000;
+  if (s`ch.ver`.equals(3)) {
+    ch_big = 1;
+    ch_chain = 3;
+    if (s`ch.conf0`.exists()) {
+      ch_conf = s`ch.conf0`;
+    }
+    if (s`ch.conf`.exists()) {
+      ch_conf = s`ch.conf`;
+    }
+  }
 }
 
 // how a token is drawn: the user's setting (~ai sampling, ~ai ks), else the one stored with the model, else
@@ -1721,18 +1767,62 @@ function ch_build_chunks() {
 // the message as chat tokens (the chat vocabulary, the last s`ch.maxm` of them) -> cg_msg
 function ch_tokenize() {
   rw_t = aq_text;
+  if (ch_big.equals(1)) {
+    ch_prepare();
+  }
   rd_words();
   wp_ids = [];
   wp_pre = "ch";
+  ch_nums = [];
   repeat::for_each_in_list(rw_list) { ct_k, ct_w ->
-    wp_w = variable::set_text_case(ct_w, "LOWER");
-    rd_wordpiece();
+    ch_word_tokens();
   }
   cg_msg = wp_ids;
   ml_yield(10);
   ct_n = variable::get_list_length(cg_msg);
   if (ct_n.greater(s`ch.maxm`)) {
     cg_msg = mli_slice(cg_msg, variable::subtract([ct_n, s`ch.maxm`]), ct_n);
+  }
+}
+
+// the message before it is split into words (chat_text.prepare): multiplication and division signs, 5x3,
+// and a decimal number becomes one word (2,5 -> 2d5)
+function ch_prepare() {
+  rw_t = variable::regex_replace_text(rw_t, "×", "*");
+  rw_t = variable::regex_replace_text(rw_t, "÷", "/");
+  rw_t = variable::regex_replace_text(rw_t, CH_TIMES_RE, " * ");
+  rw_t = variable::regex_replace_text(rw_t, CH_DEC_RE, "d");
+}
+
+// the tokens of word ct_w join wp_ids; a number (the big model, while slots are free) is the next slot token
+// and its value joins ch_nums
+function ch_word_tokens() {
+  ct_num = 0;
+  if (ch_big.equals(1)) {
+    if (variable::get_list_length(ch_nums).less(s`ch.nslots`)) {
+      if (variable::regex_replace_text(ct_w, CH_NUM_RE, "").equals("")) {
+        ct_num = 1;
+      }
+    }
+  }
+  if (ct_num.equals(1)) {
+    wp_ids.append_value(variable::add([s`ch.n0`, variable::get_list_length(ch_nums)]));
+    ch_number_value();
+    ch_nums.append_value(ct_v);
+  } else {
+    wp_w = variable::set_text_case(ct_w, "LOWER");
+    rd_wordpiece();
+  }
+}
+
+// the value of the number word ct_w (12 or 12d5) -> ct_v
+function ch_number_value() {
+  nv_p = variable::split_text(ct_w, "d");
+  ct_v = variable::convert_text_to_number(variable::get_list_value(nv_p, 0), 10);
+  if (variable::get_list_length(nv_p).greater(1)) {
+    nv_f = variable::get_list_value(nv_p, 1);
+    nv_d = variable::pow(10, variable::get_text_length(nv_f));
+    ct_v = variable::add([ct_v, variable::divide([variable::convert_text_to_number(nv_f, 10), nv_d])]);
   }
 }
 
@@ -2059,10 +2149,11 @@ function ch_answer() {
   if (ch_pW.greater_or_equals(s`ch.sure0`)) {
     // an encyclopedic question for sure: the reader answers or says it does not know
     cm_who = g`ai.who`;
-    g`ch.m.n.${cm_who}` = 2;
+    g`ch.m.n.${cm_who}` = ch_chain;
     ai_wiki_answer();
   } else {
     ch_generate();
+    ch_unsure_check();
     ch_memory_save();
     if (ch_pW.greater_or_equals(s`ch.wiki0`)) {
       // maybe a question for Wikipedia: the reply is kept and said only if the reader finds nothing
@@ -2083,12 +2174,12 @@ function ch_start_state() {
   if (g`ch.m.t.${cm_who}`.exists()) {
     cm_age = variable::subtract([value::timestamp, g`ch.m.t.${cm_who}`]);
     if (cm_age.less(CH_MEM_MS)) {
-      if (g`ch.m.n.${cm_who}`.equals(1)) {
-        cg_turn = 2;
+      if (g`ch.m.n.${cm_who}`.less(ch_chain)) {
+        cg_turn = variable::add([g`ch.m.n.${cm_who}`, 1]);
       }
     }
   }
-  if (cg_turn.equals(2)) {
+  if (cg_turn.greater(1)) {
     lf_h = g`ch.m.h.${cm_who}`;
     lf_c = g`ch.m.c.${cm_who}`;
     ce_id = s`ch.E`;
@@ -2151,9 +2242,15 @@ function ch_generate() {
   cg_out = [];
   cg_n = 0;
   cg_go = 1;
+  cg_need = 0;
+  cg_res = [];
+  cg_lp = 0;
+  cg_lpn = 0;
+  cg_temp = ch_temp;
   repeat::while(cg_go.equals(1)) {
     ch_next_token();
   }
+  ch_temp = cg_temp;
   if (not cg_text.equals("")) {
     cg_text = variable::regex_replace_text(cg_text, "(?<![\\p{L}'])i(?![\\p{L}])", "I");
     rs_t = cg_text;
@@ -2181,6 +2278,7 @@ function ch_next_token() {
   ch_sample();
   ml_yield(CH_DRAW_COST);
   cw_c = sp_i;
+  ch_conf_class();
   cw_ids = s`ch.k.${cw_c}`;
   if (variable::get_list_length(cw_ids).equals(1)) {
     // a frequent token alone in its class: nothing to score
@@ -2193,7 +2291,9 @@ function ch_next_token() {
     ch_sample();
     ml_yield(CH_DRAW_COST);
     cg_id = variable::get_list_value(cw_ids, sp_i);
+    ch_conf_word();
   }
+  ch_conf_add();
   cg_n = variable::add([cg_n, 1]);
   if (cg_id.equals(s`ch.E`)) {
     cg_go = 0;
@@ -2219,11 +2319,340 @@ function ch_mask_classes() {
 
 // the sampled token: text, progress, and the next reply step with it
 function ch_take_token() {
-  cg_out.append_value(cg_id);
-  ch_detok();
-  ch_progress();
+  if (ch_big.equals(1)) {
+    ch_take_big();
+  } else {
+    cg_out.append_value(cg_id);
+    ch_detok();
+    ch_progress();
+    ce_id = cg_id;
+    ch_decode_step();
+  }
+}
+
+// ---- confidence of the reply (the big model): the mean log-probability of the chosen tokens
+function ch_conf_class() {
+  if (ch_big.equals(1)) {
+    sm_l = cl_l;
+    sm_i = sp_i;
+    ch_softmax_at();
+    cf_p = sm_p;
+    ml_yield(variable::multiply([s`ch.C`, 5]));
+  }
+}
+
+function ch_conf_word() {
+  if (ch_big.equals(1)) {
+    sm_l = cw_l;
+    sm_i = sp_i;
+    ch_softmax_at();
+    cf_p = mli_mul(cf_p, sm_p);
+    ml_yield(variable::multiply([variable::get_list_length(cw_l), 5]));
+  }
+}
+
+function ch_conf_add() {
+  if (ch_big.equals(1)) {
+    cf_p = variable::max([cf_p, 0.000000000001]);
+    cg_lp = mli_add2(cg_lp, variable::log(cf_p, ML_E));
+    cg_lpn = variable::add([cg_lpn, 1]);
+  }
+}
+
+// a reply the model itself found unlikely is replaced by "not sure" in the language of the message
+function ch_unsure_check() {
+  cg_unsure = 0;
+  g`ch.last_conf` = 0;
+  if (ch_big.equals(1)) {
+    if (cg_lpn.greater(0)) {
+      cg_conf = variable::divide([cg_lp, cg_lpn]);
+      g`ch.last_conf` = variable::round(cg_conf, 2, "ROUND");
+      if (cg_conf.less(ch_conf)) {
+        cg_unsure = 1;
+      }
+    }
+  }
+  if (cg_unsure.equals(1)) {
+    rn_t = aq_text;
+    rd_language();
+    if (ai_lang.equals("ru")) {
+      cg_text = "Не уверена, что поняла. Скажи проще?";
+    } elif (ai_lang.equals("uk")) {
+      cg_text = "Не певна, що зрозуміла. Скажи простіше?";
+    } else {
+      cg_text = "Not sure I got that. Can you say it simpler?";
+    }
+  }
+}
+
+// ---- the big model: a token of the reply is text, the start of a calculation step, or its operand
+function ch_take_big() {
   ce_id = cg_id;
-  ch_decode_step();
+  if (cg_need.greater(0)) {
+    ch_take_operand();
+  } else {
+    tb_k = variable::subtract([cg_id, s`ch.op0`]);
+    tb_op = 0;
+    if (tb_k.greater_or_equals(0)) {
+      if (tb_k.less(s`ch.nops`)) {
+        tb_op = 1;
+      }
+    }
+    if (tb_op.equals(1)) {
+      // a step starts: its two operands are the most likely tokens, nothing of it is written
+      cg_need = 2;
+      cg_op = tb_k;
+      cg_args = [];
+      cg_argok = 1;
+      ch_temp = 0;
+    } else {
+      cg_out.append_value(cg_id);
+      ch_detok();
+      ch_progress();
+    }
+    ch_decode_step();
+  }
+}
+
+// operand cg_id of the step; after the second one the outcome is computed and fed as the next token
+function ch_take_operand() {
+  ch_operand();
+  cg_args.append_value(op_v);
+  if (op_ok.equals(0)) {
+    cg_argok = 0;
+  }
+  cg_need = variable::subtract([cg_need, 1]);
+  if (cg_need.equals(0)) {
+    ch_feed();
+    ch_step_outcome();
+    ch_temp = cg_temp;
+    ce_id = cg_forced;
+    ch_decode_step();
+    ch_step_bar();
+  } else {
+    ch_decode_step();
+  }
+}
+
+// the value of token cg_id as an operand -> op_v, op_ok: a number slot of the message, an earlier result,
+// or a token that is a whole number
+function ch_operand() {
+  op_ok = 0;
+  op_v = 0;
+  op_n = variable::subtract([cg_id, s`ch.n0`]);
+  op_r = variable::subtract([cg_id, s`ch.r0`]);
+  if (variable::number_in_range(op_n, 0, variable::subtract([s`ch.nslots`, 1]), "INCLUDE_ALL")) {
+    if (op_n.less(variable::get_list_length(ch_nums))) {
+      op_v = variable::get_list_value(ch_nums, op_n);
+      op_ok = 1;
+    }
+  } elif (variable::number_in_range(op_r, 0, variable::subtract([s`ch.rslots`, 1]), "INCLUDE_ALL")) {
+    if (op_r.less(variable::get_list_length(cg_res))) {
+      op_v = variable::get_list_value(cg_res, op_r);
+      op_ok = 1;
+    }
+  } else {
+    if (s`ch.numi`.list_contains_value(cg_id)) {
+      op_v = variable::get_list_value(s`ch.numv`, variable::get_list_index_of_value(s`ch.numi`, cg_id, "FIRST"));
+      op_ok = 1;
+    }
+  }
+}
+
+// the step cg_op over cg_args (chat_text.calc) -> cg_forced: the token of its outcome. Operations:
+// 0 + 1 - 2 * 3 / 4 remainder 5 power -> a result token; 6 > 7 < 8 = -> [T] or [F]; impossible -> [F]
+function ch_step_outcome() {
+  so_a = variable::get_list_value(cg_args, 0);
+  so_b = variable::get_list_value(cg_args, 1);
+  so_k = 2;
+  so_v = 0;
+  if (cg_argok.equals(1)) {
+    if (cg_op.less(6)) {
+      ch_step_arithmetic();
+    } else {
+      ch_step_compare();
+    }
+  }
+  if (so_k.equals(0)) {
+    if (variable::get_list_length(cg_res).greater_or_equals(s`ch.rslots`)) {
+      so_k = 2;
+    }
+  }
+  if (so_k.equals(0)) {
+    cg_res.append_value(so_v);
+    cg_forced = variable::add([s`ch.r0`, variable::get_list_length(cg_res), -1]);
+  } elif (so_k.equals(1)) {
+    cg_forced = s`ch.T`;
+  } else {
+    cg_forced = s`ch.F`;
+  }
+}
+
+function ch_step_arithmetic() {
+  so_ok = 1;
+  if (cg_op.equals(0)) {
+    so_v = variable::add([so_a, so_b]);
+  } elif (cg_op.equals(1)) {
+    so_v = variable::subtract([so_a, so_b]);
+  } elif (cg_op.equals(2)) {
+    so_v = variable::multiply([so_a, so_b]);
+  } elif (cg_op.equals(3)) {
+    if (so_b.equals(0)) {
+      so_ok = 0;
+    } else {
+      so_v = variable::divide([so_a, so_b]);
+    }
+  } elif (cg_op.equals(4)) {
+    ch_step_remainder();
+  } else {
+    ch_step_power();
+  }
+  if (so_ok.equals(1)) {
+    so_v = variable::round(so_v, 9, "ROUND");
+    if (variable::absolute(so_v).less(variable::pow(10, 12))) {
+      so_k = 0;
+    }
+  }
+}
+
+function ch_step_remainder() {
+  if (so_b.equals(0)) {
+    so_ok = 0;
+  } else {
+    so_q = variable::round(variable::divide([so_a, so_b]), 9, "ROUND");
+    so_q = variable::round(so_q, 0, "FLOOR");
+    so_v = variable::subtract([so_a, variable::multiply([so_b, so_q])]);
+  }
+}
+
+function ch_step_power() {
+  if (variable::absolute(so_b).greater(64)) {
+    so_ok = 0;
+  }
+  if (so_a.equals(0)) {
+    if (so_b.less(0)) {
+      so_ok = 0;
+    }
+  } else {
+    // too big to compute
+    so_abs = variable::absolute(so_a);
+    so_lg = variable::multiply([so_b, variable::log(so_abs, 10)]);
+    if (so_lg.greater(12.5)) {
+      so_ok = 0;
+    }
+  }
+  if (so_a.less(0)) {
+    if (not variable::round(so_b, 0, "FLOOR").equals(so_b)) {
+      so_ok = 0;
+    }
+  }
+  if (so_ok.equals(1)) {
+    so_v = variable::pow(so_a, so_b);
+  }
+}
+
+function ch_step_compare() {
+  if (cg_op.equals(6)) {
+    if (so_a.greater(so_b)) {
+      so_k = 1;
+    }
+  } elif (cg_op.equals(7)) {
+    if (so_a.less(so_b)) {
+      so_k = 1;
+    }
+  } else {
+    if (variable::absolute(variable::subtract([so_a, so_b])).less(0.0000000005)) {
+      so_k = 1;
+    }
+  }
+}
+
+// the number nf_v as the reply shows it (chat_text.fmt): at most 2 decimals, no trailing zeros -> nf_t.
+// The digits are taken one by one, so the text does not depend on how JustMC prints a number.
+function ch_num_text() {
+  nf_a = variable::absolute(nf_v);
+  if (nf_a.less(variable::pow(10, 12))) {
+    nf_q = variable::round(variable::add([variable::multiply([nf_a, 100]), 0.5]), 0, "FLOOR");
+    nf_ip = variable::divide([nf_q, 100], "FLOOR");
+    nf_fp = variable::remainder(nf_q, 100, "REMAINDER");
+    nf_dl = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    nf_t = "";
+    nf_go = 1;
+    repeat::while(nf_go.equals(1)) {
+      nf_d = variable::remainder(nf_ip, 10, "REMAINDER");
+      nf_ip = variable::divide([nf_ip, 10], "FLOOR");
+      nf_t = "${variable::get_list_value(nf_dl, nf_d)}${nf_t}";
+      if (nf_ip.less(1)) {
+        nf_go = 0;
+      }
+    }
+    if (nf_fp.greater(0)) {
+      ch_num_fraction();
+    }
+    if (nf_v.less(0)) {
+      if (nf_q.greater(0)) {
+        nf_t = "-${nf_t}";
+      }
+    }
+  } else {
+    nf_t = "∞";
+  }
+}
+
+function ch_num_fraction() {
+  nf_d1 = variable::divide([nf_fp, 10], "FLOOR");
+  nf_d2 = variable::remainder(nf_fp, 10, "REMAINDER");
+  nf_t = "${nf_t}.${variable::get_list_value(nf_dl, nf_d1)}";
+  if (nf_d2.greater(0)) {
+    nf_t = "${nf_t}${variable::get_list_value(nf_dl, nf_d2)}";
+  }
+}
+
+// the step just computed in the action bar: 3 * 64 = 192
+function ch_step_bar() {
+  sb_a = "?";
+  sb_b = "?";
+  if (cg_argok.equals(1)) {
+    nf_v = so_a;
+    ch_num_text();
+    sb_a = nf_t;
+    nf_v = so_b;
+    ch_num_text();
+    sb_b = nf_t;
+  }
+  sb_op = variable::get_list_value(["+", "-", "*", "/", "mod", "^", ">", "<", "="], cg_op);
+  if (so_k.equals(0)) {
+    nf_v = so_v;
+    ch_num_text();
+    sb_r = "= ${nf_t}";
+  } elif (so_k.equals(1)) {
+    sb_r = "✔";
+  } else {
+    sb_r = "✘";
+  }
+  player::send_action_bar("&7✎ &8${sb_a} ${sb_op} ${sb_b} ${sb_r}");
+}
+
+// the text of token cg_id in the reply of the big model: a slot or a result is written as its number
+function ch_shown() {
+  ch_operand();
+  sh_n = variable::subtract([cg_id, s`ch.n0`]);
+  sh_r = variable::subtract([cg_id, s`ch.r0`]);
+  sh_num = 0;
+  if (variable::number_in_range(sh_n, 0, variable::subtract([s`ch.nslots`, 1]), "INCLUDE_ALL")) {
+    sh_num = 1;
+  }
+  if (variable::number_in_range(sh_r, 0, variable::subtract([s`ch.rslots`, 1]), "INCLUDE_ALL")) {
+    sh_num = 1;
+  }
+  if (sh_num.equals(1)) {
+    dt_t = "?";
+    if (op_ok.equals(1)) {
+      nf_v = op_v;
+      ch_num_text();
+      dt_t = nf_t;
+    }
+  }
 }
 
 // the text of token cg_id joined to cg_text (word pieces glued, no space before punctuation)
@@ -2231,6 +2660,9 @@ function ch_detok() {
   dt_c = variable::divide([cg_id, 1000], "FLOOR");
   dt_k = variable::remainder(cg_id, 1000, "REMAINDER");
   dt_t = variable::get_list_value(s`ch.t.${dt_c}`, dt_k);
+  if (ch_big.equals(1)) {
+    ch_shown();
+  }
   if (dt_t.text_starts_with("##")) {
     rs_t = dt_t;
     rs_a = 2;

@@ -30,6 +30,14 @@ TARGETS = {
     "probe_ai.jc": "millennium_probe.json",
     "demo_reader.jc": "millennium-6m-llm.json",
 }
+# the same module for another chat model: (built file it is made from, text replacements in it)
+VARIANTS = {
+    "millennium-13m-llm.json": ("millennium-6m-llm.json", [
+        ("/justmc/weights/chat/", "/justmc/weights/chat13m/"),
+        ("several hundred files, 5-10 minutes", "about 2300 files, 25-35 minutes"),
+        ("about a thousand files, 10-15 minutes", "about 2600 files, 30-40 minutes"),
+    ]),
+}
 
 
 def compile_one(jmcc_dir, src, out):
@@ -161,6 +169,16 @@ def main():
         ok = postprocess(o, jmcc) and ok
         r = subprocess.run([sys.executable, os.path.join(HERE, "check_build.py"), o])
         ok = ok and r.returncode == 0
+        for name, (base, repl) in VARIANTS.items():
+            if base == out and os.path.exists(o):
+                text = open(o, encoding="utf-8").read()
+                for x, y in repl:
+                    if x not in text:
+                        print(f"ERROR: {name}: text to replace not found: {x}")
+                        ok = False
+                    text = text.replace(x, y)
+                open(os.path.join(OUT, name), "w", encoding="utf-8").write(text)
+                print(f"== build/{out} -> build/{name}")
     sys.exit(0 if ok else 1)
 
 

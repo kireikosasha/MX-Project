@@ -5,7 +5,9 @@ the synthetic data, the questions for Wikipedia). The reader keeps its own vocab
 chat messages this one needs ~15% fewer tokens, so replies are shorter to compute.
 
     python chat_vocab.py --src src --qa raw --out vocab.json --size 19750
-The vocabulary used for the published model is in the repository (tools/chat/vocab.json).
+    python chat_vocab.py --src src --qa raw --out vocab_big.json --big      (the big model: also the words of
+                                                     synthetic2/, and the numbers its calculation steps use)
+The vocabularies of the published models are in the repository (tools/chat/vocab.json, vocab_big.json).
 """
 import argparse
 import json
@@ -24,10 +26,15 @@ def main():
     ap.add_argument("--qa", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--size", type=int, default=19750)
+    ap.add_argument("--big", action="store_true")
     a = ap.parse_args()
     from tokenizers import Tokenizer, models, pre_tokenizers, trainers
     rng = random.Random(3)
-    texts = C.texts_for_vocab(a.src, a.qa, rng)
+    if a.big:
+        import chat_data_big as CB
+        texts = CB.vocab_texts(a.src, a.qa, rng)
+    else:
+        texts = C.texts_for_vocab(a.src, a.qa, rng)
     per = {"en": [], "ru": [], "uk": []}
     for lang, t in texts:
         per[lang].append(t)
@@ -53,6 +60,9 @@ def main():
     vocab = {"[UNK]": 0, "[PAD]": 1}
     for t in toks:
         vocab.setdefault(t, len(vocab))
+    if a.big:                                   # a constant of a calculation step is one token
+        for n in CB.CONSTANTS:
+            vocab.setdefault(str(n), len(vocab))
     json.dump(vocab, open(a.out, "w", encoding="utf-8"), ensure_ascii=False)
     print(f"vocabulary: {len(vocab)} tokens -> {a.out}")
 

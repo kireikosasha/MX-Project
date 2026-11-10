@@ -99,7 +99,7 @@ class ChatLM(torch.nn.Module):
         self.register_buffer("pos_in", pos_in)
         self.members = [torch.tensor(t, dtype=torch.long) for t in classes]
 
-    def run(self, x, is_u, is_msg, slot, is_dec, emb=None, drop=0.0):
+    def run(self, x, is_u, is_msg, slot, is_dec, emb=None, drop=0.0, rdrop=0.0):
         """x: (B, T) tokens -> o (B, T, D): output vectors (meaningful at the is_dec positions)"""
         E = self.emb if emb is None else emb
         B, T = x.shape
@@ -117,8 +117,12 @@ class ChatLM(torch.nn.Module):
         filled = torch.zeros(B, MAX_M, dtype=torch.bool, device=x.device)
         onehot = torch.nn.functional.one_hot(slot, MAX_M).bool() & is_msg[:, :, None]
         hs, ctxs = [], []
+        # recurrent dropout of the Millennium cell (RNNConfig.recurrentDropoutRate): one mask of h for all steps
+        rmask = None
+        if rdrop > 0 and self.training:
+            rmask = torch.bernoulli(xv.new_full((B, H), 1.0 - rdrop)) / (1.0 - rdrop)
         for t in range(T):
-            z = xe[:, t] + h @ Wh
+            z = xe[:, t] + (h if rmask is None else h * rmask) @ Wh
             f = torch.sigmoid(z[:, :H].clamp(-50, 50))
             i = torch.sigmoid(z[:, H:2 * H].clamp(-50, 50))
             g = torch.tanh(z[:, 2 * H:3 * H].clamp(-50, 50))
@@ -148,17 +152,18 @@ class ChatLM(torch.nn.Module):
             ctxs.append(ctx)
         return torch.stack(hs, 1) @ self.Wp.t() + self.bp + xv @ self.Ws.t() + torch.stack(ctxs, 1) @ self.Wa.t()
 
-    def loss(self, x, m, r, emb=None, drop=0.0):
+    def loss(self, x, m, r, emb=None, drop=0.0, rdrop=0.0, smooth=0.0):
         """mean -log P of the tokens marked in m (position t predicts x[t + 1]); r = roles of x"""
         is_u, is_msg, slot = r
         dec = m[:, :-1].bool()
-        o = self.run(x[:, :-1], is_u[:, :-1], is_msg[:, :-1], slot[:, :-1], dec, emb, drop)
+        o = self.run(x[:, :-1], is_u[:, :-1], is_msg[:, :-1], slot[:, :-1], dec, emb, drop, rdrop)
         o = o[dec]
         if drop > 0 and self.training:
             o = torch.nn.functional.dropout(o, drop)
         y = x[:, 1:][dec]
         cy = self.cls_of[y]
-        lc = torch.nn.functional.cross_entropy(o @ self.Wc.t() + self.bc, cy, reduction="sum")
+        sm = smooth if self.training else 0.0               # RNNConfig.labelSmoothing
+        lc = torch.nn.functional.cross_entropy(o @ self.Wc.t() + self.bc, cy, reduction="sum", label_smoothing=sm)
         E = self.emb if emb is None else emb
         lw = o.new_zeros(())
         for c in torch.unique(cy).tolist():
@@ -167,8 +172,33 @@ class ChatLM(torch.nn.Module):
                 continue
             idx = (cy == c).nonzero(as_tuple=True)[0]
             logits = o[idx] @ E[mem].t() + self.bw[mem]
-            lw = lw + torch.nn.functional.cross_entropy(logits, self.pos_in[y[idx]], reduction="sum")
+            lw = lw + torch.nn.functional.cross_entropy(logits, self.pos_in[y[idx]], reduction="sum", label_smoothing=sm)
         return (lc + lw) / max(1, len(y)), len(y)
+
+
+def log_probs(m, x, mk, r, emb, w_id):
+    """-> per predicted position (in the order of mk[:, :-1].nonzero()): log P(target), log P([W])"""
+    is_u, is_msg, slot = r
+    dec = mk[:, :-1].bool()
+    o = m.run(x[:, :-1], is_u[:, :-1], is_msg[:, :-1], slot[:, :-1], dec, emb)[dec]
+    y = x[:, 1:][dec]
+    E = m.emb if emb is None else emb
+    lc = torch.log_softmax(o @ m.Wc.t() + m.bc, -1)
+    cy = m.cls_of[y]
+    lp = lc.gather(1, cy.clamp(min=0)[:, None])[:, 0]
+    for c in torch.unique(cy).tolist():
+        mem = m.members[c]
+        if c < 0 or len(mem) == 1:
+            continue
+        idx = (cy == c).nonzero(as_tuple=True)[0]
+        lw = torch.log_softmax(o[idx] @ E[mem].t() + m.bw[mem], -1)
+        lp[idx] = lp[idx] + lw.gather(1, m.pos_in[y[idx]][:, None])[:, 0]
+    cw = int(m.cls_of[w_id])
+    pw = lc[:, cw]
+    mem = m.members[cw]
+    if len(mem) > 1:
+        pw = pw + torch.log_softmax(o @ E[mem].t() + m.bw[mem], -1)[:, int(m.pos_in[w_id])]
+    return lp, pw, dec
 
 
 def emb_scale(emb):
@@ -226,6 +256,11 @@ def main():
     ap.add_argument("--batch", type=int, default=256)
     ap.add_argument("--lr", type=float, default=2e-3)
     ap.add_argument("--dropout", type=float, default=0.1)
+    ap.add_argument("--rdrop", type=float, default=0.0, help="recurrent dropout (one mask of the state for all steps)")
+    ap.add_argument("--smooth", type=float, default=0.0, help="label smoothing")
+    ap.add_argument("--wd", type=float, default=1e-6, help="weight decay (AdamW); above 1e-4: matrices only, not the embeddings")
+    ap.add_argument("--da", type=int, default=64, help="attention: size of the query / key")
+    ap.add_argument("--dv", type=int, default=128, help="attention: size of the value")
     ap.add_argument("--threads", type=int, default=4)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu", help="cuda / cpu")
     ap.add_argument("--qat", type=int, default=1, help="last epochs with 8-bit embeddings in the forward pass")
@@ -253,7 +288,7 @@ def main():
         classes, arch = (rs or ck)["classes"], (rs or ck)["arch"]
     else:
         classes = make_classes(data.X, data.M, V)
-        arch = {"dim": a.dim, "hid": a.hidden, "da": 64, "dv": 128}
+        arch = {"dim": a.dim, "hid": a.hidden, "da": a.da, "dv": a.dv}
     m = ChatLM(V, classes, **arch)
     if rs or ck:
         m.load_state_dict((rs or ck)["state"])
@@ -274,7 +309,12 @@ def main():
         tr, va = tr[~bad[tr]], va[~bad[va]]
     if a.limit:
         tr = tr[np.random.RandomState(7).permutation(len(tr))[:a.limit]]
-    opt = torch.optim.AdamW(m.parameters(), lr=a.lr, weight_decay=1e-6)
+    if a.wd > 1e-4:
+        decay = [p for n, p in m.named_parameters() if p.dim() == 2 and n != "emb"]
+        rest = [p for n, p in m.named_parameters() if not (p.dim() == 2 and n != "emb")]
+        opt = torch.optim.AdamW([{"params": decay, "weight_decay": a.wd}, {"params": rest, "weight_decay": 1e-6}], lr=a.lr)
+    else:
+        opt = torch.optim.AdamW(m.parameters(), lr=a.lr, weight_decay=a.wd)
     steps = a.epochs * math.ceil(len(tr) / a.batch)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=a.lr, total_steps=steps, pct_start=0.03)
     os.makedirs(a.out, exist_ok=True)
@@ -301,7 +341,7 @@ def main():
             emb = None
             if qat:
                 emb = m.emb + (quantize(m.emb.detach(), scale) - m.emb).detach()   # straight-through 8-bit embeddings
-            l, k = m.loss(x, mk, r, emb, a.dropout)
+            l, k = m.loss(x, mk, r, emb, a.dropout, a.rdrop, a.smooth)
             opt.zero_grad()
             l.backward()
             torch.nn.utils.clip_grad_norm_(m.parameters(), 1.0)
