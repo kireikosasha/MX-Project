@@ -29,6 +29,7 @@ inline var ML_CHECKPOINT_THRESHOLD = 0.6;    // CHECKPOINT_DECISION_THRESHOLD
 inline var ML_MIN_RECALL = 0.75;             // CHECKPOINT_MIN_RECALL
 inline var ML_CHUNK = 150;                   // trainOneEpoch chunk size
 inline var ML_FORMAT_VERSION = 6;            // RNNModelML.VERSION
+inline var ML_CHUNK_WORK = 1300;             // estimated cost of the gate rows computed between two ml_yield calls
 
 // ---------- elementary functions (one place = one implementation) ----------
 // sigmoid with the LSTM gate clamp (+-50): 1 / (1 + exp(-x))
@@ -225,17 +226,24 @@ function ml_trace_values() {
 // mlg.dirs    = [0] or [0, 1]
 // mlg.gates   = ["f", "i", "c", "o"]
 function ml_rebuild_runtime() {
-  ml_calibrate_trim();
-  ml_build_index_lists();
-  ml_build_parameter_names();
-  ml_build_zero_vectors();
   if (not s`ml.budget`.exists()) {
     s`ml.budget` = 4000;
   }
   if (not s`ml.cpu_max`.exists()) {
     s`ml.cpu_max` = 75;
   }
-  g`mlg.yield_acc` = 0;
+  if (not g`mlg.yield_acc`.exists()) {
+    g`mlg.yield_acc` = 0;
+  }
+  ml_calibrate_trim();
+  ml_build_index_lists();
+  // a wide model has thousands of names and indices: pauses between the parts
+  mb_cost = variable::multiply([variable::add([s`ml.in`, s`ml.hid`, g`mlg.out`]), 4]);
+  ml_yield(mb_cost);
+  ml_build_parameter_names();
+  ml_yield(variable::multiply([s`ml.hid`, s`ml.layers`, 24]));
+  ml_build_zero_vectors();
+  ml_yield(mb_cost);
   g`mlg.big` = variable::pow(10, 308);
   g`mlg.meta_ok` = 1;
 }
@@ -273,6 +281,34 @@ function ml_build_index_lists() {
   mr_n = s`ml.layers`;
   ml_range();
   g`mlg.layers` = mr_list;
+  ml_build_gate_chunks();
+}
+
+// JustMC stops a line of code that runs too long without a wait, and a gate of a wide layer is hundreds of
+// long dot products. So the neurons are processed in chunks with ml_yield between them:
+// g`mlg.chunksH` = lists of neuron indices, g`mlg.chunk_cost` = estimated cost of one chunk of one gate
+// (per neuron: the activation, ~5 actions, + the dot product over [1 | x | h], counted as length / 40)
+function ml_build_gate_chunks() {
+  mb_row = s`ml.in`;
+  if (s`ml.layers`.greater(1)) {
+    mb_row = variable::max([mb_row, g`mlg.out`]);
+  }
+  mb_row = variable::add([mb_row, s`ml.hid`, 1]);
+  mb_unit = variable::add([5, variable::divide([mb_row, 40])]);
+  mb_per = variable::max([4, variable::divide([ML_CHUNK_WORK, mb_unit], "FLOOR")]);
+  g`mlg.chunk_cost` = variable::round(variable::multiply([mb_per, mb_unit]), 0, "CEIL");
+  g`mlg.chunksH` = [];
+  mb_chunk = [];
+  repeat::for_each_in_list(g`mlg.idxH`) { mb_k, mb_v ->
+    mb_chunk.append_value(mb_v);
+    if (variable::get_list_length(mb_chunk).greater_or_equals(mb_per)) {
+      g`mlg.chunksH`.append_value([mb_chunk]);
+      mb_chunk = [];
+    }
+  }
+  if (not mb_chunk.list_is_empty()) {
+    g`mlg.chunksH`.append_value([mb_chunk]);
+  }
 }
 
 // [0, 1, ..., mr_n - 1] -> mr_list

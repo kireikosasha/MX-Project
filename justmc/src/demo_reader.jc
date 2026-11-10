@@ -335,7 +335,7 @@ function rd_project_row() {
     rp_pb = variable::get_list_value(s`rd.pb`, rp_j);
     rp_p.append_value(variable::mathematical_expectation([rp_raw, rp_pa, rp_pb], [rp_sc, rp_sc, 1]));
   }
-  ml_yield(variable::multiply([s`rd.pd`, 6]));
+  ml_yield(variable::multiply([s`rd.pd`, 10]));
 }
 
 // ---------------------------------------------------------------------
@@ -1580,6 +1580,7 @@ function ch_settings() {
   if (cs_ok.equals(0)) {
     ch_build_lists();
     g`ch.mark` = cs_mark;
+    ml_yield(3000);
   }
   ch_temp = s`ch.temp0`;
   if (s`ch.temp`.exists()) {
@@ -1628,6 +1629,22 @@ function ch_build_lists() {
   repeat::for_each_in_list(mr_list) { cs_k, cs_v ->
     g`ch.onesD`.append_value(1);
   }
+  // output rows in chunks with a pause between them (a line may not run too long without a wait)
+  cs_unit = variable::add([2, variable::divide([variable::add([s`ch.hid`, s`ch.dim`, s`ch.dv`]), 40])]);
+  cs_per = variable::max([4, variable::divide([ML_CHUNK_WORK, cs_unit], "FLOOR")]);
+  g`ch.chunk_cost` = variable::round(variable::multiply([cs_per, cs_unit]), 0, "CEIL");
+  g`ch.chunksD` = [];
+  cs_chunk = [];
+  repeat::for_each_in_list(g`ch.idxD`) { cs_k, cs_v ->
+    cs_chunk.append_value(cs_v);
+    if (variable::get_list_length(cs_chunk).greater_or_equals(cs_per)) {
+      g`ch.chunksD`.append_value([cs_chunk]);
+      cs_chunk = [];
+    }
+  }
+  if (not cs_chunk.list_is_empty()) {
+    g`ch.chunksD`.append_value([cs_chunk]);
+  }
   mr_n = s`ch.C`;
   ml_range();
   g`ch.idxC` = mr_list;
@@ -1654,6 +1671,7 @@ function ch_tokenize() {
     rd_wordpiece();
   }
   cg_msg = wp_ids;
+  ml_yield(variable::multiply([variable::get_list_length(rw_list), 12]));
   ct_n = variable::get_list_length(cg_msg);
   if (ct_n.greater(s`ch.maxm`)) {
     cg_msg = mli_slice(cg_msg, variable::subtract([ct_n, s`ch.maxm`]), ct_n);
@@ -1703,7 +1721,7 @@ function ch_remember() {
     `cv.${rm_n}`.append_value(variable::mathematical_expectation(s`ch.Wv.${rm_n}`, lf_h));
   }
   ck_n = variable::add([ck_n, 1]);
-  ml_yield(variable::multiply([s`ch.dv`, 4]));
+  ml_yield(variable::multiply([variable::add([s`ch.da`, s`ch.dv`]), 9]));
 }
 
 // attention of the current state over the message -> ch_ctx
@@ -1716,7 +1734,7 @@ function ch_attend() {
     repeat::for_each_in_list(g`ch.idxV`) { at_k, at_d ->
       ch_ctx.append_value(variable::mathematical_expectation(`cv.${at_d}`, at_a));
     }
-    ml_yield(variable::multiply([s`ch.dv`, 4]));
+    ml_yield(variable::add([variable::multiply([s`ch.da`, 9]), variable::multiply([s`ch.dv`, 3])]));
   }
 }
 
@@ -1751,12 +1769,14 @@ function ch_out() {
   co_z = variable::append_list(co_z, cf_x);
   co_z = variable::append_list(co_z, ch_ctx);
   ch_o = [];
-  repeat::for_each_in_list(g`ch.idxD`) { co_k, co_j ->
-    ch_o.append_value(variable::mathematical_expectation(s`ch.Wp.${co_j}`, co_z));
+  repeat::for_each_in_list(g`ch.chunksD`) { co_ck, co_chunk ->
+    repeat::for_each_in_list(co_chunk) { co_k, co_j ->
+      ch_o.append_value(variable::mathematical_expectation(s`ch.Wp.${co_j}`, co_z));
+    }
+    ml_yield(g`ch.chunk_cost`);
   }
   ch_oz = mli_cons(1, ch_o);
   ch_so = variable::mathematical_expectation(ch_o, g`ch.onesD`);
-  ml_yield(variable::multiply([s`ch.dim`, 3]));
 }
 
 // a reply step after token ce_id: LSTM, attention over the message, output vector
@@ -1772,7 +1792,7 @@ function ch_class_logits() {
   repeat::for_each_in_list(g`ch.idxC`) { cl_k, cl_c ->
     cl_l.append_value(variable::mathematical_expectation(s`ch.Wc.${cl_c}`, ch_oz));
   }
-  ml_yield(variable::multiply([s`ch.C`, 2]));
+  ml_yield(variable::multiply([s`ch.C`, 9]));
 }
 
 // logits of the tokens of class cw_c -> cw_ids, cw_l:  s0 * (code points . o) + so * sum(o) + bias
@@ -1786,7 +1806,7 @@ function ch_word_logits() {
     cw_bk = variable::get_list_value(cw_b, cw_k);
     cw_l.append_value(variable::mathematical_expectation([cw_raw, ch_so, cw_bk], [s`ch.s0`, s`ch.so`, 1]));
   }
-  ml_yield(variable::multiply([variable::get_list_length(cw_ids), 10]));
+  ml_yield(variable::multiply([variable::get_list_length(cw_ids), 18]));
 }
 
 // tokens said before are less likely; [W] is never written, [E] not as the first token
@@ -2051,6 +2071,7 @@ function ch_wiki_probability() {
   sm_i = s`ch.pW`;
   ch_softmax_at();
   ch_pW = mli_mul(cw_pc, sm_p);
+  ml_yield(variable::multiply([s`ch.C`, 5]));
 }
 
 // tokens until [E] or s`ch.max` -> cg_text

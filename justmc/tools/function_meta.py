@@ -1066,6 +1066,9 @@ META.update({
 META["ml_build_transposed_weights"] = ("mirror",
     "Builds W^T of every layer-direction (gate-interleaved like the Java loop) used by backpropagation.",
     "Строит W^T каждого слоя-направления (с чередованием гейтов, как в цикле Java) для обратного прохода.")
+META["ml_build_gate_chunks"] = ("chain",
+    "Splits the neurons of a layer into chunks: gate rows are computed chunk by chunk with a pause between, because JustMC stops a line that runs too long without a wait.",
+    "Делит нейроны слоя на куски: строки гейтов считаются кусками с паузой между ними, потому что JustMC останавливает строку, которая слишком долго работает без «Ждать».")
 META["ml_import_architecture"] = ("map",
     META["ml_import_architecture"][1], META["ml_import_architecture"][2])
 # demo 3: the reader (~ai)

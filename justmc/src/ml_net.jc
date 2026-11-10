@@ -110,7 +110,7 @@ function ml_lstm_step() {
   lf_h = lf_hn;
   lf_c = lf_cn;
   lf_s = variable::add([lf_s, 1]);
-  ml_yield(variable::multiply([lf_H, 50]));
+  ml_yield(variable::multiply([lf_H, 9]));
 }
 
 // trace of the first step of a layer-direction: x, z = [1 | x | h] and the first forget-gate row
@@ -135,23 +135,35 @@ function ml_lstm_sigmoid_gates() {
   lf_gf = [];
   lf_gi = [];
   lf_go = [];
-  repeat::for_each_in_list(g`mlg.idxH`) { lf_k, lf_n ->
-    lf_gf.append_value(mli_sigm(variable::mathematical_expectation(s`ml.L.${lf_d}.f.${lf_n}`, lf_z)));
+  repeat::for_each_in_list(g`mlg.chunksH`) { lf_ck, lf_chunk ->
+    repeat::for_each_in_list(lf_chunk) { lf_k, lf_n ->
+      lf_gf.append_value(mli_sigm(variable::mathematical_expectation(s`ml.L.${lf_d}.f.${lf_n}`, lf_z)));
+    }
+    ml_yield(g`mlg.chunk_cost`);
   }
-  repeat::for_each_in_list(g`mlg.idxH`) { lf_k, lf_n ->
-    lf_gi.append_value(mli_sigm(variable::mathematical_expectation(s`ml.L.${lf_d}.i.${lf_n}`, lf_z)));
+  repeat::for_each_in_list(g`mlg.chunksH`) { lf_ck, lf_chunk ->
+    repeat::for_each_in_list(lf_chunk) { lf_k, lf_n ->
+      lf_gi.append_value(mli_sigm(variable::mathematical_expectation(s`ml.L.${lf_d}.i.${lf_n}`, lf_z)));
+    }
+    ml_yield(g`mlg.chunk_cost`);
   }
-  repeat::for_each_in_list(g`mlg.idxH`) { lf_k, lf_n ->
-    lf_go.append_value(mli_sigm(variable::mathematical_expectation(s`ml.L.${lf_d}.o.${lf_n}`, lf_z)));
+  repeat::for_each_in_list(g`mlg.chunksH`) { lf_ck, lf_chunk ->
+    repeat::for_each_in_list(lf_chunk) { lf_k, lf_n ->
+      lf_go.append_value(mli_sigm(variable::mathematical_expectation(s`ml.L.${lf_d}.o.${lf_n}`, lf_z)));
+    }
+    ml_yield(g`mlg.chunk_cost`);
   }
 }
 
 // candidate gate: tanh(clamp(b + W.x + U.h, -50, 50))
 function ml_lstm_candidate_gate() {
   lf_gg = [];
-  repeat::for_each_in_list(g`mlg.idxH`) { lf_k, lf_n ->
-    lf_a = variable::clamp(variable::mathematical_expectation(s`ml.L.${lf_d}.c.${lf_n}`, lf_z), -50, 50);
-    lf_gg.append_value(mli_tanh(lf_a));
+  repeat::for_each_in_list(g`mlg.chunksH`) { lf_ck, lf_chunk ->
+    repeat::for_each_in_list(lf_chunk) { lf_k, lf_n ->
+      lf_a = variable::clamp(variable::mathematical_expectation(s`ml.L.${lf_d}.c.${lf_n}`, lf_z), -50, 50);
+      lf_gg.append_value(mli_tanh(lf_a));
+    }
+    ml_yield(g`mlg.chunk_cost`);
   }
 }
 
@@ -160,12 +172,15 @@ function ml_lstm_cell_update() {
   lf_cn = [];
   lf_tc = [];
   lf_pre = [];
-  repeat::for_each_in_list(lf_gf) { lf_k, lf_fk ->
-    lf_cc = variable::mathematical_expectation([lf_fk, variable::get_list_value(lf_gi, lf_k)], [variable::get_list_value(lf_c, lf_k), variable::get_list_value(lf_gg, lf_k)]);
-    lf_cn.append_value(lf_cc);
-    lf_tk = mli_tanh(lf_cc);
-    lf_tc.append_value(lf_tk);
-    lf_pre.append_value(mli_mul(variable::get_list_value(lf_go, lf_k), lf_tk));
+  repeat::for_each_in_list(g`mlg.chunksH`) { lf_ck, lf_chunk ->
+    repeat::for_each_in_list(lf_chunk) { lf_k, lf_n ->
+      lf_cc = variable::mathematical_expectation([variable::get_list_value(lf_gf, lf_n), variable::get_list_value(lf_gi, lf_n)], [variable::get_list_value(lf_c, lf_n), variable::get_list_value(lf_gg, lf_n)]);
+      lf_cn.append_value(lf_cc);
+      lf_tk = mli_tanh(lf_cc);
+      lf_tc.append_value(lf_tk);
+      lf_pre.append_value(mli_mul(variable::get_list_value(lf_go, lf_n), lf_tk));
+    }
+    ml_yield(variable::multiply([variable::get_list_length(lf_chunk), 15]));
   }
 }
 
