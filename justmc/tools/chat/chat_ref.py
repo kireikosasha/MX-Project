@@ -72,8 +72,14 @@ class Chat:
     def __init__(self, chat_dir):
         self.s, self.rows, self.ln = load(chat_dir)
         s = self.s
-        assert s["ch.ver"] in (2, 3)
-        self.big = s["ch.ver"] == 3              # numbers as slots, calculation steps (chat_text.py)
+        assert s["ch.ver"] in (2, 3, 4)
+        self.big = s["ch.ver"] >= 3              # numbers as slots, calculation steps (chat_text.py)
+        self.q = s["ch.ver"] == 4                # compact storage: rows of code points (chat_pack.py)
+        if self.q:
+            import chat_pack
+            self.RQ = chat_pack.decode(s)
+            s["_rows"] = self.RQ
+            self.step_q = chat_pack.lstm_step_q
         self.D, self.H, self.C, self.R = int(s["ch.dim"]), int(s["ch.hid"]), int(s["ch.C"]), int(s["ch.rows"])
         self.Da, self.Dv = int(s["ch.da"]), int(s["ch.dv"])
         self.sp = {k: int(s[f"ch.{k}"]) for k in "UBEW"}
@@ -142,7 +148,16 @@ class Chat:
         return [float(ord(ch)) for ch in self.s[f"ch.e.{c}"][k * self.D:(k + 1) * self.D]]
 
     def step(self, x, h, c):
+        if self.q:
+            return self.step_q(self.s, x, h, c)
         return lstm_step(self.rows, self.ln, self.H, x, h, c)
+
+    def memory(self, h):
+        """key and value of a message token state for the attention"""
+        if self.q:
+            zh = h + [dot(h, [1.0] * self.H)]
+            return [dot(r, zh) for r in self.RQ["K"]], [dot(r, zh) for r in self.RQ["V"]]
+        return self.rows_dot("Wk", self.Da, h), self.rows_dot("Wv", self.Dv, h)
 
     def rows_dot(self, name, n, v):
         return [dot(self.s[f"ch.{name}.{i}"], v) for i in range(n)]
@@ -150,22 +165,37 @@ class Chat:
     def attend(self, h, keys, vals):
         if not keys:
             return [0.0] * self.Dv
-        q = self.rows_dot("Wq", self.Da, h)
-        sc = [dot(q, k) for k in keys]
+        if self.q:                                     # raw rows: the scales are the constants qs and cc
+            zh = h + [dot(h, [1.0] * self.H)]
+            q = [dot(r, zh) for r in self.RQ["Q"]]
+            sc = [dot(q, k) * self.s["ch.qs"] for k in keys]
+        else:
+            q = self.rows_dot("Wq", self.Da, h)
+            sc = [dot(q, k) for k in keys]
         mx = max(sc)
         e = [math.pow(E, v - mx) for v in sc]
         tot = 0.0
         for v in e:
             tot += v
         inv = math.pow(tot, -1)
+        if self.q:
+            inv = inv * self.s["ch.cc"]
         a = [v * inv for v in e]
         return [dot([v[d] for v in vals], a) for d in range(self.Dv)]
 
     def out(self, h, x, ctx):
-        o = self.rows_dot("Wp", self.D, [1.0] + h + x + ctx)
+        if self.q:
+            sm = dot(h, [1.0] * self.H) + dot(x, [1.0] * self.D) + dot(ctx, [1.0] * self.Dv)
+            z = [1.0] + h + x + ctx + [sm]
+            o = [dot(r, z) for r in self.RQ["P"]]
+        else:
+            o = self.rows_dot("Wp", self.D, [1.0] + h + x + ctx)
         return o, dot(o, [1.0] * self.D)
 
     def class_logits(self, o):
+        if self.q:
+            z = [1.0] + o + [dot(o, [1.0] * self.D)]
+            return [dot(r, z) * self.s["ch.qc"] for r in self.RQ["C"]]
         return self.rows_dot("Wc", self.C, [1.0] + o)
 
     def word_logits(self, c, o, so):
@@ -284,8 +314,9 @@ class Chat:
         keys, vals = [], []
         for t in msg:
             h, c = self.step(self.cps(t), h, c)
-            keys.append(self.rows_dot("Wk", self.Da, h))
-            vals.append(self.rows_dot("Wv", self.Dv, h))
+            k, v = self.memory(h)
+            keys.append(k)
+            vals.append(v)
         x = self.cps(self.sp["B"])
         h, c = self.step(x, h, c)
         ctx = self.attend(h, keys, vals)

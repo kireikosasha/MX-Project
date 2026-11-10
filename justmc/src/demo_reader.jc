@@ -1448,8 +1448,12 @@ function ai_cmd_ask() {
 // ~ai install: the chat model, and the reader (vocabulary, Wikipedia answers) if it is not there yet
 function ai_cmd_install() {
   rd_installed();
-  variable::purge(["ch."], "SAVE", "STARTS_WITH");
+  variable::purge(["ch.", "mlm.chat."], "SAVE", "STARTS_WITH");
+  if (s`mlm.list`.exists()) {
+    s`mlm.list` = variable::remove_list_value(s`mlm.list`, "chat");
+  }
   s`ch.ready` = 0;
+  g`ch.mark` = "";
   cm_sub = "model";
   cm_a2 = "import";
   if (ri_ok.equals(1)) {
@@ -1616,7 +1620,7 @@ function ch_installed() {
   if (s`ch.ready`.exists()) {
     if (s`ch.ver`.exists()) {
       if (s`ch.ready`.equals(1)) {
-        if (s`ch.ver`.equals([2, 3])) {
+        if (s`ch.ver`.equals([2, 4])) {
           ci_ok = 1;
         }
       }
@@ -1626,11 +1630,13 @@ function ch_installed() {
 
 // the chat LSTM as the current library model
 function ch_ensure_model() {
-  ce_ok = 0;
-  if (s`ml.in`.equals(s`ch.nin`)) {
-    if (s`ml.hid`.equals(s`ch.hid`)) {
-      if (s`ml.bi`.equals(0)) {
-        ce_ok = s`ml.ready`;
+  ce_ok = ch_q;
+  if (ch_q.equals(0)) {
+    if (s`ml.in`.equals(s`ch.nin`)) {
+      if (s`ml.hid`.equals(s`ch.hid`)) {
+        if (s`ml.bi`.equals(0)) {
+          ce_ok = s`ml.ready`;
+        }
       }
     }
   }
@@ -1650,8 +1656,13 @@ function ch_settings() {
       cs_ok = 1;
     }
   }
+  ch_big_settings();
   if (cs_ok.equals(0)) {
+    g`ch.bad` = 0;
     ch_build_lists();
+    if (ch_q.equals(1)) {
+      ch_build_q();
+    }
     g`ch.mark` = cs_mark;
   }
   ch_temp = s`ch.temp0`;
@@ -1659,7 +1670,6 @@ function ch_settings() {
     ch_temp = s`ch.temp`;
   }
   ch_sampling_settings();
-  ch_big_settings();
   cs_c = s`ch.cW`;
   cs_n = variable::get_list_length(s`ch.k.${cs_c}`);
   ch_one_W = cs_n.equals(1);
@@ -1668,15 +1678,18 @@ function ch_settings() {
   ch_one_E = cs_n.equals(1);
 }
 
-// The big model (ch.ver 3): the numbers of a message are slot tokens, the reply can start with calculation
+// The big model (ch.ver 4): the numbers of a message are slot tokens, the reply can start with calculation
 // steps (operation, two operands; the outcome is computed here and fed), a conversation has three exchanges,
 // and a reply whose tokens were unlikely on average is replaced by "not sure" (ch_conf, ~ai conf).
+// Its weights are stored compactly (ch_q = 1, see "the compact model" below).
 function ch_big_settings() {
   ch_big = 0;
+  ch_q = 0;
   ch_chain = 2;
   ch_conf = -1000;
-  if (s`ch.ver`.equals(3)) {
+  if (s`ch.ver`.equals(4)) {
     ch_big = 1;
+    ch_q = 1;
     ch_chain = 3;
     if (s`ch.conf0`.exists()) {
       ch_conf = s`ch.conf0`;
@@ -1841,25 +1854,43 @@ function ch_row() {
 function ch_feed() {
   ch_row();
   cf_x = ce_cp;
-  lf_X = [];
-  lf_X.append_value([ce_cp]);
-  lf_outS = [];
-  lf_s = 0;
-  ml_lstm_step();
+  if (ch_q.equals(1)) {
+    ch_step_q();
+  } else {
+    lf_X = [];
+    lf_X.append_value([ce_cp]);
+    lf_outS = [];
+    lf_s = 0;
+    ml_lstm_step();
+  }
 }
 
 // a fresh LSTM state
 function ch_reset() {
-  lf_X = [];
-  lf_train = 0;
-  lf_cache = 0;
-  lf_rev = 0;
-  lf_d = 0;
-  ml_lstm_init_state();
+  if (ch_q.equals(1)) {
+    lf_H = s`ch.hid`;
+    lf_gam = s`ch.gam`;
+    lf_bet = s`ch.bet`;
+  } else {
+    lf_X = [];
+    lf_train = 0;
+    lf_cache = 0;
+    lf_rev = 0;
+    lf_d = 0;
+    ml_lstm_init_state();
+  }
 }
 
 // the state of a message token joins the attention memory: its key, and its value column by column
 function ch_remember() {
+  if (ch_q.equals(1)) {
+    ch_remember_q();
+  } else {
+    ch_remember_rows();
+  }
+}
+
+function ch_remember_rows() {
   rm_k = [];
   repeat::for_each_in_list(g`ch.idxA`) { rm_i, rm_n ->
     rm_k.append_value(variable::mathematical_expectation(s`ch.Wk.${rm_n}`, lf_h));
@@ -1880,7 +1911,11 @@ function ch_attend() {
   if (ck_n.equals(0)) {
     ch_ctx = g`ch.zv`;
   } else {
-    ch_attend_weights();
+    if (ch_q.equals(1)) {
+      ch_attend_weights_q();
+    } else {
+      ch_attend_weights();
+    }
     ml_yield(variable::add([variable::multiply([s`ch.da`, 3]), variable::multiply([ck_n, 9])]));
     ch_ctx = [];
     repeat::for_each_in_list(g`ch.idxV`) { at_k, at_d ->
@@ -1917,6 +1952,14 @@ function ch_attend_weights() {
 
 // o = Wp [1 | h | code points of the token | ctx] -> ch_o, ch_oz = [1 | o], ch_so = sum(o)
 function ch_out() {
+  if (ch_q.equals(1)) {
+    ch_out_q();
+  } else {
+    ch_out_rows();
+  }
+}
+
+function ch_out_rows() {
   co_z = mli_cons(1, lf_h);
   co_z = variable::append_list(co_z, cf_x);
   co_z = variable::append_list(co_z, ch_ctx);
@@ -1940,6 +1983,14 @@ function ch_decode_step() {
 
 // logits of all classes -> cl_l
 function ch_class_logits() {
+  if (ch_q.equals(1)) {
+    ch_class_logits_q();
+  } else {
+    ch_class_logits_rows();
+  }
+}
+
+function ch_class_logits_rows() {
   cl_l = [];
   repeat::for_each_in_list(g`ch.chunksC`) { cl_ck, cl_chunk ->
     repeat::for_each_in_list(cl_chunk) { cl_k, cl_c ->
@@ -2140,8 +2191,17 @@ function ch_draw() {
 // a reply
 // ---------------------------------------------------------------------
 function ch_answer() {
-  ch_ensure_model();
   ch_settings();
+  ch_ensure_model();
+  if (g`ch.bad`.greater(0)) {
+    cg_text = "The chat model is damaged in this world (${g`ch.bad`} of its texts differ from the published ones). Admins: ~ai install";
+    ch_say();
+  } else {
+    ch_answer_checked();
+  }
+}
+
+function ch_answer_checked() {
   ch_tokenize();
   ch_start_state();
   ch_read_message();
@@ -2331,6 +2391,328 @@ function ch_take_token() {
     ch_progress();
     ce_id = cg_id;
     ch_decode_step();
+  }
+}
+
+// =====================================================================
+// The compact model (ch.ver 4, tools/chat/chat_pack.py). A world keeps its save variables in one file with a
+// size limit, and the big model as lists of numbers did not fit. So every weight is one character of a text
+// variable; on the first message after a world start the rows are unpacked into game variables (not saved):
+//   g`ch.R.<gate>.<n>`  LSTM row of gate f / i / c / o: [bias / q | 1024 code points | -384]
+//   g`ch.RP.<j>` output rows, g`ch.RQ / RK / RV.<i>` attention rows, g`ch.RC.<c>` class rows
+// The input of a row ends with the sum of the input, so the dot product is bias / q + sum((cp - 384) * input)
+// = (true value) / q. The scale q of a matrix is never multiplied in: the gates use the bases e^-q and e^2q,
+// the state is kept as K * h, the other scales are folded into ch.s0, ch.so, ch.qs, ch.cc, ch.qc.
+// Every text is checked by its md5 when it is unpacked: a damaged model does not answer (g`ch.bad`).
+// =====================================================================
+function ch_build_q() {
+  player::send_action_bar("&7✎ &8...");
+  mr_n = s`ch.hid`;
+  ml_range();
+  g`ch.onesH` = [];
+  repeat::for_each_in_list(mr_list) { bq_k, bq_v ->
+    g`ch.onesH`.append_value(1);
+  }
+  ml_yield(variable::multiply([s`ch.hid`, 5]));
+  // neurons in chunks of about ML_CHUNK_WORK actions of the cell update (14 a neuron)
+  bq_k0 = variable::divide([ML_CHUNK_WORK, 14], "FLOOR");
+  bq_k1 = variable::round(variable::divide([s`ch.hid`, bq_k0]), 0, "CEIL");
+  mc_per = variable::round(variable::divide([s`ch.hid`, bq_k1]), 0, "CEIL");
+  mc_list = mr_list;
+  ml_chunks();
+  g`ch.chunksH` = mc_out;
+  g`ch.chunk_gate` = variable::multiply([mc_per, 7]);
+  g`ch.chunk_cell` = variable::multiply([mc_per, 14]);
+  g`ch.chunk_ln` = variable::multiply([mc_per, 5.5]);
+  g`ch.onesV` = [];
+  repeat::for_each_in_list(g`ch.idxV`) { bq_k, bq_v ->
+    g`ch.onesV`.append_value(1);
+  }
+  ml_yield(variable::multiply([s`ch.hid`, 4]));
+  ch_decode_model();
+}
+
+function ch_decode_model() {
+  dm_hasb = 1;
+  dm_len = variable::add([s`ch.dim`, s`ch.hid`]);
+  dm_n = s`ch.hid`;
+  repeat::for_each_in_list(["f", "i", "c", "o"]) { dq_k, dq_g ->
+    dm_src = "ch.XL.${dq_g}";
+    dm_dst = "ch.R.${dq_g}";
+    dm_bias = s`ch.BL.${dq_g}`;
+    ch_decode_matrix();
+  }
+  dm_src = "ch.XP";
+  dm_dst = "ch.RP";
+  dm_bias = s`ch.BP`;
+  dm_len = variable::add([s`ch.hid`, s`ch.dim`, s`ch.dv`]);
+  dm_n = s`ch.dim`;
+  ch_decode_matrix();
+  dm_src = "ch.XC";
+  dm_dst = "ch.RC";
+  dm_bias = s`ch.BC`;
+  dm_len = s`ch.dim`;
+  dm_n = s`ch.C`;
+  ch_decode_matrix();
+  dm_hasb = 0;
+  dm_len = s`ch.hid`;
+  dm_n = s`ch.da`;
+  dm_src = "ch.XQ";
+  dm_dst = "ch.RQ";
+  ch_decode_matrix();
+  dm_src = "ch.XK";
+  dm_dst = "ch.RK";
+  ch_decode_matrix();
+  dm_n = s`ch.dv`;
+  dm_src = "ch.XV";
+  dm_dst = "ch.RV";
+  ch_decode_matrix();
+  ch_check_embeddings();
+}
+
+// rows of a matrix: text variables <dm_src>.<c> with dm_len characters a row -> game variables <dm_dst>.<i>
+function ch_decode_matrix() {
+  dm_i = 0;
+  dm_c = 0;
+  repeat::while(dm_i.less(dm_n)) {
+    dm_name = "${dm_src}.${dm_c}";
+    ch_check_text();
+    if (dm_ok.equals(1)) {
+      ch_decode_text();
+    } else {
+      dm_i = dm_n;
+    }
+    dm_c = variable::add([dm_c, 1]);
+  }
+}
+
+// the text variable dm_name exists and has the md5 that came with it -> dm_ok, dm_t (else one more in g`ch.bad`)
+function ch_check_text() {
+  dm_ok = 0;
+  if (s`${dm_name}`.exists()) {
+    if (s`${dm_name}.h`.exists()) {
+      dm_t = s`${dm_name}`;
+      if (variable::get_text_hash(dm_t, "MD5").equals(s`${dm_name}.h`)) {
+        dm_ok = 1;
+      }
+    }
+  }
+  if (dm_ok.equals(0)) {
+    g`ch.bad` = variable::add([g`ch.bad`, 1]);
+  }
+}
+
+function ch_decode_text() {
+  dm_rows = variable::divide([variable::get_text_length(dm_t), dm_len], "FLOOR");
+  dm_r = 0;
+  repeat::while(dm_r.less(dm_rows)) {
+    rs_t = dm_t;
+    rs_a = variable::multiply([dm_r, dm_len]);
+    rs_b = variable::add([rs_a, dm_len]);
+    rd_sub();
+    dm_row = variable::text_to_chars(rs_out, "CODEPOINTS");
+    if (dm_hasb.equals(1)) {
+      dm_b = variable::get_list_value(dm_bias, dm_i);
+      dm_row = mli_cons(dm_b, dm_row);
+    }
+    dm_row.append_value(-384);
+    g`${dm_dst}.${dm_i}` = dm_row;
+    dm_i = variable::add([dm_i, 1]);
+    dm_r = variable::add([dm_r, 1]);
+  }
+  ml_yield(variable::multiply([dm_rows, 14]));
+  if (dm_rows.less(1)) {
+    dm_i = dm_n;
+  }
+}
+
+// the embedding texts are read row by row when a token is used; here only their md5 is checked
+function ch_check_embeddings() {
+  dm_c = 0;
+  dm_cn = variable::round(variable::divide([s`ch.V`, s`ch.rows`]), 0, "CEIL");
+  repeat::while(dm_c.less(dm_cn)) {
+    dm_name = "ch.e.${dm_c}";
+    ch_check_text();
+    dm_c = variable::add([dm_c, 1]);
+    ml_yield(8);
+  }
+}
+
+// one LSTM step of the compact model with the token code points ce_cp: lf_h (K * state), lf_c -> the new ones;
+// ch_hz = [K h | sum] for the attention rows, cq_sx / cq_sh = the sums of the input and of the state
+function ch_step_q() {
+  cq_sx = variable::mathematical_expectation(ce_cp, g`ch.onesD`);
+  cq_sh = variable::mathematical_expectation(lf_h, g`ch.onesH`);
+  lf_z = mli_cons(1, ce_cp);
+  lf_z = variable::append_list(lf_z, lf_h);
+  lf_z.append_value(mli_add2(cq_sx, cq_sh));
+  qg_g = "f";
+  ch_gate_q();
+  lf_gf = qg_out;
+  qg_g = "i";
+  ch_gate_q();
+  lf_gi = qg_out;
+  qg_g = "o";
+  ch_gate_q();
+  lf_go = qg_out;
+  ch_candidate_q();
+  ch_cell_q();
+  ch_norm_q();
+  lf_h = lf_hn;
+  lf_c = lf_cn;
+  cq_sh = variable::mathematical_expectation(lf_h, g`ch.onesH`);
+  ch_hz = lf_h;
+  ch_hz.append_value(cq_sh);
+  ml_yield(24);
+}
+
+// gate qg_g (f / i / o): sigmoid(q v) = 1 / (1 + (e^-q)^v) for every neuron -> qg_out
+function ch_gate_q() {
+  qg_B = s`ch.B${qg_g}`;
+  qg_hi = s`ch.X${qg_g}`;
+  qg_lo = variable::multiply([qg_hi, -1]);
+  qg_out = [];
+  repeat::for_each_in_list(g`ch.chunksH`) { qg_ck, qg_chunk ->
+    repeat::for_each_in_list(qg_chunk) { qg_k, qg_n ->
+      qg_v = variable::clamp(variable::mathematical_expectation(g`ch.R.${qg_g}.${qg_n}`, lf_z), qg_lo, qg_hi);
+      qg_v = variable::pow(qg_B, qg_v);
+      qg_v = variable::mathematical_expectation([1, qg_v], [1, 1]);
+      qg_out.append_value(variable::pow(qg_v, -1));
+    }
+    ml_yield(g`ch.chunk_gate`);
+  }
+}
+
+// candidate gate: tanh(q v) = 1 - 2 / ((e^2q)^v + 1) -> lf_gg
+function ch_candidate_q() {
+  qg_B = s`ch.Bc`;
+  qg_hi = s`ch.Xc`;
+  qg_lo = variable::multiply([qg_hi, -1]);
+  lf_gg = [];
+  repeat::for_each_in_list(g`ch.chunksH`) { qg_ck, qg_chunk ->
+    repeat::for_each_in_list(qg_chunk) { qg_k, qg_n ->
+      qg_v = variable::clamp(variable::mathematical_expectation(g`ch.R.c.${qg_n}`, lf_z), qg_lo, qg_hi);
+      qg_v = variable::pow(qg_B, qg_v);
+      qg_v = variable::mathematical_expectation([qg_v, 1], [1, 1]);
+      qg_v = variable::pow(qg_v, -1);
+      lf_gg.append_value(variable::mathematical_expectation([1, qg_v], [1, -2]));
+    }
+    ml_yield(variable::add([g`ch.chunk_gate`, variable::get_list_length(qg_chunk)]));
+  }
+}
+
+// c = f * c_prev + i * g ;  pre = o * tanh(c)   (as ml_lstm_cell_update, over the chat chunks)
+function ch_cell_q() {
+  lf_cn = [];
+  lf_pre = [];
+  repeat::for_each_in_list(g`ch.chunksH`) { qg_ck, qg_chunk ->
+    repeat::for_each_in_list(qg_chunk) { qg_k, lf_n ->
+      lf_cc = variable::mathematical_expectation([variable::get_list_value(lf_gf, lf_n), variable::get_list_value(lf_gi, lf_n)], [variable::get_list_value(lf_c, lf_n), variable::get_list_value(lf_gg, lf_n)]);
+      lf_cn.append_value(lf_cc);
+      lf_tk = mli_tanh(lf_cc);
+      lf_pre.append_value(mli_mul(variable::get_list_value(lf_go, lf_n), lf_tk));
+    }
+    ml_yield(g`ch.chunk_cell`);
+  }
+}
+
+// LayerNorm with the gains times K (as ml_layer_norm_forward, over the chat chunks) -> lf_hn = K * h
+function ch_norm_q() {
+  lf_invH = mli_inv(lf_H);
+  lf_mean = mli_mul(variable::mathematical_expectation(lf_pre, g`ch.onesH`), lf_invH);
+  lf_dl = [];
+  repeat::for_each_in_list(g`ch.chunksH`) { qg_ck, qg_chunk ->
+    repeat::for_each_in_list(qg_chunk) { qg_k, lf_n ->
+      lf_dl.append_value(mli_sub2(variable::get_list_value(lf_pre, lf_n), lf_mean));
+    }
+    ml_yield(g`ch.chunk_ln`);
+  }
+  lf_var = mli_mul(variable::mathematical_expectation(lf_dl, lf_dl), lf_invH);
+  lf_inv = variable::pow(mli_add2(lf_var, ML_LN_EPS), -0.5);
+  lf_hn = [];
+  repeat::for_each_in_list(g`ch.chunksH`) { qg_ck, qg_chunk ->
+    repeat::for_each_in_list(qg_chunk) { qg_k, lf_n ->
+      lf_xk = mli_mul(variable::get_list_value(lf_dl, lf_n), lf_inv);
+      lf_hn.append_value(variable::mathematical_expectation([variable::get_list_value(lf_gam, lf_n), 1], [lf_xk, variable::get_list_value(lf_bet, lf_n)]));
+    }
+    ml_yield(g`ch.chunk_ln`);
+  }
+}
+
+// the state of a message token joins the attention memory (raw rows over ch_hz)
+function ch_remember_q() {
+  rm_k = [];
+  repeat::for_each_in_list(g`ch.idxA`) { rm_i, rm_n ->
+    rm_k.append_value(variable::mathematical_expectation(g`ch.RK.${rm_n}`, ch_hz));
+  }
+  ck_keys.append_value([rm_k]);
+  ml_yield(variable::multiply([s`ch.da`, 3]));
+  repeat::for_each_in_list(g`ch.chunksV`) { rm_ck, rm_chunk ->
+    repeat::for_each_in_list(rm_chunk) { rm_i, rm_n ->
+      `cv.${rm_n}`.append_value(variable::mathematical_expectation(g`ch.RV.${rm_n}`, ch_hz));
+    }
+    ml_yield(variable::multiply([variable::get_list_length(rm_chunk), 3]));
+  }
+  ck_n = variable::add([ck_n, 1]);
+}
+
+// softmax over the message tokens of qs * (q . key); the weights are times cc, so the context comes out
+// in the unit the output rows expect -> at_a
+function ch_attend_weights_q() {
+  at_q = [];
+  repeat::for_each_in_list(g`ch.idxA`) { at_k, at_i ->
+    at_q.append_value(variable::mathematical_expectation(g`ch.RQ.${at_i}`, ch_hz));
+  }
+  at_sc = [];
+  repeat::for_each_in_list(ck_keys) { at_k, at_key ->
+    at_s = variable::mathematical_expectation(at_q, at_key);
+    at_sc.append_value(mli_mul(at_s, s`ch.qs`));
+  }
+  at_mx = variable::max(at_sc);
+  at_e = [];
+  at_tot = 0;
+  repeat::for_each_in_list(at_sc) { at_k, at_v ->
+    at_x = variable::pow(ML_E, mli_sub2(at_v, at_mx));
+    at_e.append_value(at_x);
+    at_tot = mli_add2(at_tot, at_x);
+  }
+  at_inv = mli_inv(at_tot);
+  at_inv = mli_mul(at_inv, s`ch.cc`);
+  at_a = [];
+  repeat::for_each_in_list(at_e) { at_k, at_v ->
+    at_a.append_value(mli_mul(at_v, at_inv));
+  }
+}
+
+// o / qp = output rows over [1 | K h | code points of the token | context | sum] -> ch_o, ch_oz = [1 | o | sum(o)]
+function ch_out_q() {
+  co_sc = variable::mathematical_expectation(ch_ctx, g`ch.onesV`);
+  co_s = variable::mathematical_expectation([cq_sh, cq_sx, co_sc], [1, 1, 1]);
+  co_z = mli_cons(1, lf_h);
+  co_z = variable::append_list(co_z, cf_x);
+  co_z = variable::append_list(co_z, ch_ctx);
+  co_z.append_value(co_s);
+  ch_o = [];
+  repeat::for_each_in_list(g`ch.chunksD`) { co_ck, co_chunk ->
+    repeat::for_each_in_list(co_chunk) { co_k, co_j ->
+      ch_o.append_value(variable::mathematical_expectation(g`ch.RP.${co_j}`, co_z));
+    }
+    ml_yield(g`ch.chunk_cost`);
+  }
+  ch_so = variable::mathematical_expectation(ch_o, g`ch.onesD`);
+  ch_oz = mli_cons(1, ch_o);
+  ch_oz.append_value(ch_so);
+}
+
+// logits of all classes -> cl_l (the rows give them divided by qc)
+function ch_class_logits_q() {
+  cl_l = [];
+  repeat::for_each_in_list(g`ch.chunksC`) { cl_ck, cl_chunk ->
+    repeat::for_each_in_list(cl_chunk) { cl_k, cl_c ->
+      cl_v = variable::mathematical_expectation(g`ch.RC.${cl_c}`, ch_oz);
+      cl_l.append_value(mli_mul(cl_v, s`ch.qc`));
+    }
+    ml_yield(variable::multiply([variable::get_list_length(cl_chunk), 4]));
   }
 }
 

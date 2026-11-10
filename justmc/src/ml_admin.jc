@@ -27,10 +27,18 @@ inline var ML_CMD_PREFIX = "~ml";
 
 
 function ml_admin_boot() {
-  ml_boot();
+  // first what the join and chat handlers read: the boot below has pauses, and a player can join meanwhile
   if (not s`ml.admins`.exists()) {
     s`ml.admins` = [];
   }
+  if (not g`mlg.listeners`.exists()) {
+    g`mlg.listeners` = [];
+  }
+  g`mlg.imports` = [];
+  if (not g`mlg.import_queue`.exists()) {
+    g`mlg.import_queue` = [];
+  }
+  ml_boot();
   g`mlg.imports` = [];
   g`mlg.import_queue` = [];
   g`mlg.import_done` = 0;
@@ -44,12 +52,17 @@ function ml_is_admin() {
   if (ad_u.equals(value::owner_uuid)) {
     ad_ok = 1;
   }
-  if (s`ml.admins`.list_contains_value(ad_name)) {
-    ad_ok = 1;
+  if (s`ml.admins`.exists()) {
+    if (s`ml.admins`.list_contains_value(ad_name)) {
+      ad_ok = 1;
+    }
   }
 }
 
 function ml_listen_add(la_u: text) {
+  if (not g`mlg.listeners`.exists()) {
+    g`mlg.listeners` = [];
+  }
   if (not g`mlg.listeners`.list_contains_value(la_u)) {
     g`mlg.listeners`.append_value(la_u);
   }

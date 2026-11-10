@@ -34,8 +34,7 @@ TARGETS = {
 VARIANTS = {
     "millennium-13m-llm.json": ("millennium-6m-llm.json", [
         ("/justmc/weights/chat/", "/justmc/weights/chat13m/"),
-        ("several hundred files, 5-10 minutes", "about 2300 files, 25-35 minutes"),
-        ("about a thousand files, 10-15 minutes", "about 2600 files, 30-40 minutes"),
+        ("several hundred files, 5-10 minutes", "about 800 files, 10 minutes"),
     ]),
 }
 

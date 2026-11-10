@@ -2,6 +2,9 @@
 """
 Export of the Millennium chat model v2 (chat_train.py) for JustMC, one manifest for the library import:
 
+The big model (special tokens of chat_text.py in the checkpoint) is written by chat_pack.py in its compact
+form (ch.ver 4: one character per weight, nothing stored twice). The model on 6 M parameters, ch.ver 2:
+
   chat-000.json ..   the LSTM as a library model (input = embedding, one direction, LayerNorm), saved as "chat"
   ch-*.json          {"store": {...}}:
       ch.e.<c>              8-bit embeddings: ROWS rows of D characters U+0100 + code per text; value = s0 * (cp - 384).
@@ -116,17 +119,18 @@ def main():
     for name, i in sp.items():
         texts[i] = name
     n_par = sum(v.numel() for k, v in st.items() if k not in ("cls_of", "pos_in"))
-    pk = Packer(a.out)
-    lib, rows_lstm, lnv = library_parts(P, D, H, s0)
-    for i, t in enumerate(lib):
-        pk.put(f"chat-{i:03d}.json", t)
     codes = codes_of(st["emb"].detach().float(), s0)
-    cps_u = [float(CP0 + int(x)) for x in codes[sp["[U]"]]]
-    h0, c0 = lstm_step(rows_lstm, lnv, H, cps_u, [0.0] * H, [0.0] * H)
-    pk.put("save-chat.json", dumps({"format": "millennium", "save": "chat"}))
     where = {t: (c, k) for c, toks in enumerate(classes) for k, t in enumerate(toks)}
     big = "[+]" in sp
-    meta = [("ch.ver", 3 if big else 2), ("ch.hid", H), ("ch.dim", D), ("ch.dv", Dv), ("ch.da", Da), ("ch.nin", D), ("ch.V", V),
+    if not big:
+        pk = Packer(a.out)
+        lib, rows_lstm, lnv = library_parts(P, D, H, s0)
+        for i, t in enumerate(lib):
+            pk.put(f"chat-{i:03d}.json", t)
+        cps_u = [float(CP0 + int(x)) for x in codes[sp["[U]"]]]
+        h0, c0 = lstm_step(rows_lstm, lnv, H, cps_u, [0.0] * H, [0.0] * H)
+        pk.put("save-chat.json", dumps({"format": "millennium", "save": "chat"}))
+    meta = [("ch.ver", 4 if big else 2), ("ch.hid", H), ("ch.dim", D), ("ch.dv", Dv), ("ch.da", Da), ("ch.nin", D), ("ch.V", V),
             ("ch.C", len(classes)), ("ch.rows", rows), ("ch.params", n_par), ("ch.s0", fmt(s0, 9)), ("ch.so", fmt(-OFF * s0, 9)),
             ("ch.temp0", a.temp), ("ch.samp0", 1), ("ch.typ0", a.typ), ("ch.ks0", a.ks), ("ch.topc", a.topc), ("ch.topw", a.topw), ("ch.wiki0", a.wiki), ("ch.sure0", a.sure),
             ("ch.max", 48 if big else 36), ("ch.maxm", 24)]
@@ -141,6 +145,14 @@ def main():
         i = sp[f"[{name}]"]
         c, k = where.get(i, (-1, -1))
         meta += [(f"ch.{name}", i), (f"ch.c{name}", c), (f"ch.p{name}", k)]
+    if big:                                     # the compact files (chat_pack.py): one character per weight
+        import chat_pack
+        A = dict(P)
+        A["emb"] = (codes.double().numpy() - 128.0) * s0
+        os.makedirs(a.out, exist_ok=True)
+        n, stored = chat_pack.write(a.out, chat_pack.pack(A), meta, classes, vocab, texts, a.name)
+        print(f"written {a.out}/chat.json (manifest) + {n} files, {stored / 1e6:.1f} MB, ai.json (reader + chat); {n_par} parameters")
+        return
     meta += [("ch.h0", [fmt(v, 12) for v in h0]), ("ch.c0", [fmt(v, 12) for v in c0])]
     pk.store("ch-meta", meta)
     net = []
