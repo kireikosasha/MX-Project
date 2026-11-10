@@ -29,6 +29,7 @@ inline var ML_CHECKPOINT_THRESHOLD = 0.6;    // CHECKPOINT_DECISION_THRESHOLD
 inline var ML_MIN_RECALL = 0.75;             // CHECKPOINT_MIN_RECALL
 inline var ML_CHUNK = 150;                   // trainOneEpoch chunk size
 inline var ML_FORMAT_VERSION = 6;            // RNNModelML.VERSION
+inline var ML_BUILD = "MLBUILDSTAMP";        // tools/build.py puts a hash of the sources here
 inline var ML_CHUNK_WORK = 300;              // estimated actions of a piece of work between two ml_yield calls
 inline var ML_WORK = 800;                    // default s`ml.work`: the most actions in one tick
 inline var ML_WORK_MIN = 150;                // the pace never falls below it
@@ -100,6 +101,20 @@ inline function mli_cons(x, rest) -> array {
 inline function mli_slice(lst, start, end_excl) -> array {
   var _sl_e = variable::subtract([end_excl, g`mlg.trim_off`]);
   return variable::trim_list(lst, start, _sl_e);
+}
+
+// ---------- game variables of another build ----------
+// A world keeps its game variables while it is loaded, also when the module is loaded again: the lists
+// cached by the previous build can be missing or have another layout (a loop then gets a number instead
+// of a list). bc_new = 1 when the game variables were not set up by this build of the module; the
+// command handlers call this first and boot again (the boot stores the build in g`mlg.build`).
+function ml_build_check() {
+  bc_new = 1;
+  if (g`mlg.build`.exists()) {
+    if (g`mlg.build`.equals(ML_BUILD)) {
+      bc_new = 0;
+    }
+  }
 }
 
 // ---------- throttling: an even, small load in every tick ----------

@@ -95,6 +95,16 @@ def fix_block_lists(ops, spec):
     return n
 
 
+def build_stamp():
+    """hash of all sources: a module built from other sources sets its cached game variables up again"""
+    import hashlib
+    h = hashlib.sha1()
+    for name in sorted(os.listdir(SRC)):
+        if name.endswith(".jc"):
+            h.update(name.encode() + b"\0" + open(os.path.join(SRC, name), "rb").read() + b"\0")
+    return h.hexdigest()[:10]
+
+
 def postprocess(path, jmcc_dir):
     """Icons and English + Russian descriptions for every function / process (tools/function_meta.py).
     Every function must fit in one JustMC code line: helper functions "jmcc.N" are not allowed."""
@@ -119,6 +129,7 @@ def postprocess(path, jmcc_dir):
                        {"name": "icon", "value": {"type": "item", "item": '{id:"%s",count:1}' % icon}}]
     text = json.dumps(code, separators=(",", ":"), ensure_ascii=False)
     text = re.sub(r"jmcc\.(\d+)", r"tmp.\1", text)   # temporary variables of the compiler
+    text = text.replace("MLBUILDSTAMP", build_stamp())   # ML_BUILD: game variables of another build are rebuilt
     open(path, "w", encoding="utf-8").write(text)
     if split:
         print("ERROR: functions longer than one JustMC code line were split by JMCC:", split)

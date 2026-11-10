@@ -35,6 +35,7 @@ function ml_admin_boot() {
   g`mlg.import_queue` = [];
   g`mlg.import_done` = 0;
   g`mlg.import_failed` = 0;
+  g`mlg.build` = ML_BUILD;
 }
 
 // in: ad_u, ad_name -> ad_ok
@@ -74,6 +75,10 @@ function ml_admin_chat() {
   if (cm_msg.text_starts_with(ML_CMD_PREFIX)) {
     cm_handled = 1;
     world::cancel_event();
+    ml_build_check();
+    if (bc_new.equals(1)) {
+      ml_admin_boot();
+    }
     cm_a = variable::split_text(cm_msg, " ");
     cm_sub = variable::get_list_value(cm_a, 1, "help");
     cm_a2 = variable::get_list_value(cm_a, 2, "");

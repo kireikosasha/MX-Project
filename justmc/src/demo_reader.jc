@@ -81,6 +81,28 @@ function ai_boot() {
   g`ai.t0` = 0;
   rd_calibrate();
   rd_runtime();
+  // the chat lists are built again by this build, conversations start anew
+  g`ch.mark` = "";
+  variable::purge(["ch.m."], "GAME", "STARTS_WITH");
+  g`ai.build` = ML_BUILD;
+}
+
+// the game variables of the demo were set up by another build of the module (they outlive a reload of
+// the module, see ml_build_check): everything is booted again before a command is handled
+function ai_build_check() {
+  ab_new = 1;
+  if (g`ai.build`.exists()) {
+    if (g`ai.build`.equals(ML_BUILD)) {
+      ab_new = 0;
+    }
+  }
+  if (ab_new.equals(1)) {
+    ml_build_check();
+    if (bc_new.equals(1)) {
+      ml_admin_boot();
+    }
+    ai_boot();
+  }
 }
 
 function ai_on_join() {
@@ -1338,6 +1360,7 @@ function ai_on_chat() {
   cm_a = variable::split_text(cm_msg, " ");
   if (variable::get_list_value(cm_a, 0, "").equals(AI_CMD_PREFIX)) {
     world::cancel_event();
+    ai_build_check();
     cm_sub = variable::get_list_value(cm_a, 1, "help");
     cm_a2 = variable::get_list_value(cm_a, 2, "");
     cm_a3 = variable::get_list_value(cm_a, 3, "");
@@ -1593,7 +1616,8 @@ function ch_ensure_model() {
 
 // index lists of the chat model (built once per installed model), settings of this reply
 function ch_settings() {
-  cs_mark = "${s`ch.params`}.${s`ch.C`}";
+  cs_b = ML_BUILD;
+  cs_mark = "${cs_b}.${s`ch.params`}.${s`ch.C`}";
   cs_ok = 0;
   if (g`ch.mark`.exists()) {
     if (g`ch.mark`.equals(cs_mark)) {

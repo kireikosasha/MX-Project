@@ -520,6 +520,11 @@ function dg_on_chat() {
   cm_msg = value::event_chat_message;
   if (cm_msg.text_starts_with(DG_CMD_PREFIX)) {
     world::cancel_event();
+    ml_build_check();
+    if (bc_new.equals(1)) {
+      ml_admin_boot();
+      dg_boot();
+    }
     cm_a = variable::split_text(cm_msg, " ");
     cm_sub = variable::get_list_value(cm_a, 1, "help");
     cm_a2 = variable::get_list_value(cm_a, 2, "");
