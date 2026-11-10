@@ -19,7 +19,7 @@ StackedBiLSTM + LayerNorm, пулинги LAST / MEAN / MAX / ATTENTION, BinaryH
 build/millennium_trainer.json   модуль: библиотека + команды ~ml
 build/millennium_mx_demo.json   модуль: то же + демо проверки аима (AimMLCheck)
 build/millennium_digits_demo.json  модуль: то же + демо распознавания цифр
-build/millennium_reader_demo.json  модуль: то же + ИИ-собеседник (~ai: чат-модель + читатель Википедии)
+build/millennium-6m-llm.json  модуль: то же + ИИ-собеседник (~ai: чат-модель + читатель Википедии)
 weights/quark-e.json            предобученная модель MX (m1-rnn.dat): манифест
 weights/quark-e-000..071.json   её части
 weights/digits/digits.json      10 моделей цифр, малый набор: манифест (~dg install)
@@ -156,7 +156,7 @@ python tools/digits/digits_train.py --data data.npz --out weights/digits-huge --
 ## Демо 3: ИИ-собеседник (чат + Википедия)
 
 ```
-/module loadUrl force https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/build/millennium_reader_demo.json
+/module loadUrl force https://raw.githubusercontent.com/kireikosasha/MX-Project/master/justmc/build/millennium-6m-llm.json
 /play
 ~ai install
 ~ai привет, как дела?

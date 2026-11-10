@@ -28,7 +28,7 @@ TARGETS = {
     "demo_mx_aim.jc": "millennium_mx_demo.json",
     "demo_digits.jc": "millennium_digits_demo.json",
     "probe_ai.jc": "millennium_probe.json",
-    "demo_reader.jc": "millennium_reader_demo.json",
+    "demo_reader.jc": "millennium-6m-llm.json",
 }
 
 
