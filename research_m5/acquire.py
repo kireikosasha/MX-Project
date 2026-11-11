@@ -38,19 +38,6 @@ STAR = "\u2605"                  # an argument place of a form
 STARS = STAR + STAR               # an argument made of two or more places next to each other ("red square")
 
 
-CODE = re.compile(r"([a-z]+)\d+")
-
-
-def spell(text):
-    """the words of a line. A code - letters, then digits, as k7 in a log or a table - is read as its series and
-    itself (k k7): what kind of thing a code names is said by its letters, as a word of a sentence would say it"""
-    out = []
-    for w in re.findall(r"[^\W_]+|[.,?]", text.lower()):
-        m = CODE.fullmatch(w)
-        out += [m.group(1), w] if m else [w]
-    return tuple(out)
-
-
 def read(path, limit=None):
     """a bAbI file -> stories: [(words, answer or None)]; an answer is a list (several things, or the steps of a path)"""
     out = []
@@ -61,7 +48,8 @@ def read(path, limit=None):
                 break
             out.append([])
         parts = rest.split("\t")
-        out[-1].append((spell(parts[0]), [x.strip() for x in parts[1].lower().split(",")] if len(parts) > 1 else None))
+        words = tuple(re.findall(r"[^\W_]+|[.,?]", parts[0].lower()))
+        out[-1].append((words, [x.strip() for x in parts[1].lower().split(",")] if len(parts) > 1 else None))
     return out
 
 
