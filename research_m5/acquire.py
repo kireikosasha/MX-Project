@@ -643,15 +643,25 @@ class Mind:
                     (dark_q if quest else dark_s).setdefault(tuple(form + list(words[pos:])), (words, gold, text))
         if not (dark_s or dark_q) or len(dark_q) > 12:
             return None
-        s_lists = [self.guesses(w, False) for w, _, _ in dark_s.values()]
+
+        def general(words, quest, gold=None, text=()):
+            """the guesses in which every varying place is an argument: at the level of the whole task no single
+            word is yet taken as part of a form"""
+            pl, runs_of = self.places(words), dict(self.keys(words, quest))
+            return [g for g in self.guesses(words, quest, False, gold, text)
+                    if all(any(s0 <= a and b <= e0 for s0, e0 in runs_of[g[0]]) for a, b in pl)]
+
+        s_lists = [general(w, False) for w, _, _ in dark_s.values()]
         size = 1
         for x in s_lists:
             size *= len(x)
         if size == 0:
             return None
-        if len(s_lists) > 2 or size > 3000:                      # too many together: one kind of statement at a time
+        one = len(s_lists) > 2 or size > 3000                    # too many together: one kind of statement at a time
+        if one:
             s_lists = [min(s_lists, key=len)]
-        q_lists = [self.guesses(w, True, False, g, t) for w, g, t in dark_q.values()]
+        q_lists = [general(w, True, g, t) for w, g, t in dark_q.values()]
+        every, stories = stories, stories[:10]                   # the search looks at ten stories, the result is checked on all
         told = {p[0] for story in stories for w, g in story if g is None for p in [self.parse(w, False)] if p}
         fresh = {w: h for w, h in self.maybe_alias.items() if w not in self.lex.alias}
         lexes = [None]
@@ -704,8 +714,10 @@ class Mind:
                         top = (score, chosen, lex2)
         if not top:
             return None
+        stories = every
         sc = total(top[1], top[2])
-        return (top[1], sc, top[2], None, None) if sc > best else None
+        enough = (0.25 if one else 0.6) * sum(1 for s in stories for _, g in s if g is not None)
+        return (top[1], sc, top[2], None, None) if sc > best and sc >= enough else None
 
     def try_words(self, story, li, stories, best):
         """a word that stands in a place which is not an argument may itself say what is done ("got", "dropped"):
