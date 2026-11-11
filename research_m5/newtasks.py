@@ -10,6 +10,7 @@ Set A was used while the ground was being widened; set B was written by other au
 looked at, and is run once on the finished code.
 """
 import argparse
+import ast
 import os
 import re
 import subprocess
@@ -23,7 +24,13 @@ BAD = re.compile(r"\b(os|subprocess|socket|shutil|pathlib|urllib|requests|http|c
 def check(text):
     """a generator may only compute and print"""
     hit = BAD.search(text)
-    imports = set(re.findall(r"^\s*(?:import|from)\s+([\w.]+)", text, re.M))
+    try:                                                         # what is really imported (a line of a comment that begins
+        tree = ast.parse(text)                                   # with "from" is not an import)
+    except SyntaxError as e:
+        return f"syntax: {e}"
+    imports = {n.module or "" for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)} | \
+              {a.name for n in ast.walk(tree) if isinstance(n, ast.Import) for a in n.names}
+    imports = {m.split(".")[0] for m in imports}
     extra = imports - {"random", "sys", "itertools", "collections", "string", "math", "typing", "copy", "functools", "dataclasses", "enum"}
     return (hit.group(0) if hit else None) or (", ".join(sorted(extra)) if extra else None)
 
@@ -53,6 +60,7 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--train", type=int, default=2000, help="stories in the training file (the learner takes the first 20)")
     ap.add_argument("--test", type=int, default=500)
+    ap.add_argument("--size", type=int, default=1, help="how big the TEST episodes are (generators that take a size); the training ones stay at 1")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     root = os.path.join(HERE, "newtasks", a.set)
@@ -69,7 +77,8 @@ def main():
         try:
             with tempfile.TemporaryDirectory() as tmp:
                 for part, n, seed in (("train", a.train, 1), ("test", a.test, 2)):
-                    r = subprocess.run([sys.executable, "-I", gen, str(n), str(seed)], capture_output=True, text=True, timeout=300, cwd=tmp)
+                    more = [str(a.size)] if part == "test" and a.size != 1 else []
+                    r = subprocess.run([sys.executable, "-I", gen, str(n), str(seed)] + more, capture_output=True, text=True, timeout=300, cwd=tmp)
                     assert r.returncode == 0, r.stderr[-300:]
                     open(os.path.join(a.out, f"qa{k}_{name}_{part}.txt"), "w", encoding="utf-8").write(stories(r.stdout))
             print(name, "- written")

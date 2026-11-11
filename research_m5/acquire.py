@@ -38,6 +38,19 @@ STAR = "\u2605"                  # an argument place of a form
 STARS = STAR + STAR               # an argument made of two or more places next to each other ("red square")
 
 
+CODE = re.compile(r"([a-z]+)\d+")
+
+
+def spell(text):
+    """the words of a line. A code - letters, then digits, as k7 in a log or a table - is read as its series and
+    itself (k k7): what kind of thing a code names is said by its letters, as a word of a sentence would say it"""
+    out = []
+    for w in re.findall(r"[^\W_]+|[.,?]", text.lower()):
+        m = CODE.fullmatch(w)
+        out += [m.group(1), w] if m else [w]
+    return tuple(out)
+
+
 def read(path, limit=None):
     """a bAbI file -> stories: [(words, answer or None)]; an answer is a list (several things, or the steps of a path)"""
     out = []
@@ -48,8 +61,7 @@ def read(path, limit=None):
                 break
             out.append([])
         parts = rest.split("\t")
-        words = tuple(re.findall(r"[^\W_]+|[.,?]", parts[0].lower()))
-        out[-1].append((words, [x.strip() for x in parts[1].lower().split(",")] if len(parts) > 1 else None))
+        out[-1].append((spell(parts[0]), [x.strip() for x in parts[1].lower().split(",")] if len(parts) > 1 else None))
     return out
 
 
@@ -1457,6 +1469,7 @@ def main():
     ap.add_argument("--out", default="", help="where to save what was learnt (json)")
     ap.add_argument("--state", default="", help="a file to keep the learner in after every task; a run started again goes on from it")
     ap.add_argument("--apart", action="store_true", help="every task is learnt on its own, from nothing")
+    ap.add_argument("--also", default="", help="more folders with test files of the same tasks (say, bigger episodes), comma-separated")
     a = ap.parse_args()
     if os.environ.get("PYTHONHASHSEED") != "0":                  # sets are walked in the same order in every run
         os.environ["PYTHONHASHSEED"] = "0"
@@ -1468,8 +1481,8 @@ def main():
         mind._text, mind._named = {}, {}
         print(f"going on after {len(mind.tasks)} tasks", flush=True)
     mind.trace = a.trace
-    def test(k):
-        f = glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0]
+    def test(k, data=None):
+        f = glob.glob(os.path.join(data or a.data, f"qa{k}_*test.txt"))[0]
         say = dict(mind.said_all, **{s: c.most_common(1)[0][0] for s, c in mind.said_n.items()})
         for s, c in mind.said_n.items():                         # every way a sign was said
             for g in c:
@@ -1486,6 +1499,9 @@ def main():
                     r += 1
                 elif ans is None and sorted(mind.usual.get(mind.build(words), [])) == sorted(gold):
                     r, usual = r + 1, usual + 1                  # nothing was understood: the usual answer to such a question
+        if data:
+            print(f"test {k:2d} in {os.path.basename(data.rstrip('/'))}: {r}/{n} = {100 * r / n:.1f}%", flush=True)
+            return
         rows.append((k, r, n))
         print(f"test {k:2d}: {r}/{n} = {100 * r / n:.1f}%" + (f"   ({usual} of them by the usual answer)" if usual else ""), flush=True)
 
@@ -1503,6 +1519,9 @@ def main():
                 print(mind.describe())
                 print("pronouns:", sorted(mind.lex.pron), "| directions:", mind.lex.dirs, "| times:", mind.lex.times, "| one word:", mind.lex.alias, "| said:", mind.said)
             test(k)
+            for more in a.also.split(","):
+                if more:
+                    test(k, more)
         elif a.state:
             pickle.dump(mind, open(a.state + ".new", "wb"))
             os.replace(a.state + ".new", a.state)

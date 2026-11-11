@@ -128,7 +128,7 @@ def evaluate(net, data, vocab, answers, device):
     return got
 
 
-def run(root, lang, size, seed, device, width, layers, max_minutes, vectors=None):
+def run(root, lang, size, seed, device, width, layers, max_minutes, vectors=None, also=()):
     random.seed(seed)
     torch.manual_seed(seed)
     stories, test = load(root, lang, size)
@@ -184,8 +184,14 @@ def run(root, lang, size, seed, device, width, layers, max_minutes, vectors=None
     rows = [[k, got[k][0], got[k][1]] for k in sorted(got)]
     right, total = sum(r for _, r, _ in rows), sum(n for _, _, n in rows)
     print(f"{lang} {size}: test {right}/{total} = {100 * right / total:.2f}%, tasks at 95% and more: {sum(r >= 0.95 * n for _, r, n in rows)}", flush=True)
-    return {"lang": lang, "size": size, "questions": len(train) + len(held), "weights": n_par, "steps": step, "held_out": best, "test": rows,
-            "seconds": round(time.time() - t0)}
+    res = {"lang": lang, "size": size, "questions": len(train) + len(held), "weights": n_par, "steps": step, "held_out": best, "test": rows,
+           "seconds": round(time.time() - t0)}
+    for more in also:                                            # the same network on other tests of the same tasks
+        got = evaluate(net, load(more, "", size)[1], vocab, answers, device)
+        res.setdefault("also", {})[os.path.basename(more.rstrip("/"))] = [[k, got[k][0], got[k][1]] for k in sorted(got)]
+        right, total = sum(r for r, _ in got.values()), sum(n for _, n in got.values())
+        print(f"{lang} {size}: test in {os.path.basename(more.rstrip('/'))} {right}/{total} = {100 * right / total:.2f}%", flush=True)
+    return res
 
 
 def main():
@@ -198,8 +204,12 @@ def main():
     ap.add_argument("--layers", type=int, default=4)
     ap.add_argument("--minutes", type=float, default=90, help="the longest one training may take")
     ap.add_argument("--vectors", default="", help="a GloVe file (.gz): ready vectors of words, as the reader gets")
+    ap.add_argument("--also", default="", help="more folders with test files of the same tasks (say, bigger episodes), comma-separated")
+    ap.add_argument("--sents", type=int, default=60, help="the last sentences of a story the network sees")
     ap.add_argument("--out", default="baseline.json")
     a = ap.parse_args()
+    global MAX_SENTS
+    MAX_SENTS = a.sents
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     vectors = None
     if a.vectors:
@@ -210,7 +220,7 @@ def main():
     for size in a.sizes.split(","):
         if any(r["lang"] == a.lang and r["size"] == size for r in done):
             continue
-        done.append(run(a.data, a.lang, size, a.seed, device, a.width, a.layers, a.minutes, vectors))
+        done.append(run(a.data, a.lang, size, a.seed, device, a.width, a.layers, a.minutes, vectors, [x for x in a.also.split(",") if x]))
         json.dump(done, open(a.out, "w", encoding="utf-8"))
     print("\n| data | questions | right on the test, % | tasks at 95 % and more |\n| --- | --- | --- | --- |")
     for r in done:
