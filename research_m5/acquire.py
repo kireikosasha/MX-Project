@@ -82,6 +82,7 @@ class Mind:
         self.sort = {}                     # a word -> the sort of words it can be replaced with
         self.apart = set()                 # pairs of words seen in one place
         self.joint = set()                 # several words seen standing together where one word can stand
+        self.signs = set()                 # answers that are not names of things (yes, no, a number), though the word may occur in a story
         self.seen = []                     # the stories learnt from
         self.tasks = []                    # the same stories, task by task
         self._keys, self._parse, self._by_form = {}, {}, defaultdict(set)
@@ -150,6 +151,7 @@ class Mind:
             known = self.single | self.multi
             self.multi = {f for f in self.multi if not ((f[1:] if len(f) > 2 else f[1]) in known or (f[:-1] if len(f) > 2 else f[0]) in known)
                           and not any(w in self.single for w in f[1:])}      # a word that stands alone, inside: not one thing
+            self.multi |= {tuple(g.split()) for g in golds if 1 < len(g.split()) <= 4}      # an answer of several words is the name of one thing
             sorts()
             if (len(self.single), len(self.multi), len(apart)) == size:
                 break
@@ -172,6 +174,23 @@ class Mind:
         self._keys.clear()
         self._parse.clear()
         self._by_form.clear()
+
+    def find_signs(self):
+        """the kind of answer belongs to the build of the question: if a question is somewhere answered with a word
+        that is not named in the story, its answers are signs of the ground (yes, no, a number) and not things -
+        also where such a word happens to occur in the story ("no" in "is no longer")"""
+        by = {}
+        for story in self.seen:
+            text = {self.same(w) for ws, _ in story for w in ws}
+            for words, gold in story:
+                if gold and len(gold) == 1:
+                    pl = self.places(words)
+                    key = tuple(STAR if any(a <= i < b for a, b in pl) else w for i, w in enumerate(words))
+                    rec = by.setdefault(key, [set(), False])
+                    rec[0].add(gold[0])
+                    rec[1] |= not {self.same(w) for w in gold[0].split()} <= text
+        self.signs = {g for golds, free in by.values() if free for g in golds}
+        self._named.clear()
 
     def places(self, words):
         """the candidate places of a sentence: [(start, end)]"""
@@ -262,8 +281,8 @@ class Mind:
             named = {self.same(w) for w in gold[0].split()} <= {self.same(w) for w in text}
             if len(gold) > 1:
                 can = ("LIST", "PATH")
-            elif named and any(gold[0] in c for c in self.said_n.values()):
-                can = signs + things          # named in the story, but already learnt as a way to say yes, no or a number
+            elif named and gold[0] in self.signs:
+                can = signs + things          # named in the story, but elsewhere the answer to such a question is not a thing
             elif named:                       # the answer is named in the story: a thing is asked
                 can = things
             else:                             # it is not: yes or no, a number, a step
@@ -326,7 +345,7 @@ class Mind:
             self._text[id(story)] = {x for ws, _ in story for x in ws}
         for words, gold in story[:upto]:
             if gold is not None and id(gold) not in self._named:      # is the answer something named in the story
-                self._named[id(gold)] = set(" ".join(gold).split()) <= self._text[id(story)]
+                self._named[id(gold)] = set(" ".join(gold).split()) <= self._text[id(story)] and not (len(gold) == 1 and gold[0] in self.signs)
             p = self.parse(words, gold is not None)
             if gold is None:
                 if p:
@@ -371,6 +390,13 @@ class Mind:
                     said[s] = g
                     taken.add(g)
                     break
+        also = {}                                                # a sign may be said in more than one way: a word says the sign it answers most
+        for s in sorted(count):
+            for g, n in count[s].items():
+                if not s.startswith("step ") and g not in taken and n > also.get(g, (0, ""))[0]:
+                    also[g] = (n, s)
+        for g, (_, s) in also.items():
+            said[("also", g)] = s
         if learn:
             self.said = said
         return sum(self.right(ans, gold, said) for ans, gold in results), said
@@ -384,7 +410,7 @@ class Mind:
         if t == "l":
             return sorted(v) == sorted(self.lex.alias.get(g, g) for g in gold)
         if t == "s":
-            return len(gold) == 1 and said.get(v) == gold[0]
+            return len(gold) == 1 and (said.get(v) == gold[0] or said.get(("also", gold[0])) == v)
         return len(v) == len(gold) and all(said.get("step " + s) == g for s, g in zip(v, gold))
 
     def flat(self, forms, lex, stories):
@@ -470,6 +496,11 @@ class Mind:
         self.seen += stories
         self.tasks.append(stories)
         self.find_places(self.seen)
+        self.find_signs()
+        for task, was in zip(self.tasks, before):                  # the new stories may show that what stood as one word is two:
+            if self.score(task)[0] < was:                          # the earlier tasks are then read again by likeness
+                self.adopt(task)
+        before = [min(was, self.score(task)[0]) for task, was in zip(self.tasks, before)]
         self.adopt(stories)
         best = self.score(stories)[0]
         total = sum(1 for s in stories for _, g in s if g is not None)
@@ -514,7 +545,7 @@ class Mind:
         _, said = self.judge(res, learn=True)
         self.said_all.update({s: g for s, g in said.items() if s not in self.said_n})
         for ans, gold in (res if best >= 0.9 * total else ()):      # how the symbols are said stays for the next tasks
-            if ans and ans[0] == "s" and len(gold) == 1 and said.get(ans[1]) == gold[0]:
+            if ans and ans[0] == "s" and len(gold) == 1 and self.right(ans, gold, said):
                 self.said_n[ans[1]][gold[0]] += 1
             elif ans and ans[0] == "p" and self.right(ans, gold, said):
                 for s, g in zip(ans[1], gold):
@@ -904,8 +935,8 @@ class Mind:
             t, v = ans
             al = (lex or self.lex).alias
             return (t == "e" and len(gold) == 1 and al.get(gold[0], gold[0]) == v) or (t == "l" and sorted(v) == sorted(al.get(g, g) for g in gold)) \
-                or (t == "s" and len(gold) == 1 and (not set(gold[0].split()) & text or any(gold[0] in c for c in self.said_n.values()))
-                    and self.said.get(v, gold[0]) == gold[0]) \
+                or (t == "s" and len(gold) == 1 and (not set(gold[0].split()) & text or gold[0] in self.signs)
+                    and (self.said.get(v, gold[0]) == gold[0] or self.said.get(("also", gold[0]), v) == v and gold[0] not in self.said.values())) \
                 or (t == "p" and len(v) == len(gold) and all(self.said.get("step " + s, g) == g for s, g in zip(v, gold)))
 
         told = set()                                             # what the statements of this story tell
@@ -977,7 +1008,7 @@ class Mind:
             nonlocal best, everything
             change()
             sc, ev = self.score(stories)[0], self.score(self.seen)[0]
-            if sc > best and ev > everything:
+            if sc > best and ev - everything >= sc - best:        # better here, and nothing lost in what was learnt before
                 best, everything = sc, ev
                 return True
             undo()
@@ -1101,6 +1132,10 @@ def main():
         f = glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0]
         res = [r for s in read(f) for r in mind.run(s)]
         say = dict(mind.said_all, **{s: c.most_common(1)[0][0] for s, c in mind.said_n.items()})
+        for s, c in mind.said_n.items():                         # every way a sign was said
+            for g in c:
+                if g not in say.values() and not s.startswith("step "):
+                    say[("also", g)] = max(mind.said_n, key=lambda x: mind.said_n[x][g])
         r = sum(mind.right(ans, gold, say) for ans, gold in res)
         rows.append((k, r, len(res)))
         right, n = right + r, n + len(res)
@@ -1108,7 +1143,8 @@ def main():
     print(f"all: {right}/{n} = {100 * right / n:.2f}%   ({time.time() - t0:.0f} s)")
     if a.out:
         json.dump({"forms": [[list(f[1:]), f[0], list(h[:3])] for f, h in mind.forms.items()], "pronouns": sorted(mind.lex.pron),
-                   "directions": mind.lex.dirs, "times": mind.lex.times, "one_word": mind.lex.alias, "said": mind.said,
+                   "directions": mind.lex.dirs, "times": mind.lex.times, "one_word": mind.lex.alias,
+                   "said": {(k if isinstance(k, str) else "also " + k[1]): v for k, v in mind.said.items()},
                    "follows": [[list(k), v] for k, v in mind.lex.kb.items()], "like": mind.lex.like, "gave": mind.lex.gave,
                    "test": rows}, open(a.out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
