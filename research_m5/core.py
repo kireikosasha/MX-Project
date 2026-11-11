@@ -179,6 +179,9 @@ class World:
         self.never = set()                           # (a set, a set): none of the first is of the second
         self.qty = {}                                # (thing, of what) -> how many
         self.last = []
+        self.notes = []                              # what was notable in the telling: (scheme, number, what) - a value
+                                                     # changed, a thing taken that is held, less than nothing left, a
+                                                     # chain back to its start... Whether it is strange is not said here
 
     def name(self, w):
         return self.lex.norm(w)
@@ -224,15 +227,24 @@ class World:
             return
         a = self.turned(a)
         g = lambda r: [self.name(x) for x in a.get(r, [])]              # noqa: E731
+        note = lambda what: self.notes.append((kind, k, what))           # noqa: E731
         if kind == "SET":
             rank = self.lex.time(g("T")[0]) if g("T") else None
             for p in self.who(g("A1")):
+                if self.val[k].get(p) is not None:
+                    note("same" if self.val[k][p] == g("A2")[0] else "change")
                 self.val[k][p] = g("A2")[0]
                 self.by[k][p] = g("O")[0] if g("O") else None
                 self.maybe[k].pop(p, None)
                 self.hist[k].setdefault(p, []).append((rank, self.n, g("A2")[0]))
                 for o in self.carried.get(p, []):
                     self._went(k, o, g("A2")[0])
+                x, seen = g("A2")[0], set()
+                while x is not None and x != p and x not in seen:
+                    seen.add(x)
+                    x = self.val[k].get(x)
+                if x == p:
+                    note("loop")
         elif kind == "UNSET":
             for p in self.who(g("A1")):
                 self.val[k][p] = None
@@ -244,23 +256,39 @@ class World:
         elif kind == "ATTACH":
             for p in self.who(g("A1")):
                 for o in g("A2"):
+                    if self.carrier.get(o):
+                        note("held")
                     self._take(p, o)
         elif kind == "DETACH":
             for p in self.who(g("A1")):
                 for o in g("A2"):
+                    if o not in self.carried.get(p, []):
+                        note("empty")
                     self._drop(p, o)
         elif kind == "PASS":
             p, q = self.who(g("A1"))[0], g("A3")[0]
             for o in g("A2"):
                 if o in self.carried.get(p, []):
                     self.carried[p].remove(o)
+                else:
+                    note("empty")
                 self._take(q, o)
                 self.passes.append((p, o, q))
         elif kind == "ISA":
+            if self.kind.get(g("A1")[0], g("A2")[0]) != g("A2")[0]:
+                note("change")
             self.kind[g("A1")[0]] = g("A2")[0]
             self.kind_at[g("A1")[0]] = self.n
         elif kind == "ORDER":
             self.order[k].add((g("A1")[0], g("A2")[0]))
+            x, seen = [g("A2")[0]], set()
+            while x:                                             # is A1 already told to come after A2?
+                y = x.pop()
+                if y not in seen:
+                    seen.add(y)
+                    x += [b for a2, b in self.order[k] if a2 == y]
+            if g("A1")[0] in seen:
+                note("loop")
         elif kind == "LINK":
             self.links[k].append((g("A1")[0], self.lex.direction(g("D")[0]), g("A2")[0]))
         elif kind == "RISE":
@@ -280,6 +308,8 @@ class World:
             for o, frm, to in ((g("A2")[0], p, q), (g("A4")[0], q, p)):
                 if o in self.carried.get(frm, []):
                     self.carried[frm].remove(o)
+                else:
+                    note("empty")
                 self._take(to, o)
                 self.passes.append((frm, o, to))
         elif kind == "NEVER":
@@ -293,6 +323,8 @@ class World:
             for p in self.who(g("A1")):
                 have = self.qty.get((p, of), 0)
                 self.qty[(p, of)] = n if kind == "QSET" else have + n if kind == "QADD" else have - n
+                if self.qty[(p, of)] < 0:
+                    note("below")
             if kind == "QPASS":
                 self.qty[(g("A3")[0], of)] = self.qty.get((g("A3")[0], of), 0) + n
         else:
