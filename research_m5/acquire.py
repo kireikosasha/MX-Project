@@ -26,6 +26,7 @@ import glob
 import itertools
 import json
 import os
+import pickle
 import re
 import time
 from collections import Counter, defaultdict
@@ -69,9 +70,11 @@ class Mind:
         self.forms = {}                    # form -> (scheme, number, the role of every argument place)
         self.verbs = {}                    # a word in a place that is not an argument -> (scheme, number): what the word itself means
         self.bad = set()                   # guesses that were tried and spoiled something
+        self.frozen = set()                # the forms and words of the guess being defended while earlier tasks are re-read
         self.single, self.multi = set(), set()
         self.said = {}                     # a symbol of the ground -> how it is said
         self.said_n = defaultdict(Counter)
+        self.said_all = {}                 # every saying learnt, also from tasks that were not learnt well
         self.maybe_alias = {}              # forms that look like one word: tried when a guess needs them
         self.sort = {}                     # a word -> the sort of words it can be replaced with
         self.apart = set()                 # pairs of words seen in one place
@@ -458,7 +461,7 @@ class Mind:
         total = sum(1 for s in stories for _, g in s if g is not None)
         stuck, whole = set(), True
         while best < total and time.time() - t0 < budget:
-            step = self.try_task(stories, best, min(t0 + budget, time.time() + 0.3 * budget)) if whole else None   # first the task as a whole
+            step = self.try_task(stories, best, min(t0 + budget, time.time() + 0.5 * budget)) if whole else None   # first the task as a whole
             if step is None:
                 whole = False
                 step = self.next_step(stories, best, stuck, t0 + budget)
@@ -473,7 +476,10 @@ class Mind:
             self.take(new, lex, verbs)
             if any(self.score(t)[0] < b for t, b in zip(self.tasks, before)):
                 # the new understanding spoils an earlier task: read that task again in its light, or give the guess up
-                if not self.repair(before, t0 + budget) or self.score(stories)[0] <= best:
+                self.frozen = {f for f, _ in new} | set(verbs or {})
+                mended = self.repair(before, t0 + budget)
+                self.frozen = set()
+                if not mended or self.score(stories)[0] <= best:
                     self.restore(snap)
                     self.bad.add((tuple(new), tuple(sorted((verbs or {}).items()))))
                     continue
@@ -488,6 +494,7 @@ class Mind:
         best = self.score(stories)[0]
         res = [r for s in stories for r in self.run(s)]
         _, said = self.judge(res, learn=True)
+        self.said_all.update({s: g for s, g in said.items() if s not in self.said_n})
         for ans, gold in (res if best >= 0.9 * total else ()):      # how the symbols are said stays for the next tasks
             if ans and ans[0] == "s" and len(gold) == 1 and said.get(ans[1]) == gold[0]:
                 self.said_n[ans[1]][gold[0]] += 1
@@ -614,15 +621,17 @@ class Mind:
                     sets += [[old(quest)]] + [[old(d)] for d in read[:6]] + [[old(quest), old(d)] for d in read[:4]]
                 elif revise:
                     sets += [[new(quest)]] + [[new(quest), old(d)] for d in read[:4]]
-                found = self.try_words(story, li, stories, best) if quest not in dark else None
-                if found:
-                    return found + ((id(story), li),)
+                word = self.try_words(story, li, stories, best) if quest not in dark else None
                 for group in sets:
                     if time.time() > until:
                         return None
-                    found = self.try_group(group, story, li, stories, best, until, revise)
+                    if word and len(group) > 1:
+                        continue                             # a meaning of a word is at hand: only a single better reading beats it
+                    found = self.try_group(group, story, li, stories, word[1] if word else best, until, revise)
                     if found:
                         return found + (None, (id(story), li))
+                if word:
+                    return word + ((id(story), li),)
                 stuck.add((id(story), li))
         return None
 
@@ -648,8 +657,9 @@ class Mind:
             """the guesses in which every varying place is an argument: at the level of the whole task no single
             word is yet taken as part of a form"""
             pl, runs_of = self.places(words), dict(self.keys(words, quest))
-            return [g for g in self.guesses(words, quest, False, gold, text)
-                    if all(any(s0 <= a and b <= e0 for s0, e0 in runs_of[g[0]]) for a, b in pl)]
+            out = [g for g in self.guesses(words, quest, False, gold, text)
+                   if all(any(s0 <= a and b <= e0 for s0, e0 in runs_of[g[0]]) for a, b in pl)]
+            return sorted(out, key=lambda g: STARS in g[0])        # two places as one argument: only after the plain guesses
 
         s_lists = [general(w, False) for w, _, _ in dark_s.values()]
         size = 1
@@ -661,6 +671,11 @@ class Mind:
         if one:
             s_lists = [min(s_lists, key=len)]
         q_lists = [general(w, True, g, t) for w, g, t in dark_q.values()]
+        if q_lists:                                              # a statement no question can ask about is not guessed here
+            asked = {g[1][0] for gq in q_lists for g in gq}
+            s_lists = [[g for g in gs if G.READS[g[1][0]] & asked] for gs in s_lists]
+            if any(not gs for gs in s_lists):
+                return None
         every, stories = stories, stories[:10]                   # the search looks at ten stories, the result is checked on all
         told = {p[0] for story in stories for w, g in story if g is None for p in [self.parse(w, False)] if p}
         fresh = {w: h for w, h in self.maybe_alias.items() if w not in self.lex.alias}
@@ -743,7 +758,7 @@ class Mind:
                     continue
                 for k2 in ([0] if num == "" else range(min({"a": G.N_ATTR, "o": G.N_ORDER, "m": G.N_MAP}[num], used[num] + 1))):
                     verbs = {word: (kind2, k2)}
-                    if self.verbs.get(word, (kind, k)) == (kind2, k2) or ((), tuple(sorted(verbs.items()))) in self.bad:
+                    if self.verbs.get(word, (kind, k)) == (kind2, k2) or ((), tuple(sorted(verbs.items()))) in self.bad or word in self.frozen:
                         continue
                     with self.with_forms([], None, verbs):
                         sc = self.judge([r for s in stories for r in self.run(s)])[0]
@@ -836,7 +851,7 @@ class Mind:
         for idx, combo in enumerate(itertools.product(*lists)):
             if idx % 200 == 0 and time.time() > stop:
                 break
-            if len({f for f, _ in combo}) < len(combo) or (tuple(combo), ()) in self.bad:
+            if len({f for f, _ in combo}) < len(combo) or (tuple(combo), ()) in self.bad or any(f in self.frozen for f, _ in combo):
                 continue
             can = set().union(*(G.READS[k] for k in told | {h[0] for f, h in combo if not f[0]}))
             if any(f[0] and h[0] not in can for f, h in combo):
@@ -854,7 +869,7 @@ class Mind:
                     keep.append((local, idx, combo, lex, loose))
                     if local == n_story and not loose:               # all of this story is right: is the whole task?
                         sc = total(combo, lex)
-                        if sc == n_all:
+                        if sc == n_all and sc > best:
                             return list(combo), sc, lex
                     break
                 if loose:                                            # cannot be checked before the order is tried
@@ -990,14 +1005,24 @@ def main():
     ap.add_argument("--show", action="store_true", help="print the forms that were learnt")
     ap.add_argument("--trace", action="store_true", help="print every guess as it is kept")
     ap.add_argument("--out", default="", help="where to save what was learnt (json)")
+    ap.add_argument("--state", default="", help="a file to keep the learner in after every task; a run started again goes on from it")
     a = ap.parse_args()
     only = [int(x) for x in a.tasks.split(",") if x] or list(range(1, 21))
     mind, rows, t0 = Mind(), [], time.time()
+    if a.state and os.path.exists(a.state):
+        mind = pickle.load(open(a.state, "rb"))
+        mind._text, mind._named = {}, {}
+        print(f"going on after {len(mind.tasks)} tasks", flush=True)
     mind.trace = a.trace
-    for k in only:
+    for n, k in enumerate(only):
+        if n < len(mind.tasks):
+            continue
         f = glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0]
         got, total = mind.learn(read(f, a.stories), a.budget)
         print(f"task {k:2d}: learnt from {a.stories} stories, {got}/{total} of their questions right, {len(mind.forms)} forms ({time.time() - t0:.0f} s)", flush=True)
+        if a.state:
+            pickle.dump(mind, open(a.state + ".new", "wb"))
+            os.replace(a.state + ".new", a.state)
     if a.show:
         print(mind.describe())
         print("pronouns:", sorted(mind.lex.pron), "| directions:", mind.lex.dirs, "| times:", mind.lex.times, "| one word:", mind.lex.alias,
@@ -1006,7 +1031,8 @@ def main():
     for k in only:
         f = glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0]
         res = [r for s in read(f) for r in mind.run(s)]
-        r = sum(mind.right(ans, gold, mind.said) for ans, gold in res)
+        say = dict(mind.said_all, **{s: c.most_common(1)[0][0] for s, c in mind.said_n.items()})
+        r = sum(mind.right(ans, gold, say) for ans, gold in res)
         rows.append((k, r, len(res)))
         right, n = right + r, n + len(res)
         print(f"test {k:2d}: {r}/{len(res)} = {100 * r / len(res):.1f}%", flush=True)
