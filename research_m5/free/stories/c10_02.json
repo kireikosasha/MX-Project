@@ -1,0 +1,1065 @@
+{
+ "task": "c10",
+ "stories": [
+  {
+   "part": "test",
+   "id": 0,
+   "sentences": [
+    {
+     "s": "Dee joined the gold team.",
+     "p": "The gold team gained Dee as a new member.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the red team.",
+     "p": "Later Dee shifted into the red team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Dee in?",
+     "p": "What team does Dee currently belong to?",
+     "a": "red"
+    },
+    {
+     "s": "Eli joined the gold team.",
+     "p": "Eli became a member of the gold team.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the green team.",
+     "p": "Cal signed up for the green team.",
+     "a": null
+    },
+    {
+     "s": "Cal moved to the gold team.",
+     "p": "Then Cal was transferred to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the gold team.",
+     "p": "Dee next went over to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Ben joined the blue team.",
+     "p": "Ben entered the blue team.",
+     "a": null
+    },
+    {
+     "s": "Dee left the gold team.",
+     "p": "Dee quit the gold team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the gold team.",
+     "p": "The gold team took on Fay.",
+     "a": null
+    },
+    {
+     "s": "Fay moved to the green team.",
+     "p": "Fay crossed over into the green team.",
+     "a": null
+    },
+    {
+     "s": "Are Cal and Fay in the same team?",
+     "p": "Do Cal and Fay sit on the same team?",
+     "a": "no"
+    },
+    {
+     "s": "Fay left the green team.",
+     "p": "Fay departed from the green team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 1,
+   "sentences": [
+    {
+     "s": "Cal joined the green team.",
+     "p": "Cal became part of the green team.",
+     "a": null
+    },
+    {
+     "s": "Cal left the green team.",
+     "p": "Cal walked away from the green team.",
+     "a": null
+    },
+    {
+     "s": "Ben joined the red team.",
+     "p": "The red team recruited Ben.",
+     "a": null
+    },
+    {
+     "s": "Are Ben and Cal in the same team?",
+     "p": "Is Cal on the same team as Ben?",
+     "a": "no"
+    },
+    {
+     "s": "Fay joined the green team.",
+     "p": "Fay signed on with the green team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 2,
+   "sentences": [
+    {
+     "s": "Eli joined the green team.",
+     "p": "Eli was added to the green team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the red team.",
+     "p": "The red team got Fay as a member.",
+     "a": null
+    },
+    {
+     "s": "Fay moved to the green team.",
+     "p": "Next Fay was placed on the green team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Fay in?",
+     "p": "Fay belongs to which team?",
+     "a": "green"
+    },
+    {
+     "s": "Who is in the green team?",
+     "p": "Which people make up the green team?",
+     "a": "eli,fay"
+    },
+    {
+     "s": "Cal joined the gold team.",
+     "p": "The gold team now includes Cal.",
+     "a": null
+    },
+    {
+     "s": "Are Eli and Fay in the same team?",
+     "p": "Do Eli and Fay belong to the same team?",
+     "a": "yes"
+    },
+    {
+     "s": "Are Cal and Fay in the same team?",
+     "p": "Does Fay share a team with Cal?",
+     "a": "no"
+    },
+    {
+     "s": "How many people are in the green team?",
+     "p": "What is the head count of the green team?",
+     "a": "2"
+    },
+    {
+     "s": "Dee joined the gold team.",
+     "p": "Dee was made a member of the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 3,
+   "sentences": [
+    {
+     "s": "Fay joined the gold team.",
+     "p": "Fay found a place on the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dee joined the gold team.",
+     "p": "Afterward Dee earned a spot on the gold team.",
+     "a": null
+    },
+    {
+     "s": "Who is in the gold team?",
+     "p": "Who has a place on the gold team?",
+     "a": "dee,fay"
+    },
+    {
+     "s": "Cal joined the red team.",
+     "p": "Cal went and signed up for the red team.",
+     "a": null
+    },
+    {
+     "s": "Ann joined the gold team.",
+     "p": "The gold team accepted Ann.",
+     "a": null
+    },
+    {
+     "s": "Eli joined the gold team.",
+     "p": "Eli then came into the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 4,
+   "sentences": [
+    {
+     "s": "Ben joined the gold team.",
+     "p": "A spot on the gold team went to Ben.",
+     "a": null
+    },
+    {
+     "s": "Ann joined the red team.",
+     "p": "Ann registered with the red team.",
+     "a": null
+    },
+    {
+     "s": "Eli joined the red team.",
+     "p": "The red team took in Eli.",
+     "a": null
+    },
+    {
+     "s": "How many people are in the red team?",
+     "p": "How many people make up the red team?",
+     "a": "2"
+    },
+    {
+     "s": "Dee joined the gold team.",
+     "p": "Dee also got added to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the blue team.",
+     "p": "Cal stepped into the blue team.",
+     "a": null
+    },
+    {
+     "s": "Eli moved to the blue team.",
+     "p": "Eli got transferred to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the red team.",
+     "p": "Fay became a red team member.",
+     "a": null
+    },
+    {
+     "s": "Who is in the red team?",
+     "p": "Which individuals are part of the red team?",
+     "a": "ann,fay"
+    },
+    {
+     "s": "Ben moved to the blue team.",
+     "p": "Ben was shifted over to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Fay moved to the blue team.",
+     "p": "Fay later went across to the blue team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 5,
+   "sentences": [
+    {
+     "s": "Ann joined the green team.",
+     "p": "Ann was signed on for the green team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the blue team.",
+     "p": "Fay got added to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Dee joined the green team.",
+     "p": "Dee was brought onto the green team.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the green team.",
+     "p": "Cal also got into the green team.",
+     "a": null
+    },
+    {
+     "s": "Who is in the green team?",
+     "p": "Who are the members of the green team?",
+     "a": "ann,cal,dee"
+    },
+    {
+     "s": "How many people are in the green team?",
+     "p": "How many members does the green team have?",
+     "a": "3"
+    },
+    {
+     "s": "Eli joined the green team.",
+     "p": "Eli took a seat on the green team.",
+     "a": null
+    },
+    {
+     "s": "Cal moved to the gold team.",
+     "p": "Cal then relocated to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Are Cal and Dee in the same team?",
+     "p": "Do Cal and Dee play for the same team?",
+     "a": "no"
+    },
+    {
+     "s": "Are Cal and Eli in the same team?",
+     "p": "Are Cal and Eli members of the same team?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 6,
+   "sentences": [
+    {
+     "s": "Dee joined the gold team.",
+     "p": "Dee hopped onto the gold team.",
+     "a": null
+    },
+    {
+     "s": "Ann joined the blue team.",
+     "p": "Ann got registered in the blue team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the red team.",
+     "p": "Dee changed over to the red team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the red team.",
+     "p": "Fay was made part of the red team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the green team.",
+     "p": "Afterward Dee switched to the green team.",
+     "a": null
+    },
+    {
+     "s": "Who is in the red team?",
+     "p": "Which person currently sits on the red team?",
+     "a": "fay"
+    },
+    {
+     "s": "Ben joined the gold team.",
+     "p": "Ben got a place on the gold team.",
+     "a": null
+    },
+    {
+     "s": "Eli joined the gold team.",
+     "p": "Eli was accepted into the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 7,
+   "sentences": [
+    {
+     "s": "Dee joined the red team.",
+     "p": "Dee took up a spot on the red team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the gold team.",
+     "p": "Fay was signed onto the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the gold team.",
+     "p": "Dee was reassigned to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Ben joined the red team.",
+     "p": "Ben signed up for the red team.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the green team.",
+     "p": "Cal arrived on the green team.",
+     "a": null
+    },
+    {
+     "s": "Dee left the gold team.",
+     "p": "Dee stepped away from the gold team.",
+     "a": null
+    },
+    {
+     "s": "Ann joined the green team.",
+     "p": "The green team had Ann join.",
+     "a": null
+    },
+    {
+     "s": "Cal left the green team.",
+     "p": "Cal exited the green team.",
+     "a": null
+    },
+    {
+     "s": "Ann moved to the gold team.",
+     "p": "Ann went over to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Ann moved to the green team.",
+     "p": "Next Ann was moved onto the green team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Dee in?",
+     "p": "Dee is on which team at this point?",
+     "a": "none"
+    },
+    {
+     "s": "Eli joined the green team.",
+     "p": "The green team invited Eli in.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the gold team.",
+     "p": "Cal was given a place on the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 8,
+   "sentences": [
+    {
+     "s": "Dee joined the green team.",
+     "p": "Dee was assigned to the green team.",
+     "a": null
+    },
+    {
+     "s": "Eli joined the green team.",
+     "p": "Eli was also put on the green team.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the red team.",
+     "p": "The red team added Cal.",
+     "a": null
+    },
+    {
+     "s": "Eli moved to the red team.",
+     "p": "Eli then went to the red team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the red team.",
+     "p": "Dee later landed on the red team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the gold team.",
+     "p": "The gold team admitted Fay.",
+     "a": null
+    },
+    {
+     "s": "How many people are in the green team?",
+     "p": "How many people does the green team hold?",
+     "a": "0"
+    },
+    {
+     "s": "Which team is Eli in?",
+     "p": "Eli belongs to what team?",
+     "a": "red"
+    },
+    {
+     "s": "Eli moved to the gold team.",
+     "p": "Eli shifted across to the gold team.",
+     "a": null
+    },
+    {
+     "s": "How many people are in the gold team?",
+     "p": "How many people currently make up the gold team?",
+     "a": "2"
+    },
+    {
+     "s": "Are Cal and Dee in the same team?",
+     "p": "Is Cal teamed up with Dee right now?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 9,
+   "sentences": [
+    {
+     "s": "Ben joined the blue team.",
+     "p": "Ben signed onto the blue team.",
+     "a": null
+    },
+    {
+     "s": "Ben moved to the red team.",
+     "p": "Ben switched over to the red team.",
+     "a": null
+    },
+    {
+     "s": "Dee joined the gold team.",
+     "p": "The gold team recruited Dee.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the gold team.",
+     "p": "Fay became a gold team member.",
+     "a": null
+    },
+    {
+     "s": "Are Ben and Dee in the same team?",
+     "p": "Are Ben and Dee together on a shared team?",
+     "a": "no"
+    },
+    {
+     "s": "How many people are in the gold team?",
+     "p": "What is the size of the gold team?",
+     "a": "2"
+    },
+    {
+     "s": "Cal joined the green team.",
+     "p": "Cal was placed on the green team.",
+     "a": null
+    },
+    {
+     "s": "Eli joined the gold team.",
+     "p": "Eli signed up for the gold team.",
+     "a": null
+    },
+    {
+     "s": "Fay moved to the green team.",
+     "p": "Fay relocated to the green team.",
+     "a": null
+    },
+    {
+     "s": "Ben left the red team.",
+     "p": "Ben bowed out of the red team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the blue team.",
+     "p": "Dee was sent over to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the gold team.",
+     "p": "Dee returned to the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 10,
+   "sentences": [
+    {
+     "s": "Dee joined the red team.",
+     "p": "Dee was taken on by the red team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the blue team.",
+     "p": "Fay signed up for the blue team.",
+     "a": null
+    },
+    {
+     "s": "Dee left the red team.",
+     "p": "Dee withdrew from the red team.",
+     "a": null
+    },
+    {
+     "s": "Fay left the blue team.",
+     "p": "Fay parted ways with the blue team.",
+     "a": null
+    },
+    {
+     "s": "Ann joined the red team.",
+     "p": "The red team welcomed Ann.",
+     "a": null
+    },
+    {
+     "s": "Who is in the red team?",
+     "p": "Who alone sits on the red team?",
+     "a": "ann"
+    },
+    {
+     "s": "How many people are in the blue team?",
+     "p": "What is the population of the blue team?",
+     "a": "0"
+    },
+    {
+     "s": "Eli joined the red team.",
+     "p": "Eli was enlisted in the red team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the gold team.",
+     "p": "Fay got accepted onto the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dee joined the gold team.",
+     "p": "The gold team received Dee.",
+     "a": null
+    },
+    {
+     "s": "Fay left the gold team.",
+     "p": "Fay gave up the gold team.",
+     "a": null
+    },
+    {
+     "s": "Are Ann and Dee in the same team?",
+     "p": "Are Ann and Dee on the same team together?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 11,
+   "sentences": [
+    {
+     "s": "Dee joined the green team.",
+     "p": "Dee was given a spot on the green team.",
+     "a": null
+    },
+    {
+     "s": "Eli joined the green team.",
+     "p": "Eli also became a green team member.",
+     "a": null
+    },
+    {
+     "s": "Who is in the green team?",
+     "p": "Which people belong to the green team?",
+     "a": "dee,eli"
+    },
+    {
+     "s": "Ann joined the red team.",
+     "p": "Ann went onto the red team.",
+     "a": null
+    },
+    {
+     "s": "Eli moved to the gold team.",
+     "p": "Eli migrated to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the blue team.",
+     "p": "Fay came aboard the blue team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the red team.",
+     "p": "Dee was shifted to the red team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 12,
+   "sentences": [
+    {
+     "s": "Ben joined the red team.",
+     "p": "The red team brought in Ben.",
+     "a": null
+    },
+    {
+     "s": "Ann joined the red team.",
+     "p": "Ann took a place on the red team.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the blue team.",
+     "p": "Cal was enrolled in the blue team.",
+     "a": null
+    },
+    {
+     "s": "How many people are in the red team?",
+     "p": "How big is the red team by headcount?",
+     "a": "2"
+    },
+    {
+     "s": "Who is in the red team?",
+     "p": "Who makes up the red team?",
+     "a": "ann,ben"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 13,
+   "sentences": [
+    {
+     "s": "Dee joined the green team.",
+     "p": "Dee was welcomed onto the green team.",
+     "a": null
+    },
+    {
+     "s": "Fay joined the gold team.",
+     "p": "Fay was put onto the gold team.",
+     "a": null
+    },
+    {
+     "s": "Eli joined the blue team.",
+     "p": "Eli was brought into the blue team.",
+     "a": null
+    },
+    {
+     "s": "Fay moved to the blue team.",
+     "p": "Fay switched to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the blue team.",
+     "p": "Cal got added to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Ann joined the gold team.",
+     "p": "Ann became part of the gold team.",
+     "a": null
+    },
+    {
+     "s": "Cal left the blue team.",
+     "p": "Cal moved out of the blue team.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the gold team.",
+     "p": "Cal then entered the gold team.",
+     "a": null
+    },
+    {
+     "s": "Are Cal and Dee in the same team?",
+     "p": "Are Cal and Dee assigned to a common team?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 14,
+   "sentences": [
+    {
+     "s": "Cal joined the green team.",
+     "p": "Cal was registered onto the green team.",
+     "a": null
+    },
+    {
+     "s": "Ben joined the gold team.",
+     "p": "Ben was welcomed into the gold team.",
+     "a": null
+    },
+    {
+     "s": "Cal moved to the blue team.",
+     "p": "Cal ventured into the blue team.",
+     "a": null
+    },
+    {
+     "s": "Cal moved to the green team.",
+     "p": "Cal returned to the green team.",
+     "a": null
+    },
+    {
+     "s": "Ann joined the gold team.",
+     "p": "Ann went into the gold team.",
+     "a": null
+    },
+    {
+     "s": "Cal moved to the blue team.",
+     "p": "Cal next landed on the blue team.",
+     "a": null
+    },
+    {
+     "s": "Who is in the green team?",
+     "p": "Who currently has a seat on the green team?",
+     "a": "none"
+    },
+    {
+     "s": "Cal moved to the green team.",
+     "p": "Cal later got placed on the green team.",
+     "a": null
+    },
+    {
+     "s": "Ben moved to the red team.",
+     "p": "Ben was moved over to the red team.",
+     "a": null
+    },
+    {
+     "s": "Dee joined the green team.",
+     "p": "Dee was put on the green team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the blue team.",
+     "p": "Dee transitioned to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Cal moved to the red team.",
+     "p": "Last Cal went to the red team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 15,
+   "sentences": [
+    {
+     "s": "Eli joined the blue team.",
+     "p": "Eli stepped onto the blue team.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the blue team.",
+     "p": "The blue team picked Cal.",
+     "a": null
+    },
+    {
+     "s": "How many people are in the blue team?",
+     "p": "How many individuals sit on the blue team?",
+     "a": "2"
+    },
+    {
+     "s": "Who is in the blue team?",
+     "p": "Which people are on the blue team?",
+     "a": "cal,eli"
+    },
+    {
+     "s": "Cal moved to the green team.",
+     "p": "Cal relocated to the green team.",
+     "a": null
+    },
+    {
+     "s": "Cal moved to the blue team.",
+     "p": "Cal headed back to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Ben joined the gold team.",
+     "p": "Ben was signed up for the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dee joined the green team.",
+     "p": "Dee arrived in the green team.",
+     "a": null
+    },
+    {
+     "s": "Ann joined the green team.",
+     "p": "Ann was included in the green team.",
+     "a": null
+    },
+    {
+     "s": "Ben left the gold team.",
+     "p": "Ben abandoned the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 16,
+   "sentences": [
+    {
+     "s": "Ann joined the gold team.",
+     "p": "Ann was taken into the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dee joined the blue team.",
+     "p": "Dee was added to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the gold team.",
+     "p": "Dee later went over to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Who is in the gold team?",
+     "p": "Who is a member of the gold team?",
+     "a": "ann,dee"
+    },
+    {
+     "s": "Ben joined the red team.",
+     "p": "Ben was placed in the red team.",
+     "a": null
+    },
+    {
+     "s": "Are Ben and Dee in the same team?",
+     "p": "Do Ben and Dee share a team?",
+     "a": "no"
+    },
+    {
+     "s": "Eli joined the red team.",
+     "p": "Eli got onto the red team.",
+     "a": null
+    },
+    {
+     "s": "Eli moved to the gold team.",
+     "p": "Eli got shifted to the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 17,
+   "sentences": [
+    {
+     "s": "Dee joined the red team.",
+     "p": "Dee got placed on the red team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the green team.",
+     "p": "Dee was dispatched to the green team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the gold team.",
+     "p": "Dee then shifted to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Eli joined the green team.",
+     "p": "The green team included Eli.",
+     "a": null
+    },
+    {
+     "s": "Who is in the green team?",
+     "p": "Who is the only member of the green team?",
+     "a": "eli"
+    },
+    {
+     "s": "How many people are in the green team?",
+     "p": "What number of people hold spots on the green team?",
+     "a": "1"
+    },
+    {
+     "s": "Which team is Dee in?",
+     "p": "Dee currently sits on which team?",
+     "a": "gold"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 18,
+   "sentences": [
+    {
+     "s": "Dee joined the red team.",
+     "p": "Dee got onto the red team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the green team.",
+     "p": "Dee went to the green team next.",
+     "a": null
+    },
+    {
+     "s": "Eli joined the green team.",
+     "p": "Eli entered the green team.",
+     "a": null
+    },
+    {
+     "s": "Who is in the green team?",
+     "p": "Which people hold places on the green team?",
+     "a": "dee,eli"
+    },
+    {
+     "s": "Eli moved to the gold team.",
+     "p": "Eli headed into the gold team.",
+     "a": null
+    },
+    {
+     "s": "Ben joined the gold team.",
+     "p": "The gold team welcomed Ben.",
+     "a": null
+    },
+    {
+     "s": "Eli moved to the blue team.",
+     "p": "Eli was relocated to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Dee moved to the gold team.",
+     "p": "Dee reached the gold team.",
+     "a": null
+    },
+    {
+     "s": "How many people are in the green team?",
+     "p": "How many people are counted on the green team?",
+     "a": "0"
+    },
+    {
+     "s": "Ben moved to the blue team.",
+     "p": "Ben made a move to the blue team.",
+     "a": null
+    },
+    {
+     "s": "How many people are in the blue team?",
+     "p": "How many people are currently on the blue team?",
+     "a": "2"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 19,
+   "sentences": [
+    {
+     "s": "Eli joined the blue team.",
+     "p": "The blue team now has Eli.",
+     "a": null
+    },
+    {
+     "s": "Ann joined the blue team.",
+     "p": "Ann climbed onto the blue team.",
+     "a": null
+    },
+    {
+     "s": "Cal joined the red team.",
+     "p": "Cal went to the red team as a member.",
+     "a": null
+    },
+    {
+     "s": "Who is in the blue team?",
+     "p": "Which people currently make up the blue team?",
+     "a": "ann,eli"
+    },
+    {
+     "s": "Ben joined the red team.",
+     "p": "Ben became a red team participant.",
+     "a": null
+    },
+    {
+     "s": "How many people are in the blue team?",
+     "p": "How many blue team members are there?",
+     "a": "2"
+    },
+    {
+     "s": "Fay joined the green team.",
+     "p": "Fay moved aboard the green team.",
+     "a": null
+    },
+    {
+     "s": "Dee joined the red team.",
+     "p": "Dee was signed up with the red team.",
+     "a": null
+    }
+   ]
+  }
+ ]
+}

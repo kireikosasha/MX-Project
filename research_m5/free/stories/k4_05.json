@@ -1,0 +1,1245 @@
+{
+ "task": "k4",
+ "stories": [
+  {
+   "part": "test",
+   "id": 60,
+   "sentences": [
+    {
+     "s": "Max is a dog.",
+     "p": "Max happens to be a dog.",
+     "a": null
+    },
+    {
+     "s": "No mammal is loud.",
+     "p": "Not a single mammal is loud.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "Each mammal counts as an animal.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "A cow always turns out to be a mammal.",
+     "a": null
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "Without fail a bird is an animal.",
+     "a": null
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "Any cat picked is a mammal.",
+     "a": null
+    },
+    {
+     "s": "Tom is a cow.",
+     "p": "Tom turns out to be a cow.",
+     "a": null
+    },
+    {
+     "s": "Is Tom loud?",
+     "p": "Would Tom be called loud?",
+     "a": "no"
+    },
+    {
+     "s": "Is Tom a mammal?",
+     "p": "Can Tom be classed as a mammal?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 61,
+   "sentences": [
+    {
+     "s": "Every fish is an animal.",
+     "p": "Each fish is considered an animal.",
+     "a": null
+    },
+    {
+     "s": "Every owl is loud.",
+     "p": "Any owl is loud.",
+     "a": null
+    },
+    {
+     "s": "Every dog is fast.",
+     "p": "Every dog happens to be fast.",
+     "a": null
+    },
+    {
+     "s": "Mia is a cat.",
+     "p": "The animal named Mia is a cat.",
+     "a": null
+    },
+    {
+     "s": "Every dog is shy.",
+     "p": "Each dog is shy without exception.",
+     "a": null
+    },
+    {
+     "s": "Lily is a cat.",
+     "p": "Lily is classed as a cat.",
+     "a": null
+    },
+    {
+     "s": "Every duck is a bird.",
+     "p": "A duck is a bird every time.",
+     "a": null
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "Any cat is part of the mammal group.",
+     "a": null
+    },
+    {
+     "s": "Is Mia a mammal?",
+     "p": "Does Mia fall into the mammal class?",
+     "a": "yes"
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "Anything that is a mammal is an animal.",
+     "a": null
+    },
+    {
+     "s": "No mammal is warm.",
+     "p": "There is not one warm mammal.",
+     "a": null
+    },
+    {
+     "s": "Every dog is a mammal.",
+     "p": "Each dog is found in the mammal group.",
+     "a": null
+    },
+    {
+     "s": "Is Lily a mammal?",
+     "p": "Is Lily counted as a mammal?",
+     "a": "yes"
+    },
+    {
+     "s": "Is Lily an animal?",
+     "p": "Could Lily be seen as an animal?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 62,
+   "sentences": [
+    {
+     "s": "Every mammal is shy.",
+     "p": "Each mammal ends up shy.",
+     "a": null
+    },
+    {
+     "s": "Every fish is quiet.",
+     "p": "Each fish turns out quiet.",
+     "a": null
+    },
+    {
+     "s": "No duck is shy.",
+     "p": "A duck is never shy.",
+     "a": null
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "Every bird is by definition an animal.",
+     "a": null
+    },
+    {
+     "s": "Every owl is a bird.",
+     "p": "Every owl lands in the bird category.",
+     "a": null
+    },
+    {
+     "s": "No duck is a dog.",
+     "p": "A duck can never be a dog.",
+     "a": null
+    },
+    {
+     "s": "Mia is a fish.",
+     "p": "Mia belongs to the fish family.",
+     "a": null
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Being a fish means being an animal.",
+     "a": null
+    },
+    {
+     "s": "Is Mia quiet?",
+     "p": "Does Mia strike anyone as quiet?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 63,
+   "sentences": [
+    {
+     "s": "Every mammal is an animal.",
+     "p": "Each mammal is also an animal.",
+     "a": null
+    },
+    {
+     "s": "Mia is a cow.",
+     "p": "Mia is in fact a cow.",
+     "a": null
+    },
+    {
+     "s": "No bird is fast.",
+     "p": "Not one bird is fast.",
+     "a": null
+    },
+    {
+     "s": "Tom is a bird.",
+     "p": "Tom is plainly and simply a bird.",
+     "a": null
+    },
+    {
+     "s": "Every owl is a bird.",
+     "p": "Each owl qualifies as a bird.",
+     "a": null
+    },
+    {
+     "s": "Is Tom fast?",
+     "p": "Is Tom known for being fast?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 64,
+   "sentences": [
+    {
+     "s": "Every owl is a bird.",
+     "p": "An owl always belongs to the bird group.",
+     "a": null
+    },
+    {
+     "s": "Every dog is a mammal.",
+     "p": "Being a dog means being a mammal.",
+     "a": null
+    },
+    {
+     "s": "Mia is a bird.",
+     "p": "Mia goes under the label bird.",
+     "a": null
+    },
+    {
+     "s": "Every animal is warm.",
+     "p": "Warm is what each animal is.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "Any cow lands in the mammal category.",
+     "a": null
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "Each bird is an animal and that is final.",
+     "a": null
+    },
+    {
+     "s": "Is Mia an animal?",
+     "p": "Would Mia count as an animal?",
+     "a": "yes"
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "A mammal can only ever be an animal.",
+     "a": null
+    },
+    {
+     "s": "Is Mia warm?",
+     "p": "Would Mia be described as warm?",
+     "a": "yes"
+    },
+    {
+     "s": "Tom is a bird.",
+     "p": "A bird is what Tom is.",
+     "a": null
+    },
+    {
+     "s": "Is Tom warm?",
+     "p": "Would anyone call Tom warm?",
+     "a": "yes"
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Each fish is an animal of course.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 65,
+   "sentences": [
+    {
+     "s": "Tom is a cat.",
+     "p": "Tom is in the cat category.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "A cow always turns out to be a mammal.",
+     "a": null
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "No cat fails to be a mammal.",
+     "a": null
+    },
+    {
+     "s": "Every owl is a bird.",
+     "p": "Being an owl makes something a bird.",
+     "a": null
+    },
+    {
+     "s": "Every duck is a bird.",
+     "p": "A duck is never anything but a bird.",
+     "a": null
+    },
+    {
+     "s": "Is Tom a mammal?",
+     "p": "Would Tom qualify as a mammal?",
+     "a": "yes"
+    },
+    {
+     "s": "Every duck is shy.",
+     "p": "Shy describes every duck.",
+     "a": null
+    },
+    {
+     "s": "Sam is a duck.",
+     "p": "Sam belongs to the duck group.",
+     "a": null
+    },
+    {
+     "s": "Is Sam shy?",
+     "p": "Would Sam be considered shy?",
+     "a": "yes"
+    },
+    {
+     "s": "Every animal is warm.",
+     "p": "Warm applies to any animal.",
+     "a": null
+    },
+    {
+     "s": "No mammal is a duck.",
+     "p": "Nothing that is a mammal can be a duck.",
+     "a": null
+    },
+    {
+     "s": "Is Tom a duck?",
+     "p": "Could Tom possibly be a duck?",
+     "a": "no"
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "Any mammal found is an animal.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 66,
+   "sentences": [
+    {
+     "s": "Every fish is an animal.",
+     "p": "Animal status goes to every fish.",
+     "a": null
+    },
+    {
+     "s": "No dog is fast.",
+     "p": "A dog is never fast.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "Mammal status belongs to each cow.",
+     "a": null
+    },
+    {
+     "s": "Every owl is a bird.",
+     "p": "Bird is what every owl is.",
+     "a": null
+    },
+    {
+     "s": "Tom is a bird.",
+     "p": "Tom has been labelled a bird.",
+     "a": null
+    },
+    {
+     "s": "Ana is a bird.",
+     "p": "The bird label fits Ana.",
+     "a": null
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "Mammal is the class every cat is in.",
+     "a": null
+    },
+    {
+     "s": "Every bird is fast.",
+     "p": "Fast describes each bird.",
+     "a": null
+    },
+    {
+     "s": "Is Ana fast?",
+     "p": "Would Ana be described as fast?",
+     "a": "yes"
+    },
+    {
+     "s": "Mia is a cat.",
+     "p": "Mia is plainly a cat.",
+     "a": null
+    },
+    {
+     "s": "Every duck is a bird.",
+     "p": "Each duck counts as a bird.",
+     "a": null
+    },
+    {
+     "s": "Every dog is loud.",
+     "p": "Loud is how every dog turns out.",
+     "a": null
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "Being a bird always comes with being an animal.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 67,
+   "sentences": [
+    {
+     "s": "No mammal is quiet.",
+     "p": "Quiet is absent in every mammal.",
+     "a": null
+    },
+    {
+     "s": "Every cow is loud.",
+     "p": "Each cow comes across as loud.",
+     "a": null
+    },
+    {
+     "s": "Ana is a fish.",
+     "p": "Ana belongs to the fish kind.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is fast.",
+     "p": "Fast is the trait of every mammal.",
+     "a": null
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Being an animal is true of each fish.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "No mammal escapes being an animal.",
+     "a": null
+    },
+    {
+     "s": "Is Ana an animal?",
+     "p": "Is Ana classed as an animal?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 68,
+   "sentences": [
+    {
+     "s": "Every duck is a bird.",
+     "p": "A duck always lands in the bird group.",
+     "a": null
+    },
+    {
+     "s": "Every dog is warm.",
+     "p": "Each dog is undeniably warm.",
+     "a": null
+    },
+    {
+     "s": "Lily is a fish.",
+     "p": "Lily sits in the fish category.",
+     "a": null
+    },
+    {
+     "s": "Tom is a duck.",
+     "p": "The duck title belongs to Tom.",
+     "a": null
+    },
+    {
+     "s": "Is Tom a bird?",
+     "p": "Does Tom count as a bird?",
+     "a": "yes"
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "A cat is never not a mammal.",
+     "a": null
+    },
+    {
+     "s": "No bird is a cat.",
+     "p": "Being a bird rules out being a cat.",
+     "a": null
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Animal is what each fish is.",
+     "a": null
+    },
+    {
+     "s": "Is Tom a cat?",
+     "p": "Might Tom be a cat?",
+     "a": "no"
+    },
+    {
+     "s": "No duck is loud.",
+     "p": "Loud is not a word for any duck.",
+     "a": null
+    },
+    {
+     "s": "Is Lily an animal?",
+     "p": "Does Lily fall under the animal label?",
+     "a": "yes"
+    },
+    {
+     "s": "Is Tom loud?",
+     "p": "Is Tom loud at all?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 69,
+   "sentences": [
+    {
+     "s": "Every fish is an animal.",
+     "p": "Each fish ends up an animal.",
+     "a": null
+    },
+    {
+     "s": "No fish is shy.",
+     "p": "Shy never applies to a fish.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "Animal is the status of every mammal.",
+     "a": null
+    },
+    {
+     "s": "Ana is an owl.",
+     "p": "Ana turns out to be an owl.",
+     "a": null
+    },
+    {
+     "s": "Tom is a fish.",
+     "p": "Tom is a fish after all.",
+     "a": null
+    },
+    {
+     "s": "Is Tom shy?",
+     "p": "Does Tom come across as shy at all?",
+     "a": "no"
+    },
+    {
+     "s": "No bird is quiet.",
+     "p": "Quiet is not something a bird is.",
+     "a": null
+    },
+    {
+     "s": "No cat is warm.",
+     "p": "Warm never describes a cat.",
+     "a": null
+    },
+    {
+     "s": "Every owl is a bird.",
+     "p": "The owl heading sits under bird.",
+     "a": null
+    },
+    {
+     "s": "Lily is a duck.",
+     "p": "Lily happens to be a duck.",
+     "a": null
+    },
+    {
+     "s": "Is Ana quiet?",
+     "p": "Would anyone describe Ana as quiet?",
+     "a": "no"
+    },
+    {
+     "s": "No bird is loud.",
+     "p": "Loud is never the word for a bird.",
+     "a": null
+    },
+    {
+     "s": "Every cow is fast.",
+     "p": "Fast is what each cow turns out to be.",
+     "a": null
+    },
+    {
+     "s": "Is Ana loud?",
+     "p": "Would Ana be heard as loud?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 70,
+   "sentences": [
+    {
+     "s": "Every owl is a bird.",
+     "p": "The bird group includes every owl.",
+     "a": null
+    },
+    {
+     "s": "No mammal is warm.",
+     "p": "Not any mammal is warm.",
+     "a": null
+    },
+    {
+     "s": "No animal is quiet.",
+     "p": "Quiet describes no animal at all.",
+     "a": null
+    },
+    {
+     "s": "Ana is a cow.",
+     "p": "A cow is what Ana is.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "Mammal is the category of each cow.",
+     "a": null
+    },
+    {
+     "s": "Is Ana warm?",
+     "p": "Does Ana come across as warm?",
+     "a": "no"
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Any fish falls inside the animal set.",
+     "a": null
+    },
+    {
+     "s": "Is Ana a mammal?",
+     "p": "Is Ana in the mammal set?",
+     "a": "yes"
+    },
+    {
+     "s": "Every dog is a mammal.",
+     "p": "Mammal is the class for each dog.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 71,
+   "sentences": [
+    {
+     "s": "Lily is a fish.",
+     "p": "Lily has been sorted as a fish.",
+     "a": null
+    },
+    {
+     "s": "Mia is an owl.",
+     "p": "An owl describes Mia.",
+     "a": null
+    },
+    {
+     "s": "No owl is a cat.",
+     "p": "Cat is never a title for an owl.",
+     "a": null
+    },
+    {
+     "s": "No duck is an owl.",
+     "p": "Under no circumstances is a duck an owl.",
+     "a": null
+    },
+    {
+     "s": "No cow is shy.",
+     "p": "Shy is absent in each cow.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "A cow is sorted into the mammal class.",
+     "a": null
+    },
+    {
+     "s": "Is Mia a cat?",
+     "p": "Is Mia possibly a cat?",
+     "a": "no"
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Animal is the category for each fish.",
+     "a": null
+    },
+    {
+     "s": "Sam is a duck.",
+     "p": "Sam is labelled a duck.",
+     "a": null
+    },
+    {
+     "s": "Is Lily an animal?",
+     "p": "Is Lily part of the animal class?",
+     "a": "yes"
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "Being a mammal brings animal status along.",
+     "a": null
+    },
+    {
+     "s": "Is Mia a duck?",
+     "p": "Is Mia by any chance a duck?",
+     "a": "no"
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "Cat stands inside the mammal class.",
+     "a": null
+    },
+    {
+     "s": "Every dog is a mammal.",
+     "p": "Mammal is the group a dog sits in.",
+     "a": null
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "The animal umbrella covers every bird.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 72,
+   "sentences": [
+    {
+     "s": "Lily is an animal.",
+     "p": "Lily is an animal through and through.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "A mammal is what each cow must be.",
+     "a": null
+    },
+    {
+     "s": "Every bird is warm.",
+     "p": "Warm describes every bird.",
+     "a": null
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Each fish is classed as an animal.",
+     "a": null
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "Animal is the classification of any bird.",
+     "a": null
+    },
+    {
+     "s": "Tom is a bird.",
+     "p": "Tom sits in the bird category.",
+     "a": null
+    },
+    {
+     "s": "Every cow is loud.",
+     "p": "Every cow turns out loud.",
+     "a": null
+    },
+    {
+     "s": "No cow is quiet.",
+     "p": "A cow is never quiet.",
+     "a": null
+    },
+    {
+     "s": "Is Tom warm?",
+     "p": "Would Tom count as warm?",
+     "a": "yes"
+    },
+    {
+     "s": "Every dog is a mammal.",
+     "p": "Mammal is the class holding each dog.",
+     "a": null
+    },
+    {
+     "s": "Is Tom an animal?",
+     "p": "Does Tom fall under animal?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 73,
+   "sentences": [
+    {
+     "s": "Every cat is a mammal.",
+     "p": "A cat always lands in the mammal class.",
+     "a": null
+    },
+    {
+     "s": "Tom is an animal.",
+     "p": "Tom counts as an animal.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "Each mammal is an animal by definition.",
+     "a": null
+    },
+    {
+     "s": "Every cat is shy.",
+     "p": "Shy marks each cat.",
+     "a": null
+    },
+    {
+     "s": "Ana is a cow.",
+     "p": "Ana is in the cow category.",
+     "a": null
+    },
+    {
+     "s": "Every duck is a bird.",
+     "p": "A duck is always a bird.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "The cow group sits inside mammal.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is shy.",
+     "p": "Shy belongs to each mammal.",
+     "a": null
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "Any bird is animal by nature.",
+     "a": null
+    },
+    {
+     "s": "Is Ana shy?",
+     "p": "Is Ana known to be shy?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 74,
+   "sentences": [
+    {
+     "s": "Every cow is a mammal.",
+     "p": "A cow is one kind of mammal.",
+     "a": null
+    },
+    {
+     "s": "Every duck is a bird.",
+     "p": "Each duck is a sort of bird.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "Mammal membership brings animal membership.",
+     "a": null
+    },
+    {
+     "s": "Every owl is a bird.",
+     "p": "An owl is a bird no matter what.",
+     "a": null
+    },
+    {
+     "s": "No mammal is a duck.",
+     "p": "A mammal can never be a duck.",
+     "a": null
+    },
+    {
+     "s": "Every cow is loud.",
+     "p": "Loud is shared by each cow.",
+     "a": null
+    },
+    {
+     "s": "Mia is a fish.",
+     "p": "Mia belongs with the fish.",
+     "a": null
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "Each cat ranks as a mammal.",
+     "a": null
+    },
+    {
+     "s": "No fish is a duck.",
+     "p": "A fish is never a duck.",
+     "a": null
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Each fish qualifies as an animal.",
+     "a": null
+    },
+    {
+     "s": "Lily is a cow.",
+     "p": "Lily has the cow label.",
+     "a": null
+    },
+    {
+     "s": "Is Lily loud?",
+     "p": "Is Lily someone who is loud?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 75,
+   "sentences": [
+    {
+     "s": "Every fish is loud.",
+     "p": "Loud is part of every fish.",
+     "a": null
+    },
+    {
+     "s": "Mia is a duck.",
+     "p": "Duck is the label on Mia.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "Each mammal can be called an animal.",
+     "a": null
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "Any bird falls in the animal class.",
+     "a": null
+    },
+    {
+     "s": "No bird is quiet.",
+     "p": "Quiet never describes a bird.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "The mammal group contains every cow.",
+     "a": null
+    },
+    {
+     "s": "Every duck is a bird.",
+     "p": "Each duck is categorised as a bird.",
+     "a": null
+    },
+    {
+     "s": "Is Mia a bird?",
+     "p": "Is Mia classed as a bird?",
+     "a": "yes"
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "The animal set includes each fish.",
+     "a": null
+    },
+    {
+     "s": "Every owl is warm.",
+     "p": "Warm describes each owl.",
+     "a": null
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "No cat is anything other than a mammal.",
+     "a": null
+    },
+    {
+     "s": "Is Mia an animal?",
+     "p": "Can Mia be considered an animal?",
+     "a": "yes"
+    },
+    {
+     "s": "Every dog is a mammal.",
+     "p": "A dog sits in the mammal group.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 76,
+   "sentences": [
+    {
+     "s": "Every owl is warm.",
+     "p": "Warm is true of every owl.",
+     "a": null
+    },
+    {
+     "s": "Every owl is a bird.",
+     "p": "Owl means bird in every case.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "Each mammal is inside the animal set.",
+     "a": null
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "Any bird is certainly an animal.",
+     "a": null
+    },
+    {
+     "s": "No animal is loud.",
+     "p": "Nothing in the animal set is loud.",
+     "a": null
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "Each cat turns out a mammal.",
+     "a": null
+    },
+    {
+     "s": "Every duck is a bird.",
+     "p": "The duck category is a bird category.",
+     "a": null
+    },
+    {
+     "s": "Lily is a bird.",
+     "p": "Lily has the bird classification.",
+     "a": null
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Any named fish is an animal.",
+     "a": null
+    },
+    {
+     "s": "Is Lily an animal?",
+     "p": "Does Lily fall within the animal group?",
+     "a": "yes"
+    },
+    {
+     "s": "Every cat is warm.",
+     "p": "Each cat is naturally warm.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 77,
+   "sentences": [
+    {
+     "s": "No mammal is warm.",
+     "p": "Warm never describes a mammal.",
+     "a": null
+    },
+    {
+     "s": "Every dog is a mammal.",
+     "p": "Mammal is what each dog must be.",
+     "a": null
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "Each cat is a mammal.",
+     "a": null
+    },
+    {
+     "s": "Mia is a dog.",
+     "p": "Mia is the dog in this story.",
+     "a": null
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "Each bird falls into the animal set.",
+     "a": null
+    },
+    {
+     "s": "No cow is quiet.",
+     "p": "Quiet never fits a cow.",
+     "a": null
+    },
+    {
+     "s": "No dog is warm.",
+     "p": "Warm is foreign to every dog.",
+     "a": null
+    },
+    {
+     "s": "Is Mia a mammal?",
+     "p": "Would Mia be grouped as a mammal?",
+     "a": "yes"
+    },
+    {
+     "s": "No cat is shy.",
+     "p": "Shy does not describe a cat.",
+     "a": null
+    },
+    {
+     "s": "Every duck is a bird.",
+     "p": "Duck is always a kind of bird.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 78,
+   "sentences": [
+    {
+     "s": "Every duck is a bird.",
+     "p": "Every duck belongs within the bird class.",
+     "a": null
+    },
+    {
+     "s": "No mammal is fast.",
+     "p": "Fast is never a mammal trait.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "The animal set takes in every mammal.",
+     "a": null
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Each fish belongs in the animal set.",
+     "a": null
+    },
+    {
+     "s": "Tom is an owl.",
+     "p": "Tom is labelled an owl.",
+     "a": null
+    },
+    {
+     "s": "Every cat is a mammal.",
+     "p": "A cat cannot avoid being a mammal.",
+     "a": null
+    },
+    {
+     "s": "Lily is an owl.",
+     "p": "The owl title fits Lily.",
+     "a": null
+    },
+    {
+     "s": "Every dog is a mammal.",
+     "p": "Dog status always implies mammal status.",
+     "a": null
+    },
+    {
+     "s": "Sam is a cat.",
+     "p": "Sam is in the cat category.",
+     "a": null
+    },
+    {
+     "s": "Is Sam a mammal?",
+     "p": "Does Sam qualify as a mammal?",
+     "a": "yes"
+    },
+    {
+     "s": "Every cat is quiet.",
+     "p": "Quiet marks every cat.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "Mammal is what every cow turns out to be.",
+     "a": null
+    },
+    {
+     "s": "Is Sam quiet?",
+     "p": "Does Sam tend to be quiet?",
+     "a": "yes"
+    },
+    {
+     "s": "Every bird is an animal.",
+     "p": "Any bird is naturally an animal.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 79,
+   "sentences": [
+    {
+     "s": "Every owl is loud.",
+     "p": "Loud describes each owl.",
+     "a": null
+    },
+    {
+     "s": "Every duck is a bird.",
+     "p": "Bird is the class of every duck.",
+     "a": null
+    },
+    {
+     "s": "Ana is a cow.",
+     "p": "Ana is in the end a cow.",
+     "a": null
+    },
+    {
+     "s": "No dog is a cat.",
+     "p": "A dog is never a cat.",
+     "a": null
+    },
+    {
+     "s": "Every cow is a mammal.",
+     "p": "Mammal is the group for each cow.",
+     "a": null
+    },
+    {
+     "s": "Every fish is an animal.",
+     "p": "Fish live in the animal group.",
+     "a": null
+    },
+    {
+     "s": "No dog is quiet.",
+     "p": "Quiet never suits a dog.",
+     "a": null
+    },
+    {
+     "s": "Every owl is a bird.",
+     "p": "An owl always counts as a bird.",
+     "a": null
+    },
+    {
+     "s": "Every mammal is an animal.",
+     "p": "The animal class covers every mammal.",
+     "a": null
+    },
+    {
+     "s": "Is Ana an animal?",
+     "p": "Does Ana belong to the animal class?",
+     "a": "yes"
+    }
+   ]
+  }
+ ]
+}

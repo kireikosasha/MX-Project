@@ -1,0 +1,1300 @@
+{
+ "task": "b18",
+ "stories": [
+  {
+   "part": "train",
+   "id": 0,
+   "sentences": [
+    {
+     "s": "The suitcase is bigger than the chocolate.",
+     "p": "The chocolate is smaller than the suitcase.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the chocolate.",
+     "p": "Measured against the chocolate the chest is larger.",
+     "a": null
+    },
+    {
+     "s": "The container fits inside the chest.",
+     "p": "Inside the chest the container can fit.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the box.",
+     "p": "The box has enough room for the chocolate inside.",
+     "a": null
+    },
+    {
+     "s": "The box fits inside the suitcase.",
+     "p": "The box can be packed into the suitcase.",
+     "a": null
+    },
+    {
+     "s": "Is the chocolate bigger than the suitcase?",
+     "p": "Would you say the chocolate is larger than the suitcase?",
+     "a": "no"
+    },
+    {
+     "s": "Does the chocolate fit in the suitcase?",
+     "p": "Can the chocolate be placed in the suitcase?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the suitcase bigger than the chocolate?",
+     "p": "Is the suitcase larger than the chocolate in size?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the chocolate bigger than the suitcase?",
+     "p": "Does the chocolate exceed the suitcase in size?",
+     "a": "no"
+    },
+    {
+     "s": "Is the suitcase bigger than the chocolate?",
+     "p": "Is the suitcase the larger one when set beside the chocolate?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 1,
+   "sentences": [
+    {
+     "s": "The box of chocolates fits inside the chest.",
+     "p": "The chest has room to hold the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the chocolate.",
+     "p": "The container comes out bigger than the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The box fits inside the container.",
+     "p": "The box can be put inside the container.",
+     "a": null
+    },
+    {
+     "s": "The suitcase fits inside the chest.",
+     "p": "The suitcase can be stored inside the chest.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the box of chocolates.",
+     "p": "The box of chocolates is smaller than the container.",
+     "a": null
+    },
+    {
+     "s": "The suitcase is bigger than the box of chocolates.",
+     "p": "The box of chocolates falls short of the suitcase in size.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the chest.",
+     "p": "Inside the chest there is space for the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the suitcase.",
+     "p": "The chest has greater size than the suitcase.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates is bigger than the chocolate.",
+     "p": "The chocolate is smaller than the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the chocolate.",
+     "p": "Compared with the chocolate the box is the bigger item.",
+     "a": null
+    },
+    {
+     "s": "Is the chocolate bigger than the chest?",
+     "p": "Would the chocolate be larger than the chest?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chocolate bigger than the container?",
+     "p": "Can the chocolate be considered larger than the container?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chest bigger than the box of chocolates?",
+     "p": "Does the chest exceed the box of chocolates in size?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box of chocolates fit in the chest?",
+     "p": "Can the box of chocolates be placed inside the chest?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the chest fit in the chocolate?",
+     "p": "Could the chest be placed inside the chocolate?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 2,
+   "sentences": [
+    {
+     "s": "The box of chocolates is bigger than the chocolate.",
+     "p": "Next to the box of chocolates the chocolate is smaller.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the box of chocolates.",
+     "p": "Put inside the box of chocolates there is room for the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the container.",
+     "p": "The container is smaller than the box.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the container.",
+     "p": "The container has enough space to take the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The suitcase fits inside the box.",
+     "p": "The box can hold the suitcase.",
+     "a": null
+    },
+    {
+     "s": "Is the chocolate bigger than the box?",
+     "p": "Is the chocolate larger in size than the box?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chocolate bigger than the box?",
+     "p": "Does the chocolate come out bigger than the box?",
+     "a": "no"
+    },
+    {
+     "s": "Does the chocolate fit in the box?",
+     "p": "Is there space in the box for the chocolate?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box fit in the chocolate?",
+     "p": "Could the box be placed inside the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Is the box bigger than the chocolate?",
+     "p": "Is the box a larger object than the chocolate when compared?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 3,
+   "sentences": [
+    {
+     "s": "The chest is bigger than the chocolate.",
+     "p": "The chest outclasses the chocolate in size.",
+     "a": null
+    },
+    {
+     "s": "The container fits inside the suitcase.",
+     "p": "The suitcase has room for the container inside.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the chest.",
+     "p": "There is space in the chest for the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the container.",
+     "p": "Compared to the container the chest is bigger.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the chest.",
+     "p": "The chest can take in the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the chocolate.",
+     "p": "The chest has a bigger size than the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the box.",
+     "p": "The box is smaller than the container.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the container.",
+     "p": "There is room in the container for the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the chest.",
+     "p": "The box of chocolates could be placed within the chest.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the chocolate.",
+     "p": "Next to the chocolate the box is larger.",
+     "a": null
+    },
+    {
+     "s": "Is the box of chocolates bigger than the suitcase?",
+     "p": "Would the box of chocolates come out larger than the suitcase?",
+     "a": "no"
+    },
+    {
+     "s": "Is the box bigger than the suitcase?",
+     "p": "Does the box outclass the suitcase in size?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chocolate bigger than the container?",
+     "p": "Is the chocolate the larger object when put beside the container?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chocolate bigger than the container?",
+     "p": "Could the chocolate be larger than the container?",
+     "a": "no"
+    },
+    {
+     "s": "Does the container fit in the chocolate?",
+     "p": "Can the container be placed inside the chocolate?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 4,
+   "sentences": [
+    {
+     "s": "The chest is bigger than the chocolate.",
+     "p": "The chocolate is dwarfed by the chest.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the suitcase.",
+     "p": "The suitcase has room for the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the box.",
+     "p": "The box is smaller than the chest.",
+     "a": null
+    },
+    {
+     "s": "The suitcase is bigger than the chest.",
+     "p": "The suitcase towers over the chest in size.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the chest.",
+     "p": "Within the chest there is a place for the chocolate.",
+     "a": null
+    },
+    {
+     "s": "Does the chocolate fit in the suitcase?",
+     "p": "Is there room in the suitcase for the chocolate?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the suitcase bigger than the chocolate?",
+     "p": "Does the suitcase outclass the chocolate in size?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the chocolate fit in the suitcase?",
+     "p": "Could the chocolate be packed inside the suitcase?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the suitcase bigger than the chocolate?",
+     "p": "Does the suitcase outsize the chocolate?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the suitcase bigger than the chocolate?",
+     "p": "Is the chocolate smaller than the suitcase?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 5,
+   "sentences": [
+    {
+     "s": "The suitcase is bigger than the box of chocolates.",
+     "p": "The suitcase exceeds the box of chocolates in size.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the chocolate.",
+     "p": "The chocolate is outmatched in size by the container.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the chest.",
+     "p": "The chest has space enough for the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the box of chocolates.",
+     "p": "In size the chest surpasses the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The container fits inside the box.",
+     "p": "The container can be put into the box.",
+     "a": null
+    },
+    {
+     "s": "Is the box bigger than the chocolate?",
+     "p": "Is the box the larger item when set against the chocolate?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the chocolate bigger than the box?",
+     "p": "Could you call the chocolate larger than the box?",
+     "a": "no"
+    },
+    {
+     "s": "Is the box bigger than the chocolate?",
+     "p": "Does the box have a greater size than the chocolate?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box fit in the chocolate?",
+     "p": "Can the box be placed in the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Is the box bigger than the chocolate?",
+     "p": "Is the box in fact bigger than the chocolate?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 6,
+   "sentences": [
+    {
+     "s": "The box fits inside the container.",
+     "p": "The container has space for the box.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the chest.",
+     "p": "The box of chocolates can be stored in the chest.",
+     "a": null
+    },
+    {
+     "s": "The suitcase is bigger than the box.",
+     "p": "The box comes in smaller than the suitcase.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the box of chocolates.",
+     "p": "The box of chocolates is smaller than the chest.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the box.",
+     "p": "Set against the box the chest proves larger.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the container.",
+     "p": "Inside the container there is room for the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the suitcase.",
+     "p": "The suitcase falls below the container in size.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the box of chocolates.",
+     "p": "The chest is more sizable than the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the box.",
+     "p": "The container exceeds the box in size.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the box of chocolates.",
+     "p": "The box of chocolates is smaller than the box.",
+     "a": null
+    },
+    {
+     "s": "Is the container bigger than the box?",
+     "p": "Would the container come out larger than the box?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the container bigger than the box?",
+     "p": "Does the container have more size than the box?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box fit in the container?",
+     "p": "Can the box be placed inside the container?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box fit in the container?",
+     "p": "Is there room inside the container for the box?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the container fit in the box of chocolates?",
+     "p": "Could the container be placed in the box of chocolates?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 7,
+   "sentences": [
+    {
+     "s": "The box is bigger than the container.",
+     "p": "The box outsizes the container.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the box of chocolates.",
+     "p": "A chest has more size than the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the suitcase.",
+     "p": "Packed into the suitcase is the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the container.",
+     "p": "A chocolate can be put inside the container.",
+     "a": null
+    },
+    {
+     "s": "The chest fits inside the container.",
+     "p": "The container has enough room to take the chest.",
+     "a": null
+    },
+    {
+     "s": "Is the chocolate bigger than the box?",
+     "p": "Would the chocolate be bigger than the box?",
+     "a": "no"
+    },
+    {
+     "s": "Does the box fit in the chest?",
+     "p": "Is the box able to go within the chest?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chocolate bigger than the box?",
+     "p": "Does the chocolate outmatch the box in size?",
+     "a": "no"
+    },
+    {
+     "s": "Does the box of chocolates fit in the container?",
+     "p": "Is the box of chocolates able to be stored in the container?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box fit in the chest?",
+     "p": "Would the box go inside the chest?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 8,
+   "sentences": [
+    {
+     "s": "The box is bigger than the chest.",
+     "p": "The box surpasses the chest in size.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the container.",
+     "p": "A box of chocolates is able to go inside the container.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the box of chocolates.",
+     "p": "The box of chocolates is less than the container in size.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the container.",
+     "p": "Next to the box the container is smaller.",
+     "a": null
+    },
+    {
+     "s": "The container fits inside the chest.",
+     "p": "There is a spot inside the chest where the container fits.",
+     "a": null
+    },
+    {
+     "s": "Is the box bigger than the container?",
+     "p": "Would the box be larger than the container?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box fit in the container?",
+     "p": "Is there space inside the container for the box?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chest bigger than the box of chocolates?",
+     "p": "Would the chest come out bigger than the box of chocolates?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the chest bigger than the box of chocolates?",
+     "p": "Is the box of chocolates smaller than the chest?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the chest bigger than the box of chocolates?",
+     "p": "Is the chest the more substantial object compared with the box of chocolates?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 9,
+   "sentences": [
+    {
+     "s": "The box of chocolates fits inside the container.",
+     "p": "The container can accommodate the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the box of chocolates.",
+     "p": "The box exceeds the box of chocolates in size.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the chocolate.",
+     "p": "A chocolate sits smaller than the container.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the chocolate.",
+     "p": "The box is larger than the chocolate in size.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the container.",
+     "p": "The box of chocolates can be tucked inside the container.",
+     "a": null
+    },
+    {
+     "s": "The suitcase is bigger than the container.",
+     "p": "The suitcase has greater size than the container.",
+     "a": null
+    },
+    {
+     "s": "The box fits inside the container.",
+     "p": "The box can be packed in the container.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the chest.",
+     "p": "The chest is smaller than the container.",
+     "a": null
+    },
+    {
+     "s": "The chest fits inside the container.",
+     "p": "The chest can be placed inside the container.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the chocolate.",
+     "p": "In size the container surpasses the chocolate.",
+     "a": null
+    },
+    {
+     "s": "Does the box of chocolates fit in the container?",
+     "p": "Is the box of chocolates able to go into the container?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the suitcase bigger than the box of chocolates?",
+     "p": "Is the box of chocolates smaller than the suitcase?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the container bigger than the box of chocolates?",
+     "p": "Does the container exceed the box of chocolates in size?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box of chocolates fit in the suitcase?",
+     "p": "Could the box of chocolates be placed inside the suitcase?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the container bigger than the box of chocolates?",
+     "p": "Is the container the larger object in comparison with the box of chocolates?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 10,
+   "sentences": [
+    {
+     "s": "The box fits inside the container.",
+     "p": "The box is able to sit inside the container.",
+     "a": null
+    },
+    {
+     "s": "The chest fits inside the suitcase.",
+     "p": "The suitcase has space to take in the chest.",
+     "a": null
+    },
+    {
+     "s": "The suitcase fits inside the box.",
+     "p": "The suitcase goes inside the box.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the box of chocolates.",
+     "p": "A container is larger than the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the chest.",
+     "p": "The chest has space enough for the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "Is the chest bigger than the box?",
+     "p": "Does the chest surpass the box in size?",
+     "a": "no"
+    },
+    {
+     "s": "Does the suitcase fit in the box of chocolates?",
+     "p": "Can the suitcase be placed inside the box of chocolates?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chest bigger than the box?",
+     "p": "Would the chest be considered bigger than the box?",
+     "a": "no"
+    },
+    {
+     "s": "Does the box of chocolates fit in the suitcase?",
+     "p": "Is the box of chocolates able to go inside the suitcase?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the box bigger than the chest?",
+     "p": "Does the box come out bigger than the chest?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 11,
+   "sentences": [
+    {
+     "s": "The container fits inside the chest.",
+     "p": "The container can be positioned within the chest.",
+     "a": null
+    },
+    {
+     "s": "The box fits inside the chest.",
+     "p": "The box can be put into the chest.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the box of chocolates.",
+     "p": "Compared to the box of chocolates the container is larger.",
+     "a": null
+    },
+    {
+     "s": "The box fits inside the chest.",
+     "p": "Within the chest the box finds a place.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the suitcase.",
+     "p": "The suitcase is smaller than the chest.",
+     "a": null
+    },
+    {
+     "s": "Does the chest fit in the box of chocolates?",
+     "p": "Is the chest able to fit inside the box of chocolates?",
+     "a": "no"
+    },
+    {
+     "s": "Does the chest fit in the box of chocolates?",
+     "p": "Could the chest be placed in the box of chocolates?",
+     "a": "no"
+    },
+    {
+     "s": "Does the box of chocolates fit in the chest?",
+     "p": "Can the box of chocolates go inside the chest?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the chest fit in the box of chocolates?",
+     "p": "Would the chest go inside the box of chocolates?",
+     "a": "no"
+    },
+    {
+     "s": "Does the box of chocolates fit in the chest?",
+     "p": "Is there room in the chest for the box of chocolates?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 12,
+   "sentences": [
+    {
+     "s": "The box fits inside the suitcase.",
+     "p": "The box can sit in the suitcase.",
+     "a": null
+    },
+    {
+     "s": "The suitcase is bigger than the chest.",
+     "p": "In size the suitcase outdoes the chest.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the box.",
+     "p": "Inside the box the chocolate can be placed.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the box of chocolates.",
+     "p": "The container is the larger object next to the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the box.",
+     "p": "The chocolate is able to go into the box.",
+     "a": null
+    },
+    {
+     "s": "Does the suitcase fit in the chocolate?",
+     "p": "Could the suitcase be placed in the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chocolate bigger than the suitcase?",
+     "p": "Is the chocolate larger than the suitcase?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chocolate bigger than the suitcase?",
+     "p": "Does the chocolate outsize the suitcase?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chocolate bigger than the suitcase?",
+     "p": "Would the chocolate count as bigger than the suitcase?",
+     "a": "no"
+    },
+    {
+     "s": "Is the suitcase bigger than the chocolate?",
+     "p": "Is the suitcase more sizable than the chocolate?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 13,
+   "sentences": [
+    {
+     "s": "The container is bigger than the chocolate.",
+     "p": "The container outstrips the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the container.",
+     "p": "The container is smaller than the chest.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the suitcase.",
+     "p": "Inside the suitcase the chocolate can sit.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the chocolate.",
+     "p": "The chocolate is smaller than the box.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the suitcase.",
+     "p": "The box of chocolates can be carried in the suitcase.",
+     "a": null
+    },
+    {
+     "s": "Does the chocolate fit in the chest?",
+     "p": "Is there space in the chest for the chocolate?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the chocolate fit in the chest?",
+     "p": "Could the chocolate be placed inside the chest?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the chest fit in the chocolate?",
+     "p": "Can the chest be placed inside the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chest bigger than the chocolate?",
+     "p": "Does the chest outrank the chocolate in size?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the chest fit in the chocolate?",
+     "p": "Would the chest go inside the chocolate?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 14,
+   "sentences": [
+    {
+     "s": "The box fits inside the chest.",
+     "p": "The box goes inside the chest.",
+     "a": null
+    },
+    {
+     "s": "The suitcase is bigger than the container.",
+     "p": "A container comes in smaller than the suitcase.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the box.",
+     "p": "The box leaves space for the chocolate within.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the container.",
+     "p": "Next to the container the chest is larger.",
+     "a": null
+    },
+    {
+     "s": "The suitcase is bigger than the chest.",
+     "p": "The chest is outdone by the suitcase in size.",
+     "a": null
+    },
+    {
+     "s": "Does the box fit in the suitcase?",
+     "p": "Can the box be placed inside the suitcase?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the chocolate bigger than the chest?",
+     "p": "Does the chocolate outsize the chest?",
+     "a": "no"
+    },
+    {
+     "s": "Is the suitcase bigger than the box?",
+     "p": "Is the suitcase larger than the box in size?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the chocolate fit in the chest?",
+     "p": "Can the chocolate go inside the chest?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the chest bigger than the chocolate?",
+     "p": "Does the chest surpass the chocolate in size?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 15,
+   "sentences": [
+    {
+     "s": "The box fits inside the suitcase.",
+     "p": "The box can be stored inside the suitcase.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the chocolate.",
+     "p": "Measured by size the chest is greater than the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the chocolate.",
+     "p": "The container outsizes the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the chocolate.",
+     "p": "The chocolate comes out smaller than the container.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the container.",
+     "p": "The container can hold the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The suitcase fits inside the container.",
+     "p": "The container has space enough for the suitcase.",
+     "a": null
+    },
+    {
+     "s": "The chest fits inside the box.",
+     "p": "The box can house the chest.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the box of chocolates.",
+     "p": "The box of chocolates has room for the chocolate within.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates fits inside the chest.",
+     "p": "The chest can contain the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The suitcase is bigger than the box of chocolates.",
+     "p": "The suitcase is more sizable than the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "Does the box fit in the container?",
+     "p": "Is the box able to go inside the container?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the container fit in the chocolate?",
+     "p": "Would the container go inside the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Does the box fit in the container?",
+     "p": "Would the box fit into the container?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box fit in the chocolate?",
+     "p": "Can the box be placed inside the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Does the container fit in the box?",
+     "p": "Is there room in the box for the container?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 16,
+   "sentences": [
+    {
+     "s": "The chocolate fits inside the chest.",
+     "p": "The chest can house the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the container.",
+     "p": "The container is smaller than the box.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the suitcase.",
+     "p": "The chocolate can be kept in the suitcase.",
+     "a": null
+    },
+    {
+     "s": "The suitcase fits inside the box.",
+     "p": "The box can take the suitcase inside.",
+     "a": null
+    },
+    {
+     "s": "The container fits inside the chest.",
+     "p": "The chest has enough space to receive the container.",
+     "a": null
+    },
+    {
+     "s": "Is the box bigger than the chocolate?",
+     "p": "Does the box come out larger than the chocolate?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box fit in the chocolate?",
+     "p": "Could the box fit within the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Does the chocolate fit in the box?",
+     "p": "Would the chocolate go inside the box?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the box fit in the chocolate?",
+     "p": "Is the box capable of fitting in the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Is the box bigger than the chocolate?",
+     "p": "Would you agree the box is bigger than the chocolate?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 17,
+   "sentences": [
+    {
+     "s": "The box fits inside the chest.",
+     "p": "Inside the chest sits the box.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the chocolate.",
+     "p": "The chocolate comes up short against the container.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the suitcase.",
+     "p": "Inside the suitcase there is space for the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the box.",
+     "p": "The box falls short of the container.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates is bigger than the chocolate.",
+     "p": "The box of chocolates has greater size than the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The box of chocolates is bigger than the chocolate.",
+     "p": "The chocolate is outdone in size by the box of chocolates.",
+     "a": null
+    },
+    {
+     "s": "The suitcase is bigger than the box of chocolates.",
+     "p": "The box of chocolates is smaller than the suitcase.",
+     "a": null
+    },
+    {
+     "s": "The box fits inside the suitcase.",
+     "p": "The suitcase has room to take the box.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the box.",
+     "p": "The chocolate can be placed within the box.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the suitcase.",
+     "p": "The suitcase is roomy enough for the chocolate.",
+     "a": null
+    },
+    {
+     "s": "Is the chocolate bigger than the chest?",
+     "p": "Does the chocolate come out bigger than the chest?",
+     "a": "no"
+    },
+    {
+     "s": "Does the chest fit in the chocolate?",
+     "p": "Would the chest be able to sit inside the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Does the chest fit in the chocolate?",
+     "p": "Could the chest slide into the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Is the suitcase bigger than the chocolate?",
+     "p": "Would the suitcase be larger than the chocolate?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the chest fit in the chocolate?",
+     "p": "Can the chest go inside the chocolate?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 18,
+   "sentences": [
+    {
+     "s": "The chest is bigger than the chocolate.",
+     "p": "The chest has more size than the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the chocolate.",
+     "p": "The chocolate sits smaller than the container.",
+     "a": null
+    },
+    {
+     "s": "The chest is bigger than the box of chocolates.",
+     "p": "The box of chocolates is outsized by the chest.",
+     "a": null
+    },
+    {
+     "s": "The suitcase fits inside the chest.",
+     "p": "A suitcase is able to fit within the chest.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the chocolate.",
+     "p": "The box is more sizable than the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the suitcase.",
+     "p": "The chocolate can be carried inside the suitcase.",
+     "a": null
+    },
+    {
+     "s": "The suitcase fits inside the container.",
+     "p": "The suitcase can be placed within the container.",
+     "a": null
+    },
+    {
+     "s": "The box is bigger than the chest.",
+     "p": "The box surpasses the chest in size.",
+     "a": null
+    },
+    {
+     "s": "The container is bigger than the chest.",
+     "p": "The chest falls short of the container in size.",
+     "a": null
+    },
+    {
+     "s": "The suitcase fits inside the container.",
+     "p": "The container is roomy enough to take the suitcase.",
+     "a": null
+    },
+    {
+     "s": "Is the container bigger than the chocolate?",
+     "p": "Does the container exceed the chocolate in size?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the chest fit in the chocolate?",
+     "p": "Does the chest manage to fit into the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Is the box bigger than the chocolate?",
+     "p": "Is the box larger than the chocolate?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the chest bigger than the chocolate?",
+     "p": "Does the chest come out larger than the chocolate?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the box bigger than the chocolate?",
+     "p": "Would one call the box bigger than the chocolate?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 19,
+   "sentences": [
+    {
+     "s": "The box fits inside the chest.",
+     "p": "The box is able to be placed in the chest.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the suitcase.",
+     "p": "The suitcase can accommodate the chocolate.",
+     "a": null
+    },
+    {
+     "s": "The box fits inside the container.",
+     "p": "The box can go inside the container.",
+     "a": null
+    },
+    {
+     "s": "The suitcase fits inside the container.",
+     "p": "A suitcase can be packed into the container.",
+     "a": null
+    },
+    {
+     "s": "The chocolate fits inside the chest.",
+     "p": "Inside the chest there is room for the chocolate.",
+     "a": null
+    },
+    {
+     "s": "Does the container fit in the chocolate?",
+     "p": "Is the container able to fit within the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Does the chocolate fit in the container?",
+     "p": "Can the chocolate be placed inside the container?",
+     "a": "yes"
+    },
+    {
+     "s": "Does the container fit in the chocolate?",
+     "p": "Could the container slide inside the chocolate?",
+     "a": "no"
+    },
+    {
+     "s": "Is the chocolate bigger than the container?",
+     "p": "Would anyone say the chocolate is bigger than the container?",
+     "a": "no"
+    },
+    {
+     "s": "Does the container fit in the chocolate?",
+     "p": "Is there space inside the chocolate for the container?",
+     "a": "no"
+    }
+   ]
+  }
+ ]
+}

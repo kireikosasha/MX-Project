@@ -5,7 +5,8 @@ reader learns to read free wording, and the table of the README is printed.
 
     python run.py --babi tasks_1-20_v1-2 --new new --out free_out            # reader on all the tasks
     python run.py ... --school                                               # the reader first learns the other tasks
-    python run.py ... --plain plain                                          # also writes the files for the transformer
+    python run.py ... --plain plain --no-reader                              # only writes the files for the transformer:
+    python ../colab/baseline.py --data plain/dev --lang "" --sizes 60        #   one folder for every group of tasks
 
 --new is the folder with the sets A, B, C made by newtasks.py. A task already done (its json is in --out) is skipped.
 """
@@ -43,6 +44,7 @@ def main():
     ap.add_argument("--vectors", default="", help="a GloVe file for the reader's dictionary ('get' fetches the 50-number one)")
     ap.add_argument("--school", action="store_true", help="every task is read after the lessons of all the other tasks")
     ap.add_argument("--plain", default="", help="also write the stories as plain task files for colab/baseline.py here")
+    ap.add_argument("--no-reader", action="store_true")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     if a.vectors == "get":
@@ -50,10 +52,12 @@ def main():
         if not os.path.exists(a.vectors):
             urllib.request.urlretrieve(GLOVE, a.vectors)
     todo = [t for t in TASKS if not a.only or t[0] in a.only.split(",") or t[3] == a.only]
-    if a.plain:
-        spec = ",".join(f"{n}:{folder(a, w)}:{k}" for n, w, k, _ in todo)
+    for group in sorted({t[3] for t in todo}) if a.plain else []:
+        spec = ",".join(f"{n}:{folder(a, w)}:{k}" for n, w, k, g in todo if g == group)
         subprocess.run([sys.executable, os.path.join(HERE, "plain.py"), "--stories", os.path.join(HERE, "stories"), "--tasks", spec,
-                        "--out", a.plain], check=True)
+                        "--out", os.path.join(a.plain, group.replace(" ", "_").replace("-", "_"))], check=True)
+    if a.no_reader:
+        return
     tag = "school_" if a.school else ""
     lessons = os.path.join(a.out, "lessons")
     os.makedirs(lessons, exist_ok=True)

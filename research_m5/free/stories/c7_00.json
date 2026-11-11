@@ -1,0 +1,1150 @@
+{
+ "task": "c7",
+ "stories": [
+  {
+   "part": "train",
+   "id": 0,
+   "sentences": [
+    {
+     "s": "Cal owns 9 apples.",
+     "p": "Cal is the owner of 9 apples.",
+     "a": null
+    },
+    {
+     "s": "Bob gets 3 pears.",
+     "p": "Bob receives 3 pears.",
+     "a": null
+    },
+    {
+     "s": "Does Bob have 2 pears?",
+     "p": "Does Bob hold 2 pears?",
+     "a": "no"
+    },
+    {
+     "s": "Cal gets 1 apple.",
+     "p": "Cal is given 1 apple.",
+     "a": null
+    },
+    {
+     "s": "How many pears does Cal have?",
+     "p": "What number of pears does Cal possess?",
+     "a": "0"
+    },
+    {
+     "s": "How many pears does Bob have?",
+     "p": "What is the count of pears Bob owns?",
+     "a": "3"
+    },
+    {
+     "s": "How many pears does Eli have?",
+     "p": "What amount of pears does Eli currently have?",
+     "a": "0"
+    },
+    {
+     "s": "Bob owns 6 apples.",
+     "p": "Bob keeps 6 apples.",
+     "a": null
+    },
+    {
+     "s": "Cal gets 3 apples.",
+     "p": "3 apples are received by Cal.",
+     "a": null
+    },
+    {
+     "s": "Bob loses 1 pear.",
+     "p": "1 pear is lost by Bob.",
+     "a": null
+    },
+    {
+     "s": "Fay takes 4 apples from Bob.",
+     "p": "Fay grabs 4 apples away from Bob.",
+     "a": null
+    },
+    {
+     "s": "Does Cal have 14 apples?",
+     "p": "Is Cal holding 14 apples?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 1,
+   "sentences": [
+    {
+     "s": "Eli finds 5 coins.",
+     "p": "Eli discovers 5 coins.",
+     "a": null
+    },
+    {
+     "s": "Ann takes 4 coins from Eli.",
+     "p": "Ann collects 4 coins from Eli.",
+     "a": null
+    },
+    {
+     "s": "Eli finds 5 coins.",
+     "p": "Eli locates 5 more coins.",
+     "a": null
+    },
+    {
+     "s": "How many coins does Eli have?",
+     "p": "What is the total of coins Eli possesses?",
+     "a": "6"
+    },
+    {
+     "s": "How many coins does Ann have?",
+     "p": "What quantity of coins does Ann hold?",
+     "a": "4"
+    },
+    {
+     "s": "Ann loses 3 coins.",
+     "p": "3 coins slip away from Ann.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 4 coins.",
+     "p": "Ann comes across 4 coins.",
+     "a": null
+    },
+    {
+     "s": "Ann gets 3 coins.",
+     "p": "Ann is handed 3 coins.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 2,
+   "sentences": [
+    {
+     "s": "Cal has 8 pears.",
+     "p": "Cal possesses 8 pears.",
+     "a": null
+    },
+    {
+     "s": "Cal gets 1 pear.",
+     "p": "1 pear is handed to Cal.",
+     "a": null
+    },
+    {
+     "s": "Does Ann have 0 pears?",
+     "p": "Is Ann left with 0 pears?",
+     "a": "yes"
+    },
+    {
+     "s": "Does Dee have 1 pear?",
+     "p": "Is Dee carrying 1 pear?",
+     "a": "no"
+    },
+    {
+     "s": "How many pears does Bob have?",
+     "p": "What count of pears is Bob holding?",
+     "a": "0"
+    },
+    {
+     "s": "How many pears does Dee have?",
+     "p": "How many pears does Dee currently own?",
+     "a": "0"
+    },
+    {
+     "s": "Dee finds 3 pears.",
+     "p": "Dee stumbles upon 3 pears.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 3,
+   "sentences": [
+    {
+     "s": "Dee gets 5 rocks.",
+     "p": "Dee acquires 5 rocks.",
+     "a": null
+    },
+    {
+     "s": "Dee gives 1 rock to Bob.",
+     "p": "1 rock goes from Dee to Bob.",
+     "a": null
+    },
+    {
+     "s": "Ann owns 3 coins.",
+     "p": "Ann is the holder of 3 coins.",
+     "a": null
+    },
+    {
+     "s": "How many rocks does Ann have?",
+     "p": "How many rocks does Ann currently hold?",
+     "a": "0"
+    },
+    {
+     "s": "Does Dee have 4 rocks?",
+     "p": "Is Dee in possession of 4 rocks?",
+     "a": "yes"
+    },
+    {
+     "s": "Dee takes 1 rock from Bob.",
+     "p": "Dee snatches 1 rock off Bob.",
+     "a": null
+    },
+    {
+     "s": "Dee owns 8 coins.",
+     "p": "Dee keeps 8 coins.",
+     "a": null
+    },
+    {
+     "s": "Bob gets 2 coins.",
+     "p": "Bob collects 2 coins.",
+     "a": null
+    },
+    {
+     "s": "Bob gets 1 coin.",
+     "p": "1 coin lands with Bob.",
+     "a": null
+    },
+    {
+     "s": "How many rocks does Fay have?",
+     "p": "What number of rocks belongs to Fay?",
+     "a": "0"
+    },
+    {
+     "s": "Does Bob have 2 coins?",
+     "p": "Is Bob the holder of exactly 2 coins?",
+     "a": "no"
+    },
+    {
+     "s": "Dee finds 4 rocks.",
+     "p": "Dee spots and picks up 4 rocks.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 4,
+   "sentences": [
+    {
+     "s": "Bob gets 4 pears.",
+     "p": "Bob pockets 4 pears.",
+     "a": null
+    },
+    {
+     "s": "Dee has 4 pears.",
+     "p": "Dee is carrying 4 pears.",
+     "a": null
+    },
+    {
+     "s": "How many pears does Bob have?",
+     "p": "How many pears is Bob holding right now?",
+     "a": "4"
+    },
+    {
+     "s": "Does Ann have 0 pears?",
+     "p": "Is the total of pears for Ann equal to 0?",
+     "a": "yes"
+    },
+    {
+     "s": "Ann takes 1 pear from Bob.",
+     "p": "Bob is relieved of 1 pear by Ann.",
+     "a": null
+    },
+    {
+     "s": "Bob finds 1 pear.",
+     "p": "Bob comes upon 1 pear.",
+     "a": null
+    },
+    {
+     "s": "Fay takes 4 pears from Dee.",
+     "p": "Fay removes 4 pears from Dee.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 5,
+   "sentences": [
+    {
+     "s": "Dee gets 2 rocks.",
+     "p": "Dee is awarded 2 rocks.",
+     "a": null
+    },
+    {
+     "s": "Dee loses 1 rock.",
+     "p": "1 rock is misplaced by Dee.",
+     "a": null
+    },
+    {
+     "s": "Dee loses 1 rock.",
+     "p": "Dee parts with 1 rock.",
+     "a": null
+    },
+    {
+     "s": "Cal owns 5 rocks.",
+     "p": "Cal is in possession of 5 rocks.",
+     "a": null
+    },
+    {
+     "s": "Does Fay have 0 coins?",
+     "p": "Is the total of coins for Fay 0?",
+     "a": "yes"
+    },
+    {
+     "s": "How many coins does Cal have?",
+     "p": "What total of coins does Cal hold?",
+     "a": "0"
+    },
+    {
+     "s": "Does Cal have 4 rocks?",
+     "p": "Does Cal possess exactly 4 rocks?",
+     "a": "no"
+    },
+    {
+     "s": "Eli owns 8 coins.",
+     "p": "Eli holds 8 coins.",
+     "a": null
+    },
+    {
+     "s": "Does Cal have 0 coins?",
+     "p": "Does Cal hold 0 coins?",
+     "a": "yes"
+    },
+    {
+     "s": "Fay owns 1 coin.",
+     "p": "Fay is in control of 1 coin.",
+     "a": null
+    },
+    {
+     "s": "Dee takes 3 coins from Eli.",
+     "p": "3 coins get taken from Eli by Dee.",
+     "a": null
+    },
+    {
+     "s": "Cal finds 2 rocks.",
+     "p": "Cal locates 2 rocks.",
+     "a": null
+    },
+    {
+     "s": "Eli owns 7 rocks.",
+     "p": "Eli has 7 rocks on hand.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 6,
+   "sentences": [
+    {
+     "s": "Bob has 5 rocks.",
+     "p": "Bob is holding 5 rocks.",
+     "a": null
+    },
+    {
+     "s": "Bob loses 3 rocks.",
+     "p": "3 rocks slip away from Bob.",
+     "a": null
+    },
+    {
+     "s": "Does Bob have 2 rocks?",
+     "p": "Does Bob end up with 2 rocks?",
+     "a": "yes"
+    },
+    {
+     "s": "Fay has 2 rocks.",
+     "p": "Fay is in charge of 2 rocks.",
+     "a": null
+    },
+    {
+     "s": "Does Dee have 1 rock?",
+     "p": "Is Dee carrying just 1 rock?",
+     "a": "no"
+    },
+    {
+     "s": "Does Dee have 1 rock?",
+     "p": "Is the rock count for Dee exactly 1?",
+     "a": "no"
+    },
+    {
+     "s": "Dee has 9 rocks.",
+     "p": "9 rocks belong to Dee.",
+     "a": null
+    },
+    {
+     "s": "Dee loses 1 rock.",
+     "p": "1 rock gets lost by Dee.",
+     "a": null
+    },
+    {
+     "s": "Fay gets 4 rocks.",
+     "p": "4 rocks come to Fay.",
+     "a": null
+    },
+    {
+     "s": "Does Cal have 1 rock?",
+     "p": "Is the rock total of Cal equal to 1?",
+     "a": "no"
+    },
+    {
+     "s": "Cal owns 5 rocks.",
+     "p": "Cal has custody of 5 rocks.",
+     "a": null
+    },
+    {
+     "s": "Dee loses 8 rocks.",
+     "p": "8 rocks vanish from Dee.",
+     "a": null
+    },
+    {
+     "s": "Fay gets 5 rocks.",
+     "p": "5 more rocks go to Fay.",
+     "a": null
+    },
+    {
+     "s": "Bob loses 2 rocks.",
+     "p": "Bob is down 2 rocks.",
+     "a": null
+    },
+    {
+     "s": "Does Fay have 12 rocks?",
+     "p": "Does Fay possess 12 rocks in all?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 7,
+   "sentences": [
+    {
+     "s": "Eli finds 5 pears.",
+     "p": "Eli spots 5 pears.",
+     "a": null
+    },
+    {
+     "s": "Bob has 6 pears.",
+     "p": "There are 6 pears held by Bob.",
+     "a": null
+    },
+    {
+     "s": "Eli loses 4 pears.",
+     "p": "Eli misplaces 4 pears.",
+     "a": null
+    },
+    {
+     "s": "Does Bob have 6 pears?",
+     "p": "Is the total of pears held by Bob 6?",
+     "a": "yes"
+    },
+    {
+     "s": "Eli gives 1 pear to Ann.",
+     "p": "Eli passes Ann 1 pear.",
+     "a": null
+    },
+    {
+     "s": "Ann loses 1 pear.",
+     "p": "1 pear goes missing from Ann.",
+     "a": null
+    },
+    {
+     "s": "Bob loses 4 pears.",
+     "p": "4 pears are gone from Bob.",
+     "a": null
+    },
+    {
+     "s": "Eli finds 1 pear.",
+     "p": "Eli stumbles on 1 pear.",
+     "a": null
+    },
+    {
+     "s": "Bob loses 1 pear.",
+     "p": "1 pear departs from Bob.",
+     "a": null
+    },
+    {
+     "s": "Bob gives 1 pear to Eli.",
+     "p": "Eli is given 1 pear by Bob.",
+     "a": null
+    },
+    {
+     "s": "Does Eli have 1 pear?",
+     "p": "Is Eli in possession of 1 pear?",
+     "a": "no"
+    },
+    {
+     "s": "Eli finds 1 pear.",
+     "p": "Eli picks up 1 pear too.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 8,
+   "sentences": [
+    {
+     "s": "Eli gets 2 coins.",
+     "p": "Eli obtains 2 coins.",
+     "a": null
+    },
+    {
+     "s": "Does Ann have 0 apples?",
+     "p": "Does Ann have 0 apples in total?",
+     "a": "yes"
+    },
+    {
+     "s": "Eli loses 2 coins.",
+     "p": "2 coins drop away from Eli.",
+     "a": null
+    },
+    {
+     "s": "Does Eli have 0 coins?",
+     "p": "Is Eli left holding 0 coins?",
+     "a": "yes"
+    },
+    {
+     "s": "Ann finds 3 apples.",
+     "p": "3 apples turn up for Ann.",
+     "a": null
+    },
+    {
+     "s": "Does Ann have 1 coin?",
+     "p": "Is there 1 coin held by Ann?",
+     "a": "no"
+    },
+    {
+     "s": "Does Cal have 0 apples?",
+     "p": "Does Cal currently hold 0 apples?",
+     "a": "yes"
+    },
+    {
+     "s": "Eli takes 1 apple from Ann.",
+     "p": "1 apple is taken by Eli from Ann.",
+     "a": null
+    },
+    {
+     "s": "How many coins does Ann have?",
+     "p": "How many coins does Ann hold at the end?",
+     "a": "0"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 9,
+   "sentences": [
+    {
+     "s": "Cal gets 3 rocks.",
+     "p": "3 rocks land with Cal.",
+     "a": null
+    },
+    {
+     "s": "Dee gets 2 rocks.",
+     "p": "Dee takes possession of 2 rocks.",
+     "a": null
+    },
+    {
+     "s": "Does Dee have 1 rock?",
+     "p": "Does Dee possess 1 rock?",
+     "a": "no"
+    },
+    {
+     "s": "Does Cal have 4 rocks?",
+     "p": "Is the total of rocks held by Cal 4?",
+     "a": "no"
+    },
+    {
+     "s": "Cal gives 3 rocks to Dee.",
+     "p": "Dee receives 3 rocks from Cal.",
+     "a": null
+    },
+    {
+     "s": "Dee finds 3 rocks.",
+     "p": "3 rocks get discovered by Dee.",
+     "a": null
+    },
+    {
+     "s": "How many rocks does Cal have?",
+     "p": "What total of rocks does Cal end up with?",
+     "a": "0"
+    },
+    {
+     "s": "How many rocks does Dee have?",
+     "p": "What is the number of rocks that Dee holds?",
+     "a": "8"
+    },
+    {
+     "s": "Cal takes 1 rock from Dee.",
+     "p": "1 rock is snatched from Dee by Cal.",
+     "a": null
+    },
+    {
+     "s": "How many rocks does Cal have?",
+     "p": "How many rocks does Cal hold now?",
+     "a": "1"
+    },
+    {
+     "s": "Cal gives 1 rock to Dee.",
+     "p": "Cal passes 1 rock over to Dee.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 10,
+   "sentences": [
+    {
+     "s": "Fay owns 7 apples.",
+     "p": "Fay has 7 apples in hand.",
+     "a": null
+    },
+    {
+     "s": "Fay loses 4 apples.",
+     "p": "4 apples disappear from Fay.",
+     "a": null
+    },
+    {
+     "s": "Eli finds 5 pears.",
+     "p": "Eli happens upon 5 pears.",
+     "a": null
+    },
+    {
+     "s": "Fay loses 3 apples.",
+     "p": "Fay gives up 3 apples.",
+     "a": null
+    },
+    {
+     "s": "Does Cal have 0 apples?",
+     "p": "Does Cal hold 0 apples at this point?",
+     "a": "yes"
+    },
+    {
+     "s": "Eli gives 5 pears to Fay.",
+     "p": "5 pears go from Eli to Fay.",
+     "a": null
+    },
+    {
+     "s": "Fay loses 5 pears.",
+     "p": "5 pears leave Fay.",
+     "a": null
+    },
+    {
+     "s": "Cal owns 9 pears.",
+     "p": "9 pears are kept by Cal.",
+     "a": null
+    },
+    {
+     "s": "Cal loses 1 pear.",
+     "p": "Cal mislays 1 pear.",
+     "a": null
+    },
+    {
+     "s": "Cal gets 3 pears.",
+     "p": "Cal gains 3 pears.",
+     "a": null
+    },
+    {
+     "s": "Fay takes 8 pears from Cal.",
+     "p": "8 pears are seized by Fay from Cal.",
+     "a": null
+    },
+    {
+     "s": "How many apples does Fay have?",
+     "p": "What total of apples does Fay hold?",
+     "a": "0"
+    },
+    {
+     "s": "Cal takes 2 pears from Fay.",
+     "p": "Cal seizes 2 pears from Fay.",
+     "a": null
+    },
+    {
+     "s": "Cal finds 3 apples.",
+     "p": "Cal chances upon 3 apples.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 11,
+   "sentences": [
+    {
+     "s": "Fay has 6 pears.",
+     "p": "Fay holds 6 pears.",
+     "a": null
+    },
+    {
+     "s": "Does Cal have 1 apple?",
+     "p": "Is there 1 apple owned by Cal?",
+     "a": "no"
+    },
+    {
+     "s": "How many pears does Fay have?",
+     "p": "How many pears are held by Fay?",
+     "a": "6"
+    },
+    {
+     "s": "Fay gives 1 pear to Cal.",
+     "p": "1 pear is passed from Fay to Cal.",
+     "a": null
+    },
+    {
+     "s": "Cal has 4 apples.",
+     "p": "Cal is holding 4 apples.",
+     "a": null
+    },
+    {
+     "s": "Fay has 7 apples.",
+     "p": "Fay carries 7 apples.",
+     "a": null
+    },
+    {
+     "s": "Does Cal have 1 pear?",
+     "p": "Is Cal the owner of 1 pear?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 12,
+   "sentences": [
+    {
+     "s": "Cal owns 9 pears.",
+     "p": "Cal has 9 pears in stock.",
+     "a": null
+    },
+    {
+     "s": "Cal loses 5 pears.",
+     "p": "Cal sheds 5 pears.",
+     "a": null
+    },
+    {
+     "s": "Cal loses 1 pear.",
+     "p": "1 pear slips from Cal.",
+     "a": null
+    },
+    {
+     "s": "Does Cal have 2 pears?",
+     "p": "Does Cal end up with 2 pears?",
+     "a": "no"
+    },
+    {
+     "s": "Cal owns 5 apples.",
+     "p": "Cal is the possessor of 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Cal loses 1 pear.",
+     "p": "Cal drops 1 pear.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 13,
+   "sentences": [
+    {
+     "s": "Eli gets 4 coins.",
+     "p": "Eli gathers 4 coins.",
+     "a": null
+    },
+    {
+     "s": "How many coins does Eli have?",
+     "p": "How many coins does Eli currently hold?",
+     "a": "4"
+    },
+    {
+     "s": "Eli loses 1 coin.",
+     "p": "1 coin gets lost by Eli.",
+     "a": null
+    },
+    {
+     "s": "Eli finds 2 coins.",
+     "p": "Eli recovers 2 coins.",
+     "a": null
+    },
+    {
+     "s": "Eli loses 2 coins.",
+     "p": "Eli is down 2 coins.",
+     "a": null
+    },
+    {
+     "s": "Fay has 7 coins.",
+     "p": "Fay keeps hold of 7 coins.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 3 coins.",
+     "p": "Fay encounters 3 coins.",
+     "a": null
+    },
+    {
+     "s": "Eli loses 1 coin.",
+     "p": "Eli sheds 1 coin.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 14,
+   "sentences": [
+    {
+     "s": "Eli owns 2 coins.",
+     "p": "2 coins belong to Eli.",
+     "a": null
+    },
+    {
+     "s": "How many coins does Eli have?",
+     "p": "What number of coins is Eli holding?",
+     "a": "2"
+    },
+    {
+     "s": "Eli loses 1 coin.",
+     "p": "1 coin is gone from Eli.",
+     "a": null
+    },
+    {
+     "s": "Dee gets 2 coins.",
+     "p": "2 coins reach Dee.",
+     "a": null
+    },
+    {
+     "s": "Bob gets 1 coin.",
+     "p": "1 coin is picked up by Bob.",
+     "a": null
+    },
+    {
+     "s": "Eli finds 3 coins.",
+     "p": "Eli happens across 3 coins.",
+     "a": null
+    },
+    {
+     "s": "Does Eli have 3 coins?",
+     "p": "Does Eli currently possess 3 coins?",
+     "a": "no"
+    },
+    {
+     "s": "How many coins does Ann have?",
+     "p": "What number of coins does Ann carry?",
+     "a": "0"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 15,
+   "sentences": [
+    {
+     "s": "Ann finds 5 pears.",
+     "p": "Ann happens on 5 pears.",
+     "a": null
+    },
+    {
+     "s": "Ann loses 4 pears.",
+     "p": "4 pears are lost by Ann.",
+     "a": null
+    },
+    {
+     "s": "How many pears does Ann have?",
+     "p": "What count of pears belongs to Ann?",
+     "a": "1"
+    },
+    {
+     "s": "Ann gives 1 pear to Dee.",
+     "p": "1 pear is handed over from Ann to Dee.",
+     "a": null
+    },
+    {
+     "s": "Does Dee have 2 pears?",
+     "p": "Are 2 pears held by Dee?",
+     "a": "no"
+    },
+    {
+     "s": "Eli has 8 pears.",
+     "p": "There are 8 pears with Eli.",
+     "a": null
+    },
+    {
+     "s": "Dee owns 2 coins.",
+     "p": "2 coins are owned by Dee.",
+     "a": null
+    },
+    {
+     "s": "Fay has 6 pears.",
+     "p": "Fay owns 6 pears.",
+     "a": null
+    },
+    {
+     "s": "Fay loses 3 pears.",
+     "p": "Fay mislays 3 pears.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 5 coins.",
+     "p": "Ann picks up 5 coins.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 16,
+   "sentences": [
+    {
+     "s": "Cal owns 6 coins.",
+     "p": "Cal holds 6 coins in total.",
+     "a": null
+    },
+    {
+     "s": "How many coins does Bob have?",
+     "p": "What is the total of coins for Bob?",
+     "a": "0"
+    },
+    {
+     "s": "Cal gives 3 coins to Ann.",
+     "p": "Cal hands over 3 coins to Ann.",
+     "a": null
+    },
+    {
+     "s": "Ann loses 3 coins.",
+     "p": "3 coins go missing from Ann.",
+     "a": null
+    },
+    {
+     "s": "How many coins does Bob have?",
+     "p": "Which number of coins does Bob currently have?",
+     "a": "0"
+    },
+    {
+     "s": "Ann gets 5 coins.",
+     "p": "5 coins are gained by Ann.",
+     "a": null
+    },
+    {
+     "s": "Does Ann have 4 coins?",
+     "p": "Is Ann holding exactly 4 coins?",
+     "a": "no"
+    },
+    {
+     "s": "Ann loses 2 coins.",
+     "p": "2 coins are lost by Ann.",
+     "a": null
+    },
+    {
+     "s": "Bob owns 2 coins.",
+     "p": "Bob possesses 2 coins.",
+     "a": null
+    },
+    {
+     "s": "Cal takes 2 coins from Bob.",
+     "p": "2 coins are snatched by Cal from Bob.",
+     "a": null
+    },
+    {
+     "s": "Cal loses 5 coins.",
+     "p": "5 coins slip away from Cal.",
+     "a": null
+    },
+    {
+     "s": "Ann loses 2 coins.",
+     "p": "Ann sheds 2 coins.",
+     "a": null
+    },
+    {
+     "s": "How many coins does Ann have?",
+     "p": "What number of coins is held by Ann?",
+     "a": "1"
+    },
+    {
+     "s": "Ann gets 1 coin.",
+     "p": "1 coin is added for Ann.",
+     "a": null
+    },
+    {
+     "s": "How many coins does Bob have?",
+     "p": "What amount of coins does Bob end up with?",
+     "a": "0"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 17,
+   "sentences": [
+    {
+     "s": "Bob finds 2 apples.",
+     "p": "2 apples are found by Bob.",
+     "a": null
+    },
+    {
+     "s": "Bob gives 1 apple to Eli.",
+     "p": "Bob passes 1 apple on to Eli.",
+     "a": null
+    },
+    {
+     "s": "Bob loses 1 apple.",
+     "p": "1 apple disappears from Bob.",
+     "a": null
+    },
+    {
+     "s": "Bob finds 5 apples.",
+     "p": "Bob locates 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Bob loses 4 apples.",
+     "p": "4 apples get away from Bob.",
+     "a": null
+    },
+    {
+     "s": "Eli loses 1 apple.",
+     "p": "Eli parts with 1 apple.",
+     "a": null
+    },
+    {
+     "s": "Does Eli have 1 apple?",
+     "p": "Is Eli carrying exactly 1 apple?",
+     "a": "no"
+    },
+    {
+     "s": "Bob loses 1 apple.",
+     "p": "1 apple is taken from Bob.",
+     "a": null
+    },
+    {
+     "s": "Ann owns 6 apples.",
+     "p": "6 apples belong to Ann.",
+     "a": null
+    },
+    {
+     "s": "Ann loses 4 apples.",
+     "p": "Ann gives 4 apples away.",
+     "a": null
+    },
+    {
+     "s": "How many apples does Eli have?",
+     "p": "How many apples does Eli hold?",
+     "a": "0"
+    },
+    {
+     "s": "Ann gives 1 apple to Eli.",
+     "p": "Eli gets 1 apple from Ann.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 18,
+   "sentences": [
+    {
+     "s": "Bob owns 7 pears.",
+     "p": "Bob is holding 7 pears.",
+     "a": null
+    },
+    {
+     "s": "Eli has 8 rocks.",
+     "p": "Eli is holding 8 rocks.",
+     "a": null
+    },
+    {
+     "s": "How many rocks does Dee have?",
+     "p": "What number of rocks does Dee end with?",
+     "a": "0"
+    },
+    {
+     "s": "Bob has 2 rocks.",
+     "p": "2 rocks are with Bob.",
+     "a": null
+    },
+    {
+     "s": "Bob gives 2 rocks to Dee.",
+     "p": "2 rocks go from Bob to Dee.",
+     "a": null
+    },
+    {
+     "s": "Dee has 7 pears.",
+     "p": "Dee possesses 7 pears now.",
+     "a": null
+    },
+    {
+     "s": "How many pears does Dee have?",
+     "p": "What total of pears does Dee end with?",
+     "a": "7"
+    },
+    {
+     "s": "Bob loses 7 pears.",
+     "p": "Bob is short 7 pears.",
+     "a": null
+    },
+    {
+     "s": "Dee loses 2 rocks.",
+     "p": "2 rocks are gone from Dee.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 19,
+   "sentences": [
+    {
+     "s": "Fay owns 6 apples.",
+     "p": "Fay is in possession of 6 apples.",
+     "a": null
+    },
+    {
+     "s": "Eli owns 8 coins.",
+     "p": "The owner of 8 coins is Eli.",
+     "a": null
+    },
+    {
+     "s": "Fay gets 4 apples.",
+     "p": "Fay is credited with 4 apples.",
+     "a": null
+    },
+    {
+     "s": "Does Fay have 0 coins?",
+     "p": "Does Fay currently hold 0 coins?",
+     "a": "yes"
+    },
+    {
+     "s": "Eli loses 3 coins.",
+     "p": "Eli gets rid of 3 coins.",
+     "a": null
+    },
+    {
+     "s": "Eli has 3 apples.",
+     "p": "Eli is in control of 3 apples.",
+     "a": null
+    },
+    {
+     "s": "Fay loses 9 apples.",
+     "p": "9 apples disappear from Fay.",
+     "a": null
+    },
+    {
+     "s": "Eli gives 4 coins to Fay.",
+     "p": "4 coins are transferred from Eli to Fay.",
+     "a": null
+    },
+    {
+     "s": "Eli gives 3 apples to Fay.",
+     "p": "Eli hands 3 apples over to Fay.",
+     "a": null
+    },
+    {
+     "s": "Does Fay have 4 apples?",
+     "p": "Does Fay hold exactly 4 apples?",
+     "a": "yes"
+    }
+   ]
+  }
+ ]
+}

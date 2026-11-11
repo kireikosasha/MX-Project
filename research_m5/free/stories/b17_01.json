@@ -1,0 +1,1125 @@
+{
+ "task": "b17",
+ "stories": [
+  {
+   "part": "train",
+   "id": 20,
+   "sentences": [
+    {
+     "s": "The red sphere is below the pink rectangle.",
+     "p": "Beneath the pink rectangle lies the red sphere.",
+     "a": null
+    },
+    {
+     "s": "The red sphere is to the left of the red square.",
+     "p": "The red sphere lies left of the red square.",
+     "a": null
+    },
+    {
+     "s": "Is the red square to the left of the pink rectangle?",
+     "p": "Does the red square lie left of the pink rectangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the pink rectangle above the red square?",
+     "p": "Is the red square under the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle to the left of the red square?",
+     "p": "Is the pink rectangle on the left side of the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red square below the pink rectangle?",
+     "p": "Does the red square sit beneath the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle to the left of the red square?",
+     "p": "Would you say the pink rectangle lies left of the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red square to the right of the pink rectangle?",
+     "p": "Is the red square placed on the right side of the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle above the red square?",
+     "p": "Is the pink rectangle higher up than the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red square above the pink rectangle?",
+     "p": "Would the red square be found over the pink rectangle?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 21,
+   "sentences": [
+    {
+     "s": "The pink rectangle is to the right of the blue square.",
+     "p": "The blue square lies on the left of the pink rectangle.",
+     "a": null
+    },
+    {
+     "s": "The red sphere is below the pink rectangle.",
+     "p": "The red sphere rests lower than the pink rectangle.",
+     "a": null
+    },
+    {
+     "s": "Is the red sphere below the blue square?",
+     "p": "Does the red sphere sit underneath the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square to the right of the red sphere?",
+     "p": "Would the blue square be right of the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square below the red sphere?",
+     "p": "Is the blue square beneath the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red sphere above the blue square?",
+     "p": "Does the red sphere lie over the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square below the red sphere?",
+     "p": "Would you find the blue square under the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square to the right of the red sphere?",
+     "p": "Is the blue square lying right of the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red sphere to the left of the blue square?",
+     "p": "Does the red sphere stand left of the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square above the red sphere?",
+     "p": "Is the blue square placed above the red sphere?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 22,
+   "sentences": [
+    {
+     "s": "The red sphere is above the pink rectangle.",
+     "p": "The pink rectangle is positioned beneath the red sphere.",
+     "a": null
+    },
+    {
+     "s": "The red sphere is to the right of the blue square.",
+     "p": "The blue square lies to the left of the red sphere.",
+     "a": null
+    },
+    {
+     "s": "Is the pink rectangle to the left of the blue square?",
+     "p": "Does the pink rectangle sit left of the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the pink rectangle below the blue square?",
+     "p": "Is the pink rectangle lower than the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square above the pink rectangle?",
+     "p": "Is the blue square placed over the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square to the left of the pink rectangle?",
+     "p": "Would the blue square be on the left side of the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle to the right of the blue square?",
+     "p": "Is the pink rectangle lying right of the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle below the blue square?",
+     "p": "Does the pink rectangle rest underneath the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square above the pink rectangle?",
+     "p": "Is the blue square sitting higher than the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square above the pink rectangle?",
+     "p": "Would the blue square be found above the pink rectangle?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 23,
+   "sentences": [
+    {
+     "s": "The red square is above the red sphere.",
+     "p": "The red sphere lies beneath the red square.",
+     "a": null
+    },
+    {
+     "s": "The red square is to the left of the yellow square.",
+     "p": "The yellow square sits on the right of the red square.",
+     "a": null
+    },
+    {
+     "s": "Is the red sphere to the left of the yellow square?",
+     "p": "Does the red sphere lie left of the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere below the yellow square?",
+     "p": "Is the red sphere under the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere below the yellow square?",
+     "p": "Is the red sphere lower than the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere above the yellow square?",
+     "p": "Would the red sphere be positioned over the yellow square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red sphere below the yellow square?",
+     "p": "Is the red sphere beneath the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square above the red sphere?",
+     "p": "Does the yellow square sit higher than the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square above the red sphere?",
+     "p": "Is the yellow square placed over the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere to the left of the yellow square?",
+     "p": "Would the red sphere be found on the left of the yellow square?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 24,
+   "sentences": [
+    {
+     "s": "The red sphere is to the right of the blue square.",
+     "p": "Positioned on the right of the blue square is the red sphere.",
+     "a": null
+    },
+    {
+     "s": "The yellow square is to the right of the red sphere.",
+     "p": "The red sphere sits left of the yellow square.",
+     "a": null
+    },
+    {
+     "s": "Is the yellow square to the left of the blue square?",
+     "p": "Does the yellow square lie on the left of the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square to the left of the yellow square?",
+     "p": "Is the blue square on the left side of the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square to the left of the yellow square?",
+     "p": "Would the blue square be left of the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square below the blue square?",
+     "p": "Is the yellow square positioned beneath the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square to the left of the yellow square?",
+     "p": "Does the blue square sit to the left of the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square above the yellow square?",
+     "p": "Is the blue square placed higher than the yellow square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the yellow square to the right of the blue square?",
+     "p": "Is the yellow square right of the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square to the left of the yellow square?",
+     "p": "Is the blue square found left of the yellow square?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 25,
+   "sentences": [
+    {
+     "s": "The yellow square is to the left of the blue square.",
+     "p": "The blue square lies right of the yellow square.",
+     "a": null
+    },
+    {
+     "s": "The yellow square is below the red sphere.",
+     "p": "The red sphere sits higher than the yellow square.",
+     "a": null
+    },
+    {
+     "s": "Is the red sphere to the left of the blue square?",
+     "p": "Would you say the red sphere lies left of the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere to the right of the blue square?",
+     "p": "Is the red sphere placed on the right side of the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red sphere to the right of the blue square?",
+     "p": "Does the red sphere lie right of the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square below the red sphere?",
+     "p": "Does the blue square rest beneath the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere above the blue square?",
+     "p": "Is the red sphere over the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square to the right of the red sphere?",
+     "p": "Is the blue square on the right of the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square above the red sphere?",
+     "p": "Would the blue square be higher than the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square to the right of the red sphere?",
+     "p": "Is the blue square lying to the right of the red sphere?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 26,
+   "sentences": [
+    {
+     "s": "The pink rectangle is to the right of the yellow square.",
+     "p": "The yellow square lies left of the pink rectangle.",
+     "a": null
+    },
+    {
+     "s": "The yellow square is above the blue square.",
+     "p": "Over the blue square sits the yellow square.",
+     "a": null
+    },
+    {
+     "s": "Is the blue square to the left of the pink rectangle?",
+     "p": "Does the blue square lie to the left of the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle above the blue square?",
+     "p": "Is the pink rectangle higher than the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square below the pink rectangle?",
+     "p": "Is the blue square beneath the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle above the blue square?",
+     "p": "Would the pink rectangle be found above the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square below the pink rectangle?",
+     "p": "Is the blue square lower than the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle to the left of the blue square?",
+     "p": "Is the pink rectangle on the left side of the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square below the pink rectangle?",
+     "p": "Does the blue square sit underneath the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square below the pink rectangle?",
+     "p": "Is the blue square placed under the pink rectangle?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 27,
+   "sentences": [
+    {
+     "s": "The triangle is to the left of the pink rectangle.",
+     "p": "The pink rectangle lies right of the triangle.",
+     "a": null
+    },
+    {
+     "s": "The blue square is to the left of the triangle.",
+     "p": "The triangle sits on the right of the blue square.",
+     "a": null
+    },
+    {
+     "s": "Is the pink rectangle to the right of the blue square?",
+     "p": "Does the pink rectangle lie right of the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle to the right of the blue square?",
+     "p": "Is the pink rectangle on the right side of the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle to the right of the blue square?",
+     "p": "Would the pink rectangle be found to the right of the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square to the left of the pink rectangle?",
+     "p": "Is the blue square positioned left of the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle to the left of the blue square?",
+     "p": "Does the pink rectangle sit on the left of the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square to the left of the pink rectangle?",
+     "p": "Is the blue square placed to the left of the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square below the pink rectangle?",
+     "p": "Does the blue square sit lower than the pink rectangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the pink rectangle to the right of the blue square?",
+     "p": "Is the pink rectangle situated right of the blue square?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 28,
+   "sentences": [
+    {
+     "s": "The red square is to the right of the pink rectangle.",
+     "p": "The pink rectangle lies to the left of the red square.",
+     "a": null
+    },
+    {
+     "s": "The triangle is above the pink rectangle.",
+     "p": "The pink rectangle sits beneath the triangle.",
+     "a": null
+    },
+    {
+     "s": "Is the triangle above the red square?",
+     "p": "Is the triangle higher than the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle below the red square?",
+     "p": "Does the triangle sit beneath the red square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the triangle to the right of the red square?",
+     "p": "Is the triangle on the right side of the red square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red square above the triangle?",
+     "p": "Would the red square be placed over the triangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the triangle above the red square?",
+     "p": "Is the triangle situated above the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle above the red square?",
+     "p": "Is the triangle over the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle above the red square?",
+     "p": "Is the triangle positioned above the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red square above the triangle?",
+     "p": "Is the red square higher than the triangle?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 29,
+   "sentences": [
+    {
+     "s": "The red sphere is to the right of the blue square.",
+     "p": "Left of the red sphere sits the blue square.",
+     "a": null
+    },
+    {
+     "s": "The triangle is above the red sphere.",
+     "p": "The red sphere is found beneath the triangle.",
+     "a": null
+    },
+    {
+     "s": "Is the blue square above the triangle?",
+     "p": "Is the blue square over the triangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square to the left of the triangle?",
+     "p": "Does the blue square lie on the left side of the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle to the left of the blue square?",
+     "p": "Would the triangle be left of the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square below the triangle?",
+     "p": "Is the blue square lower than the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square above the triangle?",
+     "p": "Does the blue square sit higher than the triangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square to the right of the triangle?",
+     "p": "Is the blue square placed right of the triangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the triangle above the blue square?",
+     "p": "Is the triangle situated over the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle above the blue square?",
+     "p": "Would the triangle be found above the blue square?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 30,
+   "sentences": [
+    {
+     "s": "The red square is above the pink rectangle.",
+     "p": "The pink rectangle lies beneath the red square.",
+     "a": null
+    },
+    {
+     "s": "The pink rectangle is to the right of the yellow square.",
+     "p": "The yellow square sits on the left of the pink rectangle.",
+     "a": null
+    },
+    {
+     "s": "Is the yellow square to the left of the red square?",
+     "p": "Would you say the yellow square is left of the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red square below the yellow square?",
+     "p": "Is the red square underneath the yellow square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red square to the right of the yellow square?",
+     "p": "Is the red square positioned right of the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square to the left of the red square?",
+     "p": "Is the yellow square on the left side of the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square to the left of the red square?",
+     "p": "Does the yellow square sit left of the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square below the red square?",
+     "p": "Is the yellow square lower than the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red square to the right of the yellow square?",
+     "p": "Is the red square lying right of the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square below the red square?",
+     "p": "Is the yellow square beneath the red square?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 31,
+   "sentences": [
+    {
+     "s": "The red square is below the red sphere.",
+     "p": "The red sphere sits higher than the red square.",
+     "a": null
+    },
+    {
+     "s": "The red square is to the left of the blue square.",
+     "p": "The blue square lies right of the red square.",
+     "a": null
+    },
+    {
+     "s": "Is the red sphere to the right of the blue square?",
+     "p": "Does the red sphere lie on the right of the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red sphere to the left of the blue square?",
+     "p": "Is the red sphere placed left of the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere below the blue square?",
+     "p": "Is the red sphere beneath the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square to the left of the red sphere?",
+     "p": "Would the blue square be on the left of the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square to the left of the red sphere?",
+     "p": "Does the blue square lie left of the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square below the red sphere?",
+     "p": "Does the blue square sit under the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square below the red sphere?",
+     "p": "Is the blue square lower than the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere to the left of the blue square?",
+     "p": "Is the red sphere situated left of the blue square?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 32,
+   "sentences": [
+    {
+     "s": "The blue square is to the left of the pink rectangle.",
+     "p": "The pink rectangle lies right of the blue square.",
+     "a": null
+    },
+    {
+     "s": "The blue square is to the right of the red square.",
+     "p": "The red square sits left of the blue square.",
+     "a": null
+    },
+    {
+     "s": "Is the red square to the left of the pink rectangle?",
+     "p": "Is the red square found on the left of the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red square below the pink rectangle?",
+     "p": "Does the red square sit beneath the pink rectangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red square below the pink rectangle?",
+     "p": "Is the red square lower than the pink rectangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red square below the pink rectangle?",
+     "p": "Is the red square underneath the pink rectangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red square to the left of the pink rectangle?",
+     "p": "Is the red square located on the left of the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle to the right of the red square?",
+     "p": "Does the pink rectangle sit right of the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle below the red square?",
+     "p": "Is the pink rectangle beneath the red square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the pink rectangle to the left of the red square?",
+     "p": "Would the pink rectangle be left of the red square?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 33,
+   "sentences": [
+    {
+     "s": "The red sphere is below the triangle.",
+     "p": "The triangle sits above the red sphere.",
+     "a": null
+    },
+    {
+     "s": "The red sphere is above the blue square.",
+     "p": "The blue square lies beneath the red sphere.",
+     "a": null
+    },
+    {
+     "s": "Is the blue square below the triangle?",
+     "p": "Is the blue square under the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square below the triangle?",
+     "p": "Does the blue square rest beneath the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle above the blue square?",
+     "p": "Is the triangle positioned higher than the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square to the right of the triangle?",
+     "p": "Is the blue square on the right of the triangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square to the right of the triangle?",
+     "p": "Would the blue square be right of the triangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square below the triangle?",
+     "p": "Does the blue square lie lower than the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square to the left of the triangle?",
+     "p": "Is the blue square left of the triangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square below the triangle?",
+     "p": "Is the blue square placed under the triangle?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 34,
+   "sentences": [
+    {
+     "s": "The red square is above the yellow square.",
+     "p": "The yellow square sits beneath the red square.",
+     "a": null
+    },
+    {
+     "s": "The red square is below the blue square.",
+     "p": "The blue square lies higher than the red square.",
+     "a": null
+    },
+    {
+     "s": "Is the yellow square below the blue square?",
+     "p": "Is the yellow square beneath the blue square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square above the yellow square?",
+     "p": "Does the blue square sit over the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square above the yellow square?",
+     "p": "Would the blue square be above the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square to the right of the blue square?",
+     "p": "Is the yellow square right of the blue square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the blue square above the yellow square?",
+     "p": "Is the blue square higher than the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square above the yellow square?",
+     "p": "Does the blue square lie above the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the blue square to the right of the yellow square?",
+     "p": "Is the blue square lying right of the yellow square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the yellow square below the blue square?",
+     "p": "Is the yellow square lower than the blue square?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 35,
+   "sentences": [
+    {
+     "s": "The yellow square is above the triangle.",
+     "p": "The triangle lies beneath the yellow square.",
+     "a": null
+    },
+    {
+     "s": "The yellow square is to the left of the pink rectangle.",
+     "p": "The pink rectangle sits right of the yellow square.",
+     "a": null
+    },
+    {
+     "s": "Is the triangle above the pink rectangle?",
+     "p": "Is the triangle over the pink rectangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the triangle below the pink rectangle?",
+     "p": "Is the triangle lower than the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle to the right of the triangle?",
+     "p": "Is the pink rectangle situated on the right of the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle above the pink rectangle?",
+     "p": "Would the triangle be higher than the pink rectangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the pink rectangle to the left of the triangle?",
+     "p": "Does the pink rectangle lie on the left of the triangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the triangle to the right of the pink rectangle?",
+     "p": "Is the triangle right of the pink rectangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the triangle to the left of the pink rectangle?",
+     "p": "Is the triangle placed on the left of the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle to the left of the pink rectangle?",
+     "p": "Would the triangle be found left of the pink rectangle?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 36,
+   "sentences": [
+    {
+     "s": "The pink rectangle is below the yellow square.",
+     "p": "The yellow square lies above the pink rectangle.",
+     "a": null
+    },
+    {
+     "s": "The triangle is to the right of the yellow square.",
+     "p": "The yellow square is left of the triangle.",
+     "a": null
+    },
+    {
+     "s": "Is the pink rectangle below the triangle?",
+     "p": "Is the pink rectangle beneath the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle above the pink rectangle?",
+     "p": "Does the triangle sit over the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle to the right of the pink rectangle?",
+     "p": "Is the triangle positioned on the right of the pink rectangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the pink rectangle above the triangle?",
+     "p": "Would the pink rectangle be higher than the triangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the triangle to the left of the pink rectangle?",
+     "p": "Does the triangle lie left of the pink rectangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the pink rectangle above the triangle?",
+     "p": "Is the pink rectangle over the triangle?",
+     "a": "no"
+    },
+    {
+     "s": "Is the pink rectangle below the triangle?",
+     "p": "Is the pink rectangle lower than the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle above the pink rectangle?",
+     "p": "Is the triangle situated higher than the pink rectangle?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 37,
+   "sentences": [
+    {
+     "s": "The triangle is to the left of the red sphere.",
+     "p": "The red sphere lies right of the triangle.",
+     "a": null
+    },
+    {
+     "s": "The yellow square is to the left of the triangle.",
+     "p": "Left of the triangle is the yellow square.",
+     "a": null
+    },
+    {
+     "s": "Is the red sphere to the right of the yellow square?",
+     "p": "Does the red sphere lie right of the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square above the red sphere?",
+     "p": "Is the yellow square over the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the yellow square below the red sphere?",
+     "p": "Would the yellow square be under the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the yellow square to the left of the red sphere?",
+     "p": "Is the yellow square placed on the left of the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square to the left of the red sphere?",
+     "p": "Is the yellow square left of the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere to the right of the yellow square?",
+     "p": "Would the red sphere be on the right of the yellow square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the yellow square to the left of the red sphere?",
+     "p": "Is the yellow square located left of the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere above the yellow square?",
+     "p": "Is the red sphere higher than the yellow square?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 38,
+   "sentences": [
+    {
+     "s": "The red square is below the blue square.",
+     "p": "Beneath the blue square sits the red square.",
+     "a": null
+    },
+    {
+     "s": "The blue square is to the right of the red sphere.",
+     "p": "The red sphere lies on the left of the blue square.",
+     "a": null
+    },
+    {
+     "s": "Is the red sphere above the red square?",
+     "p": "Is the red sphere over the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red square above the red sphere?",
+     "p": "Does the red square sit higher than the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red sphere above the red square?",
+     "p": "Would the red sphere be placed above the red square?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere to the right of the red square?",
+     "p": "Is the red sphere on the right side of the red square?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red square above the red sphere?",
+     "p": "Is the red square positioned over the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red square above the red sphere?",
+     "p": "Does the red square lie above the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red square to the right of the red sphere?",
+     "p": "Is the red square right of the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere below the red square?",
+     "p": "Is the red sphere underneath the red square?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 39,
+   "sentences": [
+    {
+     "s": "The blue square is to the right of the triangle.",
+     "p": "The triangle lies left of the blue square.",
+     "a": null
+    },
+    {
+     "s": "The blue square is above the red sphere.",
+     "p": "The red sphere is found lower than the blue square.",
+     "a": null
+    },
+    {
+     "s": "Is the red sphere below the triangle?",
+     "p": "Is the red sphere under the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle to the right of the red sphere?",
+     "p": "Does the triangle lie on the right of the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the triangle to the right of the red sphere?",
+     "p": "Would the triangle be right of the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red sphere to the right of the triangle?",
+     "p": "Is the red sphere on the right side of the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle to the left of the red sphere?",
+     "p": "Is the triangle situated left of the red sphere?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the triangle below the red sphere?",
+     "p": "Is the triangle beneath the red sphere?",
+     "a": "no"
+    },
+    {
+     "s": "Is the red sphere below the triangle?",
+     "p": "Does the red sphere sit lower than the triangle?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the red sphere to the right of the triangle?",
+     "p": "Is the red sphere placed right of the triangle?",
+     "a": "yes"
+    }
+   ]
+  }
+ ]
+}

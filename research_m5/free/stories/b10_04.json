@@ -1,0 +1,1625 @@
+{
+ "task": "b10",
+ "stories": [
+  {
+   "part": "test",
+   "id": 40,
+   "sentences": [
+    {
+     "s": "Bill is in the school.",
+     "p": "The school is where Bill can be found.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the kitchen.",
+     "p": "Mary made the trip to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the cinema?",
+     "p": "Could Mary be sitting in the cinema?",
+     "a": "no"
+    },
+    {
+     "s": "Fred is in the park.",
+     "p": "Right now Fred is in the park.",
+     "a": null
+    },
+    {
+     "s": "Fred is in the school.",
+     "p": "Fred is inside the school.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the office?",
+     "p": "Is the office somewhere Mary is at present?",
+     "a": "no"
+    },
+    {
+     "s": "Bill is in the cinema.",
+     "p": "Bill is at the cinema at this point.",
+     "a": null
+    },
+    {
+     "s": "Bill is in the office.",
+     "p": "Bill is positioned in the office.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the cinema?",
+     "p": "Does Fred happen to be in the cinema?",
+     "a": "no"
+    },
+    {
+     "s": "Fred moved to the kitchen.",
+     "p": "Fred relocated to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Julie is in the bedroom.",
+     "p": "Julie is currently in the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the office?",
+     "p": "Is the office the place where Bill is right now?",
+     "a": "yes"
+    },
+    {
+     "s": "Fred is in the bedroom.",
+     "p": "Presently Fred is in the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Julie travelled to the kitchen.",
+     "p": "Julie went on a trip to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the bedroom?",
+     "p": "Is the bedroom the spot where Fred is?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 41,
+   "sentences": [
+    {
+     "s": "Mary is either in the bedroom or the park.",
+     "p": "Either the bedroom or the park is where Mary is.",
+     "a": null
+    },
+    {
+     "s": "Bill went to the park.",
+     "p": "Bill ended up at the park.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the bedroom?",
+     "p": "Could Bill be in the bedroom at all?",
+     "a": "no"
+    },
+    {
+     "s": "Mary went to the office.",
+     "p": "Mary headed off to the office.",
+     "a": null
+    },
+    {
+     "s": "Fred journeyed to the office.",
+     "p": "Fred took the road to the office.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the park?",
+     "p": "Would the park be where Fred is?",
+     "a": "no"
+    },
+    {
+     "s": "Mary is in the bedroom.",
+     "p": "The bedroom holds Mary at present.",
+     "a": null
+    },
+    {
+     "s": "Mary is in the school.",
+     "p": "Mary can be seen at the school.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the school?",
+     "p": "Is Mary currently within the school?",
+     "a": "yes"
+    },
+    {
+     "s": "Fred moved to the kitchen.",
+     "p": "Fred shifted over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Fred journeyed to the cinema.",
+     "p": "Fred made a trip to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bedroom?",
+     "p": "Could Mary be found in the bedroom?",
+     "a": "no"
+    },
+    {
+     "s": "Bill went to the kitchen.",
+     "p": "Bill headed into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Bill is either in the school or the park.",
+     "p": "Only one of the school and the park holds Bill.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the school?",
+     "p": "Is Fred inside the school at the moment?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 42,
+   "sentences": [
+    {
+     "s": "Julie went to the office.",
+     "p": "Julie paid a visit to the office.",
+     "a": null
+    },
+    {
+     "s": "Bill is in the park.",
+     "p": "Bill is currently located in the park.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the cinema?",
+     "p": "Would Bill be sitting in the cinema?",
+     "a": "no"
+    },
+    {
+     "s": "Julie journeyed to the park.",
+     "p": "The park was reached by Julie.",
+     "a": null
+    },
+    {
+     "s": "Bill journeyed to the cinema.",
+     "p": "Bill went out to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the bedroom?",
+     "p": "Is Julie in the bedroom at this point?",
+     "a": "no"
+    },
+    {
+     "s": "Mary moved to the kitchen.",
+     "p": "Mary went over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary is in the office.",
+     "p": "Mary has landed in the office.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the office?",
+     "p": "Is Mary found in the office right now?",
+     "a": "yes"
+    },
+    {
+     "s": "Fred is in the cinema.",
+     "p": "Fred is at the cinema.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the park.",
+     "p": "Mary took a trip to the park.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the cinema?",
+     "p": "Has Bill been confirmed in the cinema?",
+     "a": "yes"
+    },
+    {
+     "s": "Julie moved to the office.",
+     "p": "Julie transferred to the office.",
+     "a": null
+    },
+    {
+     "s": "Julie went to the bedroom.",
+     "p": "Julie ended up in the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the office?",
+     "p": "Could the office be where Julie is?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 43,
+   "sentences": [
+    {
+     "s": "Mary is either in the park or the bedroom.",
+     "p": "Mary is at the park or the bedroom and not at both.",
+     "a": null
+    },
+    {
+     "s": "Fred travelled to the school.",
+     "p": "A trip to the school was made by Fred.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the office?",
+     "p": "Has Mary turned up in the office?",
+     "a": "no"
+    },
+    {
+     "s": "Mary is in the bedroom.",
+     "p": "Mary happens to be in the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Julie is in the bedroom.",
+     "p": "Julie is inside the bedroom at the moment.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bedroom?",
+     "p": "Is the bedroom where Mary is located?",
+     "a": "yes"
+    },
+    {
+     "s": "Bill went to the cinema.",
+     "p": "Bill set off for the cinema.",
+     "a": null
+    },
+    {
+     "s": "Bill is either in the school or the office.",
+     "p": "Bill is in one of the school and the office and not both.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the kitchen?",
+     "p": "Would Mary be found in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Bill travelled to the cinema.",
+     "p": "Bill made the journey to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Fred is either in the cinema or the kitchen.",
+     "p": "Fred is in the cinema or the kitchen and exactly one of those.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the kitchen?",
+     "p": "Is there a chance Fred is in the kitchen?",
+     "a": "maybe"
+    },
+    {
+     "s": "Julie is either in the cinema or the office.",
+     "p": "Julie is in the cinema or the office and just one.",
+     "a": null
+    },
+    {
+     "s": "Fred travelled to the park.",
+     "p": "Fred took a trip out to the park.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the cinema?",
+     "p": "Has Bill ended up in the cinema?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 44,
+   "sentences": [
+    {
+     "s": "Mary went to the park.",
+     "p": "Mary headed for the park.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the kitchen.",
+     "p": "Then Mary reached the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the cinema?",
+     "p": "Has Mary wandered into the cinema?",
+     "a": "no"
+    },
+    {
+     "s": "Bill is in the cinema.",
+     "p": "The cinema is holding Bill right now.",
+     "a": null
+    },
+    {
+     "s": "Bill went back to the office.",
+     "p": "Bill returned to the office.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the kitchen?",
+     "p": "Would Bill be in the kitchen by any chance?",
+     "a": "no"
+    },
+    {
+     "s": "Mary journeyed to the park.",
+     "p": "Mary moved along toward the park.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the cinema.",
+     "p": "The cinema was where Mary traveled to.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the office?",
+     "p": "Is Bill now located in the office?",
+     "a": "yes"
+    },
+    {
+     "s": "Julie is either in the office or the bedroom.",
+     "p": "Julie is in the office or the bedroom and only one.",
+     "a": null
+    },
+    {
+     "s": "Mary is in the park.",
+     "p": "Mary is over at the park.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the bedroom?",
+     "p": "Does the bedroom perhaps hold Julie?",
+     "a": "maybe"
+    },
+    {
+     "s": "Julie is in the cinema.",
+     "p": "Julie is in the cinema now.",
+     "a": null
+    },
+    {
+     "s": "Julie is either in the kitchen or the school.",
+     "p": "Either the kitchen or the school contains Julie and not both.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the office?",
+     "p": "Would the office be where Julie is found?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 45,
+   "sentences": [
+    {
+     "s": "Mary journeyed to the office.",
+     "p": "Mary went off to the office.",
+     "a": null
+    },
+    {
+     "s": "Bill is either in the school or the kitchen.",
+     "p": "Bill is found in the school or the kitchen and only one.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the school?",
+     "p": "Might Bill be in the school?",
+     "a": "maybe"
+    },
+    {
+     "s": "Mary journeyed to the cinema.",
+     "p": "Mary moved over to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Julie is in the cinema.",
+     "p": "Julie is situated in the cinema.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the cinema?",
+     "p": "Has Mary arrived at the cinema?",
+     "a": "yes"
+    },
+    {
+     "s": "Bill travelled to the cinema.",
+     "p": "The next stop Bill reached was the cinema.",
+     "a": null
+    },
+    {
+     "s": "Bill is either in the kitchen or the school.",
+     "p": "Bill spends time in either the kitchen or the school.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the cinema?",
+     "p": "Has Bill been found in the cinema?",
+     "a": "no"
+    },
+    {
+     "s": "Bill is in the cinema.",
+     "p": "Bill is in the cinema at present.",
+     "a": null
+    },
+    {
+     "s": "Bill is either in the school or the park.",
+     "p": "Bill is in the school or else the park.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the office?",
+     "p": "Is the office a place Bill is found?",
+     "a": "no"
+    },
+    {
+     "s": "Mary is in the bedroom.",
+     "p": "Mary is in the bedroom currently.",
+     "a": null
+    },
+    {
+     "s": "Mary is either in the office or the bedroom.",
+     "p": "Mary is in the office or the bedroom but only one.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the park?",
+     "p": "Does the park possibly hold Bill?",
+     "a": "maybe"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 46,
+   "sentences": [
+    {
+     "s": "Julie journeyed to the park.",
+     "p": "Julie headed out to the park.",
+     "a": null
+    },
+    {
+     "s": "Julie moved to the kitchen.",
+     "p": "Later Julie moved into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the kitchen?",
+     "p": "Is Julie at this moment inside the kitchen?",
+     "a": "yes"
+    },
+    {
+     "s": "Fred moved to the kitchen.",
+     "p": "Fred went into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Fred is either in the bedroom or the office.",
+     "p": "Fred sits in the bedroom or the office and never both.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the park?",
+     "p": "Could Fred currently be in the park?",
+     "a": "no"
+    },
+    {
+     "s": "Bill went back to the kitchen.",
+     "p": "Bill came back into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary is in the kitchen.",
+     "p": "Mary can be found in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bedroom?",
+     "p": "Is the bedroom where Mary is at present?",
+     "a": "no"
+    },
+    {
+     "s": "Fred journeyed to the park.",
+     "p": "Fred took a jaunt to the park.",
+     "a": null
+    },
+    {
+     "s": "Julie journeyed to the bedroom.",
+     "p": "Julie wandered over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the school?",
+     "p": "Does the school hold Fred at the moment?",
+     "a": "no"
+    },
+    {
+     "s": "Julie is in the cinema.",
+     "p": "Julie is over in the cinema.",
+     "a": null
+    },
+    {
+     "s": "Julie travelled to the office.",
+     "p": "Julie went along to the office.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the kitchen?",
+     "p": "Is the kitchen where Fred is currently found?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 47,
+   "sentences": [
+    {
+     "s": "Mary went to the office.",
+     "p": "Mary wandered to the office.",
+     "a": null
+    },
+    {
+     "s": "Fred went back to the kitchen.",
+     "p": "Fred made a return trip to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the bedroom?",
+     "p": "Would Fred be in the bedroom just now?",
+     "a": "no"
+    },
+    {
+     "s": "Bill travelled to the bedroom.",
+     "p": "Bill took the journey to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Fred journeyed to the school.",
+     "p": "Fred reached the school.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the cinema?",
+     "p": "Could the cinema hold Fred at present?",
+     "a": "no"
+    },
+    {
+     "s": "Mary is in the park.",
+     "p": "Right now Mary is at the park.",
+     "a": null
+    },
+    {
+     "s": "Fred travelled to the cinema.",
+     "p": "Fred got around to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the office?",
+     "p": "Is Bill to be found in the office?",
+     "a": "no"
+    },
+    {
+     "s": "Mary is in the cinema.",
+     "p": "Mary is at the cinema these days.",
+     "a": null
+    },
+    {
+     "s": "Mary is either in the office or the park.",
+     "p": "Mary is in the office or the park and only one.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the cinema?",
+     "p": "Is Fred inside the cinema right now?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary moved to the office.",
+     "p": "Mary went across to the office.",
+     "a": null
+    },
+    {
+     "s": "Bill is either in the school or the school.",
+     "p": "Bill is in the school regardless.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the office?",
+     "p": "Is the office the place Mary is now?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 48,
+   "sentences": [
+    {
+     "s": "Julie travelled to the kitchen.",
+     "p": "Julie traveled over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Julie is in the office.",
+     "p": "Julie has been spotted in the office.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the office?",
+     "p": "Is Julie presently in the office?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary journeyed to the office.",
+     "p": "Mary arrived at the office.",
+     "a": null
+    },
+    {
+     "s": "Fred is either in the park or the park.",
+     "p": "Fred is in the park whatever the reading turns out.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the office?",
+     "p": "Is Mary in the office at the moment?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary is in the bedroom.",
+     "p": "Mary is in the bedroom today.",
+     "a": null
+    },
+    {
+     "s": "Fred went to the bedroom.",
+     "p": "The bedroom got a visit from Fred.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bedroom?",
+     "p": "Is the bedroom the place Mary is found?",
+     "a": "yes"
+    },
+    {
+     "s": "Bill went to the kitchen.",
+     "p": "Bill walked into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Bill travelled to the cinema.",
+     "p": "Bill took a trip to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the cinema?",
+     "p": "Does the cinema hold Bill?",
+     "a": "yes"
+    },
+    {
+     "s": "Julie is either in the cinema or the park.",
+     "p": "Julie is in the cinema or the park and only one.",
+     "a": null
+    },
+    {
+     "s": "Fred is in the kitchen.",
+     "p": "Fred is in the kitchen just now.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the cinema?",
+     "p": "Is Bill confirmed to be in the cinema?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 49,
+   "sentences": [
+    {
+     "s": "Julie is either in the school or the bedroom.",
+     "p": "Julie is in the school or in the bedroom and not both.",
+     "a": null
+    },
+    {
+     "s": "Bill journeyed to the cinema.",
+     "p": "Bill headed to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the office?",
+     "p": "Could Julie be at the office?",
+     "a": "no"
+    },
+    {
+     "s": "Bill went to the kitchen.",
+     "p": "Bill stepped into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Fred journeyed to the school.",
+     "p": "Fred traveled out to the school.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the bedroom?",
+     "p": "Is there any chance Julie is in the bedroom?",
+     "a": "maybe"
+    },
+    {
+     "s": "Fred is in the bedroom.",
+     "p": "Fred is found in the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Bill journeyed to the bedroom.",
+     "p": "Bill went up to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the bedroom?",
+     "p": "Is Bill now in the bedroom?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary is either in the park or the park.",
+     "p": "Mary is in the park no matter what.",
+     "a": null
+    },
+    {
+     "s": "Fred is in the cinema.",
+     "p": "Fred is at the cinema at the present time.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the office?",
+     "p": "Would Mary be found at the office?",
+     "a": "no"
+    },
+    {
+     "s": "Fred went back to the park.",
+     "p": "Fred went back over to the park.",
+     "a": null
+    },
+    {
+     "s": "Bill is in the school.",
+     "p": "Bill is in the school right now.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the school?",
+     "p": "Is Bill found in the school?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 50,
+   "sentences": [
+    {
+     "s": "Fred is either in the kitchen or the school.",
+     "p": "Fred is either at the kitchen or at the school.",
+     "a": null
+    },
+    {
+     "s": "Julie is either in the school or the office.",
+     "p": "Julie is at the office or at the school and not both.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the cinema?",
+     "p": "Is Fred in the cinema by any chance?",
+     "a": "no"
+    },
+    {
+     "s": "Julie is in the park.",
+     "p": "Julie is at the park.",
+     "a": null
+    },
+    {
+     "s": "Mary is in the kitchen.",
+     "p": "Mary is spending time in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the kitchen?",
+     "p": "Would Julie be in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Fred journeyed to the park.",
+     "p": "Fred set out to the park.",
+     "a": null
+    },
+    {
+     "s": "Bill went to the school.",
+     "p": "Bill walked to the school.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the park?",
+     "p": "Is Fred at the park just now?",
+     "a": "yes"
+    },
+    {
+     "s": "Julie is in the cinema.",
+     "p": "Julie is at the cinema now.",
+     "a": null
+    },
+    {
+     "s": "Fred went back to the bedroom.",
+     "p": "Fred headed back up to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the kitchen?",
+     "p": "Is the statement that Mary is in the kitchen true?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary travelled to the office.",
+     "p": "The office was the destination Mary reached.",
+     "a": null
+    },
+    {
+     "s": "Fred is either in the park or the office.",
+     "p": "Fred is in the park or the office and just one.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the school?",
+     "p": "Is Mary at the school at all?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 51,
+   "sentences": [
+    {
+     "s": "Bill is either in the office or the kitchen.",
+     "p": "Bill is in the office or the kitchen and not both.",
+     "a": null
+    },
+    {
+     "s": "Julie went to the school.",
+     "p": "Julie arrived at the school.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the office?",
+     "p": "Might Bill be in the office?",
+     "a": "maybe"
+    },
+    {
+     "s": "Julie travelled to the office.",
+     "p": "Julie went out to the office.",
+     "a": null
+    },
+    {
+     "s": "Julie went to the kitchen.",
+     "p": "Julie reached the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the bedroom?",
+     "p": "Would Bill happen to be in the bedroom?",
+     "a": "no"
+    },
+    {
+     "s": "Bill is in the school.",
+     "p": "Bill is at the school.",
+     "a": null
+    },
+    {
+     "s": "Bill went back to the bedroom.",
+     "p": "Bill retreated to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the bedroom?",
+     "p": "Is the bedroom where Bill is found?",
+     "a": "yes"
+    },
+    {
+     "s": "Julie went to the school.",
+     "p": "Julie got over to the school.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the kitchen.",
+     "p": "Mary journeyed on to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the bedroom?",
+     "p": "Is Bill currently in the bedroom?",
+     "a": "yes"
+    },
+    {
+     "s": "Bill is in the school.",
+     "p": "The school contains Bill.",
+     "a": null
+    },
+    {
+     "s": "Bill went to the kitchen.",
+     "p": "Bill wandered into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the park?",
+     "p": "Could the park be where Bill is?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 52,
+   "sentences": [
+    {
+     "s": "Mary went back to the park.",
+     "p": "Mary headed back to the park.",
+     "a": null
+    },
+    {
+     "s": "Fred is either in the bedroom or the kitchen.",
+     "p": "Fred is in exactly one of the bedroom and the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the cinema?",
+     "p": "Could Fred be at the cinema?",
+     "a": "no"
+    },
+    {
+     "s": "Julie travelled to the office.",
+     "p": "Julie journeyed toward the office.",
+     "a": null
+    },
+    {
+     "s": "Bill travelled to the cinema.",
+     "p": "The trip Bill made ended at the cinema.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the kitchen?",
+     "p": "Would the kitchen be where Bill is?",
+     "a": "no"
+    },
+    {
+     "s": "Bill is in the bedroom.",
+     "p": "Bill is in the bedroom now.",
+     "a": null
+    },
+    {
+     "s": "Fred is either in the park or the office.",
+     "p": "Fred is in the park or in the office and only one.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the school?",
+     "p": "Is the school the place Julie is?",
+     "a": "no"
+    },
+    {
+     "s": "Bill travelled to the cinema.",
+     "p": "Bill traveled out to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Bill went back to the school.",
+     "p": "The school was revisited by Bill.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the kitchen?",
+     "p": "Does the kitchen contain Bill at the moment?",
+     "a": "no"
+    },
+    {
+     "s": "Bill travelled to the kitchen.",
+     "p": "A trip to the kitchen was taken by Bill.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the bedroom.",
+     "p": "Mary shifted into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the kitchen?",
+     "p": "Is Bill found in the kitchen at last?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 53,
+   "sentences": [
+    {
+     "s": "Bill is either in the office or the bedroom.",
+     "p": "The office or the bedroom is where Bill stands and not both.",
+     "a": null
+    },
+    {
+     "s": "Bill is either in the office or the bedroom.",
+     "p": "Bill is either at the office or at the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the school?",
+     "p": "Could Bill be found at the school?",
+     "a": "no"
+    },
+    {
+     "s": "Julie journeyed to the cinema.",
+     "p": "Julie headed for the cinema.",
+     "a": null
+    },
+    {
+     "s": "Bill is either in the bedroom or the kitchen.",
+     "p": "Of the bedroom and the kitchen Bill is in one.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the bedroom?",
+     "p": "Is there a chance that Bill is in the bedroom?",
+     "a": "maybe"
+    },
+    {
+     "s": "Mary travelled to the bedroom.",
+     "p": "Mary took a trip up to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the kitchen.",
+     "p": "Mary went over into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the bedroom?",
+     "p": "Does Bill possibly sit in the bedroom?",
+     "a": "maybe"
+    },
+    {
+     "s": "Bill is in the office.",
+     "p": "Bill has been placed in the office.",
+     "a": null
+    },
+    {
+     "s": "Fred journeyed to the park.",
+     "p": "Fred wandered out to the park.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the park?",
+     "p": "Is Fred at the park at the moment?",
+     "a": "yes"
+    },
+    {
+     "s": "Fred went to the bedroom.",
+     "p": "The bedroom was visited by Fred.",
+     "a": null
+    },
+    {
+     "s": "Bill journeyed to the bedroom.",
+     "p": "Bill went on over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the school?",
+     "p": "Is the school a place where Fred can be found?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 54,
+   "sentences": [
+    {
+     "s": "Bill is either in the bedroom or the cinema.",
+     "p": "Bill is in the bedroom or the cinema and exactly one.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the park.",
+     "p": "Mary traveled to the park.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the park?",
+     "p": "Is the park where Mary is?",
+     "a": "yes"
+    },
+    {
+     "s": "Fred moved to the park.",
+     "p": "Fred moved across to the park.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the office.",
+     "p": "Mary took a trip over to the office.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the kitchen?",
+     "p": "Would Bill be found in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Bill is either in the cinema or the school.",
+     "p": "Bill sits in the cinema or the school with no third option.",
+     "a": null
+    },
+    {
+     "s": "Fred went to the office.",
+     "p": "Fred reached the office.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the school?",
+     "p": "Might the school hold Bill?",
+     "a": "maybe"
+    },
+    {
+     "s": "Bill is either in the kitchen or the kitchen.",
+     "p": "Bill is in the kitchen however the count goes.",
+     "a": null
+    },
+    {
+     "s": "Mary is in the kitchen.",
+     "p": "Mary is inside the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the school?",
+     "p": "Has Bill been placed in the school?",
+     "a": "no"
+    },
+    {
+     "s": "Mary is either in the park or the cinema.",
+     "p": "Mary is in the park or in the cinema and not both.",
+     "a": null
+    },
+    {
+     "s": "Fred is in the school.",
+     "p": "Fred is found in the school.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the kitchen?",
+     "p": "Could Mary be inside the kitchen?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 55,
+   "sentences": [
+    {
+     "s": "Fred is in the kitchen.",
+     "p": "Fred is in the kitchen this minute.",
+     "a": null
+    },
+    {
+     "s": "Julie moved to the school.",
+     "p": "Julie moved to the school at some point.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the school?",
+     "p": "Could Fred be at the school?",
+     "a": "no"
+    },
+    {
+     "s": "Bill moved to the park.",
+     "p": "Bill went across to the park.",
+     "a": null
+    },
+    {
+     "s": "Julie went back to the cinema.",
+     "p": "Julie got back to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the cinema?",
+     "p": "Is Julie currently in the cinema?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary is in the office.",
+     "p": "Mary is present in the office.",
+     "a": null
+    },
+    {
+     "s": "Fred journeyed to the school.",
+     "p": "Fred headed to the school.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the office?",
+     "p": "Would Julie be in the office?",
+     "a": "no"
+    },
+    {
+     "s": "Mary went back to the cinema.",
+     "p": "Mary returned to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Fred went to the cinema.",
+     "p": "Fred went off to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the cinema?",
+     "p": "Is Fred at the cinema at this very moment?",
+     "a": "yes"
+    },
+    {
+     "s": "Bill moved to the office.",
+     "p": "Bill moved on to the office.",
+     "a": null
+    },
+    {
+     "s": "Bill journeyed to the kitchen.",
+     "p": "Bill got to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the kitchen?",
+     "p": "Is the kitchen where Fred is found?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 56,
+   "sentences": [
+    {
+     "s": "Fred is either in the school or the school.",
+     "p": "Fred is in the school one way or another.",
+     "a": null
+    },
+    {
+     "s": "Bill journeyed to the kitchen.",
+     "p": "Bill walked over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the kitchen?",
+     "p": "Is Bill in the kitchen by now?",
+     "a": "yes"
+    },
+    {
+     "s": "Julie travelled to the park.",
+     "p": "Julie went out to the park.",
+     "a": null
+    },
+    {
+     "s": "Fred travelled to the park.",
+     "p": "Fred went as far as the park.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the cinema?",
+     "p": "Could Bill be at the cinema right now?",
+     "a": "no"
+    },
+    {
+     "s": "Bill is either in the bedroom or the cinema.",
+     "p": "Bill is in one of the bedroom and the cinema.",
+     "a": null
+    },
+    {
+     "s": "Julie moved to the bedroom.",
+     "p": "Julie shifted into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the cinema?",
+     "p": "Is there any possibility Bill is in the cinema?",
+     "a": "maybe"
+    },
+    {
+     "s": "Mary went to the school.",
+     "p": "Mary visited the school.",
+     "a": null
+    },
+    {
+     "s": "Mary is either in the park or the cinema.",
+     "p": "Mary is in the park or the cinema and only one.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the cinema?",
+     "p": "Might Mary be in the cinema?",
+     "a": "maybe"
+    },
+    {
+     "s": "Bill went to the bedroom.",
+     "p": "Bill headed to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary is in the office.",
+     "p": "Mary is within the office.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the office?",
+     "p": "Is Mary at the office at this point?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 57,
+   "sentences": [
+    {
+     "s": "Fred is in the school.",
+     "p": "Fred has been spotted in the school.",
+     "a": null
+    },
+    {
+     "s": "Bill went back to the kitchen.",
+     "p": "Bill backtracked to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the kitchen?",
+     "p": "Is the kitchen the room Bill is in?",
+     "a": "yes"
+    },
+    {
+     "s": "Bill is either in the cinema or the bedroom.",
+     "p": "Bill is in the cinema or the bedroom and just one.",
+     "a": null
+    },
+    {
+     "s": "Bill is in the school.",
+     "p": "Bill is in the school as of now.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the school?",
+     "p": "Is Bill indeed in the school?",
+     "a": "yes"
+    },
+    {
+     "s": "Julie travelled to the school.",
+     "p": "Julie journeyed across to the school.",
+     "a": null
+    },
+    {
+     "s": "Fred went to the bedroom.",
+     "p": "Fred walked to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the school?",
+     "p": "Is Bill at the school at this time?",
+     "a": "yes"
+    },
+    {
+     "s": "Bill journeyed to the office.",
+     "p": "Bill went over to the office.",
+     "a": null
+    },
+    {
+     "s": "Julie is in the kitchen.",
+     "p": "Julie currently occupies the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the office?",
+     "p": "Has Bill arrived in the office?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary journeyed to the office.",
+     "p": "Mary headed for the office.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the bedroom.",
+     "p": "Mary moved along to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the school?",
+     "p": "Is Fred within the school?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 58,
+   "sentences": [
+    {
+     "s": "Bill went back to the office.",
+     "p": "Bill made a return visit to the office.",
+     "a": null
+    },
+    {
+     "s": "Fred is either in the cinema or the cinema.",
+     "p": "Fred is in the cinema no matter how this is read.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the cinema?",
+     "p": "Might the cinema hold Fred?",
+     "a": "maybe"
+    },
+    {
+     "s": "Julie is either in the cinema or the bedroom.",
+     "p": "Julie is in the cinema or in the bedroom and not both.",
+     "a": null
+    },
+    {
+     "s": "Bill travelled to the kitchen.",
+     "p": "Bill proceeded to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the cinema?",
+     "p": "Is Fred possibly at the cinema?",
+     "a": "maybe"
+    },
+    {
+     "s": "Mary is either in the park or the kitchen.",
+     "p": "Of the park and the kitchen one holds Mary.",
+     "a": null
+    },
+    {
+     "s": "Julie is in the office.",
+     "p": "Julie is inside the office.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the cinema?",
+     "p": "Would Mary be in the cinema?",
+     "a": "no"
+    },
+    {
+     "s": "Fred is in the park.",
+     "p": "Fred is at the park.",
+     "a": null
+    },
+    {
+     "s": "Mary is in the bedroom.",
+     "p": "Mary is plainly in the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bedroom?",
+     "p": "Is the bedroom holding Mary at present?",
+     "a": "yes"
+    },
+    {
+     "s": "Bill is either in the school or the cinema.",
+     "p": "Bill is in the school or the cinema and one only.",
+     "a": null
+    },
+    {
+     "s": "Fred is in the office.",
+     "p": "Fred currently sits in the office.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the school?",
+     "p": "Could the school be where Fred is?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 59,
+   "sentences": [
+    {
+     "s": "Mary is either in the bedroom or the bedroom.",
+     "p": "Mary is in the bedroom and that is the only option.",
+     "a": null
+    },
+    {
+     "s": "Julie is either in the office or the cinema.",
+     "p": "Julie stands in the office or the cinema and exactly one.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the kitchen?",
+     "p": "Is the kitchen a place Mary currently occupies?",
+     "a": "no"
+    },
+    {
+     "s": "Julie went back to the park.",
+     "p": "Julie came back to the park.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the school.",
+     "p": "Mary changed locations to the school.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the park?",
+     "p": "Is Julie at the park?",
+     "a": "yes"
+    },
+    {
+     "s": "Bill moved to the park.",
+     "p": "Bill went over to the park.",
+     "a": null
+    },
+    {
+     "s": "Bill is either in the kitchen or the bedroom.",
+     "p": "Bill is in the kitchen or the bedroom and only one.",
+     "a": null
+    },
+    {
+     "s": "Is Julie in the park?",
+     "p": "Is Julie confirmed to be in the park?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary went to the kitchen.",
+     "p": "Mary got to the kitchen eventually.",
+     "a": null
+    },
+    {
+     "s": "Fred went back to the bedroom.",
+     "p": "Back to the bedroom went Fred.",
+     "a": null
+    },
+    {
+     "s": "Is Fred in the bedroom?",
+     "p": "Has Fred reached the bedroom?",
+     "a": "yes"
+    },
+    {
+     "s": "Julie went back to the cinema.",
+     "p": "Julie returned to the cinema after all.",
+     "a": null
+    },
+    {
+     "s": "Bill is either in the kitchen or the cinema.",
+     "p": "Bill is in the kitchen or in the cinema and one or the other.",
+     "a": null
+    },
+    {
+     "s": "Is Bill in the kitchen?",
+     "p": "Is Bill possibly in the kitchen?",
+     "a": "maybe"
+    }
+   ]
+  }
+ ]
+}

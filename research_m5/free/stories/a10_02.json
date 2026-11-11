@@ -1,0 +1,1285 @@
+{
+ "task": "a10",
+ "stories": [
+  {
+   "part": "test",
+   "id": 0,
+   "sentences": [
+    {
+     "s": "Ann joins the green team.",
+     "p": "Ann becomes a member of the green team.",
+     "a": null
+    },
+    {
+     "s": "Ann quits the green team.",
+     "p": "Ann walks away from the green team.",
+     "a": null
+    },
+    {
+     "s": "Ann enters the gold team.",
+     "p": "Ann gets into the gold team.",
+     "a": null
+    },
+    {
+     "s": "Ann moves from the gold team to the blue team.",
+     "p": "Ann switches from the gold team over to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Ann leaves the blue team.",
+     "p": "Ann departs the blue team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Ann in?",
+     "p": "In what team does Ann currently belong?",
+     "a": "none"
+    },
+    {
+     "s": "Which team is Ann in?",
+     "p": "Ann belongs to which team right now?",
+     "a": "none"
+    },
+    {
+     "s": "Ann enters the green team.",
+     "p": "Ann becomes part of the green team.",
+     "a": null
+    },
+    {
+     "s": "Ann moves from the green team to the red team.",
+     "p": "Ann transfers from the green team into the red team.",
+     "a": null
+    },
+    {
+     "s": "Ann moves from the red team to the gold team.",
+     "p": "Next Ann shifts from the red team to the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 1,
+   "sentences": [
+    {
+     "s": "Cal enters the gold team.",
+     "p": "Cal enlists with the gold team.",
+     "a": null
+    },
+    {
+     "s": "Cal moves from the gold team to the green team.",
+     "p": "Cal relocates from the gold team to the green team.",
+     "a": null
+    },
+    {
+     "s": "Cal quits the green team.",
+     "p": "Cal exits the green team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Cal in?",
+     "p": "What team is Cal part of?",
+     "a": "none"
+    },
+    {
+     "s": "Eve joins the green team.",
+     "p": "The green team gains Eve as a member.",
+     "a": null
+    },
+    {
+     "s": "Dan joins the red team.",
+     "p": "Dan takes a place on the red team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Cal?",
+     "p": "Cal is on which team at present?",
+     "a": "none"
+    },
+    {
+     "s": "Hal enters the red team.",
+     "p": "Hal is brought into the red team.",
+     "a": null
+    },
+    {
+     "s": "Eve moves from the green team to the blue team.",
+     "p": "Eve is shifted from the green team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Eve?",
+     "p": "On which team is Eve listed now?",
+     "a": "blue"
+    },
+    {
+     "s": "Fay enters the green team.",
+     "p": "Fay signs onto the green team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Eve?",
+     "p": "Eve is on what team at this point?",
+     "a": "blue"
+    },
+    {
+     "s": "Cal joins the blue team.",
+     "p": "Cal takes up membership in the blue team.",
+     "a": null
+    },
+    {
+     "s": "Eve moves from the blue team to the green team.",
+     "p": "Eve goes from the blue team across to the green team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 2,
+   "sentences": [
+    {
+     "s": "Ann joins the gold team.",
+     "p": "The gold team takes Ann on as a member.",
+     "a": null
+    },
+    {
+     "s": "Cal joins the green team.",
+     "p": "Cal is added to the green team.",
+     "a": null
+    },
+    {
+     "s": "Is Cal in the same team as Ann?",
+     "p": "Do Cal and Ann share a team?",
+     "a": "no"
+    },
+    {
+     "s": "Is Cal in the same team as Ann?",
+     "p": "Does Cal play on the same team as Ann?",
+     "a": "no"
+    },
+    {
+     "s": "Ann moves from the gold team to the green team.",
+     "p": "Ann crosses over from the gold team into the green team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Ann?",
+     "p": "Which team holds Ann at present?",
+     "a": "green"
+    },
+    {
+     "s": "In which team is Ann?",
+     "p": "Ann is currently on what team?",
+     "a": "green"
+    },
+    {
+     "s": "Are Ann and Cal in the same team?",
+     "p": "Do Ann and Cal belong to one shared team?",
+     "a": "yes"
+    },
+    {
+     "s": "Cal quits the green team.",
+     "p": "Cal drops out of the green team.",
+     "a": null
+    },
+    {
+     "s": "Ann moves from the green team to the gold team.",
+     "p": "Ann is transferred from the green team to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dan joins the gold team.",
+     "p": "Dan signs up with the gold team.",
+     "a": null
+    },
+    {
+     "s": "Fay joins the blue team.",
+     "p": "The blue team welcomes Fay aboard.",
+     "a": null
+    },
+    {
+     "s": "Cal joins the blue team.",
+     "p": "Cal goes onto the blue team roster.",
+     "a": null
+    },
+    {
+     "s": "Cal quits the blue team.",
+     "p": "Cal steps away from the blue team.",
+     "a": null
+    },
+    {
+     "s": "Cal joins the blue team.",
+     "p": "Cal takes a seat on the blue team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 3,
+   "sentences": [
+    {
+     "s": "Hal joins the green team.",
+     "p": "Hal signs on with the green team.",
+     "a": null
+    },
+    {
+     "s": "Hal moves from the green team to the blue team.",
+     "p": "From the green team Hal transfers across to the blue team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Hal?",
+     "p": "Which team is Hal assigned to?",
+     "a": "blue"
+    },
+    {
+     "s": "In which team is Hal?",
+     "p": "Hal sits on which team at the moment?",
+     "a": "blue"
+    },
+    {
+     "s": "Hal leaves the blue team.",
+     "p": "Hal parts ways with the blue team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Hal in?",
+     "p": "What team is Hal in right now?",
+     "a": "none"
+    },
+    {
+     "s": "Hal joins the blue team.",
+     "p": "Hal is recruited onto the blue team.",
+     "a": null
+    },
+    {
+     "s": "Fay enters the blue team.",
+     "p": "Fay gets placed on the blue team.",
+     "a": null
+    },
+    {
+     "s": "Gus joins the red team.",
+     "p": "Gus is made part of the red team.",
+     "a": null
+    },
+    {
+     "s": "Ann joins the blue team.",
+     "p": "The blue team picks up Ann as a member.",
+     "a": null
+    },
+    {
+     "s": "Is Gus in the same team as Hal?",
+     "p": "Are Gus and Hal together on one team?",
+     "a": "no"
+    },
+    {
+     "s": "Is Ann in the same team as Fay?",
+     "p": "Do Ann and Fay share the same team?",
+     "a": "yes"
+    },
+    {
+     "s": "Fay quits the blue team.",
+     "p": "Fay withdraws from the blue team.",
+     "a": null
+    },
+    {
+     "s": "Hal moves from the blue team to the green team.",
+     "p": "Hal shifts from the blue team to the green team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 4,
+   "sentences": [
+    {
+     "s": "Cal joins the red team.",
+     "p": "Cal is signed up to the red team.",
+     "a": null
+    },
+    {
+     "s": "Cal moves from the red team to the green team.",
+     "p": "Cal is moved from the red team to the green team.",
+     "a": null
+    },
+    {
+     "s": "Cal moves from the green team to the red team.",
+     "p": "Cal is sent from the green team back to the red team.",
+     "a": null
+    },
+    {
+     "s": "Cal moves from the red team to the green team.",
+     "p": "After the red team Cal lands on the green team.",
+     "a": null
+    },
+    {
+     "s": "Eve enters the red team.",
+     "p": "Eve steps into the red team.",
+     "a": null
+    },
+    {
+     "s": "Eve moves from the red team to the blue team.",
+     "p": "Eve changes from the red team over to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Eve moves from the blue team to the green team.",
+     "p": "Eve passes from the blue team onto the green team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Eve?",
+     "p": "Eve is found on which team?",
+     "a": "green"
+    },
+    {
+     "s": "Which team is Eve in?",
+     "p": "Eve currently plays for which team?",
+     "a": "green"
+    },
+    {
+     "s": "Is Eve in the same team as Cal?",
+     "p": "Are Eve and Cal on the same team?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 5,
+   "sentences": [
+    {
+     "s": "Dan enters the green team.",
+     "p": "Dan gets added to the green team.",
+     "a": null
+    },
+    {
+     "s": "Dan moves from the green team to the gold team.",
+     "p": "Dan leaves the green team for the gold team.",
+     "a": null
+    },
+    {
+     "s": "Eve joins the gold team.",
+     "p": "Eve links up with the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dan quits the gold team.",
+     "p": "Dan resigns from the gold team.",
+     "a": null
+    },
+    {
+     "s": "Eve quits the gold team.",
+     "p": "Eve gives up the gold team.",
+     "a": null
+    },
+    {
+     "s": "Eve enters the gold team.",
+     "p": "The gold team receives Eve as a new member.",
+     "a": null
+    },
+    {
+     "s": "Dan enters the red team.",
+     "p": "Dan is put on the red team.",
+     "a": null
+    },
+    {
+     "s": "Is Dan in the same team as Eve?",
+     "p": "Does Dan share a team with Eve?",
+     "a": "no"
+    },
+    {
+     "s": "Eve moves from the gold team to the red team.",
+     "p": "Eve is reassigned from the gold team to the red team.",
+     "a": null
+    },
+    {
+     "s": "Eve quits the red team.",
+     "p": "Eve steps down from the red team.",
+     "a": null
+    },
+    {
+     "s": "Dan moves from the red team to the blue team.",
+     "p": "Dan crosses from the red team over to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Dan moves from the blue team to the red team.",
+     "p": "Dan returns from the blue team to the red team.",
+     "a": null
+    },
+    {
+     "s": "Are Dan and Eve in the same team?",
+     "p": "Do Dan and Eve belong to one team together?",
+     "a": "no"
+    },
+    {
+     "s": "Dan quits the red team.",
+     "p": "Dan is out of the red team now.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 6,
+   "sentences": [
+    {
+     "s": "Dan enters the red team.",
+     "p": "Dan is counted among the red team members.",
+     "a": null
+    },
+    {
+     "s": "Fay joins the gold team.",
+     "p": "Fay makes the gold team roster.",
+     "a": null
+    },
+    {
+     "s": "Eve enters the red team.",
+     "p": "Eve is inserted onto the red team.",
+     "a": null
+    },
+    {
+     "s": "Is Fay in the same team as Eve?",
+     "p": "Is Fay a teammate of Eve?",
+     "a": "no"
+    },
+    {
+     "s": "Is Eve in the same team as Dan?",
+     "p": "Are Eve and Dan on a common team?",
+     "a": "yes"
+    },
+    {
+     "s": "Is Eve in the same team as Dan?",
+     "p": "Does Eve play on the same team as Dan?",
+     "a": "yes"
+    },
+    {
+     "s": "Dan moves from the red team to the green team.",
+     "p": "Dan is switched from the red team to the green team.",
+     "a": null
+    },
+    {
+     "s": "Fay moves from the gold team to the red team.",
+     "p": "Fay moves across from the gold team into the red team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Dan in?",
+     "p": "Dan now sits on which team?",
+     "a": "green"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 7,
+   "sentences": [
+    {
+     "s": "Cal enters the gold team.",
+     "p": "Cal is admitted to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Cal moves from the gold team to the green team.",
+     "p": "Cal heads over from the gold team to the green team.",
+     "a": null
+    },
+    {
+     "s": "Cal moves from the green team to the gold team.",
+     "p": "Cal swaps the green team for the gold team.",
+     "a": null
+    },
+    {
+     "s": "Fay enters the green team.",
+     "p": "The green team takes in Fay.",
+     "a": null
+    },
+    {
+     "s": "Bob enters the green team.",
+     "p": "Bob is assigned to the green team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Cal in?",
+     "p": "Cal belongs to which team?",
+     "a": "gold"
+    },
+    {
+     "s": "In which team is Cal?",
+     "p": "Which team has Cal as a player at present?",
+     "a": "gold"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 8,
+   "sentences": [
+    {
+     "s": "Eve joins the green team.",
+     "p": "Eve becomes a green team player.",
+     "a": null
+    },
+    {
+     "s": "Dan enters the blue team.",
+     "p": "Dan is installed in the blue team.",
+     "a": null
+    },
+    {
+     "s": "Are Eve and Dan in the same team?",
+     "p": "Are Eve and Dan members of a shared team?",
+     "a": "no"
+    },
+    {
+     "s": "Is Dan in the same team as Eve?",
+     "p": "Does Dan play alongside Eve on a team?",
+     "a": "no"
+    },
+    {
+     "s": "Dan leaves the blue team.",
+     "p": "Dan steps out of the blue team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Dan in?",
+     "p": "Dan belongs to what team at all?",
+     "a": "none"
+    },
+    {
+     "s": "Eve moves from the green team to the blue team.",
+     "p": "Eve is moved over from the green team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Hal joins the gold team.",
+     "p": "The gold team recruits Hal.",
+     "a": null
+    },
+    {
+     "s": "Hal moves from the gold team to the blue team.",
+     "p": "Hal makes the move from the gold team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Hal leaves the blue team.",
+     "p": "Hal walks out of the blue team.",
+     "a": null
+    },
+    {
+     "s": "Eve quits the blue team.",
+     "p": "Eve drops off the blue team roster.",
+     "a": null
+    },
+    {
+     "s": "Hal enters the blue team.",
+     "p": "Hal moves into the blue team.",
+     "a": null
+    },
+    {
+     "s": "Gus joins the red team.",
+     "p": "Gus becomes a red team member.",
+     "a": null
+    },
+    {
+     "s": "Gus leaves the red team.",
+     "p": "The red team loses Gus.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 9,
+   "sentences": [
+    {
+     "s": "Bob joins the blue team.",
+     "p": "Bob is enrolled in the blue team.",
+     "a": null
+    },
+    {
+     "s": "Bob moves from the blue team to the green team.",
+     "p": "Bob then goes from the blue team to the green team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Bob?",
+     "p": "On what team can Bob be found?",
+     "a": "green"
+    },
+    {
+     "s": "Bob leaves the green team.",
+     "p": "Bob is gone from the green team.",
+     "a": null
+    },
+    {
+     "s": "Cal joins the red team.",
+     "p": "Cal lands a spot on the red team.",
+     "a": null
+    },
+    {
+     "s": "Bob joins the green team.",
+     "p": "The green team adds Bob.",
+     "a": null
+    },
+    {
+     "s": "Dan joins the red team.",
+     "p": "Dan is a new red team player.",
+     "a": null
+    },
+    {
+     "s": "Bob moves from the green team to the red team.",
+     "p": "Bob goes over from the green team into the red team.",
+     "a": null
+    },
+    {
+     "s": "Bob leaves the red team.",
+     "p": "Bob is no longer on the red team.",
+     "a": null
+    },
+    {
+     "s": "Cal quits the red team.",
+     "p": "Cal bows out of the red team.",
+     "a": null
+    },
+    {
+     "s": "Dan moves from the red team to the gold team.",
+     "p": "Dan migrates from the red team to the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 10,
+   "sentences": [
+    {
+     "s": "Dan enters the gold team.",
+     "p": "Dan gets a place on the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dan moves from the gold team to the blue team.",
+     "p": "Dan shifts from the gold team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Dan?",
+     "p": "Which team is Dan on right now?",
+     "a": "blue"
+    },
+    {
+     "s": "Bob joins the red team.",
+     "p": "Bob is taken onto the red team.",
+     "a": null
+    },
+    {
+     "s": "Are Dan and Bob in the same team?",
+     "p": "Are Dan and Bob teammates?",
+     "a": "no"
+    },
+    {
+     "s": "Bob moves from the red team to the gold team.",
+     "p": "Bob moves from the red team and lands on the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dan moves from the blue team to the red team.",
+     "p": "Dan crosses from the blue team into the red team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Dan?",
+     "p": "Dan currently belongs to what team?",
+     "a": "red"
+    },
+    {
+     "s": "Dan leaves the red team.",
+     "p": "Dan is taken off the red team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 11,
+   "sentences": [
+    {
+     "s": "Eve enters the gold team.",
+     "p": "Eve is introduced to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Cal joins the red team.",
+     "p": "Cal is a red team player now.",
+     "a": null
+    },
+    {
+     "s": "Hal joins the gold team.",
+     "p": "Hal makes an entry onto the gold team.",
+     "a": null
+    },
+    {
+     "s": "Bob enters the gold team.",
+     "p": "Bob is let into the gold team.",
+     "a": null
+    },
+    {
+     "s": "Gus enters the blue team.",
+     "p": "Gus is ushered into the blue team.",
+     "a": null
+    },
+    {
+     "s": "Hal moves from the gold team to the blue team.",
+     "p": "Hal goes across from the gold team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Are Hal and Cal in the same team?",
+     "p": "Do Hal and Cal share one team?",
+     "a": "no"
+    },
+    {
+     "s": "Hal moves from the blue team to the red team.",
+     "p": "Hal goes from the blue team to the red team now.",
+     "a": null
+    },
+    {
+     "s": "Gus moves from the blue team to the red team.",
+     "p": "Gus travels from the blue team to the red team.",
+     "a": null
+    },
+    {
+     "s": "Gus leaves the red team.",
+     "p": "Gus walks away from the red team.",
+     "a": null
+    },
+    {
+     "s": "Are Gus and Cal in the same team?",
+     "p": "Do Gus and Cal share a team?",
+     "a": "no"
+    },
+    {
+     "s": "Eve moves from the gold team to the blue team.",
+     "p": "Eve heads from the gold team into the blue team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Hal in?",
+     "p": "What team is Hal currently on?",
+     "a": "red"
+    },
+    {
+     "s": "Hal quits the red team.",
+     "p": "Hal drops out of the red team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Eve in?",
+     "p": "Eve is part of which team?",
+     "a": "blue"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 12,
+   "sentences": [
+    {
+     "s": "Eve joins the blue team.",
+     "p": "Eve becomes a blue team member.",
+     "a": null
+    },
+    {
+     "s": "Dan enters the blue team.",
+     "p": "Dan is put onto the blue team.",
+     "a": null
+    },
+    {
+     "s": "Fay enters the gold team.",
+     "p": "Fay comes into the gold team.",
+     "a": null
+    },
+    {
+     "s": "Dan leaves the blue team.",
+     "p": "Dan is out of the blue team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Dan?",
+     "p": "What team has Dan joined at this moment?",
+     "a": "none"
+    },
+    {
+     "s": "Eve quits the blue team.",
+     "p": "Eve abandons the blue team.",
+     "a": null
+    },
+    {
+     "s": "Are Fay and Eve in the same team?",
+     "p": "Is Fay on a team with Eve?",
+     "a": "no"
+    },
+    {
+     "s": "Fay moves from the gold team to the blue team.",
+     "p": "Fay gets moved from the gold team onto the blue team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Dan?",
+     "p": "Dan is attached to what team at present?",
+     "a": "none"
+    },
+    {
+     "s": "In which team is Fay?",
+     "p": "Fay plays for which team now?",
+     "a": "blue"
+    },
+    {
+     "s": "Fay leaves the blue team.",
+     "p": "Fay pulls out of the blue team.",
+     "a": null
+    },
+    {
+     "s": "Fay joins the blue team.",
+     "p": "Fay signs back onto the blue team.",
+     "a": null
+    },
+    {
+     "s": "Is Eve in the same team as Dan?",
+     "p": "Do Eve and Dan belong to a common team?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 13,
+   "sentences": [
+    {
+     "s": "Cal enters the gold team.",
+     "p": "Cal gets placed on the gold team.",
+     "a": null
+    },
+    {
+     "s": "Cal moves from the gold team to the red team.",
+     "p": "Cal is shuttled from the gold team to the red team.",
+     "a": null
+    },
+    {
+     "s": "Cal leaves the red team.",
+     "p": "Cal goes away from the red team.",
+     "a": null
+    },
+    {
+     "s": "Ann enters the gold team.",
+     "p": "Ann walks into the gold team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Cal?",
+     "p": "Cal currently sits on which team?",
+     "a": "none"
+    },
+    {
+     "s": "Are Cal and Ann in the same team?",
+     "p": "Do Cal and Ann belong to a single team?",
+     "a": "no"
+    },
+    {
+     "s": "Bob enters the blue team.",
+     "p": "Bob is entered into the blue team.",
+     "a": null
+    },
+    {
+     "s": "Are Bob and Ann in the same team?",
+     "p": "Are Bob and Ann on one common team?",
+     "a": "no"
+    },
+    {
+     "s": "Eve joins the red team.",
+     "p": "Eve is added to the red team roster.",
+     "a": null
+    },
+    {
+     "s": "Bob moves from the blue team to the gold team.",
+     "p": "Bob goes from the blue team and joins the gold team.",
+     "a": null
+    },
+    {
+     "s": "Bob leaves the gold team.",
+     "p": "Bob is out of the gold team.",
+     "a": null
+    },
+    {
+     "s": "Ann quits the gold team.",
+     "p": "Ann pulls out of the gold team.",
+     "a": null
+    },
+    {
+     "s": "Eve moves from the red team to the blue team.",
+     "p": "Eve transitions from the red team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Ann joins the green team.",
+     "p": "Ann signs on for the green team.",
+     "a": null
+    },
+    {
+     "s": "Eve moves from the blue team to the gold team.",
+     "p": "Eve shifts from the blue team to the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 14,
+   "sentences": [
+    {
+     "s": "Eve enters the gold team.",
+     "p": "Eve is accepted into the gold team.",
+     "a": null
+    },
+    {
+     "s": "Eve leaves the gold team.",
+     "p": "Eve is no longer with the gold team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Eve in?",
+     "p": "Eve belongs to what team?",
+     "a": "none"
+    },
+    {
+     "s": "Gus enters the gold team.",
+     "p": "Gus is added as a member of the gold team.",
+     "a": null
+    },
+    {
+     "s": "Gus quits the gold team.",
+     "p": "Gus withdraws from the gold team.",
+     "a": null
+    },
+    {
+     "s": "Eve joins the green team.",
+     "p": "Eve joins the green roster.",
+     "a": null
+    },
+    {
+     "s": "Gus joins the red team.",
+     "p": "Gus takes up a spot with the red team.",
+     "a": null
+    },
+    {
+     "s": "Is Eve in the same team as Gus?",
+     "p": "Does Eve play for the team Gus is on?",
+     "a": "no"
+    },
+    {
+     "s": "Is Gus in the same team as Eve?",
+     "p": "Are Gus and Eve sharing one team?",
+     "a": "no"
+    },
+    {
+     "s": "Gus leaves the red team.",
+     "p": "Gus vacates the red team.",
+     "a": null
+    },
+    {
+     "s": "Are Eve and Gus in the same team?",
+     "p": "Do Eve and Gus play together on a team?",
+     "a": "no"
+    },
+    {
+     "s": "Is Eve in the same team as Gus?",
+     "p": "Is Eve a teammate of Gus?",
+     "a": "no"
+    },
+    {
+     "s": "Eve leaves the green team.",
+     "p": "Eve parts with the green team.",
+     "a": null
+    },
+    {
+     "s": "Eve enters the blue team.",
+     "p": "Eve steps onto the blue team.",
+     "a": null
+    },
+    {
+     "s": "Gus enters the gold team.",
+     "p": "Gus joins the gold team once more.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 15,
+   "sentences": [
+    {
+     "s": "Eve joins the blue team.",
+     "p": "Eve is signed up for the blue team.",
+     "a": null
+    },
+    {
+     "s": "Eve quits the blue team.",
+     "p": "Eve lets go of the blue team.",
+     "a": null
+    },
+    {
+     "s": "Eve enters the red team.",
+     "p": "Eve is taken on by the red team.",
+     "a": null
+    },
+    {
+     "s": "Eve moves from the red team to the gold team.",
+     "p": "Eve shifts across from the red team to the gold team.",
+     "a": null
+    },
+    {
+     "s": "Eve quits the gold team.",
+     "p": "Eve leaves the gold team behind.",
+     "a": null
+    },
+    {
+     "s": "Eve joins the blue team.",
+     "p": "Eve is back on the blue team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Eve?",
+     "p": "On which team does Eve appear now?",
+     "a": "blue"
+    },
+    {
+     "s": "Gus joins the red team.",
+     "p": "Gus signs on to the red team.",
+     "a": null
+    },
+    {
+     "s": "Bob enters the green team.",
+     "p": "Bob is taken in by the green team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Eve?",
+     "p": "Which team has Eve as a member right now?",
+     "a": "blue"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 16,
+   "sentences": [
+    {
+     "s": "Ann enters the green team.",
+     "p": "The green team admits Ann.",
+     "a": null
+    },
+    {
+     "s": "Ann leaves the green team.",
+     "p": "Ann severs ties with the green team.",
+     "a": null
+    },
+    {
+     "s": "Ann enters the green team.",
+     "p": "Ann is brought back onto the green team.",
+     "a": null
+    },
+    {
+     "s": "Ann moves from the green team to the blue team.",
+     "p": "Ann crosses from the green team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Which team is Ann in?",
+     "p": "Ann is found on which team?",
+     "a": "blue"
+    },
+    {
+     "s": "Ann leaves the blue team.",
+     "p": "Ann is removed from the blue team.",
+     "a": null
+    },
+    {
+     "s": "Fay enters the red team.",
+     "p": "Fay becomes a red team entrant.",
+     "a": null
+    },
+    {
+     "s": "Which team is Ann in?",
+     "p": "Ann is on what team at all now?",
+     "a": "none"
+    },
+    {
+     "s": "Ann enters the blue team.",
+     "p": "Ann becomes a blue team member.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 17,
+   "sentences": [
+    {
+     "s": "Ann enters the gold team.",
+     "p": "Ann is entered in the gold team.",
+     "a": null
+    },
+    {
+     "s": "Ann quits the gold team.",
+     "p": "Ann gives the gold team up.",
+     "a": null
+    },
+    {
+     "s": "In which team is Ann?",
+     "p": "Ann is a member of which team?",
+     "a": "none"
+    },
+    {
+     "s": "Ann joins the green team.",
+     "p": "The green team takes Ann in.",
+     "a": null
+    },
+    {
+     "s": "Ann moves from the green team to the red team.",
+     "p": "Ann switches from the green team to the red team.",
+     "a": null
+    },
+    {
+     "s": "Ann quits the red team.",
+     "p": "Ann drops out of the red team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 18,
+   "sentences": [
+    {
+     "s": "Fay enters the gold team.",
+     "p": "Fay is taken into the gold team.",
+     "a": null
+    },
+    {
+     "s": "Cal joins the red team.",
+     "p": "Cal picks up a spot on the red team.",
+     "a": null
+    },
+    {
+     "s": "Are Cal and Fay in the same team?",
+     "p": "Do Cal and Fay play on one common team?",
+     "a": "no"
+    },
+    {
+     "s": "Cal moves from the red team to the blue team.",
+     "p": "Cal is taken from the red team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Cal?",
+     "p": "Which team currently holds Cal?",
+     "a": "blue"
+    },
+    {
+     "s": "Cal moves from the blue team to the gold team.",
+     "p": "Cal heads from the blue team into the gold team.",
+     "a": null
+    },
+    {
+     "s": "Fay moves from the gold team to the red team.",
+     "p": "Fay is sent over from the gold team to the red team.",
+     "a": null
+    },
+    {
+     "s": "Fay leaves the red team.",
+     "p": "Fay steps off the red team.",
+     "a": null
+    },
+    {
+     "s": "Fay enters the green team.",
+     "p": "Fay gets onto the green team.",
+     "a": null
+    },
+    {
+     "s": "Fay moves from the green team to the blue team.",
+     "p": "Fay goes from the green team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Cal leaves the gold team.",
+     "p": "Cal drops the gold team.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 19,
+   "sentences": [
+    {
+     "s": "Gus joins the red team.",
+     "p": "Gus signs up for the red team.",
+     "a": null
+    },
+    {
+     "s": "Ann joins the green team.",
+     "p": "Ann takes up residence on the green team.",
+     "a": null
+    },
+    {
+     "s": "Is Ann in the same team as Gus?",
+     "p": "Is Ann on any team with Gus?",
+     "a": "no"
+    },
+    {
+     "s": "Is Ann in the same team as Gus?",
+     "p": "Does Ann play with Gus on one team?",
+     "a": "no"
+    },
+    {
+     "s": "Gus moves from the red team to the gold team.",
+     "p": "Gus leaves the red team and lands on the gold team.",
+     "a": null
+    },
+    {
+     "s": "Are Ann and Gus in the same team?",
+     "p": "Are Ann and Gus together on any team?",
+     "a": "no"
+    },
+    {
+     "s": "Bob joins the gold team.",
+     "p": "The gold team now includes Bob.",
+     "a": null
+    },
+    {
+     "s": "Ann moves from the green team to the blue team.",
+     "p": "Ann goes over from the green team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "In which team is Ann?",
+     "p": "Which team is Ann a member of now?",
+     "a": "blue"
+    },
+    {
+     "s": "Gus moves from the gold team to the blue team.",
+     "p": "Gus switches from the gold team to the blue team.",
+     "a": null
+    },
+    {
+     "s": "Gus moves from the blue team to the gold team.",
+     "p": "Gus heads back from the blue team to the gold team.",
+     "a": null
+    }
+   ]
+  }
+ ]
+}

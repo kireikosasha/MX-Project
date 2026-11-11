@@ -27,6 +27,7 @@ import gzip
 import itertools
 import json
 import os
+import pickle
 import random
 import re
 import sys
@@ -342,6 +343,7 @@ def main():
     ap.add_argument("--rounds", type=int, default=8)
     ap.add_argument("--alone", type=int, default=0, help="rounds of reading the test stories without their answers")
     ap.add_argument("--vectors", default="", help="a GloVe file (.gz) with vectors of words: the reader's dictionary")
+    ap.add_argument("--mind", default="", help="a learner kept by acquire.py --state (it has learnt this task after others)")
     ap.add_argument("--school", default="", help="lesson files of other tasks (a glob) to learn the language from first")
     ap.add_argument("--lessons", default="", help="where to leave this task's lessons for other tasks")
     ap.add_argument("--out", default="")
@@ -351,8 +353,17 @@ def main():
         os.execv(sys.executable, [sys.executable] + sys.argv)
     torch.set_num_threads(1)                                     # the network is tiny: one thread is enough
     template = A.read(glob.glob(os.path.join(a.data, f"qa{a.k}_*train.txt"))[0], 20)
-    mind = A.Mind()
-    got, total = mind.learn(template, 150)
+    if a.mind:                                                   # the learner as it is after a row of tasks, not from nothing
+        class Kept(pickle.Unpickler):
+            def find_class(self, module, name):
+                return super().find_class("acquire" if module == "__main__" else module, name)
+        mind = Kept(open(a.mind, "rb")).load()
+        mind._text, mind._named = {}, {}
+        res = [x for st in template for x in mind.run(st)]
+        got, total = sum(mind.right(ans, gold, dict(mind.said_all)) for ans, gold in res), len(res)
+    else:
+        mind = A.Mind()
+        got, total = mind.learn(template, 150)
     free = load_free(a.free, a.name)
     train = [[(p, g) for _, p, g in st] for st in free["train"][:a.free_train]]
     test = [[(p, g) for _, p, g in st] for st in free["test"]]

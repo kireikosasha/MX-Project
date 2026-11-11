@@ -1,0 +1,725 @@
+{
+ "task": "b19",
+ "stories": [
+  {
+   "part": "train",
+   "id": 20,
+   "sentences": [
+    {
+     "s": "The kitchen is west of the garden.",
+     "p": "Lying to the west of the garden is the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The garden is north of the hallway.",
+     "p": "Just north of the hallway sits the garden.",
+     "a": null
+    },
+    {
+     "s": "The garden is west of the office.",
+     "p": "The office is positioned to the east of the garden.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is south of the office.",
+     "p": "The bathroom can be found south of the office.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is south of the bathroom.",
+     "p": "Positioned south of the bathroom is the bedroom.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the bathroom to the garden?",
+     "p": "Which moves would take you from the bathroom to the garden?",
+     "a": "n,w"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 21,
+   "sentences": [
+    {
+     "s": "The bathroom is east of the office.",
+     "p": "The office sits to the west of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is north of the hallway.",
+     "p": "Up north from the hallway stands the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is west of the hallway.",
+     "p": "The hallway lies east of the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is north of the bedroom.",
+     "p": "Toward the north of the bedroom stands the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The hallway is north of the garden.",
+     "p": "In this layout the garden lies south of the hallway.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the hallway to the bathroom?",
+     "p": "From the hallway which moves lead to the bathroom?",
+     "a": "n,n"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 22,
+   "sentences": [
+    {
+     "s": "The kitchen is east of the garden.",
+     "p": "On the east side of the garden sits the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The garden is north of the bedroom.",
+     "p": "The bedroom lies south of the garden.",
+     "a": null
+    },
+    {
+     "s": "The garden is south of the hallway.",
+     "p": "Positioned north of the garden is the hallway.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is west of the bedroom.",
+     "p": "The bedroom sits to the east of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The garden is east of the office.",
+     "p": "The office stands west of the garden.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the bathroom to the garden?",
+     "p": "Beginning in the bathroom what moves get you to the garden?",
+     "a": "e,n"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 23,
+   "sentences": [
+    {
+     "s": "The kitchen is north of the hallway.",
+     "p": "Down south of the kitchen is the hallway.",
+     "a": null
+    },
+    {
+     "s": "The garden is south of the office.",
+     "p": "The office is found north of the garden.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is north of the bedroom.",
+     "p": "The bedroom sits south of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is south of the hallway.",
+     "p": "The hallway is situated north of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The garden is east of the bathroom.",
+     "p": "The bathroom lies to the west of the garden.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the garden to the hallway?",
+     "p": "Which moves lead from the garden toward the hallway?",
+     "a": "w,n"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 24,
+   "sentences": [
+    {
+     "s": "The kitchen is east of the hallway.",
+     "p": "Lying east of the hallway is the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is north of the garden.",
+     "p": "The garden lies to the south of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The hallway is south of the garden.",
+     "p": "The garden can be found north of the hallway.",
+     "a": null
+    },
+    {
+     "s": "The office is east of the garden.",
+     "p": "To the west of the office lies the garden.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is west of the garden.",
+     "p": "Found on the west side of the garden is the bathroom.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the office to the hallway?",
+     "p": "What path leads from the office over to the hallway?",
+     "a": "w,s"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 25,
+   "sentences": [
+    {
+     "s": "The bedroom is south of the garden.",
+     "p": "The garden stands north of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The hallway is north of the kitchen.",
+     "p": "The kitchen lies to the south of the hallway.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is south of the kitchen.",
+     "p": "Up north of the bathroom sits the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The hallway is east of the office.",
+     "p": "Standing west of the hallway is the office.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is east of the garden.",
+     "p": "Going west from the kitchen leads to the garden.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the hallway to the garden?",
+     "p": "Which moves take a traveller from the hallway to the garden?",
+     "a": "s,w"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 26,
+   "sentences": [
+    {
+     "s": "The garden is west of the office.",
+     "p": "Eastward from the garden stands the office.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is east of the bedroom.",
+     "p": "The bedroom is located to the west of the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The hallway is south of the bedroom.",
+     "p": "Heading south from the bedroom you arrive at the hallway.",
+     "a": null
+    },
+    {
+     "s": "The hallway is north of the office.",
+     "p": "The office can be found south of the hallway.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is south of the office.",
+     "p": "Sitting north of the bathroom is the office.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the office to the bedroom?",
+     "p": "What route would take us from the office to the bedroom?",
+     "a": "n,n"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 27,
+   "sentences": [
+    {
+     "s": "The bedroom is south of the bathroom.",
+     "p": "Standing north of the bedroom is the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The office is east of the garden.",
+     "p": "The garden is situated to the west of the office.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is north of the garden.",
+     "p": "The garden is south of the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The office is south of the hallway.",
+     "p": "Moving north from the office brings us to the hallway.",
+     "a": null
+    },
+    {
+     "s": "The garden is north of the bathroom.",
+     "p": "The bathroom is south of the garden.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the office to the bathroom?",
+     "p": "How could a person get from the office to the bathroom?",
+     "a": "w,s"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 28,
+   "sentences": [
+    {
+     "s": "The garden is west of the kitchen.",
+     "p": "The kitchen lies east of the garden.",
+     "a": null
+    },
+    {
+     "s": "The office is east of the bathroom.",
+     "p": "Lying east of the bathroom is the office.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is south of the office.",
+     "p": "The office is north of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The hallway is north of the kitchen.",
+     "p": "Moving south from the hallway gets you to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The hallway is east of the office.",
+     "p": "Positioned on the eastern side of the office is the hallway.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the office to the kitchen?",
+     "p": "What steps lead from the office to the kitchen?",
+     "a": "e,s"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 29,
+   "sentences": [
+    {
+     "s": "The bedroom is south of the bathroom.",
+     "p": "South of the bathroom is where the bedroom sits.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is west of the bathroom.",
+     "p": "The bathroom sits east of the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is south of the office.",
+     "p": "The office lies to the north of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The hallway is east of the bathroom.",
+     "p": "The bathroom is found west of the hallway.",
+     "a": null
+    },
+    {
+     "s": "The garden is east of the bedroom.",
+     "p": "The bedroom lies to the west of the garden.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the bedroom to the office?",
+     "p": "Which moves get someone from the bedroom to the office?",
+     "a": "n,n"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 30,
+   "sentences": [
+    {
+     "s": "The bathroom is south of the bedroom.",
+     "p": "The bedroom sits north of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The office is east of the bedroom.",
+     "p": "The bedroom lies west of the office.",
+     "a": null
+    },
+    {
+     "s": "The garden is north of the bedroom.",
+     "p": "Southward from the garden lies the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is south of the hallway.",
+     "p": "Northward from the kitchen sits the hallway.",
+     "a": null
+    },
+    {
+     "s": "The garden is west of the kitchen.",
+     "p": "Heading east from the garden brings you to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the kitchen to the bedroom?",
+     "p": "What path leads from the kitchen down to the bedroom?",
+     "a": "w,s"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 31,
+   "sentences": [
+    {
+     "s": "The hallway is south of the kitchen.",
+     "p": "The kitchen sits north of the hallway.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is east of the office.",
+     "p": "Heading west from the bedroom gets you to the office.",
+     "a": null
+    },
+    {
+     "s": "The office is south of the garden.",
+     "p": "The garden is positioned north of the office.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is east of the kitchen.",
+     "p": "Found to the west of the bathroom is the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The garden is west of the kitchen.",
+     "p": "The garden sits to the western side of the kitchen.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the office to the kitchen?",
+     "p": "Which moves carry us from the office to the kitchen?",
+     "a": "n,e"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 32,
+   "sentences": [
+    {
+     "s": "The bathroom is south of the office.",
+     "p": "You will find the office north of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is north of the hallway.",
+     "p": "Heading north from the hallway takes us to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The hallway is west of the bedroom.",
+     "p": "The bedroom lies to the east of the hallway.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is west of the garden.",
+     "p": "The garden is placed east of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is south of the bathroom.",
+     "p": "The bathroom sits to the north of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the hallway to the bathroom?",
+     "p": "Which steps would take us from the hallway to the bathroom?",
+     "a": "e,n"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 33,
+   "sentences": [
+    {
+     "s": "The office is north of the hallway.",
+     "p": "The hallway sits south of the office.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is east of the garden.",
+     "p": "The garden lies west of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is north of the bedroom.",
+     "p": "The bedroom is found to the south of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is east of the bedroom.",
+     "p": "The bedroom sits west of the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The office is south of the garden.",
+     "p": "Going south from the garden leads to the office.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the bedroom to the office?",
+     "p": "Through which steps can one travel from the bedroom to the office?",
+     "a": "w,s"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 34,
+   "sentences": [
+    {
+     "s": "The bathroom is south of the bedroom.",
+     "p": "Going south from the bedroom we reach the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The garden is west of the office.",
+     "p": "The office lies east of the garden.",
+     "a": null
+    },
+    {
+     "s": "The hallway is north of the bedroom.",
+     "p": "The bedroom is south of the hallway.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is east of the office.",
+     "p": "The office stands west of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is north of the hallway.",
+     "p": "The hallway sits south of the kitchen.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the office to the hallway?",
+     "p": "Which moves can someone make from the office to the hallway?",
+     "a": "e,n"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 35,
+   "sentences": [
+    {
+     "s": "The office is south of the kitchen.",
+     "p": "The kitchen stands north of the office.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is east of the kitchen.",
+     "p": "The kitchen sits to the west of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The garden is east of the bathroom.",
+     "p": "Eastward of the bathroom lies the garden.",
+     "a": null
+    },
+    {
+     "s": "The garden is north of the hallway.",
+     "p": "The hallway is south of the garden.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is east of the garden.",
+     "p": "The kitchen lies just east of the garden.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the kitchen to the bathroom?",
+     "p": "Which route reaches the bathroom starting at the kitchen?",
+     "a": "w,w"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 36,
+   "sentences": [
+    {
+     "s": "The hallway is west of the bathroom.",
+     "p": "The bathroom lies east of the hallway.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is north of the office.",
+     "p": "The office is south of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The garden is west of the office.",
+     "p": "Standing to the west of the office is the garden.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is south of the office.",
+     "p": "The office rests north of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The office is west of the kitchen.",
+     "p": "The kitchen lies to the east of the office.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the garden to the bathroom?",
+     "p": "By which steps does the garden reach the bathroom?",
+     "a": "e,n"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 37,
+   "sentences": [
+    {
+     "s": "The office is east of the kitchen.",
+     "p": "The kitchen sits west of the office.",
+     "a": null
+    },
+    {
+     "s": "The garden is north of the bathroom.",
+     "p": "The garden lies north of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is west of the hallway.",
+     "p": "The hallway lies east of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The office is north of the garden.",
+     "p": "The garden is positioned south of the office.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is east of the office.",
+     "p": "The bedroom can be located east of the office.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the garden to the bedroom?",
+     "p": "What path would lead from the garden to the bedroom?",
+     "a": "n,e"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 38,
+   "sentences": [
+    {
+     "s": "The bedroom is north of the office.",
+     "p": "The office sits south of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is east of the office.",
+     "p": "The office is west of the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The bathroom is west of the office.",
+     "p": "The office lies east of the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The office is north of the garden.",
+     "p": "Down south from the office sits the garden.",
+     "a": null
+    },
+    {
+     "s": "The hallway is south of the garden.",
+     "p": "Northward from the hallway lies the garden.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the bathroom to the garden?",
+     "p": "What steps would a visitor take from the bathroom to the garden?",
+     "a": "e,s"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 39,
+   "sentences": [
+    {
+     "s": "The bathroom is east of the kitchen.",
+     "p": "Eastward from the kitchen lies the bathroom.",
+     "a": null
+    },
+    {
+     "s": "The bedroom is west of the office.",
+     "p": "The office is found east of the bedroom.",
+     "a": null
+    },
+    {
+     "s": "The kitchen is south of the garden.",
+     "p": "The garden sits north of the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The hallway is east of the garden.",
+     "p": "The garden is located west of the hallway.",
+     "a": null
+    },
+    {
+     "s": "The garden is south of the office.",
+     "p": "The office lies north of the garden.",
+     "a": null
+    },
+    {
+     "s": "How do you go from the office to the kitchen?",
+     "p": "How might someone get from the office over to the kitchen?",
+     "a": "s,s"
+    }
+   ]
+  }
+ ]
+}

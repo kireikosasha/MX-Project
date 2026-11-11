@@ -1,0 +1,1635 @@
+{
+ "task": "b6",
+ "stories": [
+  {
+   "part": "test",
+   "id": 40,
+   "sentences": [
+    {
+     "s": "Mary grabbed the milk there.",
+     "p": "Right there Mary seized the milk.",
+     "a": null
+    },
+    {
+     "s": "Sandra took the football there.",
+     "p": "The football was snatched up by Sandra in that spot.",
+     "a": null
+    },
+    {
+     "s": "Daniel grabbed the apple there.",
+     "p": "In that room Daniel took hold of the apple.",
+     "a": null
+    },
+    {
+     "s": "John went to the bathroom.",
+     "p": "John headed off toward the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is John in the bathroom?",
+     "p": "Is John currently inside the bathroom?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary discarded the milk.",
+     "p": "Mary let go of the milk.",
+     "a": null
+    },
+    {
+     "s": "Mary picked up the milk there.",
+     "p": "Mary lifted the milk from that spot.",
+     "a": null
+    },
+    {
+     "s": "Is John in the bathroom?",
+     "p": "Is John located in the bathroom just now?",
+     "a": "yes"
+    },
+    {
+     "s": "Sandra put down the football there.",
+     "p": "Sandra set the football down in that room.",
+     "a": null
+    },
+    {
+     "s": "Mary put down the milk.",
+     "p": "The milk was set down by Mary.",
+     "a": null
+    },
+    {
+     "s": "Is John in the garden?",
+     "p": "Would John be found in the garden?",
+     "a": "no"
+    },
+    {
+     "s": "Sandra travelled to the office.",
+     "p": "Sandra headed over to the office.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the bedroom.",
+     "p": "Then Mary journeyed to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bedroom?",
+     "p": "Could Sandra be found in the bedroom?",
+     "a": "no"
+    },
+    {
+     "s": "John went back to the kitchen.",
+     "p": "Later John returned to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the hallway.",
+     "p": "John moved on to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is John in the garden?",
+     "p": "Is John presently found in the garden?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 41,
+   "sentences": [
+    {
+     "s": "Sandra journeyed to the garden.",
+     "p": "Sandra made the trip to the garden.",
+     "a": null
+    },
+    {
+     "s": "Mary got the milk there.",
+     "p": "Mary obtained the milk in that place.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the garden?",
+     "p": "Is Sandra in the garden right now?",
+     "a": "yes"
+    },
+    {
+     "s": "Sandra travelled to the office.",
+     "p": "Sandra set off for the office.",
+     "a": null
+    },
+    {
+     "s": "John went to the office.",
+     "p": "John walked over to the office.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the office?",
+     "p": "Is Sandra located inside the office?",
+     "a": "yes"
+    },
+    {
+     "s": "Sandra travelled to the kitchen.",
+     "p": "Sandra went over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the bathroom.",
+     "p": "Sandra then headed into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the office?",
+     "p": "Right now is Sandra in the office?",
+     "a": "no"
+    },
+    {
+     "s": "Daniel went to the bedroom.",
+     "p": "Daniel walked into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary dropped the milk.",
+     "p": "Mary let the milk fall.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the bedroom?",
+     "p": "Is Daniel to be found in the bedroom?",
+     "a": "yes"
+    },
+    {
+     "s": "John took the football there.",
+     "p": "John collected the football in that room.",
+     "a": null
+    },
+    {
+     "s": "Daniel got the milk there.",
+     "p": "Daniel picked up the milk in that room.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the bedroom?",
+     "p": "Is Daniel now in the bedroom?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 42,
+   "sentences": [
+    {
+     "s": "Daniel went to the office.",
+     "p": "Daniel traveled to the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra went back to the garden.",
+     "p": "Sandra returned to the garden.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the garden?",
+     "p": "Is Sandra confirmed to be in the garden?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary grabbed the apple there.",
+     "p": "The apple was taken up by Mary there.",
+     "a": null
+    },
+    {
+     "s": "Daniel grabbed the milk there.",
+     "p": "Daniel snatched the milk right there.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the garden?",
+     "p": "Is Daniel inside the garden at this time?",
+     "a": "no"
+    },
+    {
+     "s": "Daniel went back to the garden.",
+     "p": "Daniel returned to the garden again.",
+     "a": null
+    },
+    {
+     "s": "John moved to the office.",
+     "p": "John relocated to the office.",
+     "a": null
+    },
+    {
+     "s": "Is John in the bathroom?",
+     "p": "Is John present inside the bathroom?",
+     "a": "no"
+    },
+    {
+     "s": "John journeyed to the hallway.",
+     "p": "John traveled out into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary put down the apple.",
+     "p": "Mary deposited the apple.",
+     "a": null
+    },
+    {
+     "s": "Is John in the garden?",
+     "p": "Is John in the garden at the moment?",
+     "a": "no"
+    },
+    {
+     "s": "Daniel journeyed to the office.",
+     "p": "Daniel went over to the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the bathroom.",
+     "p": "Sandra stepped into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is John in the kitchen?",
+     "p": "Is John situated in the kitchen?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 43,
+   "sentences": [
+    {
+     "s": "Daniel moved to the bedroom.",
+     "p": "Daniel shifted over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "John travelled to the garden.",
+     "p": "John headed out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the bathroom?",
+     "p": "Is Daniel inside the bathroom at all?",
+     "a": "no"
+    },
+    {
+     "s": "Mary went to the hallway.",
+     "p": "Mary moved toward the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary picked up the football there.",
+     "p": "Mary grasped the football there.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the hallway?",
+     "p": "Is Mary now standing in the hallway?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary dropped the football.",
+     "p": "The football was let fall by Mary.",
+     "a": null
+    },
+    {
+     "s": "John went back to the bedroom.",
+     "p": "John came back to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is John in the kitchen?",
+     "p": "Is the kitchen where John is?",
+     "a": "no"
+    },
+    {
+     "s": "Mary journeyed to the kitchen.",
+     "p": "Mary traveled toward the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary got the apple there.",
+     "p": "Mary took possession of the apple there.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the office?",
+     "p": "Is Mary inside the office at present?",
+     "a": "no"
+    },
+    {
+     "s": "Mary dropped the apple there.",
+     "p": "Mary released the apple there.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the office.",
+     "p": "Daniel went off to the office.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the kitchen?",
+     "p": "Could Mary be in the kitchen?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 44,
+   "sentences": [
+    {
+     "s": "Mary travelled to the kitchen.",
+     "p": "Mary proceeded to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the kitchen.",
+     "p": "Sandra traveled to the kitchen as well.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the kitchen?",
+     "p": "At this point is Mary inside the kitchen?",
+     "a": "yes"
+    },
+    {
+     "s": "Daniel journeyed to the hallway.",
+     "p": "Daniel went to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel got the football there.",
+     "p": "Daniel acquired the football there.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the hallway?",
+     "p": "Does Mary happen to be in the hallway?",
+     "a": "no"
+    },
+    {
+     "s": "John journeyed to the bedroom.",
+     "p": "John went over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel journeyed to the bedroom.",
+     "p": "Daniel traveled to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the hallway?",
+     "p": "Does Daniel stand inside the hallway?",
+     "a": "no"
+    },
+    {
+     "s": "Sandra took the apple there.",
+     "p": "Sandra seized the apple in that room.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the hallway.",
+     "p": "Daniel moved into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the hallway?",
+     "p": "Is Daniel located in the hallway?",
+     "a": "yes"
+    },
+    {
+     "s": "Sandra put down the apple.",
+     "p": "Sandra let the apple go.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the bedroom.",
+     "p": "Mary returned to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the hallway?",
+     "p": "Is Daniel inside the hallway at this time?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 45,
+   "sentences": [
+    {
+     "s": "Mary picked up the milk there.",
+     "p": "The milk was grasped by Mary there.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the garden.",
+     "p": "John went out toward the garden.",
+     "a": null
+    },
+    {
+     "s": "Is John in the garden?",
+     "p": "Is the garden where John is right now?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary put down the milk.",
+     "p": "Mary laid the milk down.",
+     "a": null
+    },
+    {
+     "s": "Sandra grabbed the football there.",
+     "p": "Sandra took hold of the football there.",
+     "a": null
+    },
+    {
+     "s": "Is John in the garden?",
+     "p": "Is John really in the garden?",
+     "a": "yes"
+    },
+    {
+     "s": "John journeyed to the bathroom.",
+     "p": "John traveled on to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "John grabbed the apple there.",
+     "p": "John snatched up the apple there.",
+     "a": null
+    },
+    {
+     "s": "Is John in the bedroom?",
+     "p": "Can John be found in the bedroom?",
+     "a": "no"
+    },
+    {
+     "s": "Sandra discarded the football.",
+     "p": "Sandra threw away the football.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the bedroom.",
+     "p": "Mary headed up to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is John in the bathroom?",
+     "p": "Is John in the bathroom at this very moment?",
+     "a": "yes"
+    },
+    {
+     "s": "Sandra grabbed the football there.",
+     "p": "There Sandra grasped the football.",
+     "a": null
+    },
+    {
+     "s": "Sandra went back to the kitchen.",
+     "p": "Sandra came back to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the hallway?",
+     "p": "Is the hallway where Mary is?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 46,
+   "sentences": [
+    {
+     "s": "Daniel moved to the hallway.",
+     "p": "Daniel moved over to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Sandra picked up the apple there.",
+     "p": "The apple was lifted by Sandra there.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the office?",
+     "p": "Would Daniel be in the office?",
+     "a": "no"
+    },
+    {
+     "s": "Daniel travelled to the garden.",
+     "p": "Daniel journeyed out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel went back to the kitchen.",
+     "p": "Daniel came back around to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the kitchen?",
+     "p": "Is Daniel now inside the kitchen?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary went back to the hallway.",
+     "p": "Mary returned to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Sandra moved to the office.",
+     "p": "Sandra shifted to the office.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bathroom?",
+     "p": "By chance is Sandra in the bathroom?",
+     "a": "no"
+    },
+    {
+     "s": "Daniel picked up the football there.",
+     "p": "There Daniel lifted the football.",
+     "a": null
+    },
+    {
+     "s": "Daniel put down the football.",
+     "p": "Daniel set the football down.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the kitchen?",
+     "p": "Is Daniel to be seen in the kitchen?",
+     "a": "yes"
+    },
+    {
+     "s": "Sandra left the apple.",
+     "p": "Sandra abandoned the apple.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the hallway.",
+     "p": "Sandra went out to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the hallway?",
+     "p": "Is Sandra within the hallway?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 47,
+   "sentences": [
+    {
+     "s": "Sandra went back to the kitchen.",
+     "p": "Sandra came back toward the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John grabbed the football there.",
+     "p": "John seized the football there.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the kitchen?",
+     "p": "Is Sandra currently in the kitchen?",
+     "a": "yes"
+    },
+    {
+     "s": "John went back to the office.",
+     "p": "John headed back to the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra went back to the garden.",
+     "p": "Sandra went back out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the kitchen?",
+     "p": "Is the kitchen where Sandra is?",
+     "a": "no"
+    },
+    {
+     "s": "John went to the kitchen.",
+     "p": "John moved on to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the bathroom.",
+     "p": "Mary went back into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is John in the bathroom?",
+     "p": "Is John within the bathroom?",
+     "a": "no"
+    },
+    {
+     "s": "John discarded the football.",
+     "p": "John got rid of the football.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the bedroom.",
+     "p": "Mary traveled to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the kitchen?",
+     "p": "Would Sandra be in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Mary got the apple there.",
+     "p": "The apple was taken by Mary there.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the bathroom.",
+     "p": "Daniel stepped into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bathroom?",
+     "p": "Is the bathroom where Mary is?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 48,
+   "sentences": [
+    {
+     "s": "Sandra travelled to the bathroom.",
+     "p": "Sandra journeyed into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the kitchen.",
+     "p": "Next Sandra went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the hallway?",
+     "p": "Is Sandra located in the hallway?",
+     "a": "no"
+    },
+    {
+     "s": "Sandra moved to the garden.",
+     "p": "Sandra moved out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra got the apple there.",
+     "p": "There Sandra picked up the apple.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the hallway?",
+     "p": "Could Sandra be in the hallway?",
+     "a": "no"
+    },
+    {
+     "s": "Daniel travelled to the hallway.",
+     "p": "Daniel went over to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Sandra moved to the kitchen.",
+     "p": "Sandra shifted over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the kitchen?",
+     "p": "Is the kitchen where Sandra currently is?",
+     "a": "yes"
+    },
+    {
+     "s": "John went to the garden.",
+     "p": "John headed to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the office.",
+     "p": "Daniel journeyed toward the office.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the bathroom?",
+     "p": "Does Daniel happen to be in the bathroom?",
+     "a": "no"
+    },
+    {
+     "s": "Sandra went to the garden.",
+     "p": "Sandra walked to the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra discarded the apple.",
+     "p": "Sandra dropped the apple.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the bedroom?",
+     "p": "Might Daniel be in the bedroom?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 49,
+   "sentences": [
+    {
+     "s": "Daniel grabbed the apple there.",
+     "p": "The apple was snatched by Daniel there.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the hallway.",
+     "p": "John moved toward the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is John in the hallway?",
+     "p": "Right now is John in the hallway?",
+     "a": "yes"
+    },
+    {
+     "s": "John journeyed to the kitchen.",
+     "p": "John went on to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the bathroom.",
+     "p": "Sandra headed to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bathroom?",
+     "p": "Is Sandra inside the bathroom?",
+     "a": "yes"
+    },
+    {
+     "s": "John took the football there.",
+     "p": "There John picked up the football.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the office.",
+     "p": "Sandra traveled over to the office.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the office?",
+     "p": "Is the office where Sandra is?",
+     "a": "yes"
+    },
+    {
+     "s": "Sandra travelled to the hallway.",
+     "p": "Sandra went on to the hallway.",
+     "a": null
+    },
+    {
+     "s": "John left the football.",
+     "p": "The football was abandoned by John.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the garden?",
+     "p": "Is Sandra in the garden at present?",
+     "a": "no"
+    },
+    {
+     "s": "Sandra travelled to the bedroom.",
+     "p": "Sandra journeyed to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel discarded the apple.",
+     "p": "Daniel tossed the apple aside.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bedroom?",
+     "p": "Is Sandra now inside the bedroom?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 50,
+   "sentences": [
+    {
+     "s": "Mary got the apple there.",
+     "p": "There Mary took the apple.",
+     "a": null
+    },
+    {
+     "s": "John moved to the office.",
+     "p": "John shifted to the office.",
+     "a": null
+    },
+    {
+     "s": "Is John in the office?",
+     "p": "Is John now inside the office?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary travelled to the garden.",
+     "p": "Mary moved on to the garden.",
+     "a": null
+    },
+    {
+     "s": "Mary discarded the apple.",
+     "p": "Mary let the apple drop.",
+     "a": null
+    },
+    {
+     "s": "Is John in the office?",
+     "p": "Is the office where John is?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary took the apple there.",
+     "p": "Mary grabbed the apple there.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the bedroom.",
+     "p": "Mary went up to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bathroom?",
+     "p": "Is Mary inside the bathroom right now?",
+     "a": "no"
+    },
+    {
+     "s": "Mary travelled to the hallway.",
+     "p": "Mary journeyed out to the hallway.",
+     "a": null
+    },
+    {
+     "s": "John grabbed the football there.",
+     "p": "There John seized the football.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the hallway?",
+     "p": "Is Mary in the hallway according to reports?",
+     "a": "yes"
+    },
+    {
+     "s": "John put down the football there.",
+     "p": "John set the football down there.",
+     "a": null
+    },
+    {
+     "s": "Mary left the apple.",
+     "p": "Mary walked away from the apple.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the hallway?",
+     "p": "Is Mary inside the hallway?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 51,
+   "sentences": [
+    {
+     "s": "Sandra moved to the bathroom.",
+     "p": "Sandra shifted into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the garden.",
+     "p": "Daniel headed out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the garden?",
+     "p": "Is Daniel found in the garden?",
+     "a": "yes"
+    },
+    {
+     "s": "Sandra journeyed to the office.",
+     "p": "Sandra made the trip to the office.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the bathroom.",
+     "p": "Mary came back to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the office?",
+     "p": "Is Sandra inside the office at this time?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary picked up the apple there.",
+     "p": "Mary lifted the apple from there.",
+     "a": null
+    },
+    {
+     "s": "Daniel grabbed the football there.",
+     "p": "The football was taken by Daniel there.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bathroom?",
+     "p": "Is the bathroom where Mary is right now?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary journeyed to the office.",
+     "p": "Mary went to the office.",
+     "a": null
+    },
+    {
+     "s": "Daniel put down the football.",
+     "p": "Daniel laid the football down.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the garden?",
+     "p": "Is the garden where Mary is?",
+     "a": "no"
+    },
+    {
+     "s": "John grabbed the football there.",
+     "p": "John took hold of the football there.",
+     "a": null
+    },
+    {
+     "s": "John moved to the bathroom.",
+     "p": "John went into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is John in the bathroom?",
+     "p": "Is John in the bathroom now?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 52,
+   "sentences": [
+    {
+     "s": "Sandra travelled to the bathroom.",
+     "p": "Sandra journeyed off to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "John got the football there.",
+     "p": "John acquired the football there.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the garden?",
+     "p": "Is Sandra currently in the garden?",
+     "a": "no"
+    },
+    {
+     "s": "Daniel moved to the bathroom.",
+     "p": "Daniel moved toward the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the hallway.",
+     "p": "Daniel went out into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bathroom?",
+     "p": "Is Sandra within the bathroom now?",
+     "a": "yes"
+    },
+    {
+     "s": "Sandra went to the hallway.",
+     "p": "Sandra walked to the hallway.",
+     "a": null
+    },
+    {
+     "s": "John dropped the football.",
+     "p": "The football was dropped by John.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the hallway?",
+     "p": "Is Daniel in the hallway at present?",
+     "a": "yes"
+    },
+    {
+     "s": "Daniel grabbed the milk there.",
+     "p": "Daniel grasped the milk there.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the office.",
+     "p": "Sandra traveled to the office.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bedroom?",
+     "p": "Could Sandra be in the bedroom?",
+     "a": "no"
+    },
+    {
+     "s": "Daniel put down the milk there.",
+     "p": "The milk was set down there by Daniel.",
+     "a": null
+    },
+    {
+     "s": "Sandra moved to the kitchen.",
+     "p": "Sandra went to the kitchen after that.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bedroom?",
+     "p": "Is the bedroom where Sandra is?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 53,
+   "sentences": [
+    {
+     "s": "Sandra went back to the kitchen.",
+     "p": "Sandra came back to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John moved to the kitchen.",
+     "p": "John relocated to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is John in the kitchen?",
+     "p": "Is John currently inside the kitchen?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary went back to the office.",
+     "p": "Mary returned to the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra moved to the garden.",
+     "p": "Sandra went to the garden.",
+     "a": null
+    },
+    {
+     "s": "Is John in the garden?",
+     "p": "Could John be in the garden?",
+     "a": "no"
+    },
+    {
+     "s": "John moved to the office.",
+     "p": "John went to the office.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the hallway.",
+     "p": "Daniel journeyed to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the kitchen?",
+     "p": "Is Daniel inside the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "John journeyed to the bedroom.",
+     "p": "John traveled to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the bedroom.",
+     "p": "Mary returned to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the garden?",
+     "p": "Is Sandra in the garden at present?",
+     "a": "yes"
+    },
+    {
+     "s": "John journeyed to the hallway.",
+     "p": "John headed over to the hallway.",
+     "a": null
+    },
+    {
+     "s": "John went to the bedroom.",
+     "p": "John traveled into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is John in the hallway?",
+     "p": "Is John in the hallway at this moment?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 54,
+   "sentences": [
+    {
+     "s": "Mary journeyed to the garden.",
+     "p": "Mary moved out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the bathroom.",
+     "p": "Daniel walked into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the bathroom?",
+     "p": "Is Daniel now inside the bathroom?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary travelled to the hallway.",
+     "p": "Mary moved to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the office.",
+     "p": "Mary headed to the office.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the hallway?",
+     "p": "Is Mary standing in the hallway?",
+     "a": "no"
+    },
+    {
+     "s": "Mary took the football there.",
+     "p": "Mary grabbed the football there.",
+     "a": null
+    },
+    {
+     "s": "John went to the bedroom.",
+     "p": "John proceeded to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bedroom?",
+     "p": "Is Mary inside the bedroom?",
+     "a": "no"
+    },
+    {
+     "s": "Mary journeyed to the hallway.",
+     "p": "Mary went to the hallway again.",
+     "a": null
+    },
+    {
+     "s": "Sandra moved to the hallway.",
+     "p": "Sandra shifted into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the hallway?",
+     "p": "Would Mary be in the hallway?",
+     "a": "yes"
+    },
+    {
+     "s": "Daniel took the apple there.",
+     "p": "There Daniel seized the apple.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the bedroom.",
+     "p": "Mary returned to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bedroom?",
+     "p": "Is Sandra in the bedroom right now?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 55,
+   "sentences": [
+    {
+     "s": "John got the football there.",
+     "p": "John took the football there.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the bathroom.",
+     "p": "Daniel headed to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the bathroom?",
+     "p": "Is Daniel inside the bathroom?",
+     "a": "yes"
+    },
+    {
+     "s": "Daniel took the apple there.",
+     "p": "Daniel collected the apple there.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the bathroom.",
+     "p": "Sandra journeyed into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bathroom?",
+     "p": "Is Sandra currently in the bathroom?",
+     "a": "yes"
+    },
+    {
+     "s": "Daniel left the apple there.",
+     "p": "The apple was left there by Daniel.",
+     "a": null
+    },
+    {
+     "s": "Daniel journeyed to the bedroom.",
+     "p": "Daniel traveled to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bathroom?",
+     "p": "Is the bathroom where Sandra is?",
+     "a": "yes"
+    },
+    {
+     "s": "Sandra moved to the garden.",
+     "p": "Sandra went out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the garden.",
+     "p": "Daniel headed to the garden.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bathroom?",
+     "p": "Is Sandra located in the bathroom?",
+     "a": "no"
+    },
+    {
+     "s": "John put down the football.",
+     "p": "John set down the football.",
+     "a": null
+    },
+    {
+     "s": "Daniel journeyed to the bathroom.",
+     "p": "Daniel went to the bathroom again.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the hallway?",
+     "p": "Is Sandra present inside the hallway?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 56,
+   "sentences": [
+    {
+     "s": "Sandra moved to the garden.",
+     "p": "Sandra relocated to the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra went back to the bedroom.",
+     "p": "Sandra returned to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bedroom?",
+     "p": "Is Sandra in the bedroom currently?",
+     "a": "yes"
+    },
+    {
+     "s": "John travelled to the kitchen.",
+     "p": "John went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John moved to the bedroom.",
+     "p": "John shifted to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the kitchen?",
+     "p": "Is Sandra inside the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Daniel picked up the apple there.",
+     "p": "There Daniel lifted the apple.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the bathroom.",
+     "p": "Mary walked into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is John in the bedroom?",
+     "p": "Is John in the bedroom right now?",
+     "a": "yes"
+    },
+    {
+     "s": "Daniel dropped the apple.",
+     "p": "Daniel released the apple.",
+     "a": null
+    },
+    {
+     "s": "Daniel moved to the hallway.",
+     "p": "Daniel went to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is John in the bedroom?",
+     "p": "Is the bedroom where John is?",
+     "a": "yes"
+    },
+    {
+     "s": "John went back to the kitchen.",
+     "p": "John came back to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John moved to the office.",
+     "p": "John went to the office.",
+     "a": null
+    },
+    {
+     "s": "Is John in the office?",
+     "p": "Is John currently in the office?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 57,
+   "sentences": [
+    {
+     "s": "Daniel went to the office.",
+     "p": "Daniel headed to the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the hallway.",
+     "p": "Sandra went to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the office?",
+     "p": "Is Daniel inside the office?",
+     "a": "yes"
+    },
+    {
+     "s": "Mary went to the kitchen.",
+     "p": "Mary traveled to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the hallway.",
+     "p": "John went to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the hallway?",
+     "p": "Is Daniel currently in the hallway?",
+     "a": "no"
+    },
+    {
+     "s": "John got the football there.",
+     "p": "John picked up the football there.",
+     "a": null
+    },
+    {
+     "s": "John discarded the football.",
+     "p": "The football was tossed away by John.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the office?",
+     "p": "Is Mary in the office at all?",
+     "a": "no"
+    },
+    {
+     "s": "Mary travelled to the garden.",
+     "p": "Mary went out to the garden.",
+     "a": null
+    },
+    {
+     "s": "John took the football there.",
+     "p": "John grabbed the football there.",
+     "a": null
+    },
+    {
+     "s": "Is John in the hallway?",
+     "p": "Is John inside the hallway?",
+     "a": "yes"
+    },
+    {
+     "s": "John went to the office.",
+     "p": "John traveled to the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the kitchen.",
+     "p": "Sandra headed over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the hallway?",
+     "p": "Is Mary in the hallway now?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 58,
+   "sentences": [
+    {
+     "s": "Daniel journeyed to the bathroom.",
+     "p": "Daniel went to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel grabbed the football there.",
+     "p": "Daniel seized the football there.",
+     "a": null
+    },
+    {
+     "s": "Is Daniel in the bathroom?",
+     "p": "Is Daniel within the bathroom?",
+     "a": "yes"
+    },
+    {
+     "s": "Daniel grabbed the milk there.",
+     "p": "There Daniel took the milk.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the hallway.",
+     "p": "Sandra headed to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the office?",
+     "p": "Is the office where Sandra is?",
+     "a": "no"
+    },
+    {
+     "s": "Sandra picked up the apple there.",
+     "p": "Sandra lifted the apple there.",
+     "a": null
+    },
+    {
+     "s": "Sandra left the apple.",
+     "p": "Sandra let go of the apple.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the hallway?",
+     "p": "Is Sandra inside the hallway?",
+     "a": "yes"
+    },
+    {
+     "s": "Daniel went to the kitchen.",
+     "p": "Daniel walked to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the kitchen.",
+     "p": "Mary went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the office?",
+     "p": "Could Mary be in the office?",
+     "a": "no"
+    },
+    {
+     "s": "Daniel dropped the milk.",
+     "p": "Daniel let the milk fall.",
+     "a": null
+    },
+    {
+     "s": "Daniel left the football.",
+     "p": "Daniel abandoned the football.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bedroom?",
+     "p": "Is Mary in the bedroom now?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 59,
+   "sentences": [
+    {
+     "s": "Sandra travelled to the bedroom.",
+     "p": "Sandra went to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the garden.",
+     "p": "Sandra headed to the garden.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the office?",
+     "p": "Is Sandra in the office at present?",
+     "a": "no"
+    },
+    {
+     "s": "John went to the bedroom.",
+     "p": "John walked to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the bathroom.",
+     "p": "Mary shifted to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the garden?",
+     "p": "Is Sandra in the garden right now?",
+     "a": "yes"
+    },
+    {
+     "s": "Daniel got the milk there.",
+     "p": "Daniel acquired the milk there.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the bedroom.",
+     "p": "Mary relocated to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Is Mary in the bathroom?",
+     "p": "Is Mary inside the bathroom?",
+     "a": "no"
+    },
+    {
+     "s": "Sandra journeyed to the bedroom.",
+     "p": "Sandra traveled to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "John moved to the kitchen.",
+     "p": "John shifted to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the garden?",
+     "p": "Is Sandra presently in the garden?",
+     "a": "no"
+    },
+    {
+     "s": "John travelled to the bedroom.",
+     "p": "John went to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary picked up the football there.",
+     "p": "There Mary lifted the football.",
+     "a": null
+    },
+    {
+     "s": "Is Sandra in the bedroom?",
+     "p": "Is Sandra in the bedroom at this time?",
+     "a": "yes"
+    }
+   ]
+  }
+ ]
+}

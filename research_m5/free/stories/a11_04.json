@@ -1,0 +1,1265 @@
+{
+ "task": "a11",
+ "stories": [
+  {
+   "part": "test",
+   "id": 40,
+   "sentences": [
+    {
+     "s": "Every sailor is shiny.",
+     "p": "Each sailor happens to be shiny.",
+     "a": null
+    },
+    {
+     "s": "Fay is a sailor.",
+     "p": "Fay turns out to be a sailor.",
+     "a": null
+    },
+    {
+     "s": "Eli is gentle.",
+     "p": "Eli counts as gentle.",
+     "a": null
+    },
+    {
+     "s": "Ivy is gentle.",
+     "p": "Ivy has the quality of being gentle.",
+     "a": null
+    },
+    {
+     "s": "Is Fay gentle?",
+     "p": "Would Fay be described as gentle?",
+     "a": "no"
+    },
+    {
+     "s": "Fay is shiny.",
+     "p": "Shiny is a quality that Fay has.",
+     "a": null
+    },
+    {
+     "s": "Is Fay a tiger?",
+     "p": "Might Fay be a tiger at all?",
+     "a": "no"
+    },
+    {
+     "s": "Every tiger is gentle.",
+     "p": "Without exception every tiger is gentle.",
+     "a": null
+    },
+    {
+     "s": "Is Eli a sailor?",
+     "p": "By any chance is Eli a sailor?",
+     "a": "no"
+    },
+    {
+     "s": "Every sailor is gentle.",
+     "p": "Gentle applies to every sailor.",
+     "a": null
+    },
+    {
+     "s": "Eli is a sailor.",
+     "p": "A sailor is what Eli is.",
+     "a": null
+    },
+    {
+     "s": "Ivy is shiny.",
+     "p": "Shiny describes Ivy.",
+     "a": null
+    },
+    {
+     "s": "Which things are gentle?",
+     "p": "Which things count as gentle?",
+     "a": "eli,fay,ivy"
+    },
+    {
+     "s": "Every shiny thing is a sailor.",
+     "p": "Any shiny thing turns out to be a sailor.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 41,
+   "sentences": [
+    {
+     "s": "Ben is a sailor.",
+     "p": "In fact Ben is a sailor.",
+     "a": null
+    },
+    {
+     "s": "Is Ben a robot?",
+     "p": "Could Ben possibly be a robot?",
+     "a": "no"
+    },
+    {
+     "s": "Is Ben heavy?",
+     "p": "Would anyone call Ben heavy?",
+     "a": "no"
+    },
+    {
+     "s": "Is Ben round?",
+     "p": "Does the word round suit Ben?",
+     "a": "no"
+    },
+    {
+     "s": "Ben is heavy.",
+     "p": "Heavy is how Ben is.",
+     "a": null
+    },
+    {
+     "s": "Is Ben a tiger?",
+     "p": "Could Ben be called a tiger?",
+     "a": "no"
+    },
+    {
+     "s": "Every robot is a tiger.",
+     "p": "A tiger is what every robot turns out to be.",
+     "a": null
+    },
+    {
+     "s": "Which things are heavy?",
+     "p": "Which things can be called heavy?",
+     "a": "ben"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 42,
+   "sentences": [
+    {
+     "s": "Hal is shiny.",
+     "p": "Shiny is the quality Hal has.",
+     "a": null
+    },
+    {
+     "s": "Is Hal loud?",
+     "p": "Is loudness a trait of Hal?",
+     "a": "no"
+    },
+    {
+     "s": "Hal is loud.",
+     "p": "Loud is a word for Hal.",
+     "a": null
+    },
+    {
+     "s": "Hal is a robot.",
+     "p": "Plainly Hal is a robot.",
+     "a": null
+    },
+    {
+     "s": "Fay is a tiger.",
+     "p": "A tiger is what Fay happens to be.",
+     "a": null
+    },
+    {
+     "s": "Fay is heavy.",
+     "p": "Heavy fits Fay.",
+     "a": null
+    },
+    {
+     "s": "Every tiger is heavy.",
+     "p": "Heavy is true of every tiger.",
+     "a": null
+    },
+    {
+     "s": "Hal is a tiger.",
+     "p": "Hal is among the tiger kind.",
+     "a": null
+    },
+    {
+     "s": "Is Hal heavy?",
+     "p": "Would Hal be described as heavy?",
+     "a": "yes"
+    },
+    {
+     "s": "Fay is shiny.",
+     "p": "Shiny sums up Fay.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 43,
+   "sentences": [
+    {
+     "s": "Gus is quick.",
+     "p": "The word quick belongs to Gus.",
+     "a": null
+    },
+    {
+     "s": "Eli is loud.",
+     "p": "Eli can be called loud.",
+     "a": null
+    },
+    {
+     "s": "Eli is quick.",
+     "p": "Eli happens to be quick.",
+     "a": null
+    },
+    {
+     "s": "Is Eli green?",
+     "p": "Does green apply to Eli?",
+     "a": "no"
+    },
+    {
+     "s": "Which things are quick?",
+     "p": "Which things would you label quick?",
+     "a": "eli,gus"
+    },
+    {
+     "s": "Every dragon is a tiger.",
+     "p": "Each dragon ends up being a tiger.",
+     "a": null
+    },
+    {
+     "s": "Every tiger is a fox.",
+     "p": "Each tiger also counts as a fox.",
+     "a": null
+    },
+    {
+     "s": "Every tiger is quick.",
+     "p": "Every tiger turns out quick.",
+     "a": null
+    },
+    {
+     "s": "Ben is a tiger.",
+     "p": "Ben belongs to the tiger group.",
+     "a": null
+    },
+    {
+     "s": "Is Ben quick?",
+     "p": "Is Ben really quick?",
+     "a": "yes"
+    },
+    {
+     "s": "Which things are loud?",
+     "p": "Which things qualify as loud?",
+     "a": "eli"
+    },
+    {
+     "s": "Every loud thing is quick.",
+     "p": "Each loud thing is also quick.",
+     "a": null
+    },
+    {
+     "s": "Is Ben a fox?",
+     "p": "Does Ben qualify as a fox?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 44,
+   "sentences": [
+    {
+     "s": "Every loud thing is gentle.",
+     "p": "Gentle is what every loud thing is.",
+     "a": null
+    },
+    {
+     "s": "Dana is loud.",
+     "p": "Dana is known to be loud.",
+     "a": null
+    },
+    {
+     "s": "Fay is heavy.",
+     "p": "Fay carries the heavy label.",
+     "a": null
+    },
+    {
+     "s": "Is Dana round?",
+     "p": "Does Dana strike you as round?",
+     "a": "no"
+    },
+    {
+     "s": "Ben is a fox.",
+     "p": "Simply put Ben is a fox.",
+     "a": null
+    },
+    {
+     "s": "Every fox is gentle.",
+     "p": "Gentleness belongs to each fox.",
+     "a": null
+    },
+    {
+     "s": "Every heavy thing is round.",
+     "p": "Round is true of any heavy thing.",
+     "a": null
+    },
+    {
+     "s": "Is Dana gentle?",
+     "p": "Can Dana be seen as gentle?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 45,
+   "sentences": [
+    {
+     "s": "Hal is a dragon.",
+     "p": "The dragon label fits Hal.",
+     "a": null
+    },
+    {
+     "s": "Is Hal gentle?",
+     "p": "Does Hal come across as gentle?",
+     "a": "no"
+    },
+    {
+     "s": "Every gentle thing is a dragon.",
+     "p": "A dragon is the form each gentle thing takes.",
+     "a": null
+    },
+    {
+     "s": "Is Hal green?",
+     "p": "Could green be the colour of Hal?",
+     "a": "no"
+    },
+    {
+     "s": "Is Hal a pilot?",
+     "p": "Would Hal be called a pilot?",
+     "a": "no"
+    },
+    {
+     "s": "Is Hal a tiger?",
+     "p": "Does Hal belong to the tiger type?",
+     "a": "no"
+    },
+    {
+     "s": "Hal is gentle.",
+     "p": "Gentle is the way Hal turns out.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 46,
+   "sentences": [
+    {
+     "s": "Eli is a fox.",
+     "p": "A fox is what Eli happens to be.",
+     "a": null
+    },
+    {
+     "s": "Ben is loud.",
+     "p": "Loudness marks Ben.",
+     "a": null
+    },
+    {
+     "s": "Ben is heavy.",
+     "p": "Ben is on the heavy side.",
+     "a": null
+    },
+    {
+     "s": "Is Eli round?",
+     "p": "Does Eli look round to you?",
+     "a": "no"
+    },
+    {
+     "s": "Hal is round.",
+     "p": "Round fits Hal nicely.",
+     "a": null
+    },
+    {
+     "s": "Cy is green.",
+     "p": "Green is the colour of Cy.",
+     "a": null
+    },
+    {
+     "s": "Is Eli a robot?",
+     "p": "Does Eli happen to be a robot?",
+     "a": "no"
+    },
+    {
+     "s": "Cy is a robot.",
+     "p": "Robot is what Cy is.",
+     "a": null
+    },
+    {
+     "s": "Is Eli green?",
+     "p": "Would you say Eli is green?",
+     "a": "no"
+    },
+    {
+     "s": "Every loud thing is a fox.",
+     "p": "Each loud thing qualifies as a fox.",
+     "a": null
+    },
+    {
+     "s": "Every round thing is a fox.",
+     "p": "Being round makes each thing a fox.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 47,
+   "sentences": [
+    {
+     "s": "Fay is shiny.",
+     "p": "Fay appears shiny.",
+     "a": null
+    },
+    {
+     "s": "Fay is a robot.",
+     "p": "Fay has been identified as a robot.",
+     "a": null
+    },
+    {
+     "s": "Every green thing is a fox.",
+     "p": "A fox is what each green thing becomes.",
+     "a": null
+    },
+    {
+     "s": "Ivy is a fox.",
+     "p": "Ivy counts as a fox.",
+     "a": null
+    },
+    {
+     "s": "Ivy is a robot.",
+     "p": "Robots include Ivy.",
+     "a": null
+    },
+    {
+     "s": "Ivy is sleepy.",
+     "p": "Sleepy describes Ivy at present.",
+     "a": null
+    },
+    {
+     "s": "Is Ivy round?",
+     "p": "Could round describe Ivy?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 48,
+   "sentences": [
+    {
+     "s": "Every green thing is loud.",
+     "p": "Loud is what all green things are.",
+     "a": null
+    },
+    {
+     "s": "Every green thing is a pilot.",
+     "p": "Green things all qualify as pilots.",
+     "a": null
+    },
+    {
+     "s": "Ben is a dragon.",
+     "p": "The dragon kind includes Ben.",
+     "a": null
+    },
+    {
+     "s": "Is Ben round?",
+     "p": "Would round be a fitting label for Ben?",
+     "a": "no"
+    },
+    {
+     "s": "Fay is green.",
+     "p": "Green belongs to Fay.",
+     "a": null
+    },
+    {
+     "s": "Is Fay loud?",
+     "p": "Is loud a word that fits Fay?",
+     "a": "yes"
+    },
+    {
+     "s": "Every round thing is green.",
+     "p": "Green is shared by all round things.",
+     "a": null
+    },
+    {
+     "s": "Is Fay round?",
+     "p": "Does round describe Fay?",
+     "a": "no"
+    },
+    {
+     "s": "Is Fay a pilot?",
+     "p": "Could Fay be a pilot?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 49,
+   "sentences": [
+    {
+     "s": "Ben is a fox.",
+     "p": "Among the foxes sits Ben.",
+     "a": null
+    },
+    {
+     "s": "Hal is green.",
+     "p": "Green is what Hal is.",
+     "a": null
+    },
+    {
+     "s": "Every dragon is green.",
+     "p": "Green covers every dragon.",
+     "a": null
+    },
+    {
+     "s": "Ben is gentle.",
+     "p": "Gentle is how Ben can be described.",
+     "a": null
+    },
+    {
+     "s": "Ben is round.",
+     "p": "Ben has a round shape.",
+     "a": null
+    },
+    {
+     "s": "Is Hal a dragon?",
+     "p": "In truth is Hal a dragon?",
+     "a": "no"
+    },
+    {
+     "s": "Hal is gentle.",
+     "p": "The gentle quality sits with Hal.",
+     "a": null
+    },
+    {
+     "s": "Is Hal a fox?",
+     "p": "Does a fox describe Hal?",
+     "a": "no"
+    },
+    {
+     "s": "Hal is a tiger.",
+     "p": "Tiger is the kind Hal belongs to.",
+     "a": null
+    },
+    {
+     "s": "Is Hal round?",
+     "p": "Could Hal be called round?",
+     "a": "no"
+    },
+    {
+     "s": "Ben is a tiger.",
+     "p": "Tiger is a label that suits Ben.",
+     "a": null
+    },
+    {
+     "s": "Every dragon is gentle.",
+     "p": "Every dragon can be called gentle.",
+     "a": null
+    },
+    {
+     "s": "Which things are gentle?",
+     "p": "Which things would be called gentle?",
+     "a": "ben,hal"
+    },
+    {
+     "s": "Hal is round.",
+     "p": "Round is a shape Hal has.",
+     "a": null
+    },
+    {
+     "s": "Is Ben a dragon?",
+     "p": "Is a dragon what Ben is?",
+     "a": "no"
+    },
+    {
+     "s": "Ben is green.",
+     "p": "Green applies to Ben.",
+     "a": null
+    },
+    {
+     "s": "Every fox is a tiger.",
+     "p": "Each fox ends up as a tiger.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 50,
+   "sentences": [
+    {
+     "s": "Jo is round.",
+     "p": "Round is what Jo looks like.",
+     "a": null
+    },
+    {
+     "s": "Is Jo sleepy?",
+     "p": "Would sleepy fit Jo?",
+     "a": "no"
+    },
+    {
+     "s": "Is Jo green?",
+     "p": "Does green describe Jo at all?",
+     "a": "no"
+    },
+    {
+     "s": "Jo is green.",
+     "p": "Green sums up Jo.",
+     "a": null
+    },
+    {
+     "s": "Is Jo a pilot?",
+     "p": "Is the pilot role held by Jo?",
+     "a": "no"
+    },
+    {
+     "s": "Every green thing is a dragon.",
+     "p": "Every green thing counts as a dragon.",
+     "a": null
+    },
+    {
+     "s": "Which things are green?",
+     "p": "Which things can be called green?",
+     "a": "jo"
+    },
+    {
+     "s": "Is Jo a dragon?",
+     "p": "Does Jo fall in the dragon group?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 51,
+   "sentences": [
+    {
+     "s": "Fay is loud.",
+     "p": "Loud is how Fay comes across.",
+     "a": null
+    },
+    {
+     "s": "Fay is a sailor.",
+     "p": "The sailor job belongs to Fay.",
+     "a": null
+    },
+    {
+     "s": "Is Fay shiny?",
+     "p": "Would shiny fit Fay?",
+     "a": "no"
+    },
+    {
+     "s": "Which things are loud?",
+     "p": "Do you know which things are loud?",
+     "a": "fay"
+    },
+    {
+     "s": "Hal is green.",
+     "p": "Hal has a green quality.",
+     "a": null
+    },
+    {
+     "s": "Every green thing is loud.",
+     "p": "All green things are loud too.",
+     "a": null
+    },
+    {
+     "s": "Hal is shiny.",
+     "p": "Hal happens to be shiny.",
+     "a": null
+    },
+    {
+     "s": "Is Hal loud?",
+     "p": "Is Hal someone who is loud?",
+     "a": "yes"
+    },
+    {
+     "s": "Fay is green.",
+     "p": "A green quality marks Fay.",
+     "a": null
+    },
+    {
+     "s": "Gus is green.",
+     "p": "The colour green fits Gus.",
+     "a": null
+    },
+    {
+     "s": "Every loud thing is a sailor.",
+     "p": "Loud things all count as sailors.",
+     "a": null
+    },
+    {
+     "s": "Which things are green?",
+     "p": "Which things look green?",
+     "a": "fay,gus,hal"
+    },
+    {
+     "s": "Is Gus a sailor?",
+     "p": "Does Gus hold the sailor job?",
+     "a": "yes"
+    },
+    {
+     "s": "Gus is a robot.",
+     "p": "Gus happens to be a robot.",
+     "a": null
+    },
+    {
+     "s": "Every loud thing is a robot.",
+     "p": "Robot is the category for each loud thing.",
+     "a": null
+    },
+    {
+     "s": "Gus is a sailor.",
+     "p": "Sailor is the job of Gus.",
+     "a": null
+    },
+    {
+     "s": "Every robot is green.",
+     "p": "Each robot has the green tint.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 52,
+   "sentences": [
+    {
+     "s": "Ann is a sailor.",
+     "p": "Sailor is the role Ann fills.",
+     "a": null
+    },
+    {
+     "s": "Is Ann sleepy?",
+     "p": "Is sleepy a fit for Ann?",
+     "a": "no"
+    },
+    {
+     "s": "Is Ann a pilot?",
+     "p": "Could Ann be the pilot?",
+     "a": "no"
+    },
+    {
+     "s": "Jo is sleepy.",
+     "p": "Sleepiness marks Jo.",
+     "a": null
+    },
+    {
+     "s": "Jo is round.",
+     "p": "The round quality belongs to Jo.",
+     "a": null
+    },
+    {
+     "s": "Every shiny thing is sleepy.",
+     "p": "Sleepiness covers all shiny things.",
+     "a": null
+    },
+    {
+     "s": "Fay is shiny.",
+     "p": "Shiny applies to Fay.",
+     "a": null
+    },
+    {
+     "s": "Is Fay sleepy?",
+     "p": "Might Fay be sleepy?",
+     "a": "yes"
+    },
+    {
+     "s": "Every gentle thing is round.",
+     "p": "Round is true of each gentle thing.",
+     "a": null
+    },
+    {
+     "s": "Ann is sleepy.",
+     "p": "Sleepy fits Ann well.",
+     "a": null
+    },
+    {
+     "s": "Every round thing is shiny.",
+     "p": "Each round thing is shiny as well.",
+     "a": null
+    },
+    {
+     "s": "Fay is round.",
+     "p": "Fay can be called round.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 53,
+   "sentences": [
+    {
+     "s": "Eli is heavy.",
+     "p": "Heavy is how Eli is described.",
+     "a": null
+    },
+    {
+     "s": "Every green thing is a pilot.",
+     "p": "Being green makes each thing a pilot.",
+     "a": null
+    },
+    {
+     "s": "Every heavy thing is a robot.",
+     "p": "Each heavy thing is classed as a robot.",
+     "a": null
+    },
+    {
+     "s": "Is Eli a robot?",
+     "p": "Would Eli count as a robot?",
+     "a": "yes"
+    },
+    {
+     "s": "Dana is green.",
+     "p": "Dana has the colour green.",
+     "a": null
+    },
+    {
+     "s": "Is Dana a pilot?",
+     "p": "Could Dana be classed as a pilot?",
+     "a": "yes"
+    },
+    {
+     "s": "Gus is a pilot.",
+     "p": "Being a pilot describes Gus.",
+     "a": null
+    },
+    {
+     "s": "Dana is heavy.",
+     "p": "Heavy describes Dana.",
+     "a": null
+    },
+    {
+     "s": "Every pilot is a robot.",
+     "p": "Robot is what each pilot is.",
+     "a": null
+    },
+    {
+     "s": "Every robot is green.",
+     "p": "Any robot you pick is green.",
+     "a": null
+    },
+    {
+     "s": "Eli is green.",
+     "p": "Eli shows up as green.",
+     "a": null
+    },
+    {
+     "s": "Gus is green.",
+     "p": "Green belongs to Gus too.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 54,
+   "sentences": [
+    {
+     "s": "Ann is a sailor.",
+     "p": "Sailor describes Ann.",
+     "a": null
+    },
+    {
+     "s": "Eli is a dragon.",
+     "p": "Eli has turned out to be a dragon.",
+     "a": null
+    },
+    {
+     "s": "Is Ann round?",
+     "p": "Would round be a word for Ann?",
+     "a": "no"
+    },
+    {
+     "s": "Every round thing is sleepy.",
+     "p": "Sleepy goes with any round thing.",
+     "a": null
+    },
+    {
+     "s": "Ann is quick.",
+     "p": "Quick is a trait Ann carries.",
+     "a": null
+    },
+    {
+     "s": "Ann is a dragon.",
+     "p": "The dragon kind is where Ann sits.",
+     "a": null
+    },
+    {
+     "s": "Is Eli a tiger?",
+     "p": "Does Eli happen to be a tiger?",
+     "a": "no"
+    },
+    {
+     "s": "Is Eli sleepy?",
+     "p": "Is sleepy the word for Eli?",
+     "a": "no"
+    },
+    {
+     "s": "Ann is round.",
+     "p": "Round is a word that fits Ann.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 55,
+   "sentences": [
+    {
+     "s": "Gus is round.",
+     "p": "Gus has a round form.",
+     "a": null
+    },
+    {
+     "s": "Eli is a tiger.",
+     "p": "Tiger is a label for Eli.",
+     "a": null
+    },
+    {
+     "s": "Eli is a robot.",
+     "p": "Eli turns out to be a robot.",
+     "a": null
+    },
+    {
+     "s": "Every loud thing is round.",
+     "p": "Round covers each loud thing.",
+     "a": null
+    },
+    {
+     "s": "Eli is sleepy.",
+     "p": "Sleepiness suits Eli.",
+     "a": null
+    },
+    {
+     "s": "Is Eli round?",
+     "p": "Does round fit Eli at all?",
+     "a": "no"
+    },
+    {
+     "s": "Every green thing is loud.",
+     "p": "Loudness is found in every green thing.",
+     "a": null
+    },
+    {
+     "s": "Gus is green.",
+     "p": "Green describes Gus.",
+     "a": null
+    },
+    {
+     "s": "Eli is loud.",
+     "p": "Loud is a fit for Eli.",
+     "a": null
+    },
+    {
+     "s": "Eli is green.",
+     "p": "Eli has a green look.",
+     "a": null
+    },
+    {
+     "s": "Is Gus loud?",
+     "p": "Would Gus be considered loud?",
+     "a": "yes"
+    },
+    {
+     "s": "Every round thing is green.",
+     "p": "Anything round turns out green.",
+     "a": null
+    },
+    {
+     "s": "Gus is a robot.",
+     "p": "Gus is a robot by nature.",
+     "a": null
+    },
+    {
+     "s": "Gus is sleepy.",
+     "p": "Sleepy is what describes Gus.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 56,
+   "sentences": [
+    {
+     "s": "Ben is a tiger.",
+     "p": "The tiger group holds Ben.",
+     "a": null
+    },
+    {
+     "s": "Every green thing is a tiger.",
+     "p": "Green things each count as a tiger.",
+     "a": null
+    },
+    {
+     "s": "Every tiger is a robot.",
+     "p": "Robot is the form every tiger takes.",
+     "a": null
+    },
+    {
+     "s": "Eli is a robot.",
+     "p": "Eli is listed as a robot.",
+     "a": null
+    },
+    {
+     "s": "Eli is a tiger.",
+     "p": "Tiger describes Eli.",
+     "a": null
+    },
+    {
+     "s": "Ben is a robot.",
+     "p": "Ben has been labelled a robot.",
+     "a": null
+    },
+    {
+     "s": "Eli is sleepy.",
+     "p": "Eli is in the sleepy category.",
+     "a": null
+    },
+    {
+     "s": "Ben is green.",
+     "p": "Green belongs with Ben.",
+     "a": null
+    },
+    {
+     "s": "Is Eli green?",
+     "p": "Could green be the right word for Eli?",
+     "a": "no"
+    },
+    {
+     "s": "Ben is sleepy.",
+     "p": "Sleepy is a state Ben is in.",
+     "a": null
+    },
+    {
+     "s": "Fay is green.",
+     "p": "Fay shows green.",
+     "a": null
+    },
+    {
+     "s": "Every heavy thing is sleepy.",
+     "p": "Sleepy applies to any heavy thing.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 57,
+   "sentences": [
+    {
+     "s": "Cy is gentle.",
+     "p": "Gentle is a quality found in Cy.",
+     "a": null
+    },
+    {
+     "s": "Cy is a robot.",
+     "p": "Robot is the category for Cy.",
+     "a": null
+    },
+    {
+     "s": "Every green thing is a robot.",
+     "p": "Robot is the type of every green thing.",
+     "a": null
+    },
+    {
+     "s": "Every round thing is a robot.",
+     "p": "Every round thing qualifies as a robot.",
+     "a": null
+    },
+    {
+     "s": "Is Cy heavy?",
+     "p": "Does heavy suit Cy?",
+     "a": "no"
+    },
+    {
+     "s": "Is Cy round?",
+     "p": "Would round describe Cy?",
+     "a": "no"
+    },
+    {
+     "s": "Ben is gentle.",
+     "p": "Ben shows gentleness.",
+     "a": null
+    },
+    {
+     "s": "Is Ben heavy?",
+     "p": "Would heavy be a fair word for Ben?",
+     "a": "no"
+    },
+    {
+     "s": "Cy is green.",
+     "p": "Cy has a green tone.",
+     "a": null
+    },
+    {
+     "s": "Is Cy a dragon?",
+     "p": "Could Cy be a dragon?",
+     "a": "no"
+    },
+    {
+     "s": "Cy is heavy.",
+     "p": "Heavy is the trait of Cy.",
+     "a": null
+    },
+    {
+     "s": "Cy is round.",
+     "p": "Cy looks round.",
+     "a": null
+    },
+    {
+     "s": "Every green thing is a dragon.",
+     "p": "The dragon label covers every green thing.",
+     "a": null
+    },
+    {
+     "s": "Which things are heavy?",
+     "p": "Which things would you call heavy?",
+     "a": "cy"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 58,
+   "sentences": [
+    {
+     "s": "Every round thing is a fox.",
+     "p": "Being round puts a thing in the fox kind.",
+     "a": null
+    },
+    {
+     "s": "Ann is sleepy.",
+     "p": "Sleepy is the word for Ann.",
+     "a": null
+    },
+    {
+     "s": "Dana is gentle.",
+     "p": "Dana belongs with the gentle group.",
+     "a": null
+    },
+    {
+     "s": "Is Dana sleepy?",
+     "p": "Would Dana be sleepy?",
+     "a": "no"
+    },
+    {
+     "s": "Every tiger is round.",
+     "p": "Round is true for each tiger.",
+     "a": null
+    },
+    {
+     "s": "Every sleepy thing is gentle.",
+     "p": "Gentleness is shared by sleepy things.",
+     "a": null
+    },
+    {
+     "s": "Every fox is green.",
+     "p": "Green is the shade of every fox.",
+     "a": null
+    },
+    {
+     "s": "Dana is a fox.",
+     "p": "Dana is classed as a fox.",
+     "a": null
+    },
+    {
+     "s": "Gus is a fox.",
+     "p": "The fox type fits Gus.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 59,
+   "sentences": [
+    {
+     "s": "Eli is a sailor.",
+     "p": "Eli has the sailor job.",
+     "a": null
+    },
+    {
+     "s": "Every sailor is a pilot.",
+     "p": "Pilot is the role of each sailor.",
+     "a": null
+    },
+    {
+     "s": "Is Eli a pilot?",
+     "p": "Does Eli hold the pilot role?",
+     "a": "yes"
+    },
+    {
+     "s": "Dana is sleepy.",
+     "p": "Sleepy best describes Dana.",
+     "a": null
+    },
+    {
+     "s": "Is Dana a sailor?",
+     "p": "Can Dana be called a sailor?",
+     "a": "no"
+    },
+    {
+     "s": "Dana is a sailor.",
+     "p": "A sailor is Dana.",
+     "a": null
+    },
+    {
+     "s": "Dana is a robot.",
+     "p": "Dana belongs to the robot kind.",
+     "a": null
+    },
+    {
+     "s": "Eli is green.",
+     "p": "Green is a quality of Eli.",
+     "a": null
+    },
+    {
+     "s": "Eli is shiny.",
+     "p": "Shiny is how Eli shows.",
+     "a": null
+    },
+    {
+     "s": "Is Eli sleepy?",
+     "p": "Would sleepy describe Eli?",
+     "a": "no"
+    },
+    {
+     "s": "Eli is sleepy.",
+     "p": "Eli looks sleepy.",
+     "a": null
+    },
+    {
+     "s": "Is Dana green?",
+     "p": "Could Dana be green?",
+     "a": "no"
+    },
+    {
+     "s": "Is Dana shiny?",
+     "p": "Is shiny a word for Dana?",
+     "a": "no"
+    },
+    {
+     "s": "Dana is a pilot.",
+     "p": "The pilot job suits Dana.",
+     "a": null
+    },
+    {
+     "s": "Every pilot is a sailor.",
+     "p": "Each pilot counts as a sailor.",
+     "a": null
+    },
+    {
+     "s": "Eli is a pilot.",
+     "p": "Eli works as a pilot.",
+     "a": null
+    },
+    {
+     "s": "Dana is shiny.",
+     "p": "Dana can be called shiny.",
+     "a": null
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,1150 @@
+{
+  "task": "a1",
+  "stories": [
+    {
+      "part": "test",
+      "id": 60,
+      "sentences": [
+        {
+          "s": "The jar is in the kitchen.",
+          "p": "Resting in the kitchen is the jar.",
+          "a": null
+        },
+        {
+          "s": "The bag is in the kitchen.",
+          "p": "The bag can be found in the kitchen.",
+          "a": null
+        },
+        {
+          "s": "The key is in the jar.",
+          "p": "Lying within the jar is the key.",
+          "a": null
+        },
+        {
+          "s": "The book is in the jar.",
+          "p": "The jar currently holds the book.",
+          "a": null
+        },
+        {
+          "s": "Sam moved the bag to the garden.",
+          "p": "The bag was carried to the garden by Sam.",
+          "a": null
+        },
+        {
+          "s": "Is the jar in the kitchen?",
+          "p": "Does the kitchen contain the jar?",
+          "a": "yes"
+        },
+        {
+          "s": "Ana moved the bag to the office.",
+          "p": "Later Ana shifted the bag over to the office.",
+          "a": null
+        },
+        {
+          "s": "Is the book in the kitchen?",
+          "p": "Could the book be located in the kitchen?",
+          "a": "yes"
+        },
+        {
+          "s": "Is the jar in the office?",
+          "p": "Would the jar be sitting in the office?",
+          "a": "no"
+        },
+        {
+          "s": "Is the bag in the office?",
+          "p": "Has the bag ended up in the office?",
+          "a": "yes"
+        },
+        {
+          "s": "Mia took the key out of the jar.",
+          "p": "The key was lifted from the jar by Mia.",
+          "a": null
+        },
+        {
+          "s": "Ana put the key in the bag.",
+          "p": "The key was dropped into the bag by Ana.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 61,
+      "sentences": [
+        {
+          "s": "The basket is in the office.",
+          "p": "The office is where the basket lies.",
+          "a": null
+        },
+        {
+          "s": "The apple is in the hall.",
+          "p": "The apple has been left in the hall.",
+          "a": null
+        },
+        {
+          "s": "Sam put the apple in the basket.",
+          "p": "Into the basket Sam placed the apple.",
+          "a": null
+        },
+        {
+          "s": "Where is the apple?",
+          "p": "Which place holds the apple?",
+          "a": "office"
+        },
+        {
+          "s": "How many things are in the basket?",
+          "p": "What count of things rests inside the basket?",
+          "a": "1"
+        },
+        {
+          "s": "Mia moved the basket to the garden.",
+          "p": "To the garden the basket was carried by Mia.",
+          "a": null
+        },
+        {
+          "s": "Mia moved the basket to the hall.",
+          "p": "Mia later brought the basket into the hall.",
+          "a": null
+        },
+        {
+          "s": "Where is the apple?",
+          "p": "Where has the apple ended up by now?",
+          "a": "hall"
+        },
+        {
+          "s": "Where is the basket?",
+          "p": "Which room has the basket been placed in?",
+          "a": "hall"
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 62,
+      "sentences": [
+        {
+          "s": "The box is in the hall.",
+          "p": "The hall is holding the box.",
+          "a": null
+        },
+        {
+          "s": "The coin is in the kitchen.",
+          "p": "The coin is situated within the kitchen.",
+          "a": null
+        },
+        {
+          "s": "The key is in the box.",
+          "p": "Within the box rests the key.",
+          "a": null
+        },
+        {
+          "s": "Where is the coin?",
+          "p": "What room is the coin located in?",
+          "a": "kitchen"
+        },
+        {
+          "s": "Where is the key?",
+          "p": "Which room is holding the key?",
+          "a": "hall"
+        },
+        {
+          "s": "Tom put the coin in the box.",
+          "p": "The box received the coin from Tom.",
+          "a": null
+        },
+        {
+          "s": "Sam moved the box to the kitchen.",
+          "p": "Over to the kitchen Sam pushed the box.",
+          "a": null
+        },
+        {
+          "s": "Where is the box?",
+          "p": "Where can the box be found at present?",
+          "a": "kitchen"
+        },
+        {
+          "s": "How many things are in the box?",
+          "p": "How many objects does the box hold?",
+          "a": "2"
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 63,
+      "sentences": [
+        {
+          "s": "The jar is in the garden.",
+          "p": "Currently the garden holds the jar.",
+          "a": null
+        },
+        {
+          "s": "The basket is in the garden.",
+          "p": "The basket has been set down in the garden.",
+          "a": null
+        },
+        {
+          "s": "The box is in the hall.",
+          "p": "The hall is where the box can be seen.",
+          "a": null
+        },
+        {
+          "s": "The ball is in the hall.",
+          "p": "The hall contains the ball.",
+          "a": null
+        },
+        {
+          "s": "The key is in the box.",
+          "p": "The box has the key tucked inside.",
+          "a": null
+        },
+        {
+          "s": "The apple is in the box.",
+          "p": "The box is holding the apple.",
+          "a": null
+        },
+        {
+          "s": "Sam took the apple out of the box.",
+          "p": "From the box Sam lifted the apple out.",
+          "a": null
+        },
+        {
+          "s": "Tom put the ball in the box.",
+          "p": "The ball was placed inside the box by Tom.",
+          "a": null
+        },
+        {
+          "s": "Is the key in the hall?",
+          "p": "Has the key been left in the hall?",
+          "a": "yes"
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 64,
+      "sentences": [
+        {
+          "s": "The bag is in the hall.",
+          "p": "In the hall lies the bag.",
+          "a": null
+        },
+        {
+          "s": "The coin is in the garden.",
+          "p": "Out in the garden is where the coin sits.",
+          "a": null
+        },
+        {
+          "s": "The book is in the hall.",
+          "p": "The book has been stored in the hall.",
+          "a": null
+        },
+        {
+          "s": "Tom moved the bag to the garden.",
+          "p": "Tom took the bag out to the garden.",
+          "a": null
+        },
+        {
+          "s": "Tom put the coin in the bag.",
+          "p": "Tom slipped the coin into the bag.",
+          "a": null
+        },
+        {
+          "s": "Mia put the book in the bag.",
+          "p": "Inside the bag Mia deposited the book.",
+          "a": null
+        },
+        {
+          "s": "Where is the coin?",
+          "p": "Where has the coin been kept?",
+          "a": "garden"
+        },
+        {
+          "s": "Sam took the coin out of the bag.",
+          "p": "Sam pulled the coin free from the bag.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 65,
+      "sentences": [
+        {
+          "s": "The box is in the hall.",
+          "p": "Right now the box sits in the hall.",
+          "a": null
+        },
+        {
+          "s": "The coin is in the office.",
+          "p": "The coin has ended up in the office.",
+          "a": null
+        },
+        {
+          "s": "The key is in the box.",
+          "p": "Placed in the box was the key.",
+          "a": null
+        },
+        {
+          "s": "Sam took the key out of the box.",
+          "p": "Out of the box Sam drew the key.",
+          "a": null
+        },
+        {
+          "s": "Mia put the coin in the box.",
+          "p": "Mia tucked the coin away in the box.",
+          "a": null
+        },
+        {
+          "s": "How many things are in the box?",
+          "p": "How many items sit inside the box then?",
+          "a": "1"
+        },
+        {
+          "s": "Is the coin in the hall?",
+          "p": "Is the coin resting in the hall?",
+          "a": "yes"
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 66,
+      "sentences": [
+        {
+          "s": "The basket is in the kitchen.",
+          "p": "In the kitchen the basket stands.",
+          "a": null
+        },
+        {
+          "s": "The bag is in the kitchen.",
+          "p": "Standing in the kitchen is the bag.",
+          "a": null
+        },
+        {
+          "s": "The ball is in the kitchen.",
+          "p": "The ball rests in the kitchen.",
+          "a": null
+        },
+        {
+          "s": "The book is in the basket.",
+          "p": "The book has been dropped into the basket.",
+          "a": null
+        },
+        {
+          "s": "The apple is in the bag.",
+          "p": "Inside the bag sits the apple.",
+          "a": null
+        },
+        {
+          "s": "Ana took the book out of the basket.",
+          "p": "Ana lifted the book out from the basket.",
+          "a": null
+        },
+        {
+          "s": "Where is the apple?",
+          "p": "What room is hiding the apple?",
+          "a": "kitchen"
+        },
+        {
+          "s": "Where is the basket?",
+          "p": "In what room can the basket be seen?",
+          "a": "kitchen"
+        },
+        {
+          "s": "How many things are in the bag?",
+          "p": "What number of things are kept in the bag?",
+          "a": "1"
+        },
+        {
+          "s": "How many things are in the basket?",
+          "p": "How many things does the basket currently hold?",
+          "a": "0"
+        },
+        {
+          "s": "Tom put the book in the bag.",
+          "p": "Into the bag went the book placed by Tom.",
+          "a": null
+        },
+        {
+          "s": "Sam took the book out of the bag.",
+          "p": "Sam fished the book out of the bag.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 67,
+      "sentences": [
+        {
+          "s": "The box is in the kitchen.",
+          "p": "The kitchen is home to the box.",
+          "a": null
+        },
+        {
+          "s": "The bag is in the garden.",
+          "p": "Lying out in the garden is the bag.",
+          "a": null
+        },
+        {
+          "s": "The ball is in the kitchen.",
+          "p": "The kitchen now contains the ball.",
+          "a": null
+        },
+        {
+          "s": "The key is in the box.",
+          "p": "The box holds the key.",
+          "a": null
+        },
+        {
+          "s": "Sam put the ball in the box.",
+          "p": "The ball landed inside the box thanks to Sam.",
+          "a": null
+        },
+        {
+          "s": "Mia moved the bag to the kitchen.",
+          "p": "Mia brought the bag into the kitchen.",
+          "a": null
+        },
+        {
+          "s": "What is in the box?",
+          "p": "What items are stored inside the box?",
+          "a": "ball,key"
+        },
+        {
+          "s": "Mia moved the box to the garden.",
+          "p": "Mia carried the box out into the garden.",
+          "a": null
+        },
+        {
+          "s": "Where is the ball?",
+          "p": "Which location has the ball been left in?",
+          "a": "garden"
+        },
+        {
+          "s": "What is in the box?",
+          "p": "Which objects are kept inside the box exactly?",
+          "a": "ball,key"
+        },
+        {
+          "s": "How many things are in the bag?",
+          "p": "How many things does the bag contain?",
+          "a": "0"
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 68,
+      "sentences": [
+        {
+          "s": "The bag is in the hall.",
+          "p": "The hall is where the bag sits.",
+          "a": null
+        },
+        {
+          "s": "The basket is in the hall.",
+          "p": "The basket stays in the hall.",
+          "a": null
+        },
+        {
+          "s": "The jar is in the kitchen.",
+          "p": "Currently the jar is found in the kitchen.",
+          "a": null
+        },
+        {
+          "s": "The ball is in the basket.",
+          "p": "Nestled in the basket is the ball.",
+          "a": null
+        },
+        {
+          "s": "Is the ball in the kitchen?",
+          "p": "Could the ball possibly be in the kitchen?",
+          "a": "no"
+        },
+        {
+          "s": "Sam took the ball out of the basket.",
+          "p": "Sam lifted the ball clear of the basket.",
+          "a": null
+        },
+        {
+          "s": "Ana put the ball in the bag.",
+          "p": "Into the bag Ana dropped the ball.",
+          "a": null
+        },
+        {
+          "s": "Is the ball in the hall?",
+          "p": "Has the ball been brought to the hall?",
+          "a": "yes"
+        },
+        {
+          "s": "How many things are in the basket?",
+          "p": "Right now how many things fill the basket?",
+          "a": "0"
+        },
+        {
+          "s": "Tom took the ball out of the bag.",
+          "p": "Tom removed the ball from within the bag.",
+          "a": null
+        },
+        {
+          "s": "Ana put the ball in the basket.",
+          "p": "The basket received the ball from Ana.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 69,
+      "sentences": [
+        {
+          "s": "The bag is in the garden.",
+          "p": "The garden holds the bag at present.",
+          "a": null
+        },
+        {
+          "s": "The box is in the office.",
+          "p": "The office has the box stored away.",
+          "a": null
+        },
+        {
+          "s": "The basket is in the office.",
+          "p": "The basket sits waiting in the office.",
+          "a": null
+        },
+        {
+          "s": "The key is in the basket.",
+          "p": "Inside the basket lies the key.",
+          "a": null
+        },
+        {
+          "s": "The coin is in the basket.",
+          "p": "The basket has the coin resting inside.",
+          "a": null
+        },
+        {
+          "s": "Where is the bag?",
+          "p": "Where is the bag currently located?",
+          "a": "garden"
+        },
+        {
+          "s": "Mia moved the basket to the garden.",
+          "p": "Mia rolled the basket across to the garden.",
+          "a": null
+        },
+        {
+          "s": "How many things are in the bag?",
+          "p": "How many things does the bag contain then?",
+          "a": "0"
+        },
+        {
+          "s": "Is the coin in the hall?",
+          "p": "Is the coin situated in the hall at all?",
+          "a": "no"
+        },
+        {
+          "s": "Mia moved the box to the kitchen.",
+          "p": "The box was moved to the kitchen by Mia.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 70,
+      "sentences": [
+        {
+          "s": "The jar is in the hall.",
+          "p": "Right now the jar rests in the hall.",
+          "a": null
+        },
+        {
+          "s": "The basket is in the hall.",
+          "p": "The hall is where the basket is found.",
+          "a": null
+        },
+        {
+          "s": "The bag is in the office.",
+          "p": "The bag stands in the office.",
+          "a": null
+        },
+        {
+          "s": "The key is in the jar.",
+          "p": "The jar is holding the key.",
+          "a": null
+        },
+        {
+          "s": "The apple is in the jar.",
+          "p": "The apple has been put in the jar.",
+          "a": null
+        },
+        {
+          "s": "The ball is in the jar.",
+          "p": "Inside the jar the ball is located.",
+          "a": null
+        },
+        {
+          "s": "Where is the key?",
+          "p": "In which room was the key left?",
+          "a": "hall"
+        },
+        {
+          "s": "Tom took the apple out of the jar.",
+          "p": "From the jar Tom extracted the apple.",
+          "a": null
+        },
+        {
+          "s": "Is the key in the jar?",
+          "p": "Is the key still within the jar?",
+          "a": "yes"
+        },
+        {
+          "s": "Is the bag in the office?",
+          "p": "Is the office keeping the bag?",
+          "a": "yes"
+        },
+        {
+          "s": "Where is the apple?",
+          "p": "At what location does the apple sit?",
+          "a": "hall"
+        },
+        {
+          "s": "Mia moved the jar to the kitchen.",
+          "p": "Mia transported the jar into the kitchen.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 71,
+      "sentences": [
+        {
+          "s": "The jar is in the garden.",
+          "p": "The garden contains the jar.",
+          "a": null
+        },
+        {
+          "s": "The basket is in the garden.",
+          "p": "In the garden the basket remains.",
+          "a": null
+        },
+        {
+          "s": "The apple is in the basket.",
+          "p": "Within the basket the apple is found.",
+          "a": null
+        },
+        {
+          "s": "The key is in the basket.",
+          "p": "The key has been dropped in the basket.",
+          "a": null
+        },
+        {
+          "s": "Ana took the key out of the basket.",
+          "p": "Ana drew the key from the basket.",
+          "a": null
+        },
+        {
+          "s": "Is the key in the garden?",
+          "p": "Could the key be sitting in the garden?",
+          "a": "yes"
+        },
+        {
+          "s": "Where is the jar?",
+          "p": "Which spot holds the jar right now?",
+          "a": "garden"
+        },
+        {
+          "s": "Is the apple in the garden?",
+          "p": "Is the apple now residing in the garden?",
+          "a": "yes"
+        },
+        {
+          "s": "Ana took the apple out of the basket.",
+          "p": "Out of the basket Ana carried the apple.",
+          "a": null
+        },
+        {
+          "s": "How many things are in the basket?",
+          "p": "What number of items are in the basket now?",
+          "a": "0"
+        },
+        {
+          "s": "Sam moved the jar to the kitchen.",
+          "p": "Sam relocated the jar to the kitchen.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 72,
+      "sentences": [
+        {
+          "s": "The box is in the kitchen.",
+          "p": "The kitchen holds the box.",
+          "a": null
+        },
+        {
+          "s": "The jar is in the kitchen.",
+          "p": "The jar sits within the kitchen.",
+          "a": null
+        },
+        {
+          "s": "The coin is in the office.",
+          "p": "The office is hosting the coin.",
+          "a": null
+        },
+        {
+          "s": "The apple is in the hall.",
+          "p": "The hall currently has the apple.",
+          "a": null
+        },
+        {
+          "s": "The ball is in the box.",
+          "p": "Sitting in the box is the ball.",
+          "a": null
+        },
+        {
+          "s": "Mia moved the box to the garden.",
+          "p": "Mia wheeled the box out to the garden.",
+          "a": null
+        },
+        {
+          "s": "Tom put the apple in the jar.",
+          "p": "Tom dropped the apple inside the jar.",
+          "a": null
+        },
+        {
+          "s": "Is the ball in the garden?",
+          "p": "Has the ball landed in the garden?",
+          "a": "yes"
+        },
+        {
+          "s": "How many things are in the jar?",
+          "p": "How many things currently sit inside the jar?",
+          "a": "1"
+        },
+        {
+          "s": "Is the coin in the office?",
+          "p": "Does the office currently hold the coin?",
+          "a": "yes"
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 73,
+      "sentences": [
+        {
+          "s": "The jar is in the hall.",
+          "p": "The hall is where the jar stays.",
+          "a": null
+        },
+        {
+          "s": "The bag is in the office.",
+          "p": "In the office the bag is found.",
+          "a": null
+        },
+        {
+          "s": "The ball is in the bag.",
+          "p": "The bag contains the ball.",
+          "a": null
+        },
+        {
+          "s": "The book is in the hall.",
+          "p": "The hall is storing the book.",
+          "a": null
+        },
+        {
+          "s": "The key is in the hall.",
+          "p": "The key has been left in the hall.",
+          "a": null
+        },
+        {
+          "s": "Ana moved the bag to the garden.",
+          "p": "Ana brought the bag out to the garden.",
+          "a": null
+        },
+        {
+          "s": "Mia moved the jar to the garden.",
+          "p": "The jar was shifted to the garden by Mia.",
+          "a": null
+        },
+        {
+          "s": "Where is the ball?",
+          "p": "Which place is the ball now sitting in?",
+          "a": "garden"
+        },
+        {
+          "s": "Is the ball in the bag?",
+          "p": "Does the bag hold the ball?",
+          "a": "yes"
+        },
+        {
+          "s": "Mia put the book in the bag.",
+          "p": "Mia slid the book inside the bag.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 74,
+      "sentences": [
+        {
+          "s": "The jar is in the kitchen.",
+          "p": "Currently found in the kitchen is the jar.",
+          "a": null
+        },
+        {
+          "s": "The bag is in the office.",
+          "p": "The bag can be spotted in the office.",
+          "a": null
+        },
+        {
+          "s": "The basket is in the kitchen.",
+          "p": "The basket has been left in the kitchen.",
+          "a": null
+        },
+        {
+          "s": "The ball is in the basket.",
+          "p": "Inside the basket is where the ball rests.",
+          "a": null
+        },
+        {
+          "s": "The apple is in the basket.",
+          "p": "The basket is carrying the apple.",
+          "a": null
+        },
+        {
+          "s": "Sam moved the jar to the office.",
+          "p": "Sam took the jar over to the office.",
+          "a": null
+        },
+        {
+          "s": "Ana moved the jar to the kitchen.",
+          "p": "The jar was returned to the kitchen by Ana.",
+          "a": null
+        },
+        {
+          "s": "Is the ball in the office?",
+          "p": "Does the office have any ball stored there?",
+          "a": "no"
+        },
+        {
+          "s": "Where is the jar?",
+          "p": "What room has the jar been placed in?",
+          "a": "kitchen"
+        },
+        {
+          "s": "How many things are in the bag?",
+          "p": "Can the things the bag holds be counted?",
+          "a": "0"
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 75,
+      "sentences": [
+        {
+          "s": "The basket is in the kitchen.",
+          "p": "The kitchen is where the basket is stored.",
+          "a": null
+        },
+        {
+          "s": "The bag is in the office.",
+          "p": "Found in the office is the bag.",
+          "a": null
+        },
+        {
+          "s": "The key is in the garden.",
+          "p": "In the garden is the key located.",
+          "a": null
+        },
+        {
+          "s": "Mia put the key in the basket.",
+          "p": "Mia dropped the key into the basket.",
+          "a": null
+        },
+        {
+          "s": "What is in the basket?",
+          "p": "Which item currently rests in the basket?",
+          "a": "key"
+        },
+        {
+          "s": "Ana took the key out of the basket.",
+          "p": "Ana removed the key from the basket.",
+          "a": null
+        },
+        {
+          "s": "Tom put the key in the basket.",
+          "p": "Tom placed the key within the basket.",
+          "a": null
+        },
+        {
+          "s": "What is in the basket?",
+          "p": "What object does the basket hold?",
+          "a": "key"
+        },
+        {
+          "s": "Where is the key?",
+          "p": "In what room can the key be found?",
+          "a": "kitchen"
+        },
+        {
+          "s": "Mia moved the bag to the kitchen.",
+          "p": "The bag ended up in the kitchen thanks to Mia.",
+          "a": null
+        },
+        {
+          "s": "Where is the basket?",
+          "p": "Which room is the basket sitting in?",
+          "a": "kitchen"
+        },
+        {
+          "s": "Sam took the key out of the basket.",
+          "p": "From the basket Sam retrieved the key.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 76,
+      "sentences": [
+        {
+          "s": "The box is in the hall.",
+          "p": "The hall is where the box has been left.",
+          "a": null
+        },
+        {
+          "s": "The basket is in the hall.",
+          "p": "The basket sits in the hall.",
+          "a": null
+        },
+        {
+          "s": "The coin is in the box.",
+          "p": "Inside the box lies the coin.",
+          "a": null
+        },
+        {
+          "s": "The key is in the hall.",
+          "p": "The key rests within the hall.",
+          "a": null
+        },
+        {
+          "s": "Tom moved the box to the office.",
+          "p": "The box was carried to the office by Tom.",
+          "a": null
+        },
+        {
+          "s": "Ana moved the box to the kitchen.",
+          "p": "Ana transported the box into the kitchen.",
+          "a": null
+        },
+        {
+          "s": "Tom moved the basket to the office.",
+          "p": "Tom took the basket across to the office.",
+          "a": null
+        },
+        {
+          "s": "Is the box in the garden?",
+          "p": "Could the box possibly be in the garden?",
+          "a": "no"
+        },
+        {
+          "s": "Is the coin in the hall?",
+          "p": "Does the hall hold the coin at all?",
+          "a": "no"
+        },
+        {
+          "s": "Mia put the key in the box.",
+          "p": "Mia placed the key inside the box.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 77,
+      "sentences": [
+        {
+          "s": "The basket is in the kitchen.",
+          "p": "The basket occupies a spot in the kitchen.",
+          "a": null
+        },
+        {
+          "s": "The box is in the office.",
+          "p": "The office currently contains the box.",
+          "a": null
+        },
+        {
+          "s": "The bag is in the kitchen.",
+          "p": "The kitchen hosts the bag.",
+          "a": null
+        },
+        {
+          "s": "The book is in the kitchen.",
+          "p": "Positioned in the kitchen is the book.",
+          "a": null
+        },
+        {
+          "s": "The apple is in the box.",
+          "p": "Within the box the apple resides.",
+          "a": null
+        },
+        {
+          "s": "The key is in the garden.",
+          "p": "Out in the garden is the key.",
+          "a": null
+        },
+        {
+          "s": "Is the apple in the office?",
+          "p": "Can the apple be found in the office?",
+          "a": "yes"
+        },
+        {
+          "s": "What is in the box?",
+          "p": "What item rests within the box?",
+          "a": "apple"
+        },
+        {
+          "s": "How many things are in the bag?",
+          "p": "How many items does the bag hold?",
+          "a": "0"
+        },
+        {
+          "s": "Sam moved the basket to the garden.",
+          "p": "Sam conveyed the basket out to the garden.",
+          "a": null
+        },
+        {
+          "s": "Mia put the key in the box.",
+          "p": "The key ended up in the box courtesy of Mia.",
+          "a": null
+        },
+        {
+          "s": "Where is the apple?",
+          "p": "Which room is the apple now in?",
+          "a": "office"
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 78,
+      "sentences": [
+        {
+          "s": "The box is in the hall.",
+          "p": "Standing in the hall is the box.",
+          "a": null
+        },
+        {
+          "s": "The basket is in the garden.",
+          "p": "The garden has the basket.",
+          "a": null
+        },
+        {
+          "s": "The bag is in the garden.",
+          "p": "The bag has been left in the garden.",
+          "a": null
+        },
+        {
+          "s": "The apple is in the bag.",
+          "p": "The bag holds the apple.",
+          "a": null
+        },
+        {
+          "s": "Where is the apple?",
+          "p": "In what place is the apple found?",
+          "a": "garden"
+        },
+        {
+          "s": "Sam took the apple out of the bag.",
+          "p": "Sam fetched the apple from the bag.",
+          "a": null
+        },
+        {
+          "s": "How many things are in the basket?",
+          "p": "How many things are sitting in the basket?",
+          "a": "0"
+        },
+        {
+          "s": "Where is the bag?",
+          "p": "Where has the bag been placed?",
+          "a": "garden"
+        },
+        {
+          "s": "Sam moved the basket to the office.",
+          "p": "Sam sent the basket over to the office.",
+          "a": null
+        },
+        {
+          "s": "Tom put the apple in the box.",
+          "p": "The box now contains the apple placed by Tom.",
+          "a": null
+        }
+      ]
+    },
+    {
+      "part": "test",
+      "id": 79,
+      "sentences": [
+        {
+          "s": "The box is in the office.",
+          "p": "At the office is where the box sits.",
+          "a": null
+        },
+        {
+          "s": "The ball is in the box.",
+          "p": "The box is storing the ball right now.",
+          "a": null
+        },
+        {
+          "s": "Ana moved the box to the garden.",
+          "p": "Ana carried the box out to the garden.",
+          "a": null
+        },
+        {
+          "s": "Sam moved the box to the kitchen.",
+          "p": "Sam trundled the box across to the kitchen.",
+          "a": null
+        },
+        {
+          "s": "Sam moved the box to the garden.",
+          "p": "To the garden the box was taken by Sam.",
+          "a": null
+        },
+        {
+          "s": "Sam took the ball out of the box.",
+          "p": "Sam extracted the ball from the box.",
+          "a": null
+        },
+        {
+          "s": "Sam put the ball in the box.",
+          "p": "Sam set the ball down inside the box.",
+          "a": null
+        },
+        {
+          "s": "Where is the ball?",
+          "p": "Where does the ball currently sit?",
+          "a": "garden"
+        },
+        {
+          "s": "Tom took the ball out of the box.",
+          "p": "Tom drew the ball out of the box.",
+          "a": null
+        },
+        {
+          "s": "Is the ball in the office?",
+          "p": "Could the ball be in the office?",
+          "a": "no"
+        }
+      ]
+    }
+  ]
+}

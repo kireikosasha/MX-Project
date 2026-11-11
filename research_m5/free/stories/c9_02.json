@@ -1,0 +1,1345 @@
+{
+ "task": "c9",
+ "stories": [
+  {
+   "part": "test",
+   "id": 0,
+   "sentences": [
+    {
+     "s": "Cara is the parent of Ivan.",
+     "p": "Ivan is a child of Cara.",
+     "a": null
+    },
+    {
+     "s": "Bob has the parent Dan.",
+     "p": "Dan acts as the parent of Bob.",
+     "a": null
+    },
+    {
+     "s": "Dan has the parent Joy.",
+     "p": "The parent of Dan is Joy.",
+     "a": null
+    },
+    {
+     "s": "Kim has the parent Ann.",
+     "p": "Kim counts Ann as a parent.",
+     "a": null
+    },
+    {
+     "s": "Who is the top of the parent chain of Bob?",
+     "p": "Which person sits at the top of the parent chain for Bob?",
+     "a": "joy"
+    },
+    {
+     "s": "Mia has the parent Cara.",
+     "p": "Cara serves as the parent of Mia.",
+     "a": null
+    },
+    {
+     "s": "Dan is the parent of Leo.",
+     "p": "Leo has Dan as a parent.",
+     "a": null
+    },
+    {
+     "s": "Who is the parent of the parent of Bob?",
+     "p": "Who is the grandparent of Bob?",
+     "a": "joy"
+    },
+    {
+     "s": "Cara has the parent Leo.",
+     "p": "The one who parents Cara is Leo.",
+     "a": null
+    },
+    {
+     "s": "Gus is the parent of Joy.",
+     "p": "Gus stands as a parent to Joy.",
+     "a": null
+    },
+    {
+     "s": "Who is the top of the parent chain of Mia?",
+     "p": "Which person tops the parent chain above Mia?",
+     "a": "gus"
+    },
+    {
+     "s": "Is Joy the parent of the parent of Bob?",
+     "p": "Is Bob a grandchild of Joy?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 1,
+   "sentences": [
+    {
+     "s": "Gus reports to Joy.",
+     "p": "Gus has Joy as a boss.",
+     "a": null
+    },
+    {
+     "s": "Kim reports to Eve.",
+     "p": "Eve is the boss Kim answers to.",
+     "a": null
+    },
+    {
+     "s": "Gus is the boss of Leo.",
+     "p": "Leo reports to Gus.",
+     "a": null
+    },
+    {
+     "s": "Who is the boss of the boss of Leo?",
+     "p": "Who is the grandboss of Leo?",
+     "a": "joy"
+    },
+    {
+     "s": "Ann reports to Gus.",
+     "p": "Gus is the boss over Ann.",
+     "a": null
+    },
+    {
+     "s": "Leo is the boss of Ivan.",
+     "p": "Ivan takes orders from Leo.",
+     "a": null
+    },
+    {
+     "s": "Who is the top of the boss chain of Ivan?",
+     "p": "Which person heads the boss chain above Ivan?",
+     "a": "joy"
+    },
+    {
+     "s": "Kim is the boss of Finn.",
+     "p": "Kim directs Finn as the boss.",
+     "a": null
+    },
+    {
+     "s": "Kim is the boss of Joy.",
+     "p": "Kim stands above Joy as the boss.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 2,
+   "sentences": [
+    {
+     "s": "Noah is the parent of Leo.",
+     "p": "Noah parents Leo.",
+     "a": null
+    },
+    {
+     "s": "Eve has the parent Ivan.",
+     "p": "Eve lists Ivan as a parent.",
+     "a": null
+    },
+    {
+     "s": "Noah has the parent Ivan.",
+     "p": "Ivan is the parent of Noah.",
+     "a": null
+    },
+    {
+     "s": "Bob has the parent Mia.",
+     "p": "Mia becomes the parent of Bob.",
+     "a": null
+    },
+    {
+     "s": "Is Ivan the parent of the parent of Leo?",
+     "p": "Would Leo count as a grandchild of Ivan?",
+     "a": "yes"
+    },
+    {
+     "s": "Mia is the parent of Finn.",
+     "p": "Mia is a parent to Finn.",
+     "a": null
+    },
+    {
+     "s": "Is Joy the parent of the parent of Leo?",
+     "p": "Is Joy a grandparent to Leo?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 3,
+   "sentences": [
+    {
+     "s": "Hana is the boss of Eve.",
+     "p": "Eve reports to Hana.",
+     "a": null
+    },
+    {
+     "s": "Gus reports to Dan.",
+     "p": "Dan supervises Gus.",
+     "a": null
+    },
+    {
+     "s": "Cara reports to Bob.",
+     "p": "Cara answers to Bob.",
+     "a": null
+    },
+    {
+     "s": "Bob is the boss of Mia.",
+     "p": "Bob directs Mia.",
+     "a": null
+    },
+    {
+     "s": "Joy reports to Ann.",
+     "p": "Ann oversees Joy as boss.",
+     "a": null
+    },
+    {
+     "s": "Ivan is the boss of Dan.",
+     "p": "Under Ivan as boss sits Dan.",
+     "a": null
+    },
+    {
+     "s": "Kim reports to Cara.",
+     "p": "Cara gives orders to Kim.",
+     "a": null
+    },
+    {
+     "s": "Is Bob the boss of the boss of Kim?",
+     "p": "Does Bob sit two levels above Kim in the boss chain?",
+     "a": "yes"
+    },
+    {
+     "s": "Bob is the boss of Leo.",
+     "p": "Leo falls under the boss Bob.",
+     "a": null
+    },
+    {
+     "s": "Leo is the boss of Ann.",
+     "p": "Ann reports to Leo.",
+     "a": null
+    },
+    {
+     "s": "Who is the boss of the boss of Ann?",
+     "p": "Who sits two levels over Ann in the boss line?",
+     "a": "bob"
+    },
+    {
+     "s": "Cara is the boss of Ivan.",
+     "p": "Cara leads Ivan as the boss.",
+     "a": null
+    },
+    {
+     "s": "Is Bob the boss of the boss of Ivan?",
+     "p": "Would Bob count as a grandboss over Ivan?",
+     "a": "yes"
+    },
+    {
+     "s": "Who is the top of the boss chain of Dan?",
+     "p": "Who tops the boss chain above Dan?",
+     "a": "bob"
+    },
+    {
+     "s": "Is Gus the boss of the boss of Ivan?",
+     "p": "Is Gus a grandboss for Ivan?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 4,
+   "sentences": [
+    {
+     "s": "Finn is the parent of Kim.",
+     "p": "Kim is the child of Finn.",
+     "a": null
+    },
+    {
+     "s": "Ivan is the parent of Finn.",
+     "p": "Finn has Ivan as a parent.",
+     "a": null
+    },
+    {
+     "s": "Who is the parent of the parent of Kim?",
+     "p": "Who serves as the grandparent of Kim?",
+     "a": "ivan"
+    },
+    {
+     "s": "Bob has the parent Gus.",
+     "p": "Gus holds the role of parent for Bob.",
+     "a": null
+    },
+    {
+     "s": "Is Ivan the parent of the parent of Kim?",
+     "p": "Does Ivan stand two generations above Kim?",
+     "a": "yes"
+    },
+    {
+     "s": "Dan has the parent Joy.",
+     "p": "Joy takes on the parent role for Dan.",
+     "a": null
+    },
+    {
+     "s": "Is Bob the parent of the parent of Kim?",
+     "p": "Is Bob a grandparent of Kim?",
+     "a": "no"
+    },
+    {
+     "s": "Joy is the parent of Mia.",
+     "p": "Joy has Mia as a child.",
+     "a": null
+    },
+    {
+     "s": "Ann is the parent of Eve.",
+     "p": "Eve has Ann as a parent.",
+     "a": null
+    },
+    {
+     "s": "Noah has the parent Gus.",
+     "p": "Gus stands as the parent of Noah.",
+     "a": null
+    },
+    {
+     "s": "Kim is the parent of Joy.",
+     "p": "Kim serves as parent to Joy.",
+     "a": null
+    },
+    {
+     "s": "Gus has the parent Eve.",
+     "p": "Eve is the parent of Gus.",
+     "a": null
+    },
+    {
+     "s": "Leo has the parent Eve.",
+     "p": "Eve is the parent that Leo has.",
+     "a": null
+    },
+    {
+     "s": "Hana has the parent Finn.",
+     "p": "Finn is the parent of Hana.",
+     "a": null
+    },
+    {
+     "s": "Cara has the parent Kim.",
+     "p": "Kim is the parent of Cara.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 5,
+   "sentences": [
+    {
+     "s": "Gus is the boss of Kim.",
+     "p": "Kim falls under Gus as boss.",
+     "a": null
+    },
+    {
+     "s": "Hana reports to Dan.",
+     "p": "Hana works under Dan as the boss.",
+     "a": null
+    },
+    {
+     "s": "Finn reports to Eve.",
+     "p": "Eve sits above Finn in the boss line.",
+     "a": null
+    },
+    {
+     "s": "Dan is the boss of Mia.",
+     "p": "Mia reports to Dan.",
+     "a": null
+    },
+    {
+     "s": "Eve is the boss of Noah.",
+     "p": "Noah answers to Eve.",
+     "a": null
+    },
+    {
+     "s": "Eve reports to Gus.",
+     "p": "Gus is the boss of Eve.",
+     "a": null
+    },
+    {
+     "s": "Cara reports to Mia.",
+     "p": "Mia leads Cara as boss.",
+     "a": null
+    },
+    {
+     "s": "Ivan reports to Kim.",
+     "p": "Kim gives orders to Ivan.",
+     "a": null
+    },
+    {
+     "s": "Is Dan the boss of the boss of Finn?",
+     "p": "Would Finn sit two levels below Dan in the boss line?",
+     "a": "no"
+    },
+    {
+     "s": "Is Noah the boss of the boss of Ivan?",
+     "p": "Does Noah stand two levels above Ivan?",
+     "a": "no"
+    },
+    {
+     "s": "Is Eve the boss of the boss of Ivan?",
+     "p": "Is Eve two levels above Ivan in the boss line?",
+     "a": "no"
+    },
+    {
+     "s": "Is Dan the boss of the boss of Cara?",
+     "p": "Is Dan a grandboss over Cara?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 6,
+   "sentences": [
+    {
+     "s": "Ivan has the parent Dan.",
+     "p": "Dan is the parent of Ivan.",
+     "a": null
+    },
+    {
+     "s": "Noah has the parent Kim.",
+     "p": "Kim parents Noah.",
+     "a": null
+    },
+    {
+     "s": "Kim has the parent Ann.",
+     "p": "Ann counts as the parent of Kim.",
+     "a": null
+    },
+    {
+     "s": "Ann is the parent of Gus.",
+     "p": "Gus has Ann as a parent.",
+     "a": null
+    },
+    {
+     "s": "Mia has the parent Ann.",
+     "p": "Ann is the parent Mia has.",
+     "a": null
+    },
+    {
+     "s": "Eve is the parent of Ann.",
+     "p": "Ann is a child of Eve.",
+     "a": null
+    },
+    {
+     "s": "Is Bob the parent of the parent of Gus?",
+     "p": "Is Bob a grandparent of Gus?",
+     "a": "no"
+    },
+    {
+     "s": "Dan has the parent Finn.",
+     "p": "Finn takes the parent role for Dan.",
+     "a": null
+    },
+    {
+     "s": "Finn is the parent of Joy.",
+     "p": "Finn parents Joy.",
+     "a": null
+    },
+    {
+     "s": "Dan is the parent of Bob.",
+     "p": "Bob has Dan as a parent.",
+     "a": null
+    },
+    {
+     "s": "Dan is the parent of Hana.",
+     "p": "Hana is the child of Dan.",
+     "a": null
+    },
+    {
+     "s": "Ivan is the parent of Cara.",
+     "p": "Cara is the one Ivan parents.",
+     "a": null
+    },
+    {
+     "s": "Finn has the parent Gus.",
+     "p": "Gus is the parent of Finn.",
+     "a": null
+    },
+    {
+     "s": "Who is the top of the parent chain of Finn?",
+     "p": "Who is at the peak of the parent line for Finn?",
+     "a": "eve"
+    },
+    {
+     "s": "Who is the top of the parent chain of Cara?",
+     "p": "Who sits highest in the parent chain for Cara?",
+     "a": "eve"
+    },
+    {
+     "s": "Who is the parent of the parent of Bob?",
+     "p": "Which person sits two parent steps above Bob?",
+     "a": "finn"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 7,
+   "sentences": [
+    {
+     "s": "Gus reports to Ivan.",
+     "p": "Ivan is the boss of Gus.",
+     "a": null
+    },
+    {
+     "s": "Ivan is the boss of Joy.",
+     "p": "Joy reports to Ivan.",
+     "a": null
+    },
+    {
+     "s": "Gus is the boss of Hana.",
+     "p": "Hana answers to Gus.",
+     "a": null
+    },
+    {
+     "s": "Is Ivan the boss of the boss of Hana?",
+     "p": "Does Hana have Ivan as a grandboss?",
+     "a": "yes"
+    },
+    {
+     "s": "Is Joy the boss of the boss of Hana?",
+     "p": "Would Joy count as a grandboss of Hana?",
+     "a": "no"
+    },
+    {
+     "s": "Who is the boss of the boss of Hana?",
+     "p": "Which person sits two levels above Hana as boss?",
+     "a": "ivan"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 8,
+   "sentences": [
+    {
+     "s": "Kim is the parent of Ivan.",
+     "p": "Ivan has Kim as a parent.",
+     "a": null
+    },
+    {
+     "s": "Dan has the parent Joy.",
+     "p": "Dan is a child of Joy.",
+     "a": null
+    },
+    {
+     "s": "Ivan is the parent of Leo.",
+     "p": "Ivan parents Leo.",
+     "a": null
+    },
+    {
+     "s": "Ann is the parent of Bob.",
+     "p": "Ann acts as the parent of Bob.",
+     "a": null
+    },
+    {
+     "s": "Ann has the parent Mia.",
+     "p": "Mia is the parent of Ann.",
+     "a": null
+    },
+    {
+     "s": "Joy has the parent Ann.",
+     "p": "Ann is the parent of Joy.",
+     "a": null
+    },
+    {
+     "s": "Is Eve the parent of the parent of Joy?",
+     "p": "Is Eve a grandparent of Joy?",
+     "a": "no"
+    },
+    {
+     "s": "Mia is the parent of Gus.",
+     "p": "Gus has Mia as a parent.",
+     "a": null
+    },
+    {
+     "s": "Mia is the parent of Eve.",
+     "p": "Eve is a child of Mia.",
+     "a": null
+    },
+    {
+     "s": "Who is the parent of the parent of Leo?",
+     "p": "Who sits two parent steps above Leo?",
+     "a": "kim"
+    },
+    {
+     "s": "Finn has the parent Joy.",
+     "p": "Joy is the parent that Finn has.",
+     "a": null
+    },
+    {
+     "s": "Is Ann the parent of the parent of Dan?",
+     "p": "Is Dan a grandchild of Ann?",
+     "a": "yes"
+    },
+    {
+     "s": "Who is the top of the parent chain of Dan?",
+     "p": "Who is highest in the parent chain over Dan?",
+     "a": "mia"
+    },
+    {
+     "s": "Is Kim the parent of the parent of Leo?",
+     "p": "Is Leo a grandchild of Kim?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 9,
+   "sentences": [
+    {
+     "s": "Cara is the boss of Bob.",
+     "p": "Bob reports to Cara.",
+     "a": null
+    },
+    {
+     "s": "Noah reports to Bob.",
+     "p": "Bob leads Noah as the boss.",
+     "a": null
+    },
+    {
+     "s": "Finn is the boss of Joy.",
+     "p": "Joy answers to Finn.",
+     "a": null
+    },
+    {
+     "s": "Noah is the boss of Ann.",
+     "p": "Ann reports to Noah.",
+     "a": null
+    },
+    {
+     "s": "Who is the top of the boss chain of Noah?",
+     "p": "Who sits at the summit of the boss chain over Noah?",
+     "a": "cara"
+    },
+    {
+     "s": "Hana reports to Dan.",
+     "p": "Dan gives orders to Hana.",
+     "a": null
+    },
+    {
+     "s": "Is Bob the boss of the boss of Ann?",
+     "p": "Does Ann have Bob as a grandboss?",
+     "a": "yes"
+    },
+    {
+     "s": "Dan is the boss of Finn.",
+     "p": "Finn reports to Dan.",
+     "a": null
+    },
+    {
+     "s": "Is Finn the boss of the boss of Joy?",
+     "p": "Would Finn sit two levels above Joy in the boss line?",
+     "a": "no"
+    },
+    {
+     "s": "Leo reports to Mia.",
+     "p": "Mia is the boss over Leo.",
+     "a": null
+    },
+    {
+     "s": "Is Dan the boss of the boss of Joy?",
+     "p": "Does Joy have Dan as a grandboss?",
+     "a": "yes"
+    },
+    {
+     "s": "Cara is the boss of Eve.",
+     "p": "Eve reports to Cara.",
+     "a": null
+    },
+    {
+     "s": "Hana is the boss of Mia.",
+     "p": "Mia has Hana as a boss.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 10,
+   "sentences": [
+    {
+     "s": "Bob is the parent of Noah.",
+     "p": "Noah has Bob as a parent.",
+     "a": null
+    },
+    {
+     "s": "Gus is the parent of Finn.",
+     "p": "Finn is a child of Gus.",
+     "a": null
+    },
+    {
+     "s": "Dan is the parent of Leo.",
+     "p": "Dan parents Leo.",
+     "a": null
+    },
+    {
+     "s": "Joy has the parent Gus.",
+     "p": "Gus takes the parent role for Joy.",
+     "a": null
+    },
+    {
+     "s": "Noah is the parent of Kim.",
+     "p": "Noah counts Kim as a child.",
+     "a": null
+    },
+    {
+     "s": "Gus is the parent of Dan.",
+     "p": "Dan has Gus as a parent.",
+     "a": null
+    },
+    {
+     "s": "Bob is the parent of Gus.",
+     "p": "Bob parents Gus.",
+     "a": null
+    },
+    {
+     "s": "Is Eve the parent of the parent of Kim?",
+     "p": "Is Kim a grandchild of Eve?",
+     "a": "no"
+    },
+    {
+     "s": "Finn is the parent of Ann.",
+     "p": "Ann has Finn as a parent.",
+     "a": null
+    },
+    {
+     "s": "Who is the top of the parent chain of Leo?",
+     "p": "Which person sits at the top of the parent line for Leo?",
+     "a": "bob"
+    },
+    {
+     "s": "Who is the parent of the parent of Finn?",
+     "p": "Who is the grandparent of Finn?",
+     "a": "bob"
+    },
+    {
+     "s": "Is Ivan the parent of the parent of Dan?",
+     "p": "Is Dan a grandchild of Ivan?",
+     "a": "no"
+    },
+    {
+     "s": "Is Dan the parent of the parent of Kim?",
+     "p": "Is Kim a grandchild of Dan?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 11,
+   "sentences": [
+    {
+     "s": "Ann is the boss of Leo.",
+     "p": "Leo reports to Ann.",
+     "a": null
+    },
+    {
+     "s": "Ivan reports to Eve.",
+     "p": "Eve is the boss of Ivan.",
+     "a": null
+    },
+    {
+     "s": "Gus reports to Mia.",
+     "p": "Gus answers to Mia.",
+     "a": null
+    },
+    {
+     "s": "Leo is the boss of Mia.",
+     "p": "Leo sits above Mia as the boss.",
+     "a": null
+    },
+    {
+     "s": "Joy reports to Hana.",
+     "p": "Hana is the boss of Joy.",
+     "a": null
+    },
+    {
+     "s": "Is Ann the boss of the boss of Gus?",
+     "p": "Would Ann sit two levels above Gus?",
+     "a": "no"
+    },
+    {
+     "s": "Ivan is the boss of Noah.",
+     "p": "Noah reports to Ivan.",
+     "a": null
+    },
+    {
+     "s": "Leo is the boss of Hana.",
+     "p": "Hana falls under Leo.",
+     "a": null
+    },
+    {
+     "s": "Who is the top of the boss chain of Noah?",
+     "p": "Who sits highest in the boss line above Noah?",
+     "a": "eve"
+    },
+    {
+     "s": "Dan reports to Bob.",
+     "p": "Bob is the boss of Dan.",
+     "a": null
+    },
+    {
+     "s": "Cara reports to Kim.",
+     "p": "Kim gives orders to Cara.",
+     "a": null
+    },
+    {
+     "s": "Bob reports to Joy.",
+     "p": "Joy is the boss over Bob.",
+     "a": null
+    },
+    {
+     "s": "Kim reports to Eve.",
+     "p": "Kim has Eve as a boss.",
+     "a": null
+    },
+    {
+     "s": "Is Kim the boss of the boss of Joy?",
+     "p": "Does Joy have Kim as a grandboss?",
+     "a": "no"
+    },
+    {
+     "s": "Who is the top of the boss chain of Cara?",
+     "p": "Who sits highest in the boss chain over Cara?",
+     "a": "eve"
+    },
+    {
+     "s": "Is Dan the boss of the boss of Hana?",
+     "p": "Would Dan sit two levels above Hana?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 12,
+   "sentences": [
+    {
+     "s": "Eve is the parent of Bob.",
+     "p": "Bob has Eve as a parent.",
+     "a": null
+    },
+    {
+     "s": "Leo is the parent of Hana.",
+     "p": "Leo has Hana as a child.",
+     "a": null
+    },
+    {
+     "s": "Leo has the parent Joy.",
+     "p": "Joy is the parent of Leo.",
+     "a": null
+    },
+    {
+     "s": "Leo is the parent of Mia.",
+     "p": "Leo is the parent that Mia has.",
+     "a": null
+    },
+    {
+     "s": "Is Noah the parent of the parent of Mia?",
+     "p": "Is Mia a grandchild of Noah?",
+     "a": "no"
+    },
+    {
+     "s": "Noah has the parent Mia.",
+     "p": "Mia is the parent of Noah.",
+     "a": null
+    },
+    {
+     "s": "Ivan has the parent Hana.",
+     "p": "Hana parents Ivan.",
+     "a": null
+    },
+    {
+     "s": "Who is the parent of the parent of Ivan?",
+     "p": "Which person is the grandparent of Ivan?",
+     "a": "leo"
+    },
+    {
+     "s": "Is Joy the parent of the parent of Mia?",
+     "p": "Is Mia a grandchild of Joy?",
+     "a": "yes"
+    },
+    {
+     "s": "Is Leo the parent of the parent of Ivan?",
+     "p": "Is Ivan a grandchild of Leo?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 13,
+   "sentences": [
+    {
+     "s": "Gus is the boss of Kim.",
+     "p": "Gus is the superior of Kim.",
+     "a": null
+    },
+    {
+     "s": "Joy is the boss of Mia.",
+     "p": "Mia reports to Joy.",
+     "a": null
+    },
+    {
+     "s": "Hana is the boss of Leo.",
+     "p": "Leo answers to Hana.",
+     "a": null
+    },
+    {
+     "s": "Gus is the boss of Hana.",
+     "p": "Gus leads Hana as the boss.",
+     "a": null
+    },
+    {
+     "s": "Gus reports to Dan.",
+     "p": "Dan is the boss of Gus.",
+     "a": null
+    },
+    {
+     "s": "Who is the boss of the boss of Kim?",
+     "p": "Which grandboss does Kim have?",
+     "a": "dan"
+    },
+    {
+     "s": "Gus is the boss of Bob.",
+     "p": "Bob has Gus as a boss.",
+     "a": null
+    },
+    {
+     "s": "Finn reports to Eve.",
+     "p": "Finn falls under Eve as boss.",
+     "a": null
+    },
+    {
+     "s": "Noah reports to Mia.",
+     "p": "Mia gives orders to Noah.",
+     "a": null
+    },
+    {
+     "s": "Mia is the boss of Dan.",
+     "p": "Dan reports to Mia.",
+     "a": null
+    },
+    {
+     "s": "Eve is the boss of Ann.",
+     "p": "Ann answers to Eve.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 14,
+   "sentences": [
+    {
+     "s": "Kim has the parent Joy.",
+     "p": "Joy parents Kim.",
+     "a": null
+    },
+    {
+     "s": "Mia is the parent of Gus.",
+     "p": "Mia is a parent to Gus.",
+     "a": null
+    },
+    {
+     "s": "Mia has the parent Leo.",
+     "p": "Leo is the parent of Mia.",
+     "a": null
+    },
+    {
+     "s": "Ivan is the parent of Ann.",
+     "p": "Ann has Ivan as a parent.",
+     "a": null
+    },
+    {
+     "s": "Who is the top of the parent chain of Gus?",
+     "p": "Which person tops the parent line over Gus?",
+     "a": "leo"
+    },
+    {
+     "s": "Ann is the parent of Dan.",
+     "p": "Dan is the child of Ann.",
+     "a": null
+    },
+    {
+     "s": "Mia is the parent of Ivan.",
+     "p": "Ivan is the child of Mia.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 15,
+   "sentences": [
+    {
+     "s": "Mia has the parent Gus.",
+     "p": "Gus is the parent of Mia.",
+     "a": null
+    },
+    {
+     "s": "Dan has the parent Ann.",
+     "p": "Ann stands as the parent of Dan.",
+     "a": null
+    },
+    {
+     "s": "Bob is the parent of Joy.",
+     "p": "Joy has Bob as a parent.",
+     "a": null
+    },
+    {
+     "s": "Ann has the parent Ivan.",
+     "p": "Ivan is a parent to Ann.",
+     "a": null
+    },
+    {
+     "s": "Ivan has the parent Gus.",
+     "p": "Gus parents Ivan.",
+     "a": null
+    },
+    {
+     "s": "Finn has the parent Bob.",
+     "p": "Bob is the parent of Finn.",
+     "a": null
+    },
+    {
+     "s": "Is Gus the parent of the parent of Ann?",
+     "p": "Is Ann a grandchild of Gus?",
+     "a": "yes"
+    },
+    {
+     "s": "Noah is the parent of Hana.",
+     "p": "Hana has Noah as a parent.",
+     "a": null
+    },
+    {
+     "s": "Eve has the parent Cara.",
+     "p": "Cara is the parent of Eve.",
+     "a": null
+    },
+    {
+     "s": "Bob has the parent Hana.",
+     "p": "Hana is the parent of Bob.",
+     "a": null
+    },
+    {
+     "s": "Leo is the parent of Gus.",
+     "p": "Gus has Leo as a parent.",
+     "a": null
+    },
+    {
+     "s": "Hana is the parent of Kim.",
+     "p": "Kim is the child of Hana.",
+     "a": null
+    },
+    {
+     "s": "Is Mia the parent of the parent of Ann?",
+     "p": "Is Ann a grandchild of Mia?",
+     "a": "no"
+    },
+    {
+     "s": "Leo has the parent Hana.",
+     "p": "Hana stands as the parent of Leo.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 16,
+   "sentences": [
+    {
+     "s": "Mia has the parent Ivan.",
+     "p": "Ivan parents Mia.",
+     "a": null
+    },
+    {
+     "s": "Ann has the parent Noah.",
+     "p": "Noah is the parent of Ann.",
+     "a": null
+    },
+    {
+     "s": "Hana is the parent of Kim.",
+     "p": "Kim has Hana as a parent.",
+     "a": null
+    },
+    {
+     "s": "Hana is the parent of Joy.",
+     "p": "Joy is the child of Hana.",
+     "a": null
+    },
+    {
+     "s": "Ivan is the parent of Gus.",
+     "p": "Gus is a child of Ivan.",
+     "a": null
+    },
+    {
+     "s": "Dan has the parent Noah.",
+     "p": "Noah parents Dan.",
+     "a": null
+    },
+    {
+     "s": "Ivan has the parent Finn.",
+     "p": "Finn is the parent of Ivan.",
+     "a": null
+    },
+    {
+     "s": "Kim is the parent of Cara.",
+     "p": "Cara has Kim as a parent.",
+     "a": null
+    },
+    {
+     "s": "Bob has the parent Hana.",
+     "p": "Bob is a child of Hana.",
+     "a": null
+    },
+    {
+     "s": "Is Hana the parent of the parent of Cara?",
+     "p": "Is Cara a grandchild of Hana?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 17,
+   "sentences": [
+    {
+     "s": "Eve reports to Bob.",
+     "p": "Bob is the boss of Eve.",
+     "a": null
+    },
+    {
+     "s": "Mia is the boss of Joy.",
+     "p": "Joy reports to Mia.",
+     "a": null
+    },
+    {
+     "s": "Kim is the boss of Leo.",
+     "p": "Leo answers to Kim.",
+     "a": null
+    },
+    {
+     "s": "Ann reports to Gus.",
+     "p": "Gus leads Ann as boss.",
+     "a": null
+    },
+    {
+     "s": "Bob reports to Dan.",
+     "p": "Dan is the boss over Bob.",
+     "a": null
+    },
+    {
+     "s": "Finn is the boss of Cara.",
+     "p": "Cara reports to Finn.",
+     "a": null
+    },
+    {
+     "s": "Is Cara the boss of the boss of Eve?",
+     "p": "Would Eve have Cara as a grandboss?",
+     "a": "no"
+    },
+    {
+     "s": "Noah reports to Dan.",
+     "p": "Dan gives orders to Noah.",
+     "a": null
+    },
+    {
+     "s": "Ivan reports to Bob.",
+     "p": "Ivan falls under Bob as boss.",
+     "a": null
+    },
+    {
+     "s": "Is Mia the boss of the boss of Ivan?",
+     "p": "Does Ivan sit two levels below Mia in the boss line?",
+     "a": "no"
+    },
+    {
+     "s": "Finn is the boss of Mia.",
+     "p": "Mia reports to Finn.",
+     "a": null
+    },
+    {
+     "s": "Ann is the boss of Finn.",
+     "p": "Finn answers to Ann.",
+     "a": null
+    },
+    {
+     "s": "Gus reports to Noah.",
+     "p": "Noah is the boss of Gus.",
+     "a": null
+    },
+    {
+     "s": "Leo is the boss of Hana.",
+     "p": "Hana reports to Leo.",
+     "a": null
+    },
+    {
+     "s": "Who is the boss of the boss of Finn?",
+     "p": "Which person is the grandboss of Finn?",
+     "a": "gus"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 18,
+   "sentences": [
+    {
+     "s": "Leo is the boss of Mia.",
+     "p": "Mia falls under Leo as boss.",
+     "a": null
+    },
+    {
+     "s": "Kim is the boss of Bob.",
+     "p": "Kim leads Bob as the boss.",
+     "a": null
+    },
+    {
+     "s": "Gus reports to Ivan.",
+     "p": "Ivan is the boss over Gus.",
+     "a": null
+    },
+    {
+     "s": "Ivan is the boss of Cara.",
+     "p": "Cara answers to Ivan.",
+     "a": null
+    },
+    {
+     "s": "Finn reports to Mia.",
+     "p": "Mia supervises Finn.",
+     "a": null
+    },
+    {
+     "s": "Bob is the boss of Noah.",
+     "p": "Noah answers to Bob.",
+     "a": null
+    },
+    {
+     "s": "Hana reports to Gus.",
+     "p": "Gus is in charge of Hana.",
+     "a": null
+    },
+    {
+     "s": "Who is the top of the boss chain of Hana?",
+     "p": "Which person is the highest boss above Hana?",
+     "a": "ivan"
+    },
+    {
+     "s": "Kim reports to Leo.",
+     "p": "Leo is the boss of Kim.",
+     "a": null
+    },
+    {
+     "s": "Gus is the boss of Ann.",
+     "p": "Ann falls under Gus.",
+     "a": null
+    },
+    {
+     "s": "Noah is the boss of Eve.",
+     "p": "Eve reports to Noah.",
+     "a": null
+    },
+    {
+     "s": "Dan reports to Bob.",
+     "p": "Bob supervises Dan.",
+     "a": null
+    },
+    {
+     "s": "Ivan reports to Joy.",
+     "p": "Joy leads Ivan as the boss.",
+     "a": null
+    },
+    {
+     "s": "Is Ivan the boss of the boss of Ann?",
+     "p": "Would Ivan sit two levels above Ann?",
+     "a": "yes"
+    },
+    {
+     "s": "Is Leo the boss of the boss of Finn?",
+     "p": "Is Finn two levels under Leo in the boss line?",
+     "a": "yes"
+    },
+    {
+     "s": "Who is the boss of the boss of Ann?",
+     "p": "Who holds the grandboss role over Ann?",
+     "a": "ivan"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 19,
+   "sentences": [
+    {
+     "s": "Hana is the boss of Dan.",
+     "p": "Dan falls under Hana as boss.",
+     "a": null
+    },
+    {
+     "s": "Finn is the boss of Gus.",
+     "p": "Gus has Finn as a boss.",
+     "a": null
+    },
+    {
+     "s": "Ann is the boss of Eve.",
+     "p": "Eve reports to Ann.",
+     "a": null
+    },
+    {
+     "s": "Mia is the boss of Noah.",
+     "p": "Mia leads Noah as the boss.",
+     "a": null
+    },
+    {
+     "s": "Hana is the boss of Cara.",
+     "p": "Cara has Hana as boss.",
+     "a": null
+    },
+    {
+     "s": "Ivan is the boss of Leo.",
+     "p": "Leo reports to Ivan.",
+     "a": null
+    },
+    {
+     "s": "Leo is the boss of Mia.",
+     "p": "Mia answers to Leo.",
+     "a": null
+    },
+    {
+     "s": "Ann is the boss of Hana.",
+     "p": "Hana reports to Ann.",
+     "a": null
+    },
+    {
+     "s": "Who is the boss of the boss of Noah?",
+     "p": "Which person is the grandboss of Noah?",
+     "a": "leo"
+    },
+    {
+     "s": "Joy reports to Ann.",
+     "p": "Ann directs Joy as boss.",
+     "a": null
+    },
+    {
+     "s": "Finn reports to Cara.",
+     "p": "Finn is someone Cara oversees.",
+     "a": null
+    },
+    {
+     "s": "Ann reports to Noah.",
+     "p": "Noah is the boss of Ann.",
+     "a": null
+    },
+    {
+     "s": "Bob reports to Finn.",
+     "p": "Finn leads Bob as the boss.",
+     "a": null
+    }
+   ]
+  }
+ ]
+}

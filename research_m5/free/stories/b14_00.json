@@ -1,0 +1,1785 @@
+{
+ "task": "b14",
+ "stories": [
+  {
+   "part": "train",
+   "id": 0,
+   "sentences": [
+    {
+     "s": "Mary went to the kitchen this morning.",
+     "p": "In the morning today Mary headed to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the bedroom yesterday.",
+     "p": "Mary returned to the bedroom on the previous day.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the kitchen?",
+     "p": "Which place was Mary at just before the kitchen?",
+     "a": "bedroom"
+    },
+    {
+     "s": "This evening Mary moved to the kitchen.",
+     "p": "Later in the evening Mary relocated to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Mary travelled to the cinema.",
+     "p": "In the afternoon Mary journeyed over to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the kitchen?",
+     "p": "Right before the kitchen which place had Mary been at?",
+     "a": "cinema"
+    },
+    {
+     "s": "Yesterday Julie journeyed to the park.",
+     "p": "On the previous day Julie went out to the park.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Bill went back to the cinema.",
+     "p": "Bill returned to the cinema the day before today.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the cinema?",
+     "p": "Where had Mary been immediately before the cinema?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Julie moved to the cinema this afternoon.",
+     "p": "During the afternoon Julie relocated to the cinema.",
+     "a": null
+    },
+    {
+     "s": "This morning Julie went back to the office.",
+     "p": "Earlier this morning Julie returned to the office.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the office?",
+     "p": "Just prior to the office which place was Julie at?",
+     "a": "park"
+    },
+    {
+     "s": "Fred journeyed to the park yesterday.",
+     "p": "Fred went out to the park the previous day.",
+     "a": null
+    },
+    {
+     "s": "This morning Bill journeyed to the school.",
+     "p": "Bill set off for the school in the morning today.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the school?",
+     "p": "Where had Bill been right before the school?",
+     "a": "cinema"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 1,
+   "sentences": [
+    {
+     "s": "Yesterday Fred went back to the office.",
+     "p": "Fred went back to the office the day before.",
+     "a": null
+    },
+    {
+     "s": "Fred travelled to the kitchen this morning.",
+     "p": "Fred reached the kitchen during the morning of today.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the kitchen yesterday.",
+     "p": "Mary got to the kitchen on the previous day.",
+     "a": null
+    },
+    {
+     "s": "This morning Mary moved to the office.",
+     "p": "Mary relocated to the office during this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the office?",
+     "p": "Before the office at which place had Mary been?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Yesterday Bill moved to the school.",
+     "p": "Bill relocated to the school on the previous day.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the bedroom this afternoon.",
+     "p": "Mary headed into the bedroom this afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the office?",
+     "p": "What place did Mary occupy immediately prior to the office?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Mary moved to the school this evening.",
+     "p": "Mary ended up at the school during this evening.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Fred travelled to the bedroom.",
+     "p": "Fred went to the bedroom during the afternoon today.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the school?",
+     "p": "Which room was Mary in just before the school?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Julie went to the bedroom yesterday.",
+     "p": "Yesterday Julie headed for the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Bill went to the kitchen this morning.",
+     "p": "Bill walked into the kitchen this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the school?",
+     "p": "Mary had been where before arriving at the school?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Fred went back to the park this evening.",
+     "p": "Fred returned to the park during this evening.",
+     "a": null
+    },
+    {
+     "s": "Julie went back to the kitchen this morning.",
+     "p": "Julie came back to the kitchen during this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the school?",
+     "p": "Prior to the school which place was Mary at?",
+     "a": "bedroom"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 2,
+   "sentences": [
+    {
+     "s": "This morning Julie moved to the bedroom.",
+     "p": "Julie transferred into the bedroom in the morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Bill moved to the kitchen.",
+     "p": "Bill went into the kitchen on the day before.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Julie went to the park.",
+     "p": "The previous day Julie visited the park.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Mary moved to the park.",
+     "p": "Mary relocated to the park on the day before.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the bedroom?",
+     "p": "What location did Julie occupy before the bedroom?",
+     "a": "park"
+    },
+    {
+     "s": "This morning Bill journeyed to the cinema.",
+     "p": "Bill travelled over to the cinema this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Fred moved to the school.",
+     "p": "Fred got to the school the day before today.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the cinema?",
+     "p": "Bill had come from where prior to the cinema?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Julie journeyed to the school this afternoon.",
+     "p": "Julie went to the school during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the bedroom this morning.",
+     "p": "This morning Mary shifted to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the school?",
+     "p": "Julie had been at which place before the school?",
+     "a": "bedroom"
+    },
+    {
+     "s": "This morning Fred travelled to the park.",
+     "p": "Fred headed to the park during the morning.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Bill went back to the bedroom.",
+     "p": "Bill returned to the bedroom in the afternoon today.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the park?",
+     "p": "What place had Fred been in right before the park?",
+     "a": "school"
+    },
+    {
+     "s": "This evening Bill went back to the kitchen.",
+     "p": "Bill came back to the kitchen during this evening.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the school this afternoon.",
+     "p": "Mary headed off to the school this afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the school?",
+     "p": "Julie was at what place just prior to the school?",
+     "a": "bedroom"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 3,
+   "sentences": [
+    {
+     "s": "Yesterday Mary journeyed to the office.",
+     "p": "Mary went to the office on the previous day.",
+     "a": null
+    },
+    {
+     "s": "This morning Mary travelled to the cinema.",
+     "p": "Mary made the trip to the cinema this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Julie travelled to the bedroom.",
+     "p": "Julie headed into the bedroom the day before.",
+     "a": null
+    },
+    {
+     "s": "Julie travelled to the cinema this morning.",
+     "p": "Julie went over to the cinema this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Bill travelled to the kitchen.",
+     "p": "On the previous day Bill journeyed to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Fred travelled to the kitchen.",
+     "p": "Yesterday Fred got over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the cinema?",
+     "p": "What place preceded the cinema for Mary?",
+     "a": "office"
+    },
+    {
+     "s": "This morning Bill went back to the bedroom.",
+     "p": "Bill returned to the bedroom earlier this morning.",
+     "a": null
+    },
+    {
+     "s": "This morning Fred moved to the bedroom.",
+     "p": "Fred relocated into the bedroom this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the cinema?",
+     "p": "Before reaching the cinema which spot did Mary come from?",
+     "a": "office"
+    },
+    {
+     "s": "This afternoon Bill went to the office.",
+     "p": "Bill went to the office during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the office this afternoon.",
+     "p": "This afternoon Mary took a trip to the office.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the office?",
+     "p": "Bill came from where before arriving at the office?",
+     "a": "bedroom"
+    },
+    {
+     "s": "This afternoon Julie journeyed to the school.",
+     "p": "Julie got to the school during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Fred journeyed to the school this afternoon.",
+     "p": "Fred reached the school this afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the school?",
+     "p": "Fred had been where directly before the school?",
+     "a": "bedroom"
+    },
+    {
+     "s": "This evening Bill travelled to the cinema.",
+     "p": "Bill got to the cinema this evening.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the park this evening.",
+     "p": "This evening Mary went out to the park.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the office?",
+     "p": "Directly before the office where had Bill been?",
+     "a": "bedroom"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 4,
+   "sentences": [
+    {
+     "s": "This morning Julie went back to the bedroom.",
+     "p": "Julie went back into the bedroom this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Fred travelled to the office.",
+     "p": "Fred headed for the office the previous day.",
+     "a": null
+    },
+    {
+     "s": "Julie went back to the park this afternoon.",
+     "p": "This afternoon Julie came back to the park.",
+     "a": null
+    },
+    {
+     "s": "Julie journeyed to the office yesterday.",
+     "p": "The day before Julie went out to the office.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the bedroom?",
+     "p": "Prior to the bedroom which place had Julie occupied?",
+     "a": "office"
+    },
+    {
+     "s": "This morning Fred went to the kitchen.",
+     "p": "Fred walked to the kitchen this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Mary moved to the park.",
+     "p": "Mary shifted over to the park the day before.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the park?",
+     "p": "Julie had been at what location right before the park?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Bill went back to the bedroom yesterday.",
+     "p": "Bill came back to the bedroom the day before.",
+     "a": null
+    },
+    {
+     "s": "This morning Mary travelled to the office.",
+     "p": "Mary took a trip to the office this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the kitchen?",
+     "p": "Fred came from which place right before the kitchen?",
+     "a": "office"
+    },
+    {
+     "s": "This morning Bill journeyed to the cinema.",
+     "p": "Bill went to the cinema during this morning.",
+     "a": null
+    },
+    {
+     "s": "This evening Julie moved to the school.",
+     "p": "Julie relocated to the school this evening.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the kitchen?",
+     "p": "Fred had been at which place right before the kitchen?",
+     "a": "office"
+    },
+    {
+     "s": "Fred moved to the bedroom this evening.",
+     "p": "This evening Fred shifted into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Fred went to the office this afternoon.",
+     "p": "During the afternoon Fred headed to the office.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the office?",
+     "p": "Which place came just before the office for Fred?",
+     "a": "kitchen"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 5,
+   "sentences": [
+    {
+     "s": "Bill travelled to the office this morning.",
+     "p": "Bill got to the office earlier this morning.",
+     "a": null
+    },
+    {
+     "s": "Bill travelled to the cinema yesterday.",
+     "p": "The previous day Bill went to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the office?",
+     "p": "Which location did Bill leave right before the office?",
+     "a": "cinema"
+    },
+    {
+     "s": "Bill journeyed to the kitchen this afternoon.",
+     "p": "In the afternoon Bill reached the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the cinema yesterday.",
+     "p": "Mary visited the cinema on the day before.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the kitchen?",
+     "p": "Bill had been where just prior to the kitchen?",
+     "a": "office"
+    },
+    {
+     "s": "Fred went to the office yesterday.",
+     "p": "The day before Fred visited the office.",
+     "a": null
+    },
+    {
+     "s": "This evening Bill travelled to the cinema.",
+     "p": "During this evening Bill headed for the cinema.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the kitchen?",
+     "p": "Prior to the kitchen what place was Bill at?",
+     "a": "office"
+    },
+    {
+     "s": "Fred travelled to the kitchen this afternoon.",
+     "p": "This afternoon Fred went over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Fred went to the park this morning.",
+     "p": "Fred headed to the park earlier this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the cinema?",
+     "p": "Bill had come from which place before the cinema?",
+     "a": "kitchen"
+    },
+    {
+     "s": "This morning Mary journeyed to the bedroom.",
+     "p": "Mary moved into the bedroom in the morning today.",
+     "a": null
+    },
+    {
+     "s": "This evening Fred travelled to the park.",
+     "p": "Fred made the journey to the park this evening.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the kitchen?",
+     "p": "Before going to the kitchen which place had Fred been at?",
+     "a": "park"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 6,
+   "sentences": [
+    {
+     "s": "Mary journeyed to the office this morning.",
+     "p": "Mary arrived at the office during this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Mary travelled to the park.",
+     "p": "Yesterday Mary got to the park.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the office?",
+     "p": "Mary was at which place just before the office?",
+     "a": "park"
+    },
+    {
+     "s": "Mary travelled to the park this afternoon.",
+     "p": "This afternoon Mary arrived at the park.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Julie travelled to the kitchen.",
+     "p": "Julie went to the kitchen the previous day.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the park?",
+     "p": "Mary had been where directly before the park?",
+     "a": "office"
+    },
+    {
+     "s": "Yesterday Bill went to the cinema.",
+     "p": "On the day before Bill visited the cinema.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the school this evening.",
+     "p": "Mary went over to the school this evening.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the office?",
+     "p": "Before arriving at the office what place did Mary come from?",
+     "a": "park"
+    },
+    {
+     "s": "Fred journeyed to the kitchen this morning.",
+     "p": "Fred got to the kitchen this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Fred journeyed to the office.",
+     "p": "The previous day Fred headed to the office.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the school?",
+     "p": "What place came right before the school for Mary?",
+     "a": "park"
+    },
+    {
+     "s": "Fred went to the office this evening.",
+     "p": "This evening Fred visited the office.",
+     "a": null
+    },
+    {
+     "s": "Fred moved to the cinema this afternoon.",
+     "p": "Fred relocated to the cinema during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the office?",
+     "p": "Fred had come from where before the office?",
+     "a": "cinema"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 7,
+   "sentences": [
+    {
+     "s": "This morning Bill moved to the kitchen.",
+     "p": "Bill went into the kitchen in the morning.",
+     "a": null
+    },
+    {
+     "s": "Julie journeyed to the school yesterday.",
+     "p": "Yesterday Julie reached the school.",
+     "a": null
+    },
+    {
+     "s": "Bill moved to the school this afternoon.",
+     "p": "Bill relocated to the school this afternoon.",
+     "a": null
+    },
+    {
+     "s": "Bill journeyed to the office yesterday.",
+     "p": "On the previous day Bill headed to the office.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the school?",
+     "p": "Which spot did Bill occupy right before the school?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Bill went back to the cinema this evening.",
+     "p": "This evening Bill returned to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Fred travelled to the park.",
+     "p": "Fred journeyed to the park the day before.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the kitchen?",
+     "p": "Right before the kitchen Bill had been where?",
+     "a": "office"
+    },
+    {
+     "s": "This afternoon Julie went back to the park.",
+     "p": "Julie came back to the park during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "This morning Julie went back to the office.",
+     "p": "Julie returned to the office in the morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the park?",
+     "p": "Julie was located where prior to the park?",
+     "a": "office"
+    },
+    {
+     "s": "This evening Julie went back to the kitchen.",
+     "p": "Julie came back to the kitchen this evening.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Mary journeyed to the school.",
+     "p": "Mary went out to the school on the previous day.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the cinema?",
+     "p": "Bill was at which place just before the cinema?",
+     "a": "school"
+    },
+    {
+     "s": "Fred travelled to the cinema this morning.",
+     "p": "Fred got to the cinema during this morning.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the bedroom this morning.",
+     "p": "Mary shifted into the bedroom this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the bedroom?",
+     "p": "Which place did Mary come from just before the bedroom?",
+     "a": "school"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 8,
+   "sentences": [
+    {
+     "s": "This morning Mary journeyed to the office.",
+     "p": "Mary headed to the office this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Mary went back to the bedroom.",
+     "p": "Mary came back to the bedroom the previous day.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Julie travelled to the bedroom.",
+     "p": "Julie got to the bedroom on the day before.",
+     "a": null
+    },
+    {
+     "s": "Bill moved to the park yesterday.",
+     "p": "Yesterday Bill shifted to the park.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the office?",
+     "p": "Prior to the office Mary had been in which place?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Mary went to the cinema this evening.",
+     "p": "This evening Mary visited the cinema.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Mary went to the kitchen.",
+     "p": "Mary walked to the kitchen this afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the kitchen?",
+     "p": "What location was Mary in before the kitchen?",
+     "a": "office"
+    },
+    {
+     "s": "This morning Fred went to the park.",
+     "p": "Fred visited the park during this morning.",
+     "a": null
+    },
+    {
+     "s": "Fred went to the office yesterday.",
+     "p": "Yesterday Fred headed to the office.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the office?",
+     "p": "Mary had come from which place prior to the office?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Fred went to the office this evening.",
+     "p": "This evening Fred went over to the office.",
+     "a": null
+    },
+    {
+     "s": "Fred went back to the cinema this afternoon.",
+     "p": "Fred returned to the cinema this afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the park?",
+     "p": "Right before the park which place had Fred been in?",
+     "a": "office"
+    },
+    {
+     "s": "Bill travelled to the school this afternoon.",
+     "p": "This afternoon Bill went to the school.",
+     "a": null
+    },
+    {
+     "s": "This morning Bill went to the office.",
+     "p": "Bill headed to the office in the morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the office?",
+     "p": "Fred came from where prior to arriving at the office?",
+     "a": "cinema"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 9,
+   "sentences": [
+    {
+     "s": "Fred moved to the park yesterday.",
+     "p": "The day before Fred shifted to the park.",
+     "a": null
+    },
+    {
+     "s": "This morning Julie journeyed to the bedroom.",
+     "p": "Julie reached the bedroom during this morning.",
+     "a": null
+    },
+    {
+     "s": "Julie went back to the park this afternoon.",
+     "p": "This afternoon Julie returned to the park.",
+     "a": null
+    },
+    {
+     "s": "Julie moved to the park yesterday.",
+     "p": "Yesterday Julie relocated to the park.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the park?",
+     "p": "Julie had come from what place before the park?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Bill journeyed to the park this morning.",
+     "p": "Bill headed to the park earlier this morning.",
+     "a": null
+    },
+    {
+     "s": "Bill went to the bedroom yesterday.",
+     "p": "Yesterday Bill arrived in the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the park?",
+     "p": "Bill had been where right before the park?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Mary journeyed to the school yesterday.",
+     "p": "Mary went to the school the previous day.",
+     "a": null
+    },
+    {
+     "s": "Julie journeyed to the school this evening.",
+     "p": "This evening Julie went to the school.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the park?",
+     "p": "Before reaching the park which room was Julie in?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Bill went to the bedroom this afternoon.",
+     "p": "Bill moved into the bedroom during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "This morning Fred moved to the kitchen.",
+     "p": "Fred relocated to the kitchen during the morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the bedroom?",
+     "p": "What place did Bill come from prior to the bedroom?",
+     "a": "park"
+    },
+    {
+     "s": "This morning Mary travelled to the kitchen.",
+     "p": "Mary got to the kitchen in the morning.",
+     "a": null
+    },
+    {
+     "s": "Fred moved to the bedroom this afternoon.",
+     "p": "This afternoon Fred shifted into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the bedroom?",
+     "p": "Prior to the bedroom where had Fred just been?",
+     "a": "kitchen"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 10,
+   "sentences": [
+    {
+     "s": "Bill journeyed to the kitchen yesterday.",
+     "p": "Yesterday Bill went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "This morning Julie travelled to the kitchen.",
+     "p": "Julie walked over to the kitchen this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Julie moved to the office.",
+     "p": "Julie relocated to the office the day before.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Fred journeyed to the cinema.",
+     "p": "Fred headed to the cinema the previous day.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the kitchen?",
+     "p": "Julie had been at what place before the kitchen?",
+     "a": "office"
+    },
+    {
+     "s": "Julie went back to the bedroom this afternoon.",
+     "p": "This afternoon Julie came back to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "This morning Bill moved to the office.",
+     "p": "Bill shifted over to the office in the morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the office?",
+     "p": "Bill came from which location before the office?",
+     "a": "kitchen"
+    },
+    {
+     "s": "This evening Julie went to the office.",
+     "p": "Julie visited the office this evening.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Mary moved to the school.",
+     "p": "Mary relocated to the school the previous day.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the office?",
+     "p": "Julie had come from where before the office?",
+     "a": "bedroom"
+    },
+    {
+     "s": "This morning Fred went back to the kitchen.",
+     "p": "Fred returned to the kitchen this morning.",
+     "a": null
+    },
+    {
+     "s": "Bill went to the park this afternoon.",
+     "p": "This afternoon Bill went out to the park.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the park?",
+     "p": "Bill was located where directly before the park?",
+     "a": "office"
+    },
+    {
+     "s": "This evening Fred moved to the park.",
+     "p": "Fred shifted over to the park this evening.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Fred journeyed to the school.",
+     "p": "Fred headed to the school during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the park?",
+     "p": "Right before the park which place was Fred at?",
+     "a": "school"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 11,
+   "sentences": [
+    {
+     "s": "This afternoon Julie went to the kitchen.",
+     "p": "Julie reached the kitchen during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Julie journeyed to the bedroom yesterday.",
+     "p": "The previous day Julie headed to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Bill went to the bedroom.",
+     "p": "Bill visited the bedroom on the day before.",
+     "a": null
+    },
+    {
+     "s": "This morning Julie went to the office.",
+     "p": "Julie went to the office in the morning today.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the kitchen?",
+     "p": "Julie was at which place just before the kitchen?",
+     "a": "office"
+    },
+    {
+     "s": "Mary went to the office yesterday.",
+     "p": "Mary got to the office the day before.",
+     "a": null
+    },
+    {
+     "s": "This evening Julie went to the school.",
+     "p": "Julie went to the school in the evening today.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the school?",
+     "p": "Before the school which location had Julie been at?",
+     "a": "kitchen"
+    },
+    {
+     "s": "This morning Fred travelled to the office.",
+     "p": "Fred arrived at the office during this morning.",
+     "a": null
+    },
+    {
+     "s": "Fred travelled to the bedroom yesterday.",
+     "p": "Yesterday Fred went into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the kitchen?",
+     "p": "Before the kitchen Julie was at which place?",
+     "a": "office"
+    },
+    {
+     "s": "Bill went back to the school this morning.",
+     "p": "This morning Bill returned to the school.",
+     "a": null
+    },
+    {
+     "s": "Fred moved to the school this afternoon.",
+     "p": "Fred shifted to the school in the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the office?",
+     "p": "Fred came from where right before the office?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Mary journeyed to the bedroom this morning.",
+     "p": "Mary headed to the bedroom this morning.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Bill moved to the office.",
+     "p": "Bill relocated to the office this afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the school?",
+     "p": "Bill had been where just before the school?",
+     "a": "bedroom"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 12,
+   "sentences": [
+    {
+     "s": "Yesterday Bill moved to the park.",
+     "p": "Bill shifted to the park the previous day.",
+     "a": null
+    },
+    {
+     "s": "Bill went back to the school this morning.",
+     "p": "Bill came back to the school in the morning.",
+     "a": null
+    },
+    {
+     "s": "Julie went to the school yesterday.",
+     "p": "The day before Julie visited the school.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Mary went to the school.",
+     "p": "Mary headed to the school the previous day.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the school?",
+     "p": "Prior to the school which place had Bill been at?",
+     "a": "park"
+    },
+    {
+     "s": "Mary travelled to the kitchen this morning.",
+     "p": "This morning Mary went over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "This morning Julie travelled to the kitchen.",
+     "p": "Julie walked to the kitchen during this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the school?",
+     "p": "Bill came from what place just before the school?",
+     "a": "park"
+    },
+    {
+     "s": "Fred went to the park yesterday.",
+     "p": "Fred visited the park on the previous day.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Mary journeyed to the school.",
+     "p": "Mary went to the school this afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the kitchen?",
+     "p": "Julie was located where just before the kitchen?",
+     "a": "school"
+    },
+    {
+     "s": "Julie travelled to the office this afternoon.",
+     "p": "This afternoon Julie reached the office.",
+     "a": null
+    },
+    {
+     "s": "Fred went back to the kitchen this morning.",
+     "p": "Fred returned to the kitchen in the morning today.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the school?",
+     "p": "Mary had been at which place before the school?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Bill went to the office this afternoon.",
+     "p": "During the afternoon Bill went to the office.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the bedroom this evening.",
+     "p": "Mary got to the bedroom this evening.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the bedroom?",
+     "p": "Which place was Mary at directly before the bedroom?",
+     "a": "school"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 13,
+   "sentences": [
+    {
+     "s": "This morning Fred moved to the office.",
+     "p": "In the morning Fred relocated to the office.",
+     "a": null
+    },
+    {
+     "s": "Bill travelled to the cinema yesterday.",
+     "p": "Bill reached the cinema the day before today.",
+     "a": null
+    },
+    {
+     "s": "Julie travelled to the cinema yesterday.",
+     "p": "The previous day Julie got to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Fred went back to the school yesterday.",
+     "p": "Fred came back to the school on the day before.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the office?",
+     "p": "Which location did Fred come from before the office?",
+     "a": "school"
+    },
+    {
+     "s": "This afternoon Julie moved to the park.",
+     "p": "Julie relocated to the park during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "This morning Julie went to the school.",
+     "p": "Julie headed to the school this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the office?",
+     "p": "What place did Fred leave right before the office?",
+     "a": "school"
+    },
+    {
+     "s": "Mary travelled to the office yesterday.",
+     "p": "Yesterday Mary got to the office.",
+     "a": null
+    },
+    {
+     "s": "Fred moved to the park this afternoon.",
+     "p": "This afternoon Fred shifted to the park.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the park?",
+     "p": "Julie had been where directly prior to the park?",
+     "a": "school"
+    },
+    {
+     "s": "Bill went to the bedroom this afternoon.",
+     "p": "Bill made the trip to the bedroom this afternoon.",
+     "a": null
+    },
+    {
+     "s": "Bill travelled to the school this morning.",
+     "p": "This morning Bill headed off to the school.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the bedroom?",
+     "p": "Bill had come from which place prior to the bedroom?",
+     "a": "school"
+    },
+    {
+     "s": "Mary moved to the kitchen this morning.",
+     "p": "Mary relocated to the kitchen this morning.",
+     "a": null
+    },
+    {
+     "s": "Fred moved to the bedroom this evening.",
+     "p": "This evening Fred went into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the bedroom?",
+     "p": "Before the bedroom where had Fred just come from?",
+     "a": "park"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 14,
+   "sentences": [
+    {
+     "s": "Bill moved to the kitchen this morning.",
+     "p": "This morning Bill relocated to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Bill went back to the park.",
+     "p": "Bill came back to the park the day before.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the kitchen?",
+     "p": "Bill had been where prior to the kitchen?",
+     "a": "park"
+    },
+    {
+     "s": "Yesterday Mary travelled to the school.",
+     "p": "Mary reached the school on the previous day.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Bill journeyed to the office.",
+     "p": "Bill headed over to the office in the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the kitchen?",
+     "p": "Before the kitchen what location was Bill at?",
+     "a": "park"
+    },
+    {
+     "s": "Yesterday Julie went back to the school.",
+     "p": "Julie returned to the school the day before.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Fred travelled to the school.",
+     "p": "Fred got to the school yesterday.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the office?",
+     "p": "Bill had come from where before the office?",
+     "a": "kitchen"
+    },
+    {
+     "s": "This morning Mary travelled to the park.",
+     "p": "Mary headed to the park earlier this morning.",
+     "a": null
+    },
+    {
+     "s": "Julie moved to the cinema this morning.",
+     "p": "This morning Julie shifted to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the cinema?",
+     "p": "Julie was at which place right before the cinema?",
+     "a": "school"
+    },
+    {
+     "s": "Mary went back to the kitchen this afternoon.",
+     "p": "This afternoon Mary came back to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Bill travelled to the bedroom this evening.",
+     "p": "Bill went into the bedroom this evening.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the kitchen?",
+     "p": "Mary had been at which place before the kitchen?",
+     "a": "park"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 15,
+   "sentences": [
+    {
+     "s": "Yesterday Mary journeyed to the kitchen.",
+     "p": "Mary went to the kitchen the previous day.",
+     "a": null
+    },
+    {
+     "s": "This morning Fred went back to the cinema.",
+     "p": "Fred came back to the cinema this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Julie journeyed to the cinema.",
+     "p": "Julie made the trip to the cinema the day before.",
+     "a": null
+    },
+    {
+     "s": "Fred journeyed to the bedroom yesterday.",
+     "p": "The day before Fred headed into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the cinema?",
+     "p": "Which place was Fred at before the cinema?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Julie went back to the bedroom this morning.",
+     "p": "This morning Julie returned to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Fred journeyed to the school this afternoon.",
+     "p": "Fred went to the school during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the bedroom?",
+     "p": "Julie had come from what location before the bedroom?",
+     "a": "cinema"
+    },
+    {
+     "s": "Mary travelled to the bedroom this morning.",
+     "p": "Mary got to the bedroom during this morning.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Julie went back to the park.",
+     "p": "Julie returned to the park in the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the school?",
+     "p": "Fred had been where directly before the school?",
+     "a": "cinema"
+    },
+    {
+     "s": "Mary went back to the kitchen this afternoon.",
+     "p": "Mary returned to the kitchen during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "This evening Julie moved to the kitchen.",
+     "p": "Julie shifted to the kitchen this evening.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the kitchen?",
+     "p": "Prior to the kitchen which room had Mary been in?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Yesterday Bill went to the cinema.",
+     "p": "Bill visited the cinema on the previous day.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the cinema this evening.",
+     "p": "This evening Mary returned to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the kitchen?",
+     "p": "Julie was in what place right before the kitchen?",
+     "a": "park"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 16,
+   "sentences": [
+    {
+     "s": "This morning Bill moved to the school.",
+     "p": "Bill relocated to the school in the morning.",
+     "a": null
+    },
+    {
+     "s": "Bill travelled to the office yesterday.",
+     "p": "Yesterday Bill reached the office.",
+     "a": null
+    },
+    {
+     "s": "Bill went back to the office this afternoon.",
+     "p": "This afternoon Bill returned to the office.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Fred went to the school.",
+     "p": "On the previous day Fred visited the school.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the school?",
+     "p": "Bill had been at which place prior to the school?",
+     "a": "office"
+    },
+    {
+     "s": "Yesterday Julie travelled to the office.",
+     "p": "Julie got to the office the day before.",
+     "a": null
+    },
+    {
+     "s": "This evening Bill went to the kitchen.",
+     "p": "Bill headed to the kitchen this evening.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the office?",
+     "p": "Before the office which place had Bill been at?",
+     "a": "school"
+    },
+    {
+     "s": "Fred journeyed to the bedroom this morning.",
+     "p": "Fred went to the bedroom during this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Mary went to the kitchen.",
+     "p": "Mary visited the kitchen on the day before.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the kitchen?",
+     "p": "Just prior to the kitchen where had Bill been?",
+     "a": "office"
+    },
+    {
+     "s": "This morning Julie went back to the school.",
+     "p": "Julie came back to the school this morning.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Fred went to the school.",
+     "p": "Fred headed to the school in the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the bedroom?",
+     "p": "Fred had been where just before the bedroom?",
+     "a": "school"
+    },
+    {
+     "s": "Mary journeyed to the park this afternoon.",
+     "p": "This afternoon Mary headed to the park.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the cinema this morning.",
+     "p": "Mary went over to the cinema this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the park?",
+     "p": "Mary was at which place right before the park?",
+     "a": "cinema"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 17,
+   "sentences": [
+    {
+     "s": "Yesterday Julie journeyed to the bedroom.",
+     "p": "Julie went into the bedroom on the previous day.",
+     "a": null
+    },
+    {
+     "s": "Fred went to the kitchen this morning.",
+     "p": "This morning Fred visited the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Fred went back to the cinema yesterday.",
+     "p": "Fred returned to the cinema the day before.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the cinema yesterday.",
+     "p": "Yesterday Mary came back to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the kitchen?",
+     "p": "What place was Fred in just before the kitchen?",
+     "a": "cinema"
+    },
+    {
+     "s": "This morning Bill moved to the school.",
+     "p": "Bill shifted to the school during this morning.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Bill moved to the park.",
+     "p": "Bill relocated to the park on the previous day.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the kitchen?",
+     "p": "Before the kitchen Fred had been at which place?",
+     "a": "cinema"
+    },
+    {
+     "s": "This afternoon Julie travelled to the office.",
+     "p": "Julie got to the office in the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Julie moved to the kitchen this morning.",
+     "p": "This morning Julie relocated to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the office?",
+     "p": "Which place came right before the office for Julie?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Bill went back to the bedroom this afternoon.",
+     "p": "Bill came back to the bedroom in the afternoon.",
+     "a": null
+    },
+    {
+     "s": "This morning Mary went to the bedroom.",
+     "p": "Mary headed into the bedroom this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the bedroom?",
+     "p": "Bill was at what location directly before the bedroom?",
+     "a": "school"
+    },
+    {
+     "s": "This evening Julie moved to the park.",
+     "p": "Julie shifted over to the park this evening.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the kitchen this afternoon.",
+     "p": "This afternoon Mary relocated to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the bedroom?",
+     "p": "Right before the bedroom which place was Bill at?",
+     "a": "school"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 18,
+   "sentences": [
+    {
+     "s": "Bill went to the school this morning.",
+     "p": "Bill walked over to the school this morning.",
+     "a": null
+    },
+    {
+     "s": "Bill went back to the cinema yesterday.",
+     "p": "The previous day Bill returned to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the school?",
+     "p": "Bill was at which place before arriving at the school?",
+     "a": "cinema"
+    },
+    {
+     "s": "This afternoon Bill moved to the bedroom.",
+     "p": "Bill shifted into the bedroom during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Julie travelled to the cinema.",
+     "p": "Julie headed to the cinema the day before.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the bedroom?",
+     "p": "Prior to the bedroom where had Bill been?",
+     "a": "school"
+    },
+    {
+     "s": "Mary went back to the school yesterday.",
+     "p": "Mary came back to the school on the day before.",
+     "a": null
+    },
+    {
+     "s": "This evening Bill travelled to the cinema.",
+     "p": "Bill went to the cinema this evening.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the school?",
+     "p": "Which place did Bill come from before the school?",
+     "a": "cinema"
+    },
+    {
+     "s": "Julie moved to the bedroom this morning.",
+     "p": "Julie shifted into the bedroom during this morning.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the park this morning.",
+     "p": "Mary got to the park earlier this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the bedroom?",
+     "p": "What spot was Bill at right before the bedroom?",
+     "a": "school"
+    },
+    {
+     "s": "Yesterday Fred journeyed to the kitchen.",
+     "p": "Fred headed to the kitchen the previous day.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the cinema this afternoon.",
+     "p": "This afternoon Mary visited the cinema.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the cinema?",
+     "p": "Mary had been at which location prior to the cinema?",
+     "a": "park"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 19,
+   "sentences": [
+    {
+     "s": "Yesterday Julie went to the kitchen.",
+     "p": "Julie visited the kitchen on the day before.",
+     "a": null
+    },
+    {
+     "s": "Julie went back to the cinema this morning.",
+     "p": "This morning Julie returned to the cinema.",
+     "a": null
+    },
+    {
+     "s": "Fred went to the bedroom yesterday.",
+     "p": "Fred walked into the bedroom the previous day.",
+     "a": null
+    },
+    {
+     "s": "Yesterday Mary travelled to the park.",
+     "p": "Mary got to the park the day before.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the cinema?",
+     "p": "Julie had been where just prior to the cinema?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Bill journeyed to the cinema yesterday.",
+     "p": "Bill got to the cinema on the day before.",
+     "a": null
+    },
+    {
+     "s": "This morning Mary went to the bedroom.",
+     "p": "Mary went into the bedroom this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Mary before the bedroom?",
+     "p": "Prior to the bedroom what place had Mary been in?",
+     "a": "park"
+    },
+    {
+     "s": "This morning Bill moved to the school.",
+     "p": "During the morning Bill shifted to the school.",
+     "a": null
+    },
+    {
+     "s": "Fred went to the office this morning.",
+     "p": "Fred headed into the office this morning.",
+     "a": null
+    },
+    {
+     "s": "Where was Fred before the office?",
+     "p": "Fred came from which room before the office?",
+     "a": "bedroom"
+    },
+    {
+     "s": "This evening Julie went to the cinema.",
+     "p": "Julie visited the cinema this evening.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Julie moved to the park.",
+     "p": "Julie shifted to the park during the afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Julie before the park?",
+     "p": "Julie had been at which place before the park?",
+     "a": "cinema"
+    },
+    {
+     "s": "This afternoon Bill moved to the cinema.",
+     "p": "Bill relocated to the cinema in the afternoon.",
+     "a": null
+    },
+    {
+     "s": "This afternoon Fred went to the bedroom.",
+     "p": "Fred went into the bedroom this afternoon.",
+     "a": null
+    },
+    {
+     "s": "Where was Bill before the school?",
+     "p": "Right before the school which place was Bill at?",
+     "a": "cinema"
+    }
+   ]
+  }
+ ]
+}

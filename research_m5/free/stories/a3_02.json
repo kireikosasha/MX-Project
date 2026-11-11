@@ -1,0 +1,930 @@
+{
+ "task": "a3",
+ "stories": [
+  {
+   "part": "test",
+   "id": 0,
+   "sentences": [
+    {
+     "s": "Clara is shorter than Ruben.",
+     "p": "Ruben stands taller than Clara in height.",
+     "a": null
+    },
+    {
+     "s": "Hugo is shorter than Clara.",
+     "p": "Clara has greater height than Hugo.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Clara and Hugo and Ruben?",
+     "p": "Among Clara and Hugo and Ruben who has the greatest height?",
+     "a": "ruben"
+    },
+    {
+     "s": "Who is the tallest of Clara and Hugo and Ruben?",
+     "p": "Which of Clara and Hugo and Ruben stands at the greatest height?",
+     "a": "ruben"
+    },
+    {
+     "s": "Yuki is shorter than Clara.",
+     "p": "Yuki falls below Clara in height.",
+     "a": null
+    },
+    {
+     "s": "Ruben is taller than Yuki.",
+     "p": "Yuki is beneath Ruben in height.",
+     "a": null
+    },
+    {
+     "s": "Is Hugo taller than Ruben?",
+     "p": "Would Hugo be the taller one compared with Ruben?",
+     "a": "no"
+    },
+    {
+     "s": "Ruben is taller than Felix.",
+     "p": "Felix ranks lower than Ruben for height.",
+     "a": null
+    },
+    {
+     "s": "Is Hugo taller than Ruben?",
+     "p": "Does Hugo reach a greater height than Ruben?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 1,
+   "sentences": [
+    {
+     "s": "Ruben is taller than Omar.",
+     "p": "Omar falls short of Ruben in stature.",
+     "a": null
+    },
+    {
+     "s": "Omar is taller than Nadia.",
+     "p": "In height Nadia sits below Omar.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Nadia and Omar and Ruben?",
+     "p": "Which person among Nadia and Omar and Ruben is the tallest?",
+     "a": "ruben"
+    },
+    {
+     "s": "Lena is taller than Ada.",
+     "p": "Ada measures less than Lena in height.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Omar and Ruben and Nadia?",
+     "p": "Who reaches the greatest height out of Omar and Ruben and Nadia?",
+     "a": "ruben"
+    },
+    {
+     "s": "Who is the tallest of Omar and Ruben and Nadia?",
+     "p": "Out of Omar and Ruben and Nadia who stands the tallest?",
+     "a": "ruben"
+    },
+    {
+     "s": "Ada is taller than Nadia.",
+     "p": "Nadia is less tall than Ada.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 2,
+   "sentences": [
+    {
+     "s": "Lena is taller than Mira.",
+     "p": "Mira is lower in height than Lena.",
+     "a": null
+    },
+    {
+     "s": "Nadia is shorter than Yuki.",
+     "p": "Yuki exceeds Nadia in height.",
+     "a": null
+    },
+    {
+     "s": "Yuki is taller than Tomas.",
+     "p": "Tomas comes below Yuki for height.",
+     "a": null
+    },
+    {
+     "s": "Nadia is taller than Hugo.",
+     "p": "Hugo has a smaller stature than Nadia.",
+     "a": null
+    },
+    {
+     "s": "Is Hugo taller than Yuki?",
+     "p": "Does Hugo stand above Yuki in height?",
+     "a": "no"
+    },
+    {
+     "s": "Is Yuki taller than Hugo?",
+     "p": "Does Yuki surpass Hugo in height?",
+     "a": "yes"
+    },
+    {
+     "s": "Lena is taller than Hugo.",
+     "p": "Hugo is outdone in height by Lena.",
+     "a": null
+    },
+    {
+     "s": "Is Hugo taller than Yuki?",
+     "p": "Can Hugo be called taller than Yuki?",
+     "a": "no"
+    },
+    {
+     "s": "Who is the tallest of Hugo and Tomas and Yuki?",
+     "p": "Which of Hugo and Tomas and Yuki has the largest height?",
+     "a": "yuki"
+    },
+    {
+     "s": "Hugo is shorter than Mira.",
+     "p": "Mira ranks higher than Hugo in stature.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Hugo and Nadia and Yuki?",
+     "p": "Who stands at the greatest height among Hugo and Nadia and Yuki?",
+     "a": "yuki"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 3,
+   "sentences": [
+    {
+     "s": "Omar is shorter than Nadia.",
+     "p": "Nadia is above Omar in height.",
+     "a": null
+    },
+    {
+     "s": "Omar is taller than Mira.",
+     "p": "Mira falls beneath Omar when measuring height.",
+     "a": null
+    },
+    {
+     "s": "Hugo is taller than Omar.",
+     "p": "Hugo rises above Omar in stature.",
+     "a": null
+    },
+    {
+     "s": "Nadia is shorter than Hugo.",
+     "p": "Nadia measures less than Hugo does.",
+     "a": null
+    },
+    {
+     "s": "Hugo is taller than Mira.",
+     "p": "Mira stands lower than Hugo in height.",
+     "a": null
+    },
+    {
+     "s": "Nadia is taller than Mira.",
+     "p": "Mira is smaller in stature than Nadia.",
+     "a": null
+    },
+    {
+     "s": "Hugo is shorter than Yuki.",
+     "p": "Yuki is taller in height than Hugo.",
+     "a": null
+    },
+    {
+     "s": "Is Mira taller than Yuki?",
+     "p": "Is Mira the taller one compared with Yuki?",
+     "a": "no"
+    },
+    {
+     "s": "Is Yuki taller than Mira?",
+     "p": "Does Yuki tower over Mira in height?",
+     "a": "yes"
+    },
+    {
+     "s": "Who is the tallest of Hugo and Yuki and Mira?",
+     "p": "Who holds the top height from Hugo and Yuki and Mira?",
+     "a": "yuki"
+    },
+    {
+     "s": "Yuki is taller than Omar.",
+     "p": "Yuki has a height advantage over Omar.",
+     "a": null
+    },
+    {
+     "s": "Is Yuki taller than Mira?",
+     "p": "Is Yuki above Mira in height?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 4,
+   "sentences": [
+    {
+     "s": "Felix is taller than Iris.",
+     "p": "Iris comes in shorter than Felix.",
+     "a": null
+    },
+    {
+     "s": "Iris is shorter than Ruben.",
+     "p": "Ruben is greater in height than Iris.",
+     "a": null
+    },
+    {
+     "s": "Iris is shorter than Ada.",
+     "p": "Ada stands above Iris in height.",
+     "a": null
+    },
+    {
+     "s": "Clara is shorter than Iris.",
+     "p": "Iris exceeds Clara in height.",
+     "a": null
+    },
+    {
+     "s": "Ada is shorter than Nadia.",
+     "p": "Nadia has more height than Ada.",
+     "a": null
+    },
+    {
+     "s": "Felix is taller than Nadia.",
+     "p": "Nadia falls under Felix in stature.",
+     "a": null
+    },
+    {
+     "s": "Is Felix taller than Clara?",
+     "p": "Does Felix measure above Clara in height?",
+     "a": "yes"
+    },
+    {
+     "s": "Clara is shorter than Ruben.",
+     "p": "Ruben exceeds Clara in terms of height.",
+     "a": null
+    },
+    {
+     "s": "Is Ada taller than Felix?",
+     "p": "Would Ada outrank Felix for height?",
+     "a": "no"
+    },
+    {
+     "s": "Ruben is taller than Nadia.",
+     "p": "Nadia has less stature than Ruben.",
+     "a": null
+    },
+    {
+     "s": "Clara is shorter than Nadia.",
+     "p": "Clara falls short of Nadia on height.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 5,
+   "sentences": [
+    {
+     "s": "Clara is shorter than Omar.",
+     "p": "Omar edges out Clara in height.",
+     "a": null
+    },
+    {
+     "s": "Clara is shorter than Nadia.",
+     "p": "Nadia rises over Clara in stature.",
+     "a": null
+    },
+    {
+     "s": "Nadia is shorter than Lena.",
+     "p": "Lena has more stature than Nadia.",
+     "a": null
+    },
+    {
+     "s": "Clara is shorter than Yuki.",
+     "p": "Clara lies lower than Yuki on height.",
+     "a": null
+    },
+    {
+     "s": "Yuki is taller than Nadia.",
+     "p": "Yuki stands over Nadia in height.",
+     "a": null
+    },
+    {
+     "s": "Yuki is taller than Lena.",
+     "p": "Lena sits lower than Yuki for height.",
+     "a": null
+    },
+    {
+     "s": "Omar is taller than Lena.",
+     "p": "Omar beats Lena for height.",
+     "a": null
+    },
+    {
+     "s": "Yuki is taller than Omar.",
+     "p": "Omar falls below Yuki in height.",
+     "a": null
+    },
+    {
+     "s": "Omar is taller than Nadia.",
+     "p": "Nadia is under Omar in height.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Nadia and Clara and Lena?",
+     "p": "Who stands tallest when comparing Nadia and Clara and Lena?",
+     "a": "lena"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 6,
+   "sentences": [
+    {
+     "s": "Hugo is shorter than Tomas.",
+     "p": "Hugo sits below Tomas on the height scale.",
+     "a": null
+    },
+    {
+     "s": "Yuki is shorter than Tomas.",
+     "p": "Tomas has a bigger height than Yuki.",
+     "a": null
+    },
+    {
+     "s": "Yuki is taller than Clara.",
+     "p": "Clara lies beneath Yuki on height.",
+     "a": null
+    },
+    {
+     "s": "Clara is taller than Hugo.",
+     "p": "Hugo has less height than Clara has.",
+     "a": null
+    },
+    {
+     "s": "Hugo is shorter than Yuki.",
+     "p": "Yuki ranks above Hugo for stature.",
+     "a": null
+    },
+    {
+     "s": "Hugo is taller than Ada.",
+     "p": "Ada sits lower than Hugo in stature.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Ada and Yuki and Clara?",
+     "p": "Whose height is the greatest among Ada and Yuki and Clara?",
+     "a": "yuki"
+    },
+    {
+     "s": "Tomas is taller than Ada.",
+     "p": "Ada is outranked by Tomas in height.",
+     "a": null
+    },
+    {
+     "s": "Clara is taller than Ada.",
+     "p": "Ada measures smaller than Clara.",
+     "a": null
+    },
+    {
+     "s": "Is Ada taller than Yuki?",
+     "p": "Does Ada outstrip Yuki in height?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 7,
+   "sentences": [
+    {
+     "s": "Ada is taller than Yuki.",
+     "p": "Ada reaches a greater height than Yuki.",
+     "a": null
+    },
+    {
+     "s": "Yuki is shorter than Tomas.",
+     "p": "Tomas stands at a higher level than Yuki.",
+     "a": null
+    },
+    {
+     "s": "Iris is shorter than Lena.",
+     "p": "Lena passes Iris in height.",
+     "a": null
+    },
+    {
+     "s": "Yuki is shorter than Nadia.",
+     "p": "Nadia is ahead of Yuki for height.",
+     "a": null
+    },
+    {
+     "s": "Iris is taller than Tomas.",
+     "p": "Iris has the upper hand in height over Tomas.",
+     "a": null
+    },
+    {
+     "s": "Tomas is shorter than Lena.",
+     "p": "Lena has the edge over Tomas in height.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Lena and Yuki and Iris?",
+     "p": "Which name belongs to the tallest of Lena and Yuki and Iris?",
+     "a": "lena"
+    },
+    {
+     "s": "Lena is taller than Nadia.",
+     "p": "Nadia is measured lower than Lena.",
+     "a": null
+    },
+    {
+     "s": "Yuki is shorter than Iris.",
+     "p": "Iris is above Yuki in height.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 8,
+   "sentences": [
+    {
+     "s": "Yuki is taller than Nadia.",
+     "p": "Yuki is above Nadia in stature.",
+     "a": null
+    },
+    {
+     "s": "Nadia is shorter than Lena.",
+     "p": "Lena surpasses Nadia in height.",
+     "a": null
+    },
+    {
+     "s": "Ada is shorter than Omar.",
+     "p": "Omar holds more height than Ada.",
+     "a": null
+    },
+    {
+     "s": "Yuki is taller than Ada.",
+     "p": "Ada falls under Yuki for height.",
+     "a": null
+    },
+    {
+     "s": "Nadia is shorter than Ada.",
+     "p": "Ada beats Nadia on height.",
+     "a": null
+    },
+    {
+     "s": "Lena is taller than Ada.",
+     "p": "In height Ada trails behind Lena.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Omar and Ada and Nadia?",
+     "p": "Which of Omar and Ada and Nadia holds the greatest height?",
+     "a": "omar"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 9,
+   "sentences": [
+    {
+     "s": "Iris is taller than Tomas.",
+     "p": "Iris rises higher than Tomas does.",
+     "a": null
+    },
+    {
+     "s": "Felix is taller than Mira.",
+     "p": "Mira stands beneath Felix.",
+     "a": null
+    },
+    {
+     "s": "Yuki is shorter than Mira.",
+     "p": "Mira outclasses Yuki for height.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Mira and Felix and Yuki?",
+     "p": "Who ranks highest in height from Mira and Felix and Yuki?",
+     "a": "felix"
+    },
+    {
+     "s": "Iris is taller than Yuki.",
+     "p": "Yuki stands below Iris.",
+     "a": null
+    },
+    {
+     "s": "Is Felix taller than Yuki?",
+     "p": "Does Felix stand higher than Yuki?",
+     "a": "yes"
+    },
+    {
+     "s": "Who is the tallest of Yuki and Mira and Felix?",
+     "p": "Who has the most height out of Yuki and Mira and Felix?",
+     "a": "felix"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 10,
+   "sentences": [
+    {
+     "s": "Clara is taller than Omar.",
+     "p": "Omar stands lower than Clara.",
+     "a": null
+    },
+    {
+     "s": "Omar is taller than Hugo.",
+     "p": "Hugo is outpaced by Omar in height.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Hugo and Omar and Clara?",
+     "p": "Which of Hugo and Omar and Clara reaches the greatest height?",
+     "a": "clara"
+    },
+    {
+     "s": "Is Hugo taller than Clara?",
+     "p": "Does Hugo have greater height than Clara?",
+     "a": "no"
+    },
+    {
+     "s": "Felix is taller than Hugo.",
+     "p": "Felix has the advantage over Hugo in height.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 11,
+   "sentences": [
+    {
+     "s": "Clara is shorter than Nadia.",
+     "p": "Nadia tops Clara in height.",
+     "a": null
+    },
+    {
+     "s": "Nadia is taller than Lena.",
+     "p": "Lena ranks under Nadia in height.",
+     "a": null
+    },
+    {
+     "s": "Yuki is taller than Felix.",
+     "p": "Yuki outstrips Felix on height.",
+     "a": null
+    },
+    {
+     "s": "Yuki is shorter than Lena.",
+     "p": "Lena has a larger height than Yuki.",
+     "a": null
+    },
+    {
+     "s": "Is Nadia taller than Felix?",
+     "p": "Does Nadia exceed Felix in height?",
+     "a": "yes"
+    },
+    {
+     "s": "Is Felix taller than Lena?",
+     "p": "Is Felix standing at a greater height than Lena?",
+     "a": "no"
+    },
+    {
+     "s": "Omar is taller than Felix.",
+     "p": "Felix sits lower than Omar on height.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 12,
+   "sentences": [
+    {
+     "s": "Hugo is taller than Omar.",
+     "p": "Hugo holds a height advantage over Omar.",
+     "a": null
+    },
+    {
+     "s": "Hugo is taller than Ruben.",
+     "p": "Ruben falls behind Hugo in height.",
+     "a": null
+    },
+    {
+     "s": "Tomas is taller than Omar.",
+     "p": "Omar is outmatched by Tomas on height.",
+     "a": null
+    },
+    {
+     "s": "Yuki is shorter than Hugo.",
+     "p": "Hugo measures more than Yuki.",
+     "a": null
+    },
+    {
+     "s": "Omar is taller than Yuki.",
+     "p": "Yuki trails Omar in height.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Tomas and Yuki and Omar?",
+     "p": "Which one of Tomas and Yuki and Omar stands highest?",
+     "a": "tomas"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 13,
+   "sentences": [
+    {
+     "s": "Mira is shorter than Felix.",
+     "p": "Felix towers over Mira.",
+     "a": null
+    },
+    {
+     "s": "Mira is shorter than Ada.",
+     "p": "Ada reaches above Mira in stature.",
+     "a": null
+    },
+    {
+     "s": "Tomas is taller than Felix.",
+     "p": "Felix lies under Tomas in height.",
+     "a": null
+    },
+    {
+     "s": "Is Tomas taller than Mira?",
+     "p": "Does Tomas stand over Mira in height?",
+     "a": "yes"
+    },
+    {
+     "s": "Iris is shorter than Felix.",
+     "p": "Felix reaches more height than Iris.",
+     "a": null
+    },
+    {
+     "s": "Felix is taller than Nadia.",
+     "p": "Nadia is measured below Felix.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 14,
+   "sentences": [
+    {
+     "s": "Mira is taller than Nadia.",
+     "p": "Nadia falls under Mira in stature.",
+     "a": null
+    },
+    {
+     "s": "Nadia is taller than Felix.",
+     "p": "Nadia edges above Felix in height.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Nadia and Felix and Mira?",
+     "p": "Which of Nadia and Felix and Mira has the most height?",
+     "a": "mira"
+    },
+    {
+     "s": "Hugo is taller than Nadia.",
+     "p": "Nadia sits lower than Hugo in stature.",
+     "a": null
+    },
+    {
+     "s": "Felix is shorter than Lena.",
+     "p": "Lena has greater stature than Felix.",
+     "a": null
+    },
+    {
+     "s": "Lena is taller than Mira.",
+     "p": "Mira falls behind Lena for height.",
+     "a": null
+    },
+    {
+     "s": "Lena is shorter than Hugo.",
+     "p": "Hugo has a greater height than Lena does.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 15,
+   "sentences": [
+    {
+     "s": "Tomas is shorter than Iris.",
+     "p": "Iris outdoes Tomas in height.",
+     "a": null
+    },
+    {
+     "s": "Clara is taller than Yuki.",
+     "p": "Yuki lies below Clara in height.",
+     "a": null
+    },
+    {
+     "s": "Yuki is shorter than Tomas.",
+     "p": "Tomas stands above Yuki on height.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Iris and Tomas and Yuki?",
+     "p": "Who sits at the highest height among Iris and Tomas and Yuki?",
+     "a": "iris"
+    },
+    {
+     "s": "Who is the tallest of Yuki and Tomas and Iris?",
+     "p": "Of Yuki and Tomas and Iris who measures the most?",
+     "a": "iris"
+    },
+    {
+     "s": "Is Yuki taller than Iris?",
+     "p": "Is Yuki standing higher than Iris?",
+     "a": "no"
+    },
+    {
+     "s": "Is Yuki taller than Iris?",
+     "p": "Does Yuki top Iris in height?",
+     "a": "no"
+    },
+    {
+     "s": "Tomas is taller than Clara.",
+     "p": "Clara comes in under Tomas in height.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Iris and Clara and Yuki?",
+     "p": "Who has the most height from Iris and Clara and Yuki?",
+     "a": "iris"
+    },
+    {
+     "s": "Hugo is shorter than Iris.",
+     "p": "Iris is greater in height than Hugo.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 16,
+   "sentences": [
+    {
+     "s": "Yuki is taller than Felix.",
+     "p": "Felix falls short of Yuki in height.",
+     "a": null
+    },
+    {
+     "s": "Clara is shorter than Lena.",
+     "p": "Lena holds more height than Clara.",
+     "a": null
+    },
+    {
+     "s": "Ruben is taller than Yuki.",
+     "p": "Ruben has the lead over Yuki for height.",
+     "a": null
+    },
+    {
+     "s": "Clara is shorter than Felix.",
+     "p": "Felix exceeds Clara on height.",
+     "a": null
+    },
+    {
+     "s": "Is Yuki taller than Clara?",
+     "p": "Does Yuki outrank Clara in height?",
+     "a": "yes"
+    },
+    {
+     "s": "Is Felix taller than Ruben?",
+     "p": "Is Felix above Ruben in height?",
+     "a": "no"
+    },
+    {
+     "s": "Nadia is taller than Clara.",
+     "p": "Nadia reaches a bigger stature than Clara.",
+     "a": null
+    },
+    {
+     "s": "Lena is shorter than Ruben.",
+     "p": "Ruben towers above Lena.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 17,
+   "sentences": [
+    {
+     "s": "Clara is taller than Felix.",
+     "p": "Felix lies lower than Clara in height.",
+     "a": null
+    },
+    {
+     "s": "Felix is taller than Nadia.",
+     "p": "Felix stands over Nadia on height.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Clara and Felix and Nadia?",
+     "p": "Which person stands tallest among Clara and Felix and Nadia?",
+     "a": "clara"
+    },
+    {
+     "s": "Tomas is shorter than Lena.",
+     "p": "Lena is higher than Tomas in stature.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Felix and Nadia and Clara?",
+     "p": "Of Felix and Nadia and Clara who reaches the greatest height?",
+     "a": "clara"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 18,
+   "sentences": [
+    {
+     "s": "Felix is taller than Mira.",
+     "p": "Felix measures greater than Mira.",
+     "a": null
+    },
+    {
+     "s": "Nadia is shorter than Mira.",
+     "p": "Mira reaches more height than Nadia.",
+     "a": null
+    },
+    {
+     "s": "Nadia is shorter than Omar.",
+     "p": "Omar stands higher than Nadia on height.",
+     "a": null
+    },
+    {
+     "s": "Is Felix taller than Nadia?",
+     "p": "Would Felix rank above Nadia in height?",
+     "a": "yes"
+    },
+    {
+     "s": "Iris is taller than Ruben.",
+     "p": "Iris has the upper edge over Ruben.",
+     "a": null
+    },
+    {
+     "s": "Omar is shorter than Felix.",
+     "p": "Felix has more height than Omar.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 19,
+   "sentences": [
+    {
+     "s": "Tomas is taller than Ruben.",
+     "p": "Ruben stands under Tomas in height.",
+     "a": null
+    },
+    {
+     "s": "Ruben is taller than Mira.",
+     "p": "Mira comes in below Ruben on height.",
+     "a": null
+    },
+    {
+     "s": "Is Mira taller than Tomas?",
+     "p": "Does Mira stand above Tomas in height?",
+     "a": "no"
+    },
+    {
+     "s": "Who is the tallest of Mira and Ruben and Tomas?",
+     "p": "Which of Mira and Ruben and Tomas reaches the greatest height?",
+     "a": "tomas"
+    },
+    {
+     "s": "Felix is shorter than Ruben.",
+     "p": "Ruben outclasses Felix in height.",
+     "a": null
+    },
+    {
+     "s": "Mira is taller than Felix.",
+     "p": "Felix sits beneath Mira on height.",
+     "a": null
+    },
+    {
+     "s": "Felix is shorter than Tomas.",
+     "p": "Tomas exceeds Felix in stature.",
+     "a": null
+    },
+    {
+     "s": "Who is the tallest of Mira and Felix and Tomas?",
+     "p": "Which one among Mira and Felix and Tomas holds the greatest height?",
+     "a": "tomas"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,1325 @@
+{
+ "task": "b15",
+ "stories": [
+  {
+   "part": "test",
+   "id": 0,
+   "sentences": [
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Wolves live in fear of mice.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of mice.",
+     "p": "Sheep feel fear toward mice.",
+     "a": null
+    },
+    {
+     "s": "Winona is a sheep.",
+     "p": "Winona counts as a sheep.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of cats.",
+     "p": "Cats are feared by mice.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of wolves.",
+     "p": "Cats dread the wolves.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a mouse.",
+     "p": "A mouse is what Jessica is.",
+     "a": null
+    },
+    {
+     "s": "Emily is a cat.",
+     "p": "Emily happens to be a cat.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a wolf.",
+     "p": "Gertrude turns out to be a wolf.",
+     "a": null
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "What kind of animal does emily fear?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona is scared of what?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "What makes gertrude afraid?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Jessica is in fear of what?",
+     "a": "cat"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 1,
+   "sentences": [
+    {
+     "s": "Cats are afraid of wolves.",
+     "p": "Cats fear wolves plain and simple.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of cats.",
+     "p": "Mice shudder at the sight of cats.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of mice.",
+     "p": "The sheep tremble before mice.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a cat.",
+     "p": "Gertrude is definitely a cat.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of sheep.",
+     "p": "Wolves fear the sheep.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a mouse.",
+     "p": "Jessica is classed as a mouse.",
+     "a": null
+    },
+    {
+     "s": "Emily is a wolf.",
+     "p": "Emily is in fact a wolf.",
+     "a": null
+    },
+    {
+     "s": "Winona is a cat.",
+     "p": "Winona is indeed a cat.",
+     "a": null
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Of what is emily scared?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Which thing scares emily?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Jessica dreads which animal?",
+     "a": "cat"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude is terrified of what?",
+     "a": "wolf"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 2,
+   "sentences": [
+    {
+     "s": "Cats are afraid of wolves.",
+     "p": "Cats have a fear of wolves.",
+     "a": null
+    },
+    {
+     "s": "Winona is a cat.",
+     "p": "Winona is clearly a cat.",
+     "a": null
+    },
+    {
+     "s": "Emily is a cat.",
+     "p": "Emily is a cat by nature.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of wolves.",
+     "p": "Mice live in terror of wolves.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Wolves are scared of mice.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of cats.",
+     "p": "Cats are dreaded by sheep.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a mouse.",
+     "p": "Gertrude is undoubtedly a mouse.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a mouse.",
+     "p": "Jessica is a mouse too.",
+     "a": null
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude fears what kind of animal?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Emily is fearful of which animal?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Of what does gertrude live in fear?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "What does emily shrink from?",
+     "a": "wolf"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 3,
+   "sentences": [
+    {
+     "s": "Mice are afraid of wolves.",
+     "p": "Mice tremble before wolves.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "The wolves regard mice with fear.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of sheep.",
+     "p": "Sheep scare the cats.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a cat.",
+     "p": "Jessica is a cat for certain.",
+     "a": null
+    },
+    {
+     "s": "Emily is a cat.",
+     "p": "Emily is also a cat.",
+     "a": null
+    },
+    {
+     "s": "Winona is a mouse.",
+     "p": "Winona is in reality a mouse.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of wolves.",
+     "p": "Wolves are what sheep dread.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a sheep.",
+     "p": "Gertrude is a sheep by birth.",
+     "a": null
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Which animal does gertrude dread?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona is terrified of what?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude feels fear of which creature?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "What animal does gertrude shrink from?",
+     "a": "wolf"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 4,
+   "sentences": [
+    {
+     "s": "Sheep are afraid of cats.",
+     "p": "Sheep dread the presence of cats.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a sheep.",
+     "p": "Jessica is actually a sheep.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of sheep.",
+     "p": "Sheep are the terror of mice.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of sheep.",
+     "p": "Cats cower whenever sheep appear.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "The wolves quail at mice.",
+     "a": null
+    },
+    {
+     "s": "Emily is a sheep.",
+     "p": "Emily belongs to the sheep.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a sheep.",
+     "p": "Gertrude is among the sheep.",
+     "a": null
+    },
+    {
+     "s": "Winona is a mouse.",
+     "p": "Winona is a mouse after all.",
+     "a": null
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona fears which animal?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Of what animal is jessica scared?",
+     "a": "cat"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude recoils from what animal?",
+     "a": "cat"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Which creature does gertrude fear?",
+     "a": "cat"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 5,
+   "sentences": [
+    {
+     "s": "Cats are afraid of wolves.",
+     "p": "Wolves are a cause of dread for cats.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of sheep.",
+     "p": "Mice dread the sight of sheep.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of mice.",
+     "p": "Mice inspire fear in sheep.",
+     "a": null
+    },
+    {
+     "s": "Emily is a sheep.",
+     "p": "Emily is simply a sheep.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of sheep.",
+     "p": "Wolves are fearful of sheep.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a sheep.",
+     "p": "Gertrude is a sheep too.",
+     "a": null
+    },
+    {
+     "s": "Winona is a wolf.",
+     "p": "Winona is a wolf through and through.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a mouse.",
+     "p": "Jessica is a mouse without doubt.",
+     "a": null
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude is frightened by which animal?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona is panicked by which animal?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Emily lives in dread of what?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Jessica is scared of which creature?",
+     "a": "sheep"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 6,
+   "sentences": [
+    {
+     "s": "Cats are afraid of sheep.",
+     "p": "Cats tremble when sheep come near.",
+     "a": null
+    },
+    {
+     "s": "Emily is a cat.",
+     "p": "Emily has the nature of a cat.",
+     "a": null
+    },
+    {
+     "s": "Winona is a cat.",
+     "p": "Winona is a cat without question.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of mice.",
+     "p": "The sheep quiver at the sight of mice.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of cats.",
+     "p": "Mice cower before cats.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of cats.",
+     "p": "Cats strike fear into wolves.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a wolf.",
+     "p": "Certainly Jessica is a wolf.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a cat.",
+     "p": "Gertrude proves to be a cat.",
+     "a": null
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "What causes emily to shudder?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Which animal is emily frightened by?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Toward what animal does emily feel dread?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona shies away from what animal?",
+     "a": "sheep"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 7,
+   "sentences": [
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Mice are what wolves dread.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a wolf.",
+     "p": "Gertrude is a wolf and always was.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of wolves.",
+     "p": "Wolves are feared by cats.",
+     "a": null
+    },
+    {
+     "s": "Emily is a cat.",
+     "p": "Emily is a cat in every sense.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of cats.",
+     "p": "Mice are scared stiff by cats.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a cat.",
+     "p": "Jessica just so happens to be a cat.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of wolves.",
+     "p": "Wolves are what the sheep fear.",
+     "a": null
+    },
+    {
+     "s": "Winona is a mouse.",
+     "p": "Winona is definitely a mouse.",
+     "a": null
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude cowers before which animal?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Which animal sends gertrude into a panic?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude is nervous around what animal?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Which animal is emily scared of?",
+     "a": "wolf"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 8,
+   "sentences": [
+    {
+     "s": "Mice are afraid of cats.",
+     "p": "Cats strike terror into mice.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a mouse.",
+     "p": "In essence Jessica is a mouse.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of sheep.",
+     "p": "The cats flinch from sheep.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Mice are dreaded by wolves.",
+     "a": null
+    },
+    {
+     "s": "Emily is a mouse.",
+     "p": "Emily is a mouse for sure.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of mice.",
+     "p": "The sheep are terrified of mice.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a wolf.",
+     "p": "Gertrude is a wolf and no mistake.",
+     "a": null
+    },
+    {
+     "s": "Winona is a mouse.",
+     "p": "Winona is a mouse beyond question.",
+     "a": null
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Emily shrinks away from which animal?",
+     "a": "cat"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Jessica recoils at what animal?",
+     "a": "cat"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "What animal makes jessica panic?",
+     "a": "cat"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Which animal does emily dread?",
+     "a": "cat"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 9,
+   "sentences": [
+    {
+     "s": "Cats are afraid of mice.",
+     "p": "Mice fill cats with dread.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of cats.",
+     "p": "Cats are the thing wolves fear.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of mice.",
+     "p": "Sheep shake when mice are nearby.",
+     "a": null
+    },
+    {
+     "s": "Emily is a cat.",
+     "p": "To be sure Emily is a cat.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of sheep.",
+     "p": "Mice cower when sheep come close.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a sheep.",
+     "p": "There is no doubt that Gertrude is a sheep.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a mouse.",
+     "p": "Jessica belongs in the mouse family.",
+     "a": null
+    },
+    {
+     "s": "Winona is a wolf.",
+     "p": "In one word Winona is a wolf.",
+     "a": null
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "What creature frightens jessica?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "What frightens emily?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Fear of what animal grips gertrude?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Of what animal is emily frightened?",
+     "a": "mouse"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 10,
+   "sentences": [
+    {
+     "s": "Cats are afraid of wolves.",
+     "p": "Wolves intimidate the cats.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of cats.",
+     "p": "Wolves are scared stiff of cats.",
+     "a": null
+    },
+    {
+     "s": "Winona is a cat.",
+     "p": "Truly Winona is a cat.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of cats.",
+     "p": "Cats make sheep flinch with fear.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a cat.",
+     "p": "By all accounts Gertrude is a cat.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a wolf.",
+     "p": "The wolf in this story is Jessica.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of sheep.",
+     "p": "Mice keep away from sheep out of fear.",
+     "a": null
+    },
+    {
+     "s": "Emily is a sheep.",
+     "p": "Emily is most certainly a sheep.",
+     "a": null
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Jessica is intimidated by what animal?",
+     "a": "cat"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Which animal scares winona?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona is nervous about which animal?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Jessica is spooked by which animal?",
+     "a": "cat"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 11,
+   "sentences": [
+    {
+     "s": "Wolves are afraid of cats.",
+     "p": "Cats are what wolves fear.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of wolves.",
+     "p": "Wolves cause cats to shake.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of wolves.",
+     "p": "Wolves are a terror to mice.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a cat.",
+     "p": "Gertrude is undeniably a cat.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a mouse.",
+     "p": "Sure enough Jessica is a mouse.",
+     "a": null
+    },
+    {
+     "s": "Winona is a mouse.",
+     "p": "Everyone agrees that Winona is a mouse.",
+     "a": null
+    },
+    {
+     "s": "Emily is a mouse.",
+     "p": "Emily can be called a mouse.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of wolves.",
+     "p": "The sheep are scared of wolves.",
+     "a": null
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "What does winona fear?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Emily is in terror of which creature?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude feels fear toward what?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona is frightened by what creature?",
+     "a": "wolf"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 12,
+   "sentences": [
+    {
+     "s": "Sheep are afraid of mice.",
+     "p": "Sheep tense up whenever mice appear.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of mice.",
+     "p": "The cats are scared of mice.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of sheep.",
+     "p": "Sheep are what mice shrink from.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Mice scare wolves.",
+     "a": null
+    },
+    {
+     "s": "Emily is a sheep.",
+     "p": "Emily is a sheep as well.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a wolf.",
+     "p": "A wolf is what Gertrude is.",
+     "a": null
+    },
+    {
+     "s": "Winona is a sheep.",
+     "p": "Winona is nothing but a sheep.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a mouse.",
+     "p": "Jessica is found to be a mouse.",
+     "a": null
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "At what does gertrude feel fear?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Emily gets scared of what animal?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude is alarmed by what animal?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Which creature makes emily flinch?",
+     "a": "mouse"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 13,
+   "sentences": [
+    {
+     "s": "Sheep are afraid of cats.",
+     "p": "Sheep get jittery around cats.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a sheep.",
+     "p": "On paper Jessica is a sheep.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of sheep.",
+     "p": "Mice shiver when sheep are near.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Wolves cower from mice.",
+     "a": null
+    },
+    {
+     "s": "Winona is a wolf.",
+     "p": "Winona is in truth a wolf.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a sheep.",
+     "p": "Gertrude is a sheep and nothing other.",
+     "a": null
+    },
+    {
+     "s": "Emily is a mouse.",
+     "p": "The mouse in this tale is Emily.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of wolves.",
+     "p": "The cats shrink back from wolves.",
+     "a": null
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Emily is frightened of which animal?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Which animal makes jessica cower?",
+     "a": "cat"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Emily feels dread about what creature?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona dreads what sort of animal?",
+     "a": "mouse"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 14,
+   "sentences": [
+    {
+     "s": "Sheep are afraid of wolves.",
+     "p": "Sheep are petrified of wolves.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of sheep.",
+     "p": "Sheep alarm the mice.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a mouse.",
+     "p": "Gertrude is a mouse and always has been.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Wolves run scared from mice.",
+     "a": null
+    },
+    {
+     "s": "Winona is a sheep.",
+     "p": "Winona is a sheep by nature.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a wolf.",
+     "p": "Jessica is the wolf in question.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of sheep.",
+     "p": "Cats cringe at sheep.",
+     "a": null
+    },
+    {
+     "s": "Emily is a cat.",
+     "p": "Emily ends up being a cat.",
+     "a": null
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona cowers from which animal?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Emily dreads which creature?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "The thing winona fears is what?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "At what creature does winona panic?",
+     "a": "wolf"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 15,
+   "sentences": [
+    {
+     "s": "Mice are afraid of sheep.",
+     "p": "Sheep make the mice tremble.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of wolves.",
+     "p": "Wolves terrify the sheep.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a mouse.",
+     "p": "Gertrude is a mouse by any measure.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a sheep.",
+     "p": "Jessica is a sheep in every way.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of sheep.",
+     "p": "The cats are fearful of sheep.",
+     "a": null
+    },
+    {
+     "s": "Emily is a mouse.",
+     "p": "Emily is a mouse with no exceptions.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Wolves are frightened of mice.",
+     "a": null
+    },
+    {
+     "s": "Winona is a sheep.",
+     "p": "Obviously Winona is a sheep.",
+     "a": null
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Which animal does emily live in fear of?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude dreads what?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Of which animal is gertrude frightened?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Which animal makes gertrude uneasy?",
+     "a": "sheep"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 16,
+   "sentences": [
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Wolves cringe at mice.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of sheep.",
+     "p": "Cats quiver at the thought of sheep.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a wolf.",
+     "p": "Jessica is the wolf of this tale.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of sheep.",
+     "p": "The mice live in fear of sheep.",
+     "a": null
+    },
+    {
+     "s": "Winona is a cat.",
+     "p": "A cat describes Winona.",
+     "a": null
+    },
+    {
+     "s": "Emily is a mouse.",
+     "p": "Emily is a mouse for real.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of wolves.",
+     "p": "Sheep flee from wolves.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a cat.",
+     "p": "Gertrude is a true cat.",
+     "a": null
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "What animal is emily fearful of?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "What does winona dread?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Jessica panics at what animal?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude is scared stiff of what?",
+     "a": "sheep"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 17,
+   "sentences": [
+    {
+     "s": "Cats are afraid of sheep.",
+     "p": "Cats run from sheep in fright.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Wolves are unnerved by mice.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of sheep.",
+     "p": "Mice dread sheep.",
+     "a": null
+    },
+    {
+     "s": "Emily is a wolf.",
+     "p": "At heart Emily is a wolf.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a wolf.",
+     "p": "Naturally Jessica is a wolf.",
+     "a": null
+    },
+    {
+     "s": "Winona is a cat.",
+     "p": "Winona is really a cat.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a mouse.",
+     "p": "All in all Gertrude is a mouse.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of cats.",
+     "p": "Sheep quail when cats are near.",
+     "a": null
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "What animal does gertrude fear?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Jessica fears what kind of creature?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "Emily has a fear of what?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona shrinks from what?",
+     "a": "sheep"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 18,
+   "sentences": [
+    {
+     "s": "Cats are afraid of sheep.",
+     "p": "Cats flinch away from sheep.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of sheep.",
+     "p": "Sheep are a fright to wolves.",
+     "a": null
+    },
+    {
+     "s": "Winona is a wolf.",
+     "p": "Winona is a wolf whatever anyone says.",
+     "a": null
+    },
+    {
+     "s": "Emily is a wolf.",
+     "p": "The one named Emily is a wolf.",
+     "a": null
+    },
+    {
+     "s": "Sheep are afraid of cats.",
+     "p": "Sheep are fearful of cats.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a sheep.",
+     "p": "As expected Jessica is a sheep.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a cat.",
+     "p": "Gertrude has been a cat all along.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of wolves.",
+     "p": "Mice cower in the face of wolves.",
+     "a": null
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude is afraid of which animal?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "What does jessica recoil from?",
+     "a": "cat"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "Gertrude fears which animal?",
+     "a": "sheep"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona is frightened of what creature?",
+     "a": "sheep"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 19,
+   "sentences": [
+    {
+     "s": "Sheep are afraid of cats.",
+     "p": "Sheep cower whenever cats show up.",
+     "a": null
+    },
+    {
+     "s": "Wolves are afraid of mice.",
+     "p": "Mice make the wolves recoil.",
+     "a": null
+    },
+    {
+     "s": "Winona is a sheep.",
+     "p": "A sheep is Winona.",
+     "a": null
+    },
+    {
+     "s": "Emily is a wolf.",
+     "p": "Emily is a wolf in the story.",
+     "a": null
+    },
+    {
+     "s": "Mice are afraid of wolves.",
+     "p": "Wolves are what mice shrink from.",
+     "a": null
+    },
+    {
+     "s": "Jessica is a mouse.",
+     "p": "Jessica is a mouse and that is that.",
+     "a": null
+    },
+    {
+     "s": "Gertrude is a mouse.",
+     "p": "The truth is Gertrude is a mouse.",
+     "a": null
+    },
+    {
+     "s": "Cats are afraid of sheep.",
+     "p": "Sheep are what make cats quiver.",
+     "a": null
+    },
+    {
+     "s": "What is emily afraid of?",
+     "p": "What animal does emily cower from?",
+     "a": "mouse"
+    },
+    {
+     "s": "What is winona afraid of?",
+     "p": "Winona dreads which animal?",
+     "a": "cat"
+    },
+    {
+     "s": "What is jessica afraid of?",
+     "p": "Jessica is fearful of which animal?",
+     "a": "wolf"
+    },
+    {
+     "s": "What is gertrude afraid of?",
+     "p": "What makes gertrude tremble?",
+     "a": "wolf"
+    }
+   ]
+  }
+ ]
+}
