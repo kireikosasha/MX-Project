@@ -277,7 +277,7 @@ python solver.py --train train.csv --test dev.csv --heads expr --world 2000 --li
 скрыта часть слов, сеть их называет; текст — простые рассказы TinyStories и тексты самих задач без
 ответов). Точная часть, задачи от кода и проверенные задачи живым языком у всех одинаковые.
 
-Открыть: https://colab.research.google.com/github/kireikosasha/MX-Project/blob/master/logic/colab/train.ipynb
+Открыть: https://colab.research.google.com/github/kireikosasha/MX-Project/blob/master/research_m5/colab/train.ipynb
 
 `solver.py` и `pretrain.py` сами выбирают видеокарту, если она есть; `--layers` задаёт число слоёв
 читалки, `--pretrained` начинает с прочитавшей текст читалки, `--sets` заранее готовит задачи от
