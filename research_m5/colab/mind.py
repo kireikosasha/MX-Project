@@ -23,9 +23,10 @@ DATA = "https://s3.amazonaws.com/text-datasets/babi_tasks_1-20_v1-2.tar.gz"
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--work", default="/content/mx-mind")
-    ap.add_argument("--runs", default="en:20,hn:20,shuffled:20,en:5,en:10,en:50",
+    ap.add_argument("--runs", default="en:20,hn:20,shuffled:20,en:10,en:50",
                     help="language:stories of every task to learn from - one run for each pair")
     ap.add_argument("--fetch", action="store_true", help="only download the tasks")
+    ap.add_argument("--hours", type=float, default=2.5, help="a run that takes longer is stopped (started again, it goes on)")
     ap.add_argument("--budget", type=int, default=150, help="the learner's own time for one task (it counts sentences read, not seconds)")
     a = ap.parse_args()
     os.makedirs(a.work, exist_ok=True)
@@ -52,8 +53,15 @@ def main():
                                           cwd=ROOT, stdout=open(f"{a.work}/{name}.log", "a"), stderr=subprocess.STDOUT,
                                           env=dict(os.environ, PYTHONHASHSEED="0")))
         names = [f"{lang}{n}" for lang, n in runs[i:i + many]]
+        began = time.time()
         while any(p.poll() is None for p in procs):           # a line now and then, to see that it is alive
             time.sleep(20)
+            if time.time() - began > 3600 * a.hours:
+                for p in procs:
+                    if p.poll() is None:
+                        p.kill()
+                print("   stopped after", a.hours, "hours: what is not finished is marked in the table", flush=True)
+                break
             if time.time() - seen > 300:
                 seen = time.time()
                 done = {}
