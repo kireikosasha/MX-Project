@@ -16,6 +16,7 @@ import json
 import math
 import os
 import random
+import re
 import sys
 import time
 
@@ -45,11 +46,12 @@ def examples(stories, task):
 def load(root, lang, size):
     """-> training stories of every task (kept whole, to hold some out), and the test questions"""
     train, test = {}, []
-    for k in range(1, 21):
-        folder = os.path.join(root, lang + "-10k" if size == "10k" else lang)
+    here = os.path.join(root, lang) if lang else root            # no language: the task files lie in the folder itself
+    for k in sorted(int(re.match(r"qa(\d+)_", os.path.basename(f)).group(1)) for f in glob.glob(os.path.join(here, "qa*_train.txt"))):
+        folder = here + "-10k" if size == "10k" else here
         f = glob.glob(os.path.join(folder, f"qa{k}_*train.txt"))[0]
         train[k] = read(f, int(size) if size.isdigit() else None)
-        test += examples(read(glob.glob(os.path.join(root, lang, f"qa{k}_*test.txt"))[0]), k)
+        test += examples(read(glob.glob(os.path.join(here, f"qa{k}_*test.txt"))[0]), k)
     return train, test
 
 
