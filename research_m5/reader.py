@@ -10,16 +10,20 @@ choose a reading for a sentence in ANY wording. Two things keep it right where i
            back to its start, a question got no answer). What of this never happens in the stories the learner read
            itself is strange; of the readings of a new story the reader takes those with the least strange in them.
            No answers are needed for this.
-  answers  on free stories with answers the readings with which the answers come out right become new lessons.
-           Nobody labels the free sentences.
+  answers  on free stories with answers every reading of a sentence with which the answers of its story come out right
+           is a lesson; an answer seldom leaves one reading, and which of them is meant the network works out over
+           many stories. Nobody labels the free sentences.
 
-    python reader.py --data tasks_1-20_v1-2/en --k 1 --free free/stories --name b1
+    python reader.py --data tasks_1-20_v1-2/en --k 1 --free free/stories --name b1 [--vectors glove50.gz]
 
-What is given to the reader beyond the learner: nothing about words. The names of things are those the learner met in
-argument places; a candidate reading is one of the learner's schemes with those names in its roles.
+What is given to the reader beyond the learner: nothing about the task. The names of things are those the learner met
+in argument places; a candidate reading is one of the learner's schemes with those names in its roles; a role with few
+values (a direction, a time) may be named by any word. With --vectors every word also brings a vector made elsewhere
+from plain text (GloVe): a dictionary. --school lets the reader first learn the lessons other tasks left (--lessons).
 """
 import argparse
 import glob
+import gzip
 import itertools
 import json
 import os
@@ -34,6 +38,23 @@ import acquire as A
 import core as G
 
 ERR = (IndexError, KeyError, ValueError, TypeError)
+CLOSED = ("D", "T")     # roles with few values (directions, times): a word the learner never met may name one of them
+
+
+def load_vectors(path, limit=50000):
+    """vectors of words made elsewhere from much plain text (GloVe): the reader's dictionary -> {word: row}, rows"""
+    index, rows = {}, []
+    with gzip.open(path, "rt", encoding="utf-8") as f:
+        for line in f:
+            part = line.rstrip().split(" ")
+            if len(part) > 10:
+                if not rows:
+                    rows.append([0.0] * (len(part) - 1))
+                index[part[0]] = len(rows)
+                rows.append([float(x) for x in part[1:]])
+                if len(rows) > limit:
+                    break
+    return index, torch.tensor(rows)
 
 
 def words_of(text):
@@ -51,21 +72,23 @@ def load_free(folder, name):
 
 
 class Reader:
-    def __init__(self, mind, template):
-        self.m = mind
-        self.names, self.shapes, self.sorts = set(), {}, {}      # the things met in argument places; the schemes with their
-        self.turn = {}                                           # roles; which sorts of things stand in which role; the
-        parses = []                                              # schemes met with a word that turns the relation round
+    def __init__(self, mind, template, vectors=None):
+        self.m, norm = mind, mind.lex.norm
+        self.names, self.kinds = set(), {}                       # the things met alone in an argument place, in the form
+        self.shapes, self.sorts = {}, {}                         # the learner's lexicon gives them, and their sorts; the
+        self.closed, self.turn = {}, {}                          # schemes with their roles; which sorts stand in a role;
+        parses = []                                              # the values of closed roles; the schemes met turned round
         for story in template:
             for words, gold in story:
                 p = mind.parse(words, gold is not None)
                 if p and p[0] != "NOP":
                     parses.append((gold is not None, p))
-                    for r, vals in p[2].items():                 # a thing is a word that somewhere fills a role alone
-                        if r not in ("O", "N") and len(vals) == 1:
-                            self.names.add(vals[0])
+                    for r, vals in p[2].items():
+                        if r not in ("O", "N") + CLOSED and len(vals) == 1:
+                            self.names.add(norm(vals[0]))
+                            self.kinds.setdefault(norm(vals[0]), set()).add(mind.sort_of(vals[0].split()))
         for quest, p in parses:
-            a = {r: [v for v in vals if r == "N" or v in self.names] for r, vals in p[2].items() if r != "O"}
+            a = self.roles(p[2])
             if any(not v for v in a.values()):
                 continue
             key = (quest, p[0], p[1] if not isinstance(p[1], list) else tuple(p[1]))
@@ -76,35 +99,43 @@ class Reader:
             self.shapes.setdefault(key, {}).setdefault(roles, 0)
             self.shapes[key][roles] += 1
             for r, vals in a.items():
-                if r != "N":
-                    self.sorts.setdefault((key, r), set()).update(mind.sort_of(v.split()) for v in vals)
-        self.long = sorted((tuple(n.split()) for n in self.names if " " in n), key=len, reverse=True)
-        self.vocab, self.net = {"<pad>": 0, "<unk>": 1}, None
+                if r in CLOSED:
+                    self.closed.setdefault((key, r), set()).update(vals)
+                elif r != "N":
+                    self.sorts.setdefault((key, r), set()).update(*(self.kinds[v] for v in vals))
+        self.longest = max([len(n.split()) for n in self.names] + [1])
+        self.vindex, self.vectors = vectors if vectors else ({}, None)
+        self.vocab, self.net, self.nets = {"<pad>": 0, "<unk>": 1}, None, []
+        self.start = None                                        # a network that has read other tasks: every new one starts from it
+        self.say = dict(mind.said_all, **{s: c.most_common(1)[0][0] for s, c in mind.said_n.items()})
         self.usual = set()                                       # what happens in this world: the notes of the ground on
         for story in template:                                   # the stories as the learner itself reads them
             picks = []
             for words, gold in story:
                 p = mind.parse(words, gold is not None)
-                picks.append((p[0], p[1], {r: [v for v in vals if r in ("O", "N") or v in self.names] for r, vals in p[2].items()}, None)
-                             if p and p[0] != "NOP" else (None, 0, {}, None))
-            self.say = dict(mind.said_all, **{s: c.most_common(1)[0][0] for s, c in mind.said_n.items()})
+                picks.append((p[0], p[1], dict(self.roles(p[2]), O=p[2].get("O", [])), None) if p and p[0] != "NOP" else (None, 0, {}, None))
             self.usual.update(self.answers(story, picks)[1])
+
+    def roles(self, a):
+        """the roles of a reading of the learner, as the reader keeps them: things by their names, no words of the form"""
+        norm = self.m.lex.norm
+        return {r: [v if r in ("N",) + CLOSED else norm(v) for v in vals if r in ("N",) + CLOSED or norm(v) in self.names]
+                for r, vals in a.items() if r != "O"}
 
     # ---------------------------------------------------------------- candidates
     def mentions(self, words):
-        """the things and the numbers named in a sentence: [(start, end, is it a number)]"""
-        out, i = [], 0
+        """the things and the numbers named in a sentence: [(start, end, is it a number, the name)]"""
+        out, i, norm = [], 0, self.m.lex.norm
         while i < len(words):
-            for n in self.long:
-                if words[i:i + len(n)] == n:
-                    out.append((i, i + len(n), False))
-                    i += len(n)
+            for n in range(min(self.longest, len(words) - i), 0, -1):
+                name = norm(" ".join(words[i:i + n]))
+                if name in self.names and (n == 1 or len(name.split()) == n):
+                    out.append((i, i + n, False, name))
+                    i += n
                     break
             else:
                 if words[i].isdigit():
-                    out.append((i, i + 1, True))
-                elif words[i] in self.names:
-                    out.append((i, i + 1, False))
+                    out.append((i, i + 1, True, words[i]))
                 i += 1
         return out
 
@@ -112,9 +143,9 @@ class Reader:
         """every reading the learner's schemes allow for this sentence: [(scheme or None, number, roles, tokens)]"""
         ment = self.mentions(words)
 
-        def tokens(scheme, at):
-            toks, pos = [f"<{scheme}>", "<?>" if quest else "<.>"], 0
-            for j, (s, e, num) in enumerate(ment):
+        def tokens(scheme, at, more=()):
+            toks, pos = [f"<{scheme}>", "<?>" if quest else "<.>"] + list(more), 0
+            for j, (s, e, num, _) in enumerate(ment):
                 toks += list(words[pos:s]) + [f"<{at[j]}>" if j in at else ("<#>" if num else "<E>")]
                 pos = e
             return toks + list(words[pos:])
@@ -123,24 +154,28 @@ class Reader:
             if q != quest:
                 continue
             for roles in sorted(shapes, key=lambda r: -shapes[r])[:2]:
-                slots = [r for r, n in roles for _ in range(n)]
+                slots = [r for r, n in roles for _ in range(n) if r not in CLOSED]
+                given = [r for r, n in roles for _ in range(n) if r in CLOSED]
                 if len(slots) > len(ment):
                     continue
                 for pick in itertools.permutations(range(len(ment)), len(slots)):
                     if any((slots[i] == "N") != ment[j][2] for i, j in enumerate(pick)):
                         continue
-                    if any(slots[i] != "N" and self.m.sort_of(words[ment[j][0]:ment[j][1]]) not in self.sorts[((q, kind, k), slots[i])]
-                           for i, j in enumerate(pick)):
+                    if any(slots[i] != "N" and not self.kinds[ment[j][3]] & self.sorts[((q, kind, k), slots[i])] for i, j in enumerate(pick)):
                         continue                                 # a thing of a sort the learner never met in this role
                     if any(slots[i] == slots[i2] and pick[i] > pick[i2] for i in range(len(slots)) for i2 in range(i + 1, len(slots))):
                         continue                                 # the same role twice: one order is enough
-                    a = {}
-                    for i, j in enumerate(pick):
-                        a.setdefault(slots[i], []).append(" ".join(words[ment[j][0]:ment[j][1]]))
                     at = {j: slots[i] for i, j in enumerate(pick)}
-                    out.append((kind, list(k) if isinstance(k, tuple) else k, a, tokens(f"{kind}:{k}", at)))
-                    if (q, kind, k) in self.turn:                # the same, turned round
-                        out.append((kind, out[-1][1], dict(a, O=[self.turn[(q, kind, k)]]), tokens(f"{kind}:{k}~", at)))
+                    for vals in itertools.product(*(sorted(self.closed[((q, kind, k), r)]) for r in given)):
+                        a = {}
+                        for i, j in enumerate(pick):
+                            a.setdefault(slots[i], []).append(ment[j][3])
+                        for r, v in zip(given, vals):            # a closed role: every value it had is offered, whatever
+                            a.setdefault(r, []).append(v)        # the words; the network tells which the sentence means
+                        more = [f"<{r}={v}>" for r, v in zip(given, vals)]
+                        out.append((kind, list(k) if isinstance(k, tuple) else k, a, tokens(f"{kind}:{k}", at, more)))
+                        if (q, kind, k) in self.turn:            # the same, turned round
+                            out.append((kind, out[-1][1], dict(a, O=[self.turn[(q, kind, k)]]), tokens(f"{kind}:{k}~", at, more)))
         return out
 
     # ---------------------------------------------------------------- the ground
@@ -163,13 +198,27 @@ class Reader:
                 notes.append((kind, k, "fails"))
         return right, w.notes + notes
 
+    def grade(self, story, cands, pick):
+        """-> right answers, and minus how much of what happens never happened in the stories the learner read itself"""
+        right, notes = self.answers(story, [c[i] for c, i in zip(cands, pick)])
+        return right, -sum(n not in self.usual for n in notes)
+
+    def allowed(self, story, cands, pick):
+        """for every sentence of a story read with all answers right: all its readings with which they stay right (and
+        nothing gets stranger). An answer seldom leaves one reading: which of them is meant, many stories tell"""
+        best, out = self.grade(story, cands, pick), []
+        for s in range(len(story)):
+            out.append([alt for alt in range(len(cands[s]))
+                        if alt == pick[s] or self.grade(story, cands, pick[:s] + [alt] + pick[s + 1:]) >= best])
+        return out
+
     def climb(self, story, cands, logp, start, blind):
         """from the given readings, by the best change of one sentence at a time, to the readings that fit best:
         most right answers (not looked at when blind), least of what never happened in the stories the learner read
         itself, likeliest"""
         def score(pick):
-            right, notes = self.answers(story, [c[i] for c, i in zip(cands, pick)])
-            return (0 if blind else right, -sum(n not in self.usual for n in notes), sum(lp[i] for lp, i in zip(logp, pick)))
+            right, odd = self.grade(story, cands, pick)
+            return (0 if blind else right, odd, sum(lp[i] for lp, i in zip(logp, pick)))
         pick, best = list(start), score(start)
         for _ in range(2 * len(story)):
             step = max(((score(pick[:s] + [alt] + pick[s + 1:]), s, alt) for s in range(len(story))
@@ -188,45 +237,72 @@ class Reader:
 
     # ---------------------------------------------------------------- the network
     def encode(self, toks, grow=False):
-        if grow:
-            for t in toks:
+        """every token has a place of its own in the network once it is met in a lesson; a word the dictionary has
+        brings its vector too - for a word never met in a lesson that is all that is known of it"""
+        out = []
+        for t in toks:
+            if grow:
                 self.vocab.setdefault(t, len(self.vocab))
-        return [self.vocab.get(t, 1) for t in toks]
+            out.append((self.vocab.get(t, 1), self.vindex.get(t, 0)))
+        return out
 
     def scores(self, cand_lists):
         """log-probabilities of the candidates of every sentence"""
         flat = [self.encode(c[3]) for cands in cand_lists for c in cands]
         n = max(len(x) for x in flat)
-        x = torch.tensor([t + [0] * (n - len(t)) for t in flat])
-        out, s, at = [], self.net(x), 0
-        for cands in cand_lists:
-            out.append(torch.log_softmax(s[at:at + len(cands)], 0))
+        x = torch.tensor([[t for t, _ in row] + [0] * (n - len(row)) for row in flat])
+        v = torch.tensor([[t for _, t in row] + [0] * (n - len(row)) for row in flat])
+        out, at = [], 0
+        every = [net(x, v) for net in ([self.net] if self.net.training else self.nets)]
+        for cands in cand_lists:                                 # in reading, the last networks answer together
+            out.append(sum(torch.log_softmax(s[at:at + len(cands)], 0) for s in every) / len(every))
             at += len(cands)
         return out
 
-    def fit(self, lessons, epochs=30, seed=0):
-        """lessons: [(candidates, the index of the right one)]"""
+    def fit(self, lessons, epochs=30, seed=0, keep=3):
+        """lessons: [(candidates, the index of the right one - or of all that may be right)]"""
         torch.manual_seed(seed)
         random.seed(seed)
         for cands, _ in lessons:
             for c in cands:
                 self.encode(c[3], grow=True)
-        self.net = Net(len(self.vocab) + 50)
+        self.net = Net(len(self.vocab), self.vectors)
+        if self.start is not None:                               # what was learnt of the language on other tasks is kept
+            mine = self.net.state_dict()
+            for name, old in self.start.items():
+                if name == "emb.weight":
+                    mine[name][:old.shape[0]] = old
+                elif name != "vec.weight":
+                    mine[name] = old.clone()
+            self.net.load_state_dict(mine)
         opt = torch.optim.Adam(self.net.parameters(), lr=3e-3)
         for _ in range(epochs):
             random.shuffle(lessons)
             for i in range(0, len(lessons), 32):
                 part = lessons[i:i + 32]
-                loss = -sum(lp[t] for lp, (_, t) in zip(self.scores([c for c, _ in part]), part)) / len(part)
+                loss = -sum(torch.logsumexp(lp[t], 0) if isinstance(t, list) else lp[t]
+                            for lp, (_, t) in zip(self.scores([c for c, _ in part]), part)) / len(part)
                 opt.zero_grad()
                 loss.backward()
                 opt.step()
+        self.net.eval()
+        self.nets = (self.nets + [self.net])[-keep:]
+
+    def school(self, files, epochs=12):
+        """before the task: the lessons other tasks left (their sentences with the readings found for them) are learnt
+        once; the tokens of the ground - schemes, roles - mean the same in every task, and so do the words"""
+        lessons = []
+        for f in files:
+            lessons += [([(None, 0, {}, toks) for toks in cands], t) for cands, t in json.load(open(f, encoding="utf-8"))]
+        self.fit(lessons, epochs=epochs, seed=7)
+        self.start = {k: v.clone() for k, v in self.net.state_dict().items()}
+        self.nets = []
+        return len(lessons)
 
     def read(self, stories, sense=True):
         """reading without the answers: the network's choice for every sentence, then (with sense) the changes after
         which less in the story makes no sense -> right answers, and the readings"""
         right, picks = 0, []
-        self.net.eval()
         with torch.no_grad():
             for story in stories:
                 cands = [self.candidates(w, g is not None) for w, g in story]
@@ -236,19 +312,22 @@ class Reader:
                     pick = self.solve(story, cands, lp, blind=True)[1]
                 right += self.answers(story, [c[i] for c, i in zip(cands, pick)])[0]
                 picks += [(c, i) for c, i in zip(cands, pick)]
-        self.net.train()
         return right, picks
 
 
 class Net(nn.Module):
-    def __init__(self, n_words, width=48):
+    def __init__(self, n_words, vectors=None, width=48):
         super().__init__()
         self.emb = nn.Embedding(n_words, width, padding_idx=0)
+        self.vec = nn.Embedding.from_pretrained(vectors if vectors is not None else torch.zeros(1, 1), freeze=True)
+        self.lift = nn.Linear(self.vec.embedding_dim, width)
         self.rnn = nn.GRU(width, width, batch_first=True, bidirectional=True)
         self.out = nn.Sequential(nn.Linear(2 * width, width), nn.Tanh(), nn.Linear(width, 1))
 
-    def forward(self, x):
-        h, _ = self.rnn(self.emb(x.clamp(max=self.emb.num_embeddings - 1)))
+    def forward(self, x, v):
+        known = torch.where(x < self.emb.num_embeddings, x, torch.ones_like(x))      # a token met after this network was made
+        e = self.emb(known) + self.lift(self.vec(v)) * (v > 0).unsqueeze(-1)
+        h, _ = self.rnn(e)
         h = h.masked_fill((x == 0).unsqueeze(-1), -1e9).max(1).values
         return self.out(h).squeeze(-1)
 
@@ -260,8 +339,11 @@ def main():
     ap.add_argument("--free", required=True, help="the folder with the paraphrased stories")
     ap.add_argument("--name", required=True, help="the name of the task in the paraphrase files")
     ap.add_argument("--free-train", type=int, default=40, help="free stories with answers to learn from")
-    ap.add_argument("--rounds", type=int, default=6)
+    ap.add_argument("--rounds", type=int, default=8)
     ap.add_argument("--alone", type=int, default=0, help="rounds of reading the test stories without their answers")
+    ap.add_argument("--vectors", default="", help="a GloVe file (.gz) with vectors of words: the reader's dictionary")
+    ap.add_argument("--school", default="", help="lesson files of other tasks (a glob) to learn the language from first")
+    ap.add_argument("--lessons", default="", help="where to leave this task's lessons for other tasks")
     ap.add_argument("--out", default="")
     a = ap.parse_args()
     if os.environ.get("PYTHONHASHSEED") != "0":
@@ -275,7 +357,7 @@ def main():
     train = [[(p, g) for _, p, g in st] for st in free["train"][:a.free_train]]
     test = [[(p, g) for _, p, g in st] for st in free["test"]]
     same = [[(s, g) for s, _, g in st] for st in free["test"]]                # the same test stories in template language
-    r = Reader(mind, template)
+    r = Reader(mind, template, load_vectors(a.vectors) if a.vectors else None)
     n_test = sum(g is not None for st in test for _, g in st)
     res = {"task": a.name, "learner_template_train": [got, total], "test_questions": n_test, "usual": sorted(map(str, r.usual))}
 
@@ -291,7 +373,7 @@ def main():
             cands = r.candidates(words, gold is not None)
             want = None
             if p and p[0] != "NOP":
-                want = (p[0], p[1], {k: sorted(x for x in v if k == "N" or x in r.names) for k, v in p[2].items() if k != "O"})
+                want = (p[0], p[1], {k: sorted(v) for k, v in r.roles(p[2]).items()})
                 if any(o in mind.lex.flip for o in p[2].get("O", ())):
                     want[2]["O"] = [r.turn[(gold is not None, p[0], tuple(p[1]) if isinstance(p[1], list) else p[1])]]
             hit = [i for i, c in enumerate(cands) if (c[0] is None and want is None) or
@@ -299,6 +381,8 @@ def main():
             if hit:
                 lessons.append((cands, hit[0]))
     res["template_lessons"] = len(lessons)
+    if a.school:
+        res["school_lessons"] = r.school(sorted(f for f in glob.glob(a.school) if os.path.basename(f) != a.name + ".json"))
     r.fit(list(lessons))
     res["reader_template_only"] = [r.read(test, False)[0], r.read(test)[0]]        # the network alone; with sense
     # the ceiling: the best the candidates allow on the test, found with the answers
@@ -318,13 +402,15 @@ def main():
                 right, pick = r.solve(story, cands, [lp.tolist() for lp in r.scores(cands)])
                 if right == sum(g is not None for _, g in story):
                     solved += 1
-                    new += [(c, i) for c, i in zip(cands, pick)]
+                    new += list(zip(cands, r.allowed(story, cands, pick)))
         r.fit(list(lessons) + new, seed=rnd + 1)
         alone, got = r.read(test, False)[0], r.read(test)[0]
         print(f"round {rnd + 1}: {solved}/{len(train)} free stories read with all answers right; free test: the network alone "
               f"{100 * alone / n_test:.1f}%, with sense {100 * got / n_test:.1f}%", flush=True)
         res.setdefault("rounds", []).append([solved, alone, got])
     res["reader_with_free"] = res["rounds"][-1][1:]
+    if a.lessons:
+        json.dump([([c[3] for c in cands], t) for cands, t in list(lessons) + new], open(a.lessons, "w", encoding="utf-8"))
     # reading on its own: the test stories WITHOUT their answers, read so that they make sense, are lessons too
     for rnd in range(a.alone):
         own = r.read(test)[1]

@@ -56,7 +56,7 @@ def load(root, lang, size):
 
 
 class Net(nn.Module):
-    def __init__(self, n_words, n_answers, width=192, layers=4, heads=4, max_len=1024, drop=0.1):
+    def __init__(self, n_words, n_answers, width=192, layers=4, heads=4, max_len=1024, drop=0.1, vectors=None):
         super().__init__()
         self.word = nn.Embedding(n_words, width, padding_idx=PAD)
         self.place = nn.Embedding(max_len, width)                 # where the word stands
@@ -66,23 +66,31 @@ class Net(nn.Module):
         self.norm = nn.LayerNorm(width)
         self.out = nn.Linear(width, n_answers)
         self.drop = nn.Dropout(drop)
+        self.vec = nn.Embedding.from_pretrained(vectors if vectors is not None else torch.zeros(1, 1), freeze=True)
+        self.lift = nn.Linear(self.vec.embedding_dim, width)      # ready vectors of words, if given (the same as the reader's)
 
-    def forward(self, words, ages):
+    def forward(self, words, ages, vecs):
         pos = torch.arange(words.shape[1], device=words.device).clamp(max=self.place.num_embeddings - 1)
-        x = self.drop(self.word(words) + self.place(pos)[None] + self.age(ages))
+        x = self.word(words) + self.lift(self.vec(vecs)) * (vecs > 0).unsqueeze(-1)
+        x = self.drop(x + self.place(pos)[None] + self.age(ages))
         x = self.body(x, src_key_padding_mask=words == PAD)
         return self.out(self.norm(x[:, 0]))
 
 
+VINDEX = {}             # word -> row of the ready vectors (empty: none are used)
+
+
 def encode(ex, vocab):
     _, told, quest, _ = ex
-    words, ages = [CLS], [0]
+    words, ages, vecs = [CLS], [0], [0]
     for i, s in enumerate(told):
         words += [vocab.get(w, UNK) for w in s] + [SEP]
+        vecs += [VINDEX.get(w, 0) for w in s] + [0]
         ages += [min(len(told) - i, MAX_SENTS) + 1] * (len(s) + 1)
     words += [ASK] + [vocab.get(w, UNK) for w in quest]
+    vecs += [0] + [VINDEX.get(w, 0) for w in quest]
     ages += [1] * (len(quest) + 1)
-    return words, ages
+    return words, ages, vecs
 
 
 def batches(data, vocab, answers, size, shuffle, device):
@@ -97,11 +105,12 @@ def batches(data, vocab, answers, size, shuffle, device):
         random.shuffle(packs)
     for pack in packs:
         enc = [encode(data[i], vocab) for i in pack]
-        n = max(len(w) for w, _ in enc)
-        words = torch.tensor([w + [PAD] * (n - len(w)) for w, _ in enc], device=device)
-        ages = torch.tensor([a + [0] * (n - len(a)) for _, a in enc], device=device)
+        n = max(len(w) for w, _, _ in enc)
+        words = torch.tensor([w + [PAD] * (n - len(w)) for w, _, _ in enc], device=device)
+        ages = torch.tensor([a + [0] * (n - len(a)) for _, a, _ in enc], device=device)
+        vecs = torch.tensor([v + [0] * (n - len(v)) for _, _, v in enc], device=device)
         gold = torch.tensor([answers.get(data[i][3], -1) for i in pack], device=device)
-        yield pack, words, ages, gold
+        yield pack, words, ages, vecs, gold
 
 
 def evaluate(net, data, vocab, answers, device):
@@ -109,9 +118,9 @@ def evaluate(net, data, vocab, answers, device):
     net.eval()
     got = {}
     with torch.no_grad():
-        for pack, words, ages, gold in batches(data, vocab, answers, 256, False, device):
+        for pack, words, ages, vecs, gold in batches(data, vocab, answers, 256, False, device):
             with torch.autocast(device.type, enabled=device.type == "cuda"):
-                best = net(words, ages).argmax(-1)
+                best = net(words, ages, vecs).argmax(-1)
             for i, b, g in zip(pack, best.tolist(), gold.tolist()):
                 r = got.setdefault(data[i][0], [0, 0])
                 r[0] += b == g
@@ -119,7 +128,7 @@ def evaluate(net, data, vocab, answers, device):
     return got
 
 
-def run(root, lang, size, seed, device, width, layers, max_minutes):
+def run(root, lang, size, seed, device, width, layers, max_minutes, vectors=None):
     random.seed(seed)
     torch.manual_seed(seed)
     stories, test = load(root, lang, size)
@@ -132,8 +141,8 @@ def run(root, lang, size, seed, device, width, layers, max_minutes):
         train += examples(st[cut:], k)
     vocab = {w: i + 5 for i, w in enumerate(sorted({w for _, told, q, _ in train + held for s in told + (q,) for w in s}))}
     answers = {a: i for i, a in enumerate(sorted({a for *_, a in train + held}))}
-    net = Net(len(vocab) + 5, len(answers), width, layers).to(device)
-    n_par = sum(p.numel() for p in net.parameters())
+    net = Net(len(vocab) + 5, len(answers), width, layers, vectors=vectors).to(device)
+    n_par = sum(p.numel() for p in net.parameters() if p.requires_grad)
     batch = 64
     per_epoch = math.ceil(len(train) / batch)
     steps = max(3000, min(60000, per_epoch * 40))               # little data: many passes; much data: at most 40 passes
@@ -145,13 +154,13 @@ def run(root, lang, size, seed, device, width, layers, max_minutes):
     print(f"{lang} {size}: {len(train)} questions to learn from, {len(held)} held out, {n_par / 1e6:.1f}M weights, {steps} steps", flush=True)
     done = False
     while not done:
-        for _, words, ages, gold in batches(train, vocab, answers, batch, True, device):
+        for _, words, ages, vecs, gold in batches(train, vocab, answers, batch, True, device):
             net.train()
             lr = 3e-4 * (step / warm if step < warm else 0.5 * (1 + math.cos(math.pi * (step - warm) / max(1, steps - warm))))
             for g in opt.param_groups:
                 g["lr"] = lr
             with torch.autocast(device.type, enabled=device.type == "cuda"):
-                loss = nn.functional.cross_entropy(net(words, ages), gold)
+                loss = nn.functional.cross_entropy(net(words, ages, vecs), gold)
             opt.zero_grad(set_to_none=True)
             scaler.scale(loss).backward()
             scaler.unscale_(opt)
@@ -188,14 +197,20 @@ def main():
     ap.add_argument("--width", type=int, default=192)
     ap.add_argument("--layers", type=int, default=4)
     ap.add_argument("--minutes", type=float, default=90, help="the longest one training may take")
+    ap.add_argument("--vectors", default="", help="a GloVe file (.gz): ready vectors of words, as the reader gets")
     ap.add_argument("--out", default="baseline.json")
     a = ap.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    vectors = None
+    if a.vectors:
+        from reader import load_vectors
+        index, vectors = load_vectors(a.vectors)
+        VINDEX.update(index)
     done = json.load(open(a.out, encoding="utf-8")) if os.path.exists(a.out) else []
     for size in a.sizes.split(","):
         if any(r["lang"] == a.lang and r["size"] == size for r in done):
             continue
-        done.append(run(a.data, a.lang, size, a.seed, device, a.width, a.layers, a.minutes))
+        done.append(run(a.data, a.lang, size, a.seed, device, a.width, a.layers, a.minutes, vectors))
         json.dump(done, open(a.out, "w", encoding="utf-8"))
     print("\n| data | questions | right on the test, % | tasks at 95 % and more |\n| --- | --- | --- | --- |")
     for r in done:
