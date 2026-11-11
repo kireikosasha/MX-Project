@@ -25,6 +25,7 @@ def main():
     ap.add_argument("--work", default="/content/mx-mind")
     ap.add_argument("--runs", default="en:20,hn:20,shuffled:20,en:5,en:10,en:50",
                     help="language:stories of every task to learn from - one run for each pair")
+    ap.add_argument("--fetch", action="store_true", help="only download the tasks")
     ap.add_argument("--budget", type=int, default=300, help="seconds for one task (Colab processors are about half as fast)")
     a = ap.parse_args()
     os.makedirs(a.work, exist_ok=True)
@@ -34,6 +35,8 @@ def main():
         urllib.request.urlretrieve(DATA, os.path.join(a.work, "babi.tar.gz"))
         with tarfile.open(os.path.join(a.work, "babi.tar.gz")) as t:
             t.extractall(a.work, filter="data")
+    if a.fetch:
+        return
     runs = [(r.split(":")[0], int(r.split(":")[1])) for r in a.runs.split(",")]
     many = max(1, min(4, (os.cpu_count() or 2)))
     seen = time.time()
