@@ -60,6 +60,8 @@ def alike(a, b):
     pre = len(os.path.commonprefix([a, b]))
     if pre >= 3 and abs(len(a) - len(b)) <= 3:
         return 10 + pre
+    if len(a) >= 4 and a[1:] == b[1:]:                         # only the first letter differs (as a capital letter may)
+        return 9
     if a[0] == b[0] and a[-1] == b[-1] and abs(len(a) - len(b)) <= 1 and len(a) >= 4:
         return 5
     return 0
@@ -484,8 +486,12 @@ class Mind:
             if any(self.score(t)[0] < b for t, b in zip(self.tasks, before)):
                 # the new understanding spoils an earlier task: read that task again in its light, or give the guess up
                 self.frozen = {f for f, _ in new} | set(verbs or {})
-                mended = self.repair(before, t0 + budget)
+                t1 = time.time()
+                mended = self.repair(before, min(t0 + budget, t1 + 0.2 * budget))
                 self.frozen = set()
+                if self.trace:
+                    print(f"   ? an earlier task got worse with: " + "; ".join(" ".join(map(str, f[1:])) + " = " + str(h) for f, h in new)
+                          + (f" {verbs}" if verbs else "") + f" - {'mended' if mended else 'not mended'} in {time.time() - t1:.0f} s", flush=True)
                 if not mended or self.score(stories)[0] <= best:
                     self.restore(snap)
                     self.bad.add((tuple(new), tuple(sorted((verbs or {}).items()))))
