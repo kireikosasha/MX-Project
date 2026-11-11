@@ -26,7 +26,7 @@ def main():
     ap.add_argument("--runs", default="en:20,hn:20,shuffled:20,en:5,en:10,en:50",
                     help="language:stories of every task to learn from - one run for each pair")
     ap.add_argument("--fetch", action="store_true", help="only download the tasks")
-    ap.add_argument("--budget", type=int, default=300, help="seconds for one task (Colab processors are about half as fast)")
+    ap.add_argument("--budget", type=int, default=150, help="the learner's own time for one task (it counts sentences read, not seconds)")
     a = ap.parse_args()
     os.makedirs(a.work, exist_ok=True)
     base = os.path.join(a.work, "tasks_1-20_v1-2")
