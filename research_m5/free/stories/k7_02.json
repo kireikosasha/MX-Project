@@ -1,0 +1,1200 @@
+{
+ "task": "k7",
+ "stories": [
+  {
+   "part": "test",
+   "id": 0,
+   "sentences": [
+    {
+     "s": "Cara has 2 coins.",
+     "p": "Cara owns 2 coins.",
+     "a": null
+    },
+    {
+     "s": "Cara has 3 shells.",
+     "p": "Cara holds 3 shells.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 3 coins.",
+     "p": "Ann uncovers 3 coins.",
+     "a": null
+    },
+    {
+     "s": "Does Cara have more than 3 coins?",
+     "p": "Is Cara holding over 3 coins?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 1,
+   "sentences": [
+    {
+     "s": "Dan has 4 coins.",
+     "p": "Dan possesses 4 coins.",
+     "a": null
+    },
+    {
+     "s": "Dan finds 5 shells.",
+     "p": "Dan discovers 5 shells.",
+     "a": null
+    },
+    {
+     "s": "Dan gives 4 shells to Eli.",
+     "p": "Eli receives 4 shells from Dan.",
+     "a": null
+    },
+    {
+     "s": "Eli finds 2 coins.",
+     "p": "Eli locates 2 coins.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 3 pens.",
+     "p": "3 pens are discovered by Ann.",
+     "a": null
+    },
+    {
+     "s": "Cara has 2 stones.",
+     "p": "Cara keeps 2 stones.",
+     "a": null
+    },
+    {
+     "s": "How many stones does Cara have?",
+     "p": "What number of stones does Cara own?",
+     "a": "2"
+    },
+    {
+     "s": "How many coins does Dan have?",
+     "p": "Dan holds how many coins?",
+     "a": "4"
+    },
+    {
+     "s": "Who has the most coins?",
+     "p": "Which person owns the largest number of coins?",
+     "a": "dan"
+    },
+    {
+     "s": "How many shells does Dan have?",
+     "p": "Dan is left with how many shells?",
+     "a": "1"
+    },
+    {
+     "s": "Ben has 3 apples.",
+     "p": "There are 3 apples belonging to Ben.",
+     "a": null
+    },
+    {
+     "s": "Fay has 4 coins.",
+     "p": "The coins Fay has total 4.",
+     "a": null
+    },
+    {
+     "s": "Cara has 4 pens.",
+     "p": "Cara is in possession of 4 pens.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 2 stones.",
+     "p": "Fay turns up 2 stones.",
+     "a": null
+    },
+    {
+     "s": "Ben has 5 coins.",
+     "p": "5 coins are held by Ben.",
+     "a": null
+    },
+    {
+     "s": "How many apples does Ben have?",
+     "p": "What quantity of apples belongs to Ben?",
+     "a": "3"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 2,
+   "sentences": [
+    {
+     "s": "Ann has 4 shells.",
+     "p": "Ann owns 4 shells.",
+     "a": null
+    },
+    {
+     "s": "Eli has 3 stones.",
+     "p": "The stones Eli owns come to 3.",
+     "a": null
+    },
+    {
+     "s": "How many shells does Ann have?",
+     "p": "What count of shells does Ann possess?",
+     "a": "4"
+    },
+    {
+     "s": "How many stones does Eli have?",
+     "p": "Eli owns how many stones?",
+     "a": "3"
+    },
+    {
+     "s": "Cara finds 4 pens.",
+     "p": "Cara stumbles upon 4 pens.",
+     "a": null
+    },
+    {
+     "s": "How many shells does Ann have?",
+     "p": "Which number of shells is Ann holding?",
+     "a": "4"
+    },
+    {
+     "s": "Does Ann have more than 2 shells?",
+     "p": "Is the amount of shells held by Ann bigger than 2?",
+     "a": "yes"
+    },
+    {
+     "s": "Ann has 3 pens.",
+     "p": "Ann carries 3 pens.",
+     "a": null
+    },
+    {
+     "s": "How many stones does Eli have?",
+     "p": "The number of stones Eli has is what?",
+     "a": "3"
+    },
+    {
+     "s": "Ann has 3 apples.",
+     "p": "3 apples are the property of Ann.",
+     "a": null
+    },
+    {
+     "s": "Ann loses 3 pens.",
+     "p": "Ann misplaces 3 pens.",
+     "a": null
+    },
+    {
+     "s": "Ben has 5 coins.",
+     "p": "Ben is credited with 5 coins.",
+     "a": null
+    },
+    {
+     "s": "Cara has 4 apples.",
+     "p": "Cara is the owner of 4 apples.",
+     "a": null
+    },
+    {
+     "s": "Ann has 5 stones.",
+     "p": "5 stones belong to Ann.",
+     "a": null
+    },
+    {
+     "s": "Ann loses 2 stones.",
+     "p": "Ann drops 2 stones.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 3,
+   "sentences": [
+    {
+     "s": "Fay has 4 shells.",
+     "p": "Fay is holding 4 shells.",
+     "a": null
+    },
+    {
+     "s": "Ben finds 5 apples.",
+     "p": "Ben comes across 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Ann has 4 pens.",
+     "p": "Ann keeps 4 pens.",
+     "a": null
+    },
+    {
+     "s": "How many shells does Fay have?",
+     "p": "How many shells is Fay holding?",
+     "a": "4"
+    },
+    {
+     "s": "Who has the most pens?",
+     "p": "Who owns the greatest number of pens?",
+     "a": "ann"
+    },
+    {
+     "s": "Who has the most pens?",
+     "p": "Which person has more pens than anyone else?",
+     "a": "ann"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 4,
+   "sentences": [
+    {
+     "s": "Dan has 2 shells.",
+     "p": "Dan is carrying 2 shells.",
+     "a": null
+    },
+    {
+     "s": "Ben has 5 shells.",
+     "p": "Ben owns 5 shells.",
+     "a": null
+    },
+    {
+     "s": "Does Dan have more than 4 shells?",
+     "p": "Is the number of shells Dan has greater than 4?",
+     "a": "no"
+    },
+    {
+     "s": "Dan finds 3 apples.",
+     "p": "Dan happens upon 3 apples.",
+     "a": null
+    },
+    {
+     "s": "Ann has 2 shells.",
+     "p": "Ann is the holder of 2 shells.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 4 coins.",
+     "p": "Ann gathers 4 coins.",
+     "a": null
+    },
+    {
+     "s": "Dan finds 3 pens.",
+     "p": "Dan uncovers 3 pens.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 5,
+   "sentences": [
+    {
+     "s": "Dan has 5 coins.",
+     "p": "Dan currently has 5 coins.",
+     "a": null
+    },
+    {
+     "s": "Ben finds 5 apples.",
+     "p": "Ben spots 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Who has the most apples?",
+     "p": "Who ends up with the most apples?",
+     "a": "ben"
+    },
+    {
+     "s": "Who has the most apples?",
+     "p": "Who holds the greatest count of apples among everyone?",
+     "a": "ben"
+    },
+    {
+     "s": "Fay finds 5 coins.",
+     "p": "Fay picks up 5 coins.",
+     "a": null
+    },
+    {
+     "s": "How many apples does Ben have?",
+     "p": "What is the apple total for Ben?",
+     "a": "5"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 6,
+   "sentences": [
+    {
+     "s": "Eli has 2 shells.",
+     "p": "Eli holds 2 shells.",
+     "a": null
+    },
+    {
+     "s": "Dan has 2 shells.",
+     "p": "Dan keeps 2 shells.",
+     "a": null
+    },
+    {
+     "s": "Cara finds 5 coins.",
+     "p": "Cara lays hands on 5 coins.",
+     "a": null
+    },
+    {
+     "s": "How many shells does Eli have?",
+     "p": "Eli possesses how many shells?",
+     "a": "2"
+    },
+    {
+     "s": "Does Dan have more than 5 shells?",
+     "p": "Is the shell count of Dan above 5?",
+     "a": "no"
+    },
+    {
+     "s": "How many shells does Eli have?",
+     "p": "Shells held by Eli number how many?",
+     "a": "2"
+    },
+    {
+     "s": "How many shells does Dan have?",
+     "p": "The shells Dan has come to how many?",
+     "a": "2"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 7,
+   "sentences": [
+    {
+     "s": "Cara has 2 coins.",
+     "p": "There are 2 coins with Cara.",
+     "a": null
+    },
+    {
+     "s": "Does Cara have more than 3 coins?",
+     "p": "Does Cara possess more than 3 coins?",
+     "a": "no"
+    },
+    {
+     "s": "Dan has 3 apples.",
+     "p": "Dan owns 3 apples.",
+     "a": null
+    },
+    {
+     "s": "Fay has 5 shells.",
+     "p": "5 shells are with Fay.",
+     "a": null
+    },
+    {
+     "s": "Does Dan have more than 2 apples?",
+     "p": "Has Dan got over 2 apples?",
+     "a": "yes"
+    },
+    {
+     "s": "Does Cara have more than 5 coins?",
+     "p": "Does Cara hold more than 5 coins in total?",
+     "a": "no"
+    },
+    {
+     "s": "Ann finds 4 pens.",
+     "p": "Ann tracks down 4 pens.",
+     "a": null
+    },
+    {
+     "s": "Does Dan have more than 5 apples?",
+     "p": "Is Dan holding over 5 apples?",
+     "a": "no"
+    },
+    {
+     "s": "Cara finds 3 stones.",
+     "p": "Cara collects 3 stones.",
+     "a": null
+    },
+    {
+     "s": "Cara finds 5 stones.",
+     "p": "Cara ends up finding 5 stones.",
+     "a": null
+    },
+    {
+     "s": "Ben has 4 stones.",
+     "p": "Ben holds 4 stones.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 3 shells.",
+     "p": "Fay uncovers 3 shells.",
+     "a": null
+    },
+    {
+     "s": "Dan has 4 coins.",
+     "p": "Dan keeps 4 coins.",
+     "a": null
+    },
+    {
+     "s": "Eli has 5 apples.",
+     "p": "Eli is holding 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Fay has 4 stones.",
+     "p": "The stones Fay holds total 4.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 8,
+   "sentences": [
+    {
+     "s": "Ann has 3 coins.",
+     "p": "Ann possesses 3 coins.",
+     "a": null
+    },
+    {
+     "s": "Does Ann have more than 4 coins?",
+     "p": "Does Ann hold above 4 coins?",
+     "a": "no"
+    },
+    {
+     "s": "Dan finds 5 shells.",
+     "p": "Dan discovers 5 shells.",
+     "a": null
+    },
+    {
+     "s": "Eli has 5 apples.",
+     "p": "Eli gets to keep 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Who has the most shells?",
+     "p": "Who holds the greatest amount of shells?",
+     "a": "dan"
+    },
+    {
+     "s": "Cara has 5 apples.",
+     "p": "Cara carries 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Ann has 4 shells.",
+     "p": "Ann keeps 4 shells.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 3 coins.",
+     "p": "Ann locates 3 coins.",
+     "a": null
+    },
+    {
+     "s": "Fay has 4 apples.",
+     "p": "Fay is holding 4 apples.",
+     "a": null
+    },
+    {
+     "s": "Ann gives 3 coins to Dan.",
+     "p": "Dan gets 3 coins from Ann.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 2 coins.",
+     "p": "Ann comes across 2 coins.",
+     "a": null
+    },
+    {
+     "s": "Fay has 4 pens.",
+     "p": "Fay holds 4 pens.",
+     "a": null
+    },
+    {
+     "s": "Cara finds 3 pens.",
+     "p": "Cara turns up 3 pens.",
+     "a": null
+    },
+    {
+     "s": "How many apples does Cara have?",
+     "p": "How many apples is Cara carrying?",
+     "a": "5"
+    },
+    {
+     "s": "How many coins does Ann have?",
+     "p": "Ann ends up with how many coins?",
+     "a": "5"
+    },
+    {
+     "s": "Fay loses 3 pens.",
+     "p": "3 pens slip away from Fay.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 9,
+   "sentences": [
+    {
+     "s": "Fay has 5 pens.",
+     "p": "Fay is holding 5 pens.",
+     "a": null
+    },
+    {
+     "s": "Ben finds 3 pens.",
+     "p": "3 pens are spotted by Ben.",
+     "a": null
+    },
+    {
+     "s": "Does Ben have more than 3 pens?",
+     "p": "Is Ben holding over 3 pens?",
+     "a": "no"
+    },
+    {
+     "s": "Ben has 5 shells.",
+     "p": "Ben keeps 5 shells.",
+     "a": null
+    },
+    {
+     "s": "Does Ben have more than 3 pens?",
+     "p": "Does the pen total of Ben exceed 3?",
+     "a": "no"
+    },
+    {
+     "s": "Ann finds 2 shells.",
+     "p": "Ann discovers 2 shells.",
+     "a": null
+    },
+    {
+     "s": "Ben finds 3 pens.",
+     "p": "Ben turns up 3 pens.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 2 stones.",
+     "p": "Fay picks up 2 stones.",
+     "a": null
+    },
+    {
+     "s": "Eli has 3 pens.",
+     "p": "Eli owns 3 pens.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 2 pens.",
+     "p": "Fay comes across 2 pens.",
+     "a": null
+    },
+    {
+     "s": "Who has the most shells?",
+     "p": "Who has more shells than anyone else?",
+     "a": "ben"
+    },
+    {
+     "s": "How many pens does Ben have?",
+     "p": "Ben has how many pens?",
+     "a": "6"
+    },
+    {
+     "s": "Does Eli have more than 4 pens?",
+     "p": "Is Eli above 4 pens?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 10,
+   "sentences": [
+    {
+     "s": "Cara has 2 pens.",
+     "p": "2 pens are owned by Cara.",
+     "a": null
+    },
+    {
+     "s": "Ben has 5 shells.",
+     "p": "Ben currently holds 5 shells.",
+     "a": null
+    },
+    {
+     "s": "Ann has 4 apples.",
+     "p": "Ann keeps 4 apples.",
+     "a": null
+    },
+    {
+     "s": "Does Ben have more than 5 shells?",
+     "p": "Does Ben own over 5 shells?",
+     "a": "no"
+    },
+    {
+     "s": "Ben finds 5 coins.",
+     "p": "Ben comes upon 5 coins.",
+     "a": null
+    },
+    {
+     "s": "Eli gets 5 shells from Ben.",
+     "p": "Ben hands 5 shells to Eli.",
+     "a": null
+    },
+    {
+     "s": "Ben has 2 pens.",
+     "p": "2 pens are with Ben.",
+     "a": null
+    },
+    {
+     "s": "Eli has 4 stones.",
+     "p": "Eli holds 4 stones.",
+     "a": null
+    },
+    {
+     "s": "How many stones does Eli have?",
+     "p": "Eli is holding how many stones?",
+     "a": "4"
+    },
+    {
+     "s": "Ben loses 3 coins.",
+     "p": "Ben misplaces 3 coins.",
+     "a": null
+    },
+    {
+     "s": "Does Ben have more than 2 pens?",
+     "p": "Does Ben hold over 2 pens?",
+     "a": "no"
+    },
+    {
+     "s": "Eli finds 3 stones.",
+     "p": "Eli uncovers 3 stones.",
+     "a": null
+    },
+    {
+     "s": "Fay has 4 pens.",
+     "p": "Fay keeps 4 pens.",
+     "a": null
+    },
+    {
+     "s": "Who has the most shells?",
+     "p": "Who holds the top number of shells?",
+     "a": "eli"
+    },
+    {
+     "s": "Dan has 5 stones.",
+     "p": "5 stones belong to Dan.",
+     "a": null
+    },
+    {
+     "s": "Does Fay have more than 5 pens?",
+     "p": "Does Fay possess more pens than 5?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 11,
+   "sentences": [
+    {
+     "s": "Ben has 3 stones.",
+     "p": "There are 3 stones held by Ben.",
+     "a": null
+    },
+    {
+     "s": "Who has the most stones?",
+     "p": "Who has more stones than anyone?",
+     "a": "ben"
+    },
+    {
+     "s": "Dan has 4 stones.",
+     "p": "Dan stocks 4 stones.",
+     "a": null
+    },
+    {
+     "s": "Does Ben have more than 5 stones?",
+     "p": "Does Ben possess over 5 stones?",
+     "a": "no"
+    },
+    {
+     "s": "Ann finds 4 apples.",
+     "p": "Ann gathers 4 apples.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 4 shells.",
+     "p": "Ann locates 4 shells.",
+     "a": null
+    },
+    {
+     "s": "Ann gives 3 shells to Cara.",
+     "p": "Cara is handed 3 shells by Ann.",
+     "a": null
+    },
+    {
+     "s": "Cara has 2 pens.",
+     "p": "The pens Cara has come to 2.",
+     "a": null
+    },
+    {
+     "s": "Dan has 5 shells.",
+     "p": "Dan is the holder of 5 shells.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 12,
+   "sentences": [
+    {
+     "s": "Ben has 3 apples.",
+     "p": "Ben is holding 3 apples.",
+     "a": null
+    },
+    {
+     "s": "Eli has 4 stones.",
+     "p": "Eli carries 4 stones.",
+     "a": null
+    },
+    {
+     "s": "How many apples does Ben have?",
+     "p": "Ben has how many apples?",
+     "a": "3"
+    },
+    {
+     "s": "Ann finds 3 apples.",
+     "p": "Ann turns up 3 apples.",
+     "a": null
+    },
+    {
+     "s": "Eli has 4 apples.",
+     "p": "Eli possesses 4 apples.",
+     "a": null
+    },
+    {
+     "s": "Dan has 5 apples.",
+     "p": "The apples Dan has come to 5.",
+     "a": null
+    },
+    {
+     "s": "Dan finds 3 coins.",
+     "p": "Dan turns up 3 coins.",
+     "a": null
+    },
+    {
+     "s": "Fay has 5 apples.",
+     "p": "Fay holds 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 5 pens.",
+     "p": "5 pens turn up for Fay.",
+     "a": null
+    },
+    {
+     "s": "Who has the most stones?",
+     "p": "Who holds the largest pile of stones?",
+     "a": "eli"
+    },
+    {
+     "s": "Dan finds 3 stones.",
+     "p": "Dan picks up 3 stones.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 13,
+   "sentences": [
+    {
+     "s": "Dan has 2 coins.",
+     "p": "2 coins are owned by Dan.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 5 pens.",
+     "p": "Ann comes across 5 pens.",
+     "a": null
+    },
+    {
+     "s": "Ann loses 5 pens.",
+     "p": "5 pens go missing for Ann.",
+     "a": null
+    },
+    {
+     "s": "Dan finds 5 pens.",
+     "p": "Dan turns up 5 pens.",
+     "a": null
+    },
+    {
+     "s": "Cara finds 5 stones.",
+     "p": "Cara discovers 5 stones.",
+     "a": null
+    },
+    {
+     "s": "Eli has 5 stones.",
+     "p": "5 stones are with Eli.",
+     "a": null
+    },
+    {
+     "s": "Does Dan have more than 2 coins?",
+     "p": "Is the coin count of Dan over 2?",
+     "a": "no"
+    },
+    {
+     "s": "Does Dan have more than 4 pens?",
+     "p": "Has Dan got more than 4 pens?",
+     "a": "yes"
+    },
+    {
+     "s": "Ann finds 4 shells.",
+     "p": "Ann comes upon 4 shells.",
+     "a": null
+    },
+    {
+     "s": "Ann has 4 apples.",
+     "p": "Ann holds 4 apples.",
+     "a": null
+    },
+    {
+     "s": "Does Cara have more than 3 stones?",
+     "p": "Is the stone total for Cara above 3?",
+     "a": "yes"
+    },
+    {
+     "s": "Who has the most apples?",
+     "p": "Who has the highest apple count?",
+     "a": "ann"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 14,
+   "sentences": [
+    {
+     "s": "Dan has 5 apples.",
+     "p": "Dan keeps 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 3 shells.",
+     "p": "Fay spots 3 shells.",
+     "a": null
+    },
+    {
+     "s": "Does Fay have more than 5 shells?",
+     "p": "Is Fay carrying above 5 shells?",
+     "a": "no"
+    },
+    {
+     "s": "Ben finds 4 stones.",
+     "p": "4 stones are found by Ben.",
+     "a": null
+    },
+    {
+     "s": "Does Dan have more than 3 apples?",
+     "p": "Are there over 3 apples held by Dan?",
+     "a": "yes"
+    },
+    {
+     "s": "Who has the most stones?",
+     "p": "Who owns the largest stone count?",
+     "a": "ben"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 15,
+   "sentences": [
+    {
+     "s": "Dan has 3 pens.",
+     "p": "Dan is holding 3 pens.",
+     "a": null
+    },
+    {
+     "s": "Dan finds 2 pens.",
+     "p": "Dan discovers 2 pens.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 3 shells.",
+     "p": "Fay turns up 3 shells.",
+     "a": null
+    },
+    {
+     "s": "Eli finds 2 apples.",
+     "p": "2 apples are discovered by Eli.",
+     "a": null
+    },
+    {
+     "s": "Cara finds 3 pens.",
+     "p": "Cara comes upon 3 pens.",
+     "a": null
+    },
+    {
+     "s": "Cara has 2 coins.",
+     "p": "2 coins are with Cara.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 5 apples.",
+     "p": "Fay tracks down 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Does Cara have more than 2 coins?",
+     "p": "Does the count of coins Cara holds exceed 2?",
+     "a": "no"
+    },
+    {
+     "s": "Eli finds 3 stones.",
+     "p": "Eli spots 3 stones.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 2 stones.",
+     "p": "Fay discovers 2 stones.",
+     "a": null
+    },
+    {
+     "s": "Ben has 3 stones.",
+     "p": "Ben keeps 3 stones.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 3 stones.",
+     "p": "Ann turns up 3 stones.",
+     "a": null
+    },
+    {
+     "s": "How many apples does Fay have?",
+     "p": "Fay possesses how many apples?",
+     "a": "5"
+    },
+    {
+     "s": "Dan has 3 apples.",
+     "p": "3 apples belong to Dan.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 16,
+   "sentences": [
+    {
+     "s": "Ben has 3 shells.",
+     "p": "Ben owns 3 shells.",
+     "a": null
+    },
+    {
+     "s": "Cara has 2 coins.",
+     "p": "Cara holds 2 coins.",
+     "a": null
+    },
+    {
+     "s": "Ann has 2 shells.",
+     "p": "Ann keeps 2 shells.",
+     "a": null
+    },
+    {
+     "s": "Ben has 2 apples.",
+     "p": "Ben possesses 2 apples.",
+     "a": null
+    },
+    {
+     "s": "Who has the most apples?",
+     "p": "Who ends up with the largest apple count?",
+     "a": "ben"
+    },
+    {
+     "s": "Ben finds 5 pens.",
+     "p": "Ben discovers 5 pens.",
+     "a": null
+    },
+    {
+     "s": "Who has the most apples?",
+     "p": "Which person owns the most apples?",
+     "a": "ben"
+    },
+    {
+     "s": "Does Ben have more than 5 apples?",
+     "p": "Are there more than 5 apples belonging to Ben?",
+     "a": "no"
+    },
+    {
+     "s": "Who has the most pens?",
+     "p": "Who holds more pens than anyone else?",
+     "a": "ben"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 17,
+   "sentences": [
+    {
+     "s": "Eli has 2 coins.",
+     "p": "2 coins are held by Eli.",
+     "a": null
+    },
+    {
+     "s": "Ben finds 5 pens.",
+     "p": "Ben spots 5 pens.",
+     "a": null
+    },
+    {
+     "s": "Eli finds 4 shells.",
+     "p": "4 shells are discovered by Eli.",
+     "a": null
+    },
+    {
+     "s": "Dan has 2 stones.",
+     "p": "Dan keeps 2 stones.",
+     "a": null
+    },
+    {
+     "s": "Ann has 4 shells.",
+     "p": "4 shells belong to Ann.",
+     "a": null
+    },
+    {
+     "s": "Who has the most pens?",
+     "p": "Who has the largest number of pens?",
+     "a": "ben"
+    },
+    {
+     "s": "How many stones does Dan have?",
+     "p": "Dan carries how many stones?",
+     "a": "2"
+    },
+    {
+     "s": "Who has the most stones?",
+     "p": "Which person holds the largest stone count?",
+     "a": "dan"
+    },
+    {
+     "s": "Does Eli have more than 4 coins?",
+     "p": "Is the coin total for Eli greater than 4?",
+     "a": "no"
+    },
+    {
+     "s": "How many coins does Eli have?",
+     "p": "What total of coins is Eli carrying?",
+     "a": "2"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 18,
+   "sentences": [
+    {
+     "s": "Ann has 5 apples.",
+     "p": "Ann is holding 5 apples.",
+     "a": null
+    },
+    {
+     "s": "Dan finds 3 coins.",
+     "p": "3 coins are spotted by Dan.",
+     "a": null
+    },
+    {
+     "s": "Ann finds 5 coins.",
+     "p": "Ann tracks down 5 coins.",
+     "a": null
+    },
+    {
+     "s": "Dan has 4 apples.",
+     "p": "4 apples are held by Dan.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 2 stones.",
+     "p": "Fay comes upon 2 stones.",
+     "a": null
+    },
+    {
+     "s": "Dan finds 2 shells.",
+     "p": "Dan happens upon 2 shells.",
+     "a": null
+    },
+    {
+     "s": "Does Fay have more than 4 stones?",
+     "p": "Is the stone count of Fay above 4?",
+     "a": "no"
+    },
+    {
+     "s": "Fay finds 3 pens.",
+     "p": "3 pens get found by Fay.",
+     "a": null
+    },
+    {
+     "s": "Eli finds 3 coins.",
+     "p": "Eli locates 3 coins.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 19,
+   "sentences": [
+    {
+     "s": "Dan has 4 shells.",
+     "p": "Dan owns 4 shells.",
+     "a": null
+    },
+    {
+     "s": "How many shells does Dan have?",
+     "p": "Dan possesses how many shells?",
+     "a": "4"
+    },
+    {
+     "s": "Fay has 2 coins.",
+     "p": "2 coins are with Fay.",
+     "a": null
+    },
+    {
+     "s": "Cara finds 4 pens.",
+     "p": "4 pens are discovered by Cara.",
+     "a": null
+    },
+    {
+     "s": "Who has the most pens?",
+     "p": "Which person has the largest pen count?",
+     "a": "cara"
+    },
+    {
+     "s": "Does Dan have more than 5 shells?",
+     "p": "Would Dan have over 5 shells?",
+     "a": "no"
+    },
+    {
+     "s": "Dan finds 3 pens.",
+     "p": "Dan discovers 3 pens.",
+     "a": null
+    },
+    {
+     "s": "Fay finds 5 stones.",
+     "p": "5 stones are found by Fay.",
+     "a": null
+    },
+    {
+     "s": "Fay has 3 shells.",
+     "p": "Fay carries 3 shells.",
+     "a": null
+    },
+    {
+     "s": "Ann has 5 stones.",
+     "p": "Ann owns 5 stones.",
+     "a": null
+    },
+    {
+     "s": "Eli gets 3 shells from Fay.",
+     "p": "Fay passes 3 shells to Eli.",
+     "a": null
+    },
+    {
+     "s": "Ben has 2 apples.",
+     "p": "Ben carries 2 apples.",
+     "a": null
+    },
+    {
+     "s": "Cara has 4 apples.",
+     "p": "4 apples are with Cara.",
+     "a": null
+    },
+    {
+     "s": "Fay has 2 apples.",
+     "p": "2 apples are held by Fay.",
+     "a": null
+    }
+   ]
+  }
+ ]
+}

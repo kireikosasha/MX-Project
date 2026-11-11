@@ -1,0 +1,1115 @@
+{
+ "task": "b20",
+ "stories": [
+  {
+   "part": "train",
+   "id": 20,
+   "sentences": [
+    {
+     "s": "Jason is bored.",
+     "p": "Jason has grown bored.",
+     "a": null
+    },
+    {
+     "s": "Where will jason go?",
+     "p": "Next jason will head toward which place?",
+     "a": "garden"
+    },
+    {
+     "s": "Yann is bored.",
+     "p": "Yann currently feels bored.",
+     "a": null
+    },
+    {
+     "s": "Where will yann go?",
+     "p": "Toward which spot will yann walk?",
+     "a": "garden"
+    },
+    {
+     "s": "Yann travelled to the garden.",
+     "p": "Yann made the trip out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did yann go to the garden?",
+     "p": "What was behind yann walking into the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Antoine is hungry.",
+     "p": "Antoine feels hungry at the moment.",
+     "a": null
+    },
+    {
+     "s": "Where will antoine go?",
+     "p": "Which place is antoine heading off to?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Jason travelled to the garden.",
+     "p": "Jason went out into the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did jason go to the garden?",
+     "p": "What made jason walk to the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Yann picked up the football there.",
+     "p": "Yann scooped up the football at that same place.",
+     "a": null
+    },
+    {
+     "s": "Why did yann get the football?",
+     "p": "For what reason did yann take the football?",
+     "a": "bored"
+    },
+    {
+     "s": "Sumit is bored.",
+     "p": "Sumit is a little bored today.",
+     "a": null
+    },
+    {
+     "s": "Where will sumit go?",
+     "p": "What place will sumit end up in?",
+     "a": "garden"
+    },
+    {
+     "s": "Sumit went back to the garden.",
+     "p": "Once again Sumit returned to the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit go to the garden?",
+     "p": "What caused sumit to return to the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Antoine moved to the kitchen.",
+     "p": "Antoine relocated into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine go to the kitchen?",
+     "p": "What prompted antoine to enter the kitchen?",
+     "a": "hungry"
+    },
+    {
+     "s": "Antoine took the apple there.",
+     "p": "Antoine snatched up the apple on the spot.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine get the apple?",
+     "p": "What was the reason antoine collected the apple?",
+     "a": "hungry"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 21,
+   "sentences": [
+    {
+     "s": "Yann is bored.",
+     "p": "Yann is growing bored.",
+     "a": null
+    },
+    {
+     "s": "Where will yann go?",
+     "p": "Which location is yann headed for?",
+     "a": "garden"
+    },
+    {
+     "s": "Antoine is bored.",
+     "p": "Antoine has become bored.",
+     "a": null
+    },
+    {
+     "s": "Where will antoine go?",
+     "p": "Which place does antoine plan to visit?",
+     "a": "garden"
+    },
+    {
+     "s": "Sumit is thirsty.",
+     "p": "Thirst is what Sumit is feeling.",
+     "a": null
+    },
+    {
+     "s": "Where will sumit go?",
+     "p": "What location is sumit bound for?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Sumit journeyed to the kitchen.",
+     "p": "Sumit traveled over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit go to the kitchen?",
+     "p": "Which feeling sent sumit into the kitchen?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Yann moved to the garden.",
+     "p": "Yann shifted over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did yann go to the garden?",
+     "p": "Which condition took yann out to the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Jason is hungry.",
+     "p": "Hunger is troubling Jason right now.",
+     "a": null
+    },
+    {
+     "s": "Where will jason go?",
+     "p": "Where is jason planning on heading?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Antoine moved to the garden.",
+     "p": "Off to the garden went Antoine.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine go to the garden?",
+     "p": "What drove antoine toward the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Sumit picked up the milk there.",
+     "p": "Sumit took hold of the milk in that spot.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit get the milk?",
+     "p": "What led sumit to pick up the milk?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Jason travelled to the kitchen.",
+     "p": "The kitchen is where Jason went.",
+     "a": null
+    },
+    {
+     "s": "Why did jason go to the kitchen?",
+     "p": "Out of what need did jason head to the kitchen?",
+     "a": "hungry"
+    },
+    {
+     "s": "Antoine picked up the football there.",
+     "p": "Antoine lifted the football from that spot.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine get the football?",
+     "p": "Which motive led antoine to grab the football?",
+     "a": "bored"
+    },
+    {
+     "s": "Jason got the apple there.",
+     "p": "Jason collected the apple from that place.",
+     "a": null
+    },
+    {
+     "s": "Why did jason get the apple?",
+     "p": "What purpose did jason have in taking the apple?",
+     "a": "hungry"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 22,
+   "sentences": [
+    {
+     "s": "Yann is thirsty.",
+     "p": "Yann has become quite thirsty.",
+     "a": null
+    },
+    {
+     "s": "Where will yann go?",
+     "p": "Which room is yann set to visit?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Jason is bored.",
+     "p": "Jason sits around feeling bored.",
+     "a": null
+    },
+    {
+     "s": "Where will jason go?",
+     "p": "Which area will jason head for next?",
+     "a": "garden"
+    },
+    {
+     "s": "Sumit is bored.",
+     "p": "Sumit is caught up in boredom.",
+     "a": null
+    },
+    {
+     "s": "Where will sumit go?",
+     "p": "Which spot will sumit end up in?",
+     "a": "garden"
+    },
+    {
+     "s": "Jason journeyed to the garden.",
+     "p": "Jason set off for the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did jason go to the garden?",
+     "p": "Which feeling pushed jason toward the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Sumit journeyed to the garden.",
+     "p": "The garden is where Sumit traveled to.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit go to the garden?",
+     "p": "What led sumit to the garden in the first place?",
+     "a": "bored"
+    },
+    {
+     "s": "Antoine is tired.",
+     "p": "Tiredness has overtaken Antoine.",
+     "a": null
+    },
+    {
+     "s": "Where will antoine go?",
+     "p": "Which room is antoine going to next?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Sumit grabbed the football there.",
+     "p": "The football was grabbed by Sumit right there.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit get the football?",
+     "p": "Which reason explains sumit taking the football?",
+     "a": "bored"
+    },
+    {
+     "s": "Antoine journeyed to the bedroom.",
+     "p": "Antoine headed upstairs to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine go to the bedroom?",
+     "p": "Because of what did antoine go to the bedroom?",
+     "a": "tired"
+    },
+    {
+     "s": "Antoine picked up the pajamas there.",
+     "p": "Antoine took the pajamas in that room.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine get the pajamas?",
+     "p": "What pushed antoine to grab the pajamas?",
+     "a": "tired"
+    },
+    {
+     "s": "Yann journeyed to the kitchen.",
+     "p": "Yann walked on into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did yann go to the kitchen?",
+     "p": "What caused yann to head into the kitchen?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Yann got the milk there.",
+     "p": "Yann obtained the milk right there.",
+     "a": null
+    },
+    {
+     "s": "Why did yann get the milk?",
+     "p": "What need brought yann to grab the milk?",
+     "a": "thirsty"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 23,
+   "sentences": [
+    {
+     "s": "Jason is hungry.",
+     "p": "Jason is feeling rather hungry.",
+     "a": null
+    },
+    {
+     "s": "Where will jason go?",
+     "p": "Which place will jason visit later?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Yann is hungry.",
+     "p": "Yann has developed a hunger.",
+     "a": null
+    },
+    {
+     "s": "Where will yann go?",
+     "p": "Where is yann going to end up?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Antoine is bored.",
+     "p": "Boredom has come over Antoine.",
+     "a": null
+    },
+    {
+     "s": "Where will antoine go?",
+     "p": "What spot lies ahead for antoine?",
+     "a": "garden"
+    },
+    {
+     "s": "Sumit is hungry.",
+     "p": "Sumit has got a hungry feeling.",
+     "a": null
+    },
+    {
+     "s": "Where will sumit go?",
+     "p": "Where exactly will sumit head?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Jason journeyed to the kitchen.",
+     "p": "Jason walked into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did jason go to the kitchen?",
+     "p": "What drove jason into the kitchen?",
+     "a": "hungry"
+    },
+    {
+     "s": "Yann travelled to the kitchen.",
+     "p": "Yann headed over to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did yann go to the kitchen?",
+     "p": "What led yann into the kitchen in the end?",
+     "a": "hungry"
+    },
+    {
+     "s": "Sumit journeyed to the kitchen.",
+     "p": "Sumit went over into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit go to the kitchen?",
+     "p": "Why exactly did sumit step into the kitchen?",
+     "a": "hungry"
+    },
+    {
+     "s": "Jason took the apple there.",
+     "p": "The apple was taken by Jason on that spot.",
+     "a": null
+    },
+    {
+     "s": "Why did jason get the apple?",
+     "p": "Which motive made jason grab the apple?",
+     "a": "hungry"
+    },
+    {
+     "s": "Antoine travelled to the garden.",
+     "p": "Antoine set out for the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine go to the garden?",
+     "p": "Why would antoine choose the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Antoine got the football there.",
+     "p": "Antoine acquired the football at that spot.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine get the football?",
+     "p": "For what reason was the football taken by antoine?",
+     "a": "bored"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 24,
+   "sentences": [
+    {
+     "s": "Jason is hungry.",
+     "p": "Jason is starting to feel hungry.",
+     "a": null
+    },
+    {
+     "s": "Where will jason go?",
+     "p": "Which room will jason be off to?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Yann is bored.",
+     "p": "Yann feels a sense of boredom.",
+     "a": null
+    },
+    {
+     "s": "Where will yann go?",
+     "p": "Eventually yann will move to which place?",
+     "a": "garden"
+    },
+    {
+     "s": "Jason moved to the kitchen.",
+     "p": "Into the kitchen Jason moved.",
+     "a": null
+    },
+    {
+     "s": "Why did jason go to the kitchen?",
+     "p": "What appetite pushed jason toward the kitchen?",
+     "a": "hungry"
+    },
+    {
+     "s": "Sumit is bored.",
+     "p": "Sumit has come to feel bored.",
+     "a": null
+    },
+    {
+     "s": "Where will sumit go?",
+     "p": "The next stop for sumit will be where?",
+     "a": "garden"
+    },
+    {
+     "s": "Sumit moved to the garden.",
+     "p": "Sumit went out toward the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit go to the garden?",
+     "p": "Why was sumit drawn to the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Antoine is bored.",
+     "p": "Antoine is stuck feeling bored.",
+     "a": null
+    },
+    {
+     "s": "Where will antoine go?",
+     "p": "Which place is antoine bound for?",
+     "a": "garden"
+    },
+    {
+     "s": "Sumit grabbed the football there.",
+     "p": "Right there Sumit seized the football.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit get the football?",
+     "p": "What motive lay behind sumit taking the football?",
+     "a": "bored"
+    },
+    {
+     "s": "Jason took the apple there.",
+     "p": "Jason picked the apple up at that location.",
+     "a": null
+    },
+    {
+     "s": "Why did jason get the apple?",
+     "p": "For what reason did jason claim the apple?",
+     "a": "hungry"
+    },
+    {
+     "s": "Antoine journeyed to the garden.",
+     "p": "Antoine wandered over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine go to the garden?",
+     "p": "What drew antoine out toward the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Yann went back to the garden.",
+     "p": "Yann returned once more to the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did yann go to the garden?",
+     "p": "What reason took yann back to the garden?",
+     "a": "bored"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 25,
+   "sentences": [
+    {
+     "s": "Antoine is thirsty.",
+     "p": "Antoine has grown thirsty lately.",
+     "a": null
+    },
+    {
+     "s": "Where will antoine go?",
+     "p": "Which room awaits antoine next?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Yann is bored.",
+     "p": "Boredom currently plagues Yann.",
+     "a": null
+    },
+    {
+     "s": "Where will yann go?",
+     "p": "Toward what place will yann head?",
+     "a": "garden"
+    },
+    {
+     "s": "Antoine went back to the kitchen.",
+     "p": "Antoine returned to the kitchen once more.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine go to the kitchen?",
+     "p": "What need brought antoine back to the kitchen?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Sumit is thirsty.",
+     "p": "Sumit has become thirsty.",
+     "a": null
+    },
+    {
+     "s": "Where will sumit go?",
+     "p": "Which room is sumit planning to visit?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Antoine grabbed the milk there.",
+     "p": "The milk was seized by Antoine right there.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine get the milk?",
+     "p": "What reason did antoine have for the milk?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Jason is bored.",
+     "p": "Jason has been feeling bored.",
+     "a": null
+    },
+    {
+     "s": "Where will jason go?",
+     "p": "What destination is jason aiming for?",
+     "a": "garden"
+    },
+    {
+     "s": "Sumit travelled to the kitchen.",
+     "p": "Sumit ended up walking into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit go to the kitchen?",
+     "p": "Which need guided sumit to the kitchen?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Jason went back to the garden.",
+     "p": "Jason headed back out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did jason go to the garden?",
+     "p": "What brought jason back to the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Yann moved to the garden.",
+     "p": "Yann transferred over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did yann go to the garden?",
+     "p": "Which feeling explained yann going to the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Yann grabbed the football there.",
+     "p": "Yann seized the football right on that spot.",
+     "a": null
+    },
+    {
+     "s": "Why did yann get the football?",
+     "p": "What motivated yann to grab the football?",
+     "a": "bored"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 26,
+   "sentences": [
+    {
+     "s": "Antoine is tired.",
+     "p": "Antoine is feeling quite tired.",
+     "a": null
+    },
+    {
+     "s": "Where will antoine go?",
+     "p": "Which room is antoine off to?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Yann is tired.",
+     "p": "Yann has become tired.",
+     "a": null
+    },
+    {
+     "s": "Where will yann go?",
+     "p": "Which room will yann visit next?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Jason is hungry.",
+     "p": "Hunger has come over Jason.",
+     "a": null
+    },
+    {
+     "s": "Where will jason go?",
+     "p": "What room is jason planning to reach?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Sumit is hungry.",
+     "p": "Sumit currently feels hungry.",
+     "a": null
+    },
+    {
+     "s": "Where will sumit go?",
+     "p": "Which room will sumit enter next?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Yann went back to the bedroom.",
+     "p": "Yann walked back up to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Why did yann go to the bedroom?",
+     "p": "What made yann return to the bedroom?",
+     "a": "tired"
+    },
+    {
+     "s": "Sumit moved to the kitchen.",
+     "p": "Sumit headed off to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit go to the kitchen?",
+     "p": "What led sumit into the kitchen?",
+     "a": "hungry"
+    },
+    {
+     "s": "Yann grabbed the pajamas there.",
+     "p": "Yann picked the pajamas up right there.",
+     "a": null
+    },
+    {
+     "s": "Why did yann get the pajamas?",
+     "p": "Which need made yann gather the pajamas?",
+     "a": "tired"
+    },
+    {
+     "s": "Sumit took the apple there.",
+     "p": "Sumit scooped the apple up in that room.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit get the apple?",
+     "p": "Why would sumit collect that apple?",
+     "a": "hungry"
+    },
+    {
+     "s": "Antoine moved to the bedroom.",
+     "p": "Antoine walked over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine go to the bedroom?",
+     "p": "Why was antoine headed to the bedroom?",
+     "a": "tired"
+    },
+    {
+     "s": "Jason moved to the kitchen.",
+     "p": "Jason made the move into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did jason go to the kitchen?",
+     "p": "What caused jason to make that kitchen trip?",
+     "a": "hungry"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 27,
+   "sentences": [
+    {
+     "s": "Antoine is thirsty.",
+     "p": "Thirst has settled in for Antoine.",
+     "a": null
+    },
+    {
+     "s": "Where will antoine go?",
+     "p": "What room will antoine visit next?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Antoine journeyed to the kitchen.",
+     "p": "Antoine traveled on into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine go to the kitchen?",
+     "p": "Because of what did antoine head to the kitchen?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Sumit is tired.",
+     "p": "Sumit is worn out and tired.",
+     "a": null
+    },
+    {
+     "s": "Where will sumit go?",
+     "p": "Where does sumit need to go next?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Antoine took the milk there.",
+     "p": "The milk was taken up by Antoine there.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine get the milk?",
+     "p": "Which need prompted antoine to grab the milk?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Sumit went back to the bedroom.",
+     "p": "Sumit returned upstairs to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit go to the bedroom?",
+     "p": "What made sumit come back to the bedroom?",
+     "a": "tired"
+    },
+    {
+     "s": "Sumit took the pajamas there.",
+     "p": "Sumit grabbed the pajamas in that room.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit get the pajamas?",
+     "p": "Which need led sumit to the pajamas?",
+     "a": "tired"
+    },
+    {
+     "s": "Jason is thirsty.",
+     "p": "Jason has become quite thirsty.",
+     "a": null
+    },
+    {
+     "s": "Where will jason go?",
+     "p": "Which room is jason bound for?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Jason moved to the kitchen.",
+     "p": "Jason stepped into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did jason go to the kitchen?",
+     "p": "What drew jason into the kitchen?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Yann is bored.",
+     "p": "Yann is sitting around feeling bored.",
+     "a": null
+    },
+    {
+     "s": "Where will yann go?",
+     "p": "Which place does yann plan to visit?",
+     "a": "garden"
+    },
+    {
+     "s": "Yann went back to the garden.",
+     "p": "Yann walked back out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Why did yann go to the garden?",
+     "p": "Which feeling sent yann back to the garden?",
+     "a": "bored"
+    },
+    {
+     "s": "Yann got the football there.",
+     "p": "Yann collected the football at that place.",
+     "a": null
+    },
+    {
+     "s": "Why did yann get the football?",
+     "p": "What explains yann picking up the football?",
+     "a": "bored"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 28,
+   "sentences": [
+    {
+     "s": "Jason is hungry.",
+     "p": "Hunger is affecting Jason right now.",
+     "a": null
+    },
+    {
+     "s": "Where will jason go?",
+     "p": "Which room will jason head into?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Yann is thirsty.",
+     "p": "Yann is parched and thirsty.",
+     "a": null
+    },
+    {
+     "s": "Where will yann go?",
+     "p": "Which room is yann set to reach?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Antoine is tired.",
+     "p": "Antoine has grown exhausted and tired.",
+     "a": null
+    },
+    {
+     "s": "Where will antoine go?",
+     "p": "Which room does antoine intend to visit?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Jason journeyed to the kitchen.",
+     "p": "Jason went out and reached the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did jason go to the kitchen?",
+     "p": "Which need took jason to the kitchen?",
+     "a": "hungry"
+    },
+    {
+     "s": "Sumit is thirsty.",
+     "p": "Sumit has grown thirsty recently.",
+     "a": null
+    },
+    {
+     "s": "Where will sumit go?",
+     "p": "What room is sumit aiming for?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Jason took the apple there.",
+     "p": "Jason grabbed the apple right there.",
+     "a": null
+    },
+    {
+     "s": "Why did jason get the apple?",
+     "p": "For what reason did jason take that apple?",
+     "a": "hungry"
+    },
+    {
+     "s": "Antoine moved to the bedroom.",
+     "p": "Antoine shifted into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine go to the bedroom?",
+     "p": "What prompted antoine to head to the bedroom?",
+     "a": "tired"
+    },
+    {
+     "s": "Sumit went to the kitchen.",
+     "p": "Sumit reached the kitchen at last.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit go to the kitchen?",
+     "p": "What motivated sumit to reach the kitchen?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Yann moved to the kitchen.",
+     "p": "Yann made a move into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did yann go to the kitchen?",
+     "p": "For what cause did yann walk into the kitchen?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Antoine picked up the pajamas there.",
+     "p": "The pajamas were picked up by Antoine there.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine get the pajamas?",
+     "p": "What led antoine to pick up those pajamas?",
+     "a": "tired"
+    },
+    {
+     "s": "Yann grabbed the milk there.",
+     "p": "Yann took the milk from that place.",
+     "a": null
+    },
+    {
+     "s": "Why did yann get the milk?",
+     "p": "What reason made yann take the milk?",
+     "a": "thirsty"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 29,
+   "sentences": [
+    {
+     "s": "Sumit is hungry.",
+     "p": "Sumit has begun feeling hungry.",
+     "a": null
+    },
+    {
+     "s": "Where will sumit go?",
+     "p": "Which room will sumit visit?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Yann is thirsty.",
+     "p": "Yann has grown thirsty lately.",
+     "a": null
+    },
+    {
+     "s": "Where will yann go?",
+     "p": "Which room is yann headed toward?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Yann moved to the kitchen.",
+     "p": "Yann entered the kitchen after moving.",
+     "a": null
+    },
+    {
+     "s": "Why did yann go to the kitchen?",
+     "p": "Which craving led yann to the kitchen?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Sumit travelled to the kitchen.",
+     "p": "Sumit walked along to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit go to the kitchen?",
+     "p": "What need pushed sumit toward the kitchen?",
+     "a": "hungry"
+    },
+    {
+     "s": "Jason is hungry.",
+     "p": "Jason has a hungry feeling now.",
+     "a": null
+    },
+    {
+     "s": "Where will jason go?",
+     "p": "Where is jason going next?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Sumit got the apple there.",
+     "p": "Sumit obtained the apple right there.",
+     "a": null
+    },
+    {
+     "s": "Why did sumit get the apple?",
+     "p": "For what reason did sumit collect that apple?",
+     "a": "hungry"
+    },
+    {
+     "s": "Antoine is tired.",
+     "p": "Antoine has been feeling tired all day.",
+     "a": null
+    },
+    {
+     "s": "Where will antoine go?",
+     "p": "Which room will antoine head to?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Yann picked up the milk there.",
+     "p": "Yann lifted the milk up from that same spot.",
+     "a": null
+    },
+    {
+     "s": "Why did yann get the milk?",
+     "p": "What made yann want the milk?",
+     "a": "thirsty"
+    },
+    {
+     "s": "Jason went to the kitchen.",
+     "p": "Jason reached the kitchen eventually.",
+     "a": null
+    },
+    {
+     "s": "Why did jason go to the kitchen?",
+     "p": "What took jason to the kitchen that day?",
+     "a": "hungry"
+    },
+    {
+     "s": "Antoine moved to the bedroom.",
+     "p": "Antoine went into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine go to the bedroom?",
+     "p": "What made antoine head for the bedroom?",
+     "a": "tired"
+    },
+    {
+     "s": "Antoine picked up the pajamas there.",
+     "p": "Antoine grabbed the pajamas from that spot.",
+     "a": null
+    },
+    {
+     "s": "Why did antoine get the pajamas?",
+     "p": "Which need led antoine to pick up the pajamas?",
+     "a": "tired"
+    }
+   ]
+  }
+ ]
+}

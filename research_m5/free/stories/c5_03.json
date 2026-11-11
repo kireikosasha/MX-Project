@@ -1,0 +1,1380 @@
+{
+ "task": "c5",
+ "stories": [
+  {
+   "part": "test",
+   "id": 20,
+   "sentences": [
+    {
+     "s": "Cara went to the hall.",
+     "p": "Over to the hall walked Cara.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the kitchen.",
+     "p": "Ann headed off toward the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The key is in the kitchen.",
+     "p": "Lying in the kitchen is the key.",
+     "a": null
+    },
+    {
+     "s": "Ann took the key.",
+     "p": "The key was grabbed by Ann.",
+     "a": null
+    },
+    {
+     "s": "Ann dropped the key.",
+     "p": "Then Ann let the key fall.",
+     "a": null
+    },
+    {
+     "s": "The box is in the garden.",
+     "p": "In the garden sits the box.",
+     "a": null
+    },
+    {
+     "s": "Where is the key?",
+     "p": "Which room holds the key?",
+     "a": "kitchen"
+    },
+    {
+     "s": "The box is open.",
+     "p": "The box has been left open.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the kitchen.",
+     "p": "Cara later walked into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Ben went to the hall.",
+     "p": "Ben strolled down to the hall.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the hall?",
+     "p": "Can the key be found in the hall?",
+     "a": "no"
+    },
+    {
+     "s": "Is the key in the kitchen?",
+     "p": "Would you find the key in the kitchen?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the key in the garden?",
+     "p": "Has the key ended up in the garden?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 21,
+   "sentences": [
+    {
+     "s": "Cara went to the garden.",
+     "p": "To the garden went Cara.",
+     "a": null
+    },
+    {
+     "s": "The box is open.",
+     "p": "Right now the box stands open.",
+     "a": null
+    },
+    {
+     "s": "The key is in the garden.",
+     "p": "The garden is where the key rests.",
+     "a": null
+    },
+    {
+     "s": "Cara took the key.",
+     "p": "Cara snatched up the key.",
+     "a": null
+    },
+    {
+     "s": "Cara dropped the key.",
+     "p": "Cara let the key slip away.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the garden?",
+     "p": "Does the key lie in the garden?",
+     "a": "yes"
+    },
+    {
+     "s": "The box is in the garden.",
+     "p": "The box rests somewhere in the garden.",
+     "a": null
+    },
+    {
+     "s": "Cara took the box.",
+     "p": "The box was picked up by Cara.",
+     "a": null
+    },
+    {
+     "s": "The ball is in the garden.",
+     "p": "Out in the garden you will see the ball.",
+     "a": null
+    },
+    {
+     "s": "The lamp is off.",
+     "p": "Presently the lamp is turned off.",
+     "a": null
+    },
+    {
+     "s": "The lamp is on.",
+     "p": "Now the lamp is glowing and switched on.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 22,
+   "sentences": [
+    {
+     "s": "Ben went to the hall.",
+     "p": "Ben walked over to the hall.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the hall.",
+     "p": "Cara also made the trip to the hall.",
+     "a": null
+    },
+    {
+     "s": "Ann switched the lamp on.",
+     "p": "Ann flipped the lamp on.",
+     "a": null
+    },
+    {
+     "s": "The key is in the kitchen.",
+     "p": "Within the kitchen lies the key.",
+     "a": null
+    },
+    {
+     "s": "The ball is red.",
+     "p": "The ball has a red hue.",
+     "a": null
+    },
+    {
+     "s": "Ben went to the kitchen.",
+     "p": "Off to the kitchen went Ben.",
+     "a": null
+    },
+    {
+     "s": "The ball is green.",
+     "p": "The ball is a green one.",
+     "a": null
+    },
+    {
+     "s": "What color is the ball?",
+     "p": "What hue is the ball?",
+     "a": "green"
+    },
+    {
+     "s": "The ball is in the garden.",
+     "p": "The garden holds the ball at the moment.",
+     "a": null
+    },
+    {
+     "s": "Ben took the key.",
+     "p": "Ben seized the key.",
+     "a": null
+    },
+    {
+     "s": "Where is the key?",
+     "p": "In which place can the key be found?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Ben switched the lamp off.",
+     "p": "Ben shut off the lamp.",
+     "a": null
+    },
+    {
+     "s": "Ben dropped the key.",
+     "p": "Ben allowed the key to fall.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the garden.",
+     "p": "Cara strolled out into the garden.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 23,
+   "sentences": [
+    {
+     "s": "The ball is in the garden.",
+     "p": "Waiting in the garden is the ball.",
+     "a": null
+    },
+    {
+     "s": "The key is in the kitchen.",
+     "p": "The key has been left in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The box is in the hall.",
+     "p": "Inside the hall you find the box.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the garden.",
+     "p": "Ann went outside into the garden.",
+     "a": null
+    },
+    {
+     "s": "Ben went to the kitchen.",
+     "p": "Ben came into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the hall.",
+     "p": "Cara moved over to the hall.",
+     "a": null
+    },
+    {
+     "s": "Ann took the ball.",
+     "p": "The ball got picked up by Ann.",
+     "a": null
+    },
+    {
+     "s": "Is the ball in the hall?",
+     "p": "Could the ball be sitting in the hall?",
+     "a": "no"
+    },
+    {
+     "s": "Where is the ball?",
+     "p": "Which place currently holds the ball?",
+     "a": "garden"
+    },
+    {
+     "s": "Is the ball in the kitchen?",
+     "p": "Has the ball landed in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Is the ball in the garden?",
+     "p": "Is the garden where the ball sits?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 24,
+   "sentences": [
+    {
+     "s": "The key is in the hall.",
+     "p": "Resting in the hall is the key.",
+     "a": null
+    },
+    {
+     "s": "The box is in the kitchen.",
+     "p": "The box sits in the kitchen now.",
+     "a": null
+    },
+    {
+     "s": "The ball is in the garden.",
+     "p": "A ball happens to be in the garden.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the garden.",
+     "p": "Then Ann walked to the garden.",
+     "a": null
+    },
+    {
+     "s": "Ann switched the lamp on.",
+     "p": "The lamp was switched on by Ann.",
+     "a": null
+    },
+    {
+     "s": "Ann took the ball.",
+     "p": "Ann lifted the ball up.",
+     "a": null
+    },
+    {
+     "s": "Ann dropped the ball.",
+     "p": "Ann let the ball fall.",
+     "a": null
+    },
+    {
+     "s": "The box is closed.",
+     "p": "Shut tight is the box.",
+     "a": null
+    },
+    {
+     "s": "The box is open.",
+     "p": "At this point the box is open.",
+     "a": null
+    },
+    {
+     "s": "Is the box open?",
+     "p": "Has the box been opened?",
+     "a": "yes"
+    },
+    {
+     "s": "Ann took the ball.",
+     "p": "After that the ball was seized by Ann.",
+     "a": null
+    },
+    {
+     "s": "Is the box closed?",
+     "p": "Is the box shut tight?",
+     "a": "no"
+    },
+    {
+     "s": "The ball is blue.",
+     "p": "Blue is the color of the ball.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the kitchen.",
+     "p": "Ann moved on into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is the ball?",
+     "p": "In what place is the ball?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Is the ball in the hall?",
+     "p": "Does the ball rest in the hall?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 25,
+   "sentences": [
+    {
+     "s": "The key is in the kitchen.",
+     "p": "The kitchen is where the key sits.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the hall.",
+     "p": "Ann made a trip to the hall.",
+     "a": null
+    },
+    {
+     "s": "The ball is in the hall.",
+     "p": "The ball can be found in the hall.",
+     "a": null
+    },
+    {
+     "s": "The box is in the garden.",
+     "p": "The box has been placed in the garden.",
+     "a": null
+    },
+    {
+     "s": "Ann took the ball.",
+     "p": "Ann grabbed hold of the ball.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the kitchen.",
+     "p": "Cara wandered into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Cara took the key.",
+     "p": "The key was picked up by Cara.",
+     "a": null
+    },
+    {
+     "s": "Where is the key?",
+     "p": "Where can the key be located?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Ann went to the garden.",
+     "p": "Ann then set out for the garden.",
+     "a": null
+    },
+    {
+     "s": "Is the ball in the kitchen?",
+     "p": "Is the ball somewhere in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Cara went to the garden.",
+     "p": "Cara moved on toward the garden.",
+     "a": null
+    },
+    {
+     "s": "Is the ball in the garden?",
+     "p": "Is the ball located in the garden?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the key in the garden?",
+     "p": "Could the key be lying in the garden?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 26,
+   "sentences": [
+    {
+     "s": "The key is in the kitchen.",
+     "p": "The kitchen is the spot holding the key.",
+     "a": null
+    },
+    {
+     "s": "The box is in the kitchen.",
+     "p": "Also in the kitchen is the box.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the hall.",
+     "p": "Ann took a walk into the hall.",
+     "a": null
+    },
+    {
+     "s": "The ball is red.",
+     "p": "The ball has turned out red.",
+     "a": null
+    },
+    {
+     "s": "The box is open.",
+     "p": "Left open is the box.",
+     "a": null
+    },
+    {
+     "s": "The ball is in the hall.",
+     "p": "Found in the hall is the ball.",
+     "a": null
+    },
+    {
+     "s": "The ball is green.",
+     "p": "The ball shows a green color.",
+     "a": null
+    },
+    {
+     "s": "Ann took the ball.",
+     "p": "Ann scooped up the ball.",
+     "a": null
+    },
+    {
+     "s": "The box is closed.",
+     "p": "Closed is the box.",
+     "a": null
+    },
+    {
+     "s": "Is the ball in the kitchen?",
+     "p": "Might the ball be in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Cara went to the kitchen.",
+     "p": "Cara reached the kitchen.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 27,
+   "sentences": [
+    {
+     "s": "The ball is blue.",
+     "p": "The ball turns out to be blue.",
+     "a": null
+    },
+    {
+     "s": "The ball is red.",
+     "p": "The ball has been red all along.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the hall.",
+     "p": "The hall is where Cara went.",
+     "a": null
+    },
+    {
+     "s": "What color is the ball?",
+     "p": "What shade does the ball have?",
+     "a": "red"
+    },
+    {
+     "s": "Ben went to the hall.",
+     "p": "Ben journeyed out to the hall.",
+     "a": null
+    },
+    {
+     "s": "The key is in the kitchen.",
+     "p": "Found in the kitchen was the key.",
+     "a": null
+    },
+    {
+     "s": "The ball is in the hall.",
+     "p": "The ball is resting in the hall.",
+     "a": null
+    },
+    {
+     "s": "Ben took the ball.",
+     "p": "Ben grabbed hold of the ball.",
+     "a": null
+    },
+    {
+     "s": "The box is open.",
+     "p": "Currently the box is open.",
+     "a": null
+    },
+    {
+     "s": "Ben switched the lamp on.",
+     "p": "Ben turned on the lamp.",
+     "a": null
+    },
+    {
+     "s": "Is the ball in the hall?",
+     "p": "Can we say the ball is in the hall?",
+     "a": "yes"
+    },
+    {
+     "s": "Ben dropped the ball.",
+     "p": "Ben let go of the ball.",
+     "a": null
+    },
+    {
+     "s": "Where is the ball?",
+     "p": "What spot is the ball in?",
+     "a": "hall"
+    },
+    {
+     "s": "Is the ball in the kitchen?",
+     "p": "Is the kitchen home to the ball?",
+     "a": "no"
+    },
+    {
+     "s": "Is the ball in the garden?",
+     "p": "Does the garden contain the ball?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 28,
+   "sentences": [
+    {
+     "s": "The key is in the hall.",
+     "p": "The key sits in the hall.",
+     "a": null
+    },
+    {
+     "s": "Ben went to the hall.",
+     "p": "Ben traveled to the hall.",
+     "a": null
+    },
+    {
+     "s": "Ben took the key.",
+     "p": "The key was taken by Ben.",
+     "a": null
+    },
+    {
+     "s": "Where is the key?",
+     "p": "Where has the key been put?",
+     "a": "hall"
+    },
+    {
+     "s": "The ball is in the kitchen.",
+     "p": "The kitchen is holding the ball.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the kitchen?",
+     "p": "Do you think the key rests in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Cara switched the lamp on.",
+     "p": "Cara flicked the lamp on.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the hall.",
+     "p": "Cara is now walking into the hall.",
+     "a": null
+    },
+    {
+     "s": "Ben dropped the key.",
+     "p": "Ben let the key drop.",
+     "a": null
+    },
+    {
+     "s": "The ball is red.",
+     "p": "The ball happens to be red.",
+     "a": null
+    },
+    {
+     "s": "The box is open.",
+     "p": "An open box is what we have.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the hall?",
+     "p": "Does the key happen to be in the hall?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the key in the garden?",
+     "p": "Has anybody placed the key in the garden?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 29,
+   "sentences": [
+    {
+     "s": "The ball is red.",
+     "p": "Red describes the ball.",
+     "a": null
+    },
+    {
+     "s": "The ball is green.",
+     "p": "The ball has the color green.",
+     "a": null
+    },
+    {
+     "s": "The key is in the kitchen.",
+     "p": "The key rests in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The box is in the kitchen.",
+     "p": "Within the kitchen stands the box.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the kitchen.",
+     "p": "Cara stepped into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The ball is red.",
+     "p": "The ball shows as red.",
+     "a": null
+    },
+    {
+     "s": "What color is the ball?",
+     "p": "Which hue belongs to the ball?",
+     "a": "red"
+    },
+    {
+     "s": "The ball is in the hall.",
+     "p": "Hall is where the ball lies.",
+     "a": null
+    },
+    {
+     "s": "Cara took the key.",
+     "p": "Cara collected the key.",
+     "a": null
+    },
+    {
+     "s": "Where is the key?",
+     "p": "Where does the key happen to be?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Ann went to the hall.",
+     "p": "Ann set off for the hall.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the hall?",
+     "p": "Is the key sitting in the hall?",
+     "a": "no"
+    },
+    {
+     "s": "Ann went to the kitchen.",
+     "p": "Ann then arrived in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The ball is blue.",
+     "p": "The ball is actually blue.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the kitchen?",
+     "p": "Is the key somewhere in the kitchen?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the key in the garden?",
+     "p": "Could the garden be hiding the key?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 30,
+   "sentences": [
+    {
+     "s": "The box is closed.",
+     "p": "The box remains closed.",
+     "a": null
+    },
+    {
+     "s": "The key is in the hall.",
+     "p": "Hall is where the key is kept.",
+     "a": null
+    },
+    {
+     "s": "The box is open.",
+     "p": "A box that is open sits here.",
+     "a": null
+    },
+    {
+     "s": "Ben went to the hall.",
+     "p": "Ben crossed over to the hall.",
+     "a": null
+    },
+    {
+     "s": "Cara switched the lamp on.",
+     "p": "Cara lit up the lamp.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the garden.",
+     "p": "Cara walked outside to the garden.",
+     "a": null
+    },
+    {
+     "s": "Is the box closed?",
+     "p": "Is the box shut?",
+     "a": "no"
+    },
+    {
+     "s": "The box is in the garden.",
+     "p": "The garden holds the box.",
+     "a": null
+    },
+    {
+     "s": "Ben took the key.",
+     "p": "The key was taken up by Ben.",
+     "a": null
+    },
+    {
+     "s": "Where is the key?",
+     "p": "Which location contains the key?",
+     "a": "hall"
+    },
+    {
+     "s": "Ben dropped the key.",
+     "p": "Ben let the key fall again.",
+     "a": null
+    },
+    {
+     "s": "Cara took the box.",
+     "p": "The box was lifted by Cara.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the hall?",
+     "p": "Might the key be in the hall?",
+     "a": "yes"
+    },
+    {
+     "s": "The ball is in the hall.",
+     "p": "Hall holds the ball.",
+     "a": null
+    },
+    {
+     "s": "Ben took the key.",
+     "p": "Next Ben picked up the key again.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 31,
+   "sentences": [
+    {
+     "s": "Ben went to the kitchen.",
+     "p": "Ben headed for the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Cara switched the lamp on.",
+     "p": "Cara turned the lamp on.",
+     "a": null
+    },
+    {
+     "s": "The key is in the kitchen.",
+     "p": "The kitchen holds the key.",
+     "a": null
+    },
+    {
+     "s": "Ben took the key.",
+     "p": "The key was seized by Ben.",
+     "a": null
+    },
+    {
+     "s": "Ben switched the lamp off.",
+     "p": "Ben turned the lamp off.",
+     "a": null
+    },
+    {
+     "s": "Where is the key?",
+     "p": "Where has the key ended up?",
+     "a": "kitchen"
+    },
+    {
+     "s": "The ball is in the garden.",
+     "p": "The ball has been placed in the garden.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the garden?",
+     "p": "Would the garden have the key?",
+     "a": "no"
+    },
+    {
+     "s": "Is the lamp off?",
+     "p": "Has the lamp been turned off?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 32,
+   "sentences": [
+    {
+     "s": "Ben went to the garden.",
+     "p": "Ben walked into the garden.",
+     "a": null
+    },
+    {
+     "s": "The box is in the garden.",
+     "p": "A box is located in the garden.",
+     "a": null
+    },
+    {
+     "s": "Ben took the box.",
+     "p": "The box was grabbed by Ben.",
+     "a": null
+    },
+    {
+     "s": "The key is in the hall.",
+     "p": "The hall currently has the key.",
+     "a": null
+    },
+    {
+     "s": "The box is open.",
+     "p": "The box is standing open.",
+     "a": null
+    },
+    {
+     "s": "Is the box in the kitchen?",
+     "p": "Do we find the box in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Where is the box?",
+     "p": "At what location is the box?",
+     "a": "garden"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 33,
+   "sentences": [
+    {
+     "s": "Cara went to the kitchen.",
+     "p": "Cara arrived in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The ball is blue.",
+     "p": "The ball happens to be blue.",
+     "a": null
+    },
+    {
+     "s": "The ball is in the kitchen.",
+     "p": "The kitchen is where the ball rests.",
+     "a": null
+    },
+    {
+     "s": "Cara took the ball.",
+     "p": "Cara took hold of the ball.",
+     "a": null
+    },
+    {
+     "s": "Is the ball in the hall?",
+     "p": "Could the hall contain the ball?",
+     "a": "no"
+    },
+    {
+     "s": "The key is in the garden.",
+     "p": "A key lies in the garden.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the garden.",
+     "p": "Ann strolled over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the garden.",
+     "p": "Cara went out to the garden too.",
+     "a": null
+    },
+    {
+     "s": "Cara took the key.",
+     "p": "Cara grabbed the key.",
+     "a": null
+    },
+    {
+     "s": "The box is in the garden.",
+     "p": "The box lies in the garden.",
+     "a": null
+    },
+    {
+     "s": "Ann took the box.",
+     "p": "Ann lifted up the box.",
+     "a": null
+    },
+    {
+     "s": "The box is open.",
+     "p": "The box has been opened.",
+     "a": null
+    },
+    {
+     "s": "Ann dropped the box.",
+     "p": "Ann let the box fall.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 34,
+   "sentences": [
+    {
+     "s": "The box is closed.",
+     "p": "The box is shut.",
+     "a": null
+    },
+    {
+     "s": "The box is open.",
+     "p": "The box stands open.",
+     "a": null
+    },
+    {
+     "s": "The lamp is off.",
+     "p": "The lamp is currently off.",
+     "a": null
+    },
+    {
+     "s": "Is the box open?",
+     "p": "Is the box standing open?",
+     "a": "yes"
+    },
+    {
+     "s": "Cara went to the kitchen.",
+     "p": "Cara moved into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The key is in the garden.",
+     "p": "A key is out in the garden.",
+     "a": null
+    },
+    {
+     "s": "The box is in the kitchen.",
+     "p": "The kitchen has the box.",
+     "a": null
+    },
+    {
+     "s": "Cara took the box.",
+     "p": "Cara picked the box up.",
+     "a": null
+    },
+    {
+     "s": "Where is the box?",
+     "p": "Where might the box be?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Cara went to the garden.",
+     "p": "Cara walked out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the kitchen.",
+     "p": "Cara walked back into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Cara dropped the box.",
+     "p": "Cara let the box slip down.",
+     "a": null
+    },
+    {
+     "s": "Cara took the box.",
+     "p": "Cara lifted the box up once more.",
+     "a": null
+    },
+    {
+     "s": "Cara closed the box.",
+     "p": "Cara shut the box.",
+     "a": null
+    },
+    {
+     "s": "Is the box in the kitchen?",
+     "p": "Is the box inside the kitchen right now?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the box in the hall?",
+     "p": "Has the box been moved to the hall?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 35,
+   "sentences": [
+    {
+     "s": "The key is in the kitchen.",
+     "p": "The kitchen contains the key.",
+     "a": null
+    },
+    {
+     "s": "The box is in the hall.",
+     "p": "The hall is storing the box.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the kitchen.",
+     "p": "Ann reached the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the kitchen.",
+     "p": "Cara also headed to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Cara took the key.",
+     "p": "Cara lifted the key.",
+     "a": null
+    },
+    {
+     "s": "Where is the key?",
+     "p": "Where is the key now?",
+     "a": "kitchen"
+    },
+    {
+     "s": "The ball is blue.",
+     "p": "The ball appears blue.",
+     "a": null
+    },
+    {
+     "s": "The ball is green.",
+     "p": "The ball is green in color.",
+     "a": null
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 36,
+   "sentences": [
+    {
+     "s": "The key is in the hall.",
+     "p": "You will find the key in the hall.",
+     "a": null
+    },
+    {
+     "s": "The ball is blue.",
+     "p": "Blue is what the ball looks like.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the garden.",
+     "p": "Ann arrived at the garden.",
+     "a": null
+    },
+    {
+     "s": "The ball is in the garden.",
+     "p": "A ball lies in the garden.",
+     "a": null
+    },
+    {
+     "s": "The box is in the kitchen.",
+     "p": "The box has been put in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the hall.",
+     "p": "Ann went over to the hall.",
+     "a": null
+    },
+    {
+     "s": "Ann took the key.",
+     "p": "Ann grabbed the key.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the kitchen?",
+     "p": "Could we spot the key in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Where is the key?",
+     "p": "What place holds the key?",
+     "a": "hall"
+    },
+    {
+     "s": "Is the key in the garden?",
+     "p": "Is the garden holding the key?",
+     "a": "no"
+    },
+    {
+     "s": "Is the key in the hall?",
+     "p": "Is the key found in the hall?",
+     "a": "yes"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 37,
+   "sentences": [
+    {
+     "s": "The key is in the garden.",
+     "p": "The garden contains the key.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the hall.",
+     "p": "Ann moved toward the hall.",
+     "a": null
+    },
+    {
+     "s": "The box is open.",
+     "p": "Standing open is the box.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the hall.",
+     "p": "Cara headed for the hall.",
+     "a": null
+    },
+    {
+     "s": "Ben went to the garden.",
+     "p": "Ben traveled to the garden.",
+     "a": null
+    },
+    {
+     "s": "Ben took the key.",
+     "p": "Ben picked the key up.",
+     "a": null
+    },
+    {
+     "s": "Ben went to the hall.",
+     "p": "Ben returned to the hall.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the garden.",
+     "p": "Cara journeyed to the garden.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the kitchen?",
+     "p": "Could the key be sitting in the kitchen?",
+     "a": "no"
+    },
+    {
+     "s": "Ann switched the lamp off.",
+     "p": "Ann flicked the lamp off.",
+     "a": null
+    },
+    {
+     "s": "The ball is in the kitchen.",
+     "p": "The kitchen currently has the ball.",
+     "a": null
+    },
+    {
+     "s": "Where is the key?",
+     "p": "Where can the key be seen?",
+     "a": "hall"
+    },
+    {
+     "s": "The box is in the hall.",
+     "p": "Inside the hall sits the box.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the hall?",
+     "p": "Is the key present in the hall?",
+     "a": "yes"
+    },
+    {
+     "s": "Is the key in the garden?",
+     "p": "Would the key be found in the garden?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 38,
+   "sentences": [
+    {
+     "s": "Ann went to the kitchen.",
+     "p": "Ann set foot in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the kitchen.",
+     "p": "Cara paid a visit to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The ball is in the garden.",
+     "p": "Sitting in the garden is a ball.",
+     "a": null
+    },
+    {
+     "s": "The key is in the kitchen.",
+     "p": "The key is kept in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Ben went to the garden.",
+     "p": "Ben journeyed out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Cara took the key.",
+     "p": "Cara took possession of the key.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the hall?",
+     "p": "Does the hall contain the key?",
+     "a": "no"
+    },
+    {
+     "s": "Ben went to the hall.",
+     "p": "Ben walked to the hall.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the hall.",
+     "p": "Cara went along to the hall.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the hall.",
+     "p": "Ann finally reached the hall.",
+     "a": null
+    },
+    {
+     "s": "Where is the key?",
+     "p": "Where is the key kept?",
+     "a": "hall"
+    },
+    {
+     "s": "Is the key in the garden?",
+     "p": "Has the key been left in the garden?",
+     "a": "no"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 39,
+   "sentences": [
+    {
+     "s": "Ben went to the garden.",
+     "p": "Ben set off for the garden.",
+     "a": null
+    },
+    {
+     "s": "The box is closed.",
+     "p": "The box stays shut.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the hall.",
+     "p": "Ann strolled into the hall.",
+     "a": null
+    },
+    {
+     "s": "Cara went to the kitchen.",
+     "p": "Cara made the trip to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Ann went to the kitchen.",
+     "p": "Ann walked on into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The key is in the kitchen.",
+     "p": "The key lies in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "The ball is in the garden.",
+     "p": "The garden contains a ball.",
+     "a": null
+    },
+    {
+     "s": "Ben took the ball.",
+     "p": "Ben picked up the ball.",
+     "a": null
+    },
+    {
+     "s": "Cara took the key.",
+     "p": "The key was held by Cara.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the kitchen?",
+     "p": "Is the key kept in the kitchen?",
+     "a": "yes"
+    },
+    {
+     "s": "Ben went to the hall.",
+     "p": "Next Ben went on to the hall.",
+     "a": null
+    },
+    {
+     "s": "Is the key in the hall?",
+     "p": "Does the key sit in the hall?",
+     "a": "no"
+    }
+   ]
+  }
+ ]
+}

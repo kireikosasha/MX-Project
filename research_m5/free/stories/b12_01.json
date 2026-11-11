@@ -1,0 +1,1625 @@
+{
+ "task": "b12",
+ "stories": [
+  {
+   "part": "train",
+   "id": 20,
+   "sentences": [
+    {
+     "s": "Sandra and Mary moved to the kitchen.",
+     "p": "Mary and Sandra relocated to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra travelled to the office.",
+     "p": "Sandra joined Daniel on a trip to the office.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "In which room is Daniel now?",
+     "a": "office"
+    },
+    {
+     "s": "Sandra and John moved to the bathroom.",
+     "p": "John and Sandra shifted over to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra went back to the garden.",
+     "p": "Sandra and Daniel returned to the garden together.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Can you tell me which room Sandra is in?",
+     "a": "garden"
+    },
+    {
+     "s": "John and Daniel travelled to the bedroom.",
+     "p": "Daniel went to the bedroom along with John.",
+     "a": null
+    },
+    {
+     "s": "John and Mary went back to the bathroom.",
+     "p": "Mary and John returned to the bathroom once more.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Which room has John ended up in?",
+     "a": "bathroom"
+    },
+    {
+     "s": "Sandra and Daniel went to the office.",
+     "p": "The office was visited by Sandra and Daniel.",
+     "a": null
+    },
+    {
+     "s": "John and Mary went back to the garden.",
+     "p": "Mary and John walked back over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Mary is in which room at the moment?",
+     "a": "garden"
+    },
+    {
+     "s": "John and Sandra went to the bedroom.",
+     "p": "Off to the bedroom went John and Sandra.",
+     "a": null
+    },
+    {
+     "s": "Mary and Sandra moved to the kitchen.",
+     "p": "Sandra and Mary both shifted into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Could you tell me the room where John is now?",
+     "a": "bedroom"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 21,
+   "sentences": [
+    {
+     "s": "Mary and Sandra journeyed to the kitchen.",
+     "p": "Sandra and Mary set out for the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Mary went to the hallway.",
+     "p": "Mary got to the hallway together with Daniel.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "What room is Daniel currently in?",
+     "a": "hallway"
+    },
+    {
+     "s": "John and Mary went back to the kitchen.",
+     "p": "John and Mary returned once more to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary and Daniel went to the bedroom.",
+     "p": "Daniel and Mary are the pair who went to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Daniel is hiding out in which room?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Sandra and Daniel went to the garden.",
+     "p": "Daniel was joined by Sandra on a trip to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John went to the bathroom.",
+     "p": "John accompanied Daniel to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "In what room can Daniel now be found?",
+     "a": "bathroom"
+    },
+    {
+     "s": "Daniel and Sandra moved to the kitchen.",
+     "p": "Sandra and Daniel ended up in the kitchen after moving.",
+     "a": null
+    },
+    {
+     "s": "John and Sandra travelled to the garden.",
+     "p": "The garden is where John and Sandra headed off to.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Could you name the room John is in at present?",
+     "a": "garden"
+    },
+    {
+     "s": "John and Mary moved to the kitchen.",
+     "p": "Mary and John transferred to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Daniel went to the office.",
+     "p": "The office received a visit from Sandra and Daniel.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Daniel is located in which room?",
+     "a": "office"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 22,
+   "sentences": [
+    {
+     "s": "Sandra and Daniel travelled to the bathroom.",
+     "p": "Daniel and Sandra made the trip to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Daniel travelled to the office.",
+     "p": "Later Sandra and Daniel journeyed onward to the office.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Which room is Daniel in?",
+     "a": "office"
+    },
+    {
+     "s": "John and Mary journeyed to the office.",
+     "p": "Mary and John headed over to the office.",
+     "a": null
+    },
+    {
+     "s": "Mary and Sandra moved to the hallway.",
+     "p": "Into the hallway shifted Mary and Sandra.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Daniel can be found in what room?",
+     "a": "office"
+    },
+    {
+     "s": "John and Mary went to the bathroom.",
+     "p": "The bathroom got a visit from John and Mary.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Mary moved to the bedroom.",
+     "p": "Mary and Daniel shifted to the bedroom just now.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "In which room is John standing right now?",
+     "a": "bathroom"
+    },
+    {
+     "s": "Daniel and John went to the hallway.",
+     "p": "John went out to the hallway with Daniel.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John journeyed to the garden.",
+     "p": "Then Daniel and John set out for the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "In which room will you find Mary?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Sandra and Daniel journeyed to the bedroom.",
+     "p": "Daniel and Sandra traveled to the bedroom after that.",
+     "a": null
+    },
+    {
+     "s": "Mary and John went back to the office.",
+     "p": "John and Mary returned to the office once again.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "What is the current location of Mary?",
+     "a": "office"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 23,
+   "sentences": [
+    {
+     "s": "Sandra and Mary went to the hallway.",
+     "p": "Mary and Sandra walked into the hallway.",
+     "a": null
+    },
+    {
+     "s": "John and Daniel went back to the bedroom.",
+     "p": "Back to the bedroom returned John and Daniel.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Which room has John gone into?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Daniel and John went back to the kitchen.",
+     "p": "John and Daniel both returned to the kitchen afterward.",
+     "a": null
+    },
+    {
+     "s": "Sandra and John went to the office.",
+     "p": "The office is where Sandra and John went.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "In what room is John located?",
+     "a": "office"
+    },
+    {
+     "s": "Daniel and John travelled to the bathroom.",
+     "p": "John and Daniel took a trip to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "John and Sandra went back to the hallway.",
+     "p": "Sandra and John headed back to the hallway again.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Which room is John standing in now?",
+     "a": "hallway"
+    },
+    {
+     "s": "John and Mary moved to the garden.",
+     "p": "John and Mary both relocated to the garden now.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John went back to the bedroom.",
+     "p": "Once more John and Daniel reached the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Mary is found in which room these days?",
+     "a": "garden"
+    },
+    {
+     "s": "Daniel and Sandra went back to the bathroom.",
+     "p": "Sandra and Daniel returned to the bathroom a while later.",
+     "a": null
+    },
+    {
+     "s": "Mary and Daniel went to the hallway.",
+     "p": "Daniel and Mary made the trip to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Which room can Sandra be found in?",
+     "a": "bathroom"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 24,
+   "sentences": [
+    {
+     "s": "Sandra and Mary went to the kitchen.",
+     "p": "Sandra and Mary arrived in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra and John journeyed to the bedroom.",
+     "p": "Sandra travelled to the bedroom in the company of John.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Could you tell me which room John is in?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Sandra and Daniel moved to the bathroom.",
+     "p": "Daniel and Sandra shifted over to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Daniel moved to the bedroom.",
+     "p": "Next the bedroom was reached by Sandra and Daniel.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Which room is Sandra currently located in?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Daniel and Mary travelled to the hallway.",
+     "p": "Mary and Daniel journeyed out to the hallway.",
+     "a": null
+    },
+    {
+     "s": "John and Sandra travelled to the garden.",
+     "p": "Sandra and John went out into the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Sandra is now located in which room?",
+     "a": "garden"
+    },
+    {
+     "s": "Daniel and Sandra went to the bathroom.",
+     "p": "The bathroom is where Daniel and Sandra headed.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Mary moved to the kitchen.",
+     "p": "Mary and Sandra switched to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "What room has Mary moved into?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Daniel and Mary moved to the hallway.",
+     "p": "Mary and Daniel changed rooms to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Mary moved to the garden.",
+     "p": "Then Daniel and Mary went on to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "In which room can Mary be found now?",
+     "a": "garden"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 25,
+   "sentences": [
+    {
+     "s": "Daniel and Mary travelled to the bathroom.",
+     "p": "Mary and Daniel went together to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Mary went to the hallway.",
+     "p": "The hallway was visited by Daniel and Mary.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Daniel is in what room at this point?",
+     "a": "hallway"
+    },
+    {
+     "s": "Mary and Daniel went to the kitchen.",
+     "p": "Daniel accompanied Mary to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary and John journeyed to the hallway.",
+     "p": "John and Mary set off for the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Which room is Mary in right now?",
+     "a": "hallway"
+    },
+    {
+     "s": "John and Daniel journeyed to the bathroom.",
+     "p": "Daniel and John headed to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Mary and Daniel went back to the garden.",
+     "p": "Daniel and Mary came back to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Which room would Daniel be found in?",
+     "a": "garden"
+    },
+    {
+     "s": "Sandra and Mary moved to the office.",
+     "p": "The office is where Mary and Sandra moved.",
+     "a": null
+    },
+    {
+     "s": "John and Mary travelled to the garden.",
+     "p": "Mary and John took a trip to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Daniel is currently found in which room?",
+     "a": "garden"
+    },
+    {
+     "s": "John and Mary went to the bedroom.",
+     "p": "John and Mary arrived at the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Daniel journeyed to the kitchen.",
+     "p": "The kitchen was reached by Sandra and Daniel.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "What room has Daniel gone into?",
+     "a": "kitchen"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 26,
+   "sentences": [
+    {
+     "s": "Sandra and Daniel travelled to the bathroom.",
+     "p": "Daniel and Sandra went along to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra moved to the garden.",
+     "p": "Sandra and Daniel shifted over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Which room is Sandra found in?",
+     "a": "garden"
+    },
+    {
+     "s": "Daniel and John travelled to the bathroom.",
+     "p": "John and Daniel took the trip to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "John and Sandra journeyed to the office.",
+     "p": "The office is where John and Sandra traveled to.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "In what room is John situated at present?",
+     "a": "office"
+    },
+    {
+     "s": "Daniel and Sandra journeyed to the garden.",
+     "p": "Sandra went to the garden along with Daniel.",
+     "a": null
+    },
+    {
+     "s": "Sandra and John journeyed to the bedroom.",
+     "p": "John and Sandra headed out to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Daniel is located in which room now?",
+     "a": "garden"
+    },
+    {
+     "s": "Daniel and Sandra journeyed to the office.",
+     "p": "Sandra and Daniel traveled over to the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Daniel moved to the hallway.",
+     "p": "The hallway received Daniel and Sandra.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Could you tell me which room Sandra is in?",
+     "a": "hallway"
+    },
+    {
+     "s": "Sandra and Mary moved to the kitchen.",
+     "p": "Mary and Sandra relocated into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary and John journeyed to the bathroom.",
+     "p": "John and Mary set out for the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "What room is Sandra in at this moment?",
+     "a": "kitchen"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 27,
+   "sentences": [
+    {
+     "s": "Sandra and John went back to the kitchen.",
+     "p": "John and Sandra returned to the kitchen once more.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra travelled to the bedroom.",
+     "p": "Sandra and Daniel went over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Which room is Sandra now in?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Daniel and John went back to the garden.",
+     "p": "The garden became the place John and Daniel returned to.",
+     "a": null
+    },
+    {
+     "s": "John and Mary travelled to the bathroom.",
+     "p": "Mary and John journeyed as far as the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "What room is Daniel in right now?",
+     "a": "garden"
+    },
+    {
+     "s": "Mary and John journeyed to the kitchen.",
+     "p": "John went with Mary to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Mary journeyed to the office.",
+     "p": "The office is where Mary and Sandra traveled.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Mary has ended up in which room?",
+     "a": "office"
+    },
+    {
+     "s": "John and Daniel journeyed to the office.",
+     "p": "Daniel and John set off together for the office.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John moved to the garden.",
+     "p": "Then John and Daniel relocated to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Which room has Daniel arrived in?",
+     "a": "garden"
+    },
+    {
+     "s": "Sandra and Mary moved to the bedroom.",
+     "p": "The bedroom was where Mary and Sandra moved.",
+     "a": null
+    },
+    {
+     "s": "Mary and Sandra journeyed to the office.",
+     "p": "Sandra and Mary headed out to the office.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "In which room will Sandra be located?",
+     "a": "office"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 28,
+   "sentences": [
+    {
+     "s": "Daniel and Mary went back to the bedroom.",
+     "p": "Mary and Daniel returned to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra and John went back to the bedroom.",
+     "p": "John and Sandra came back to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "In which room is Sandra located?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Sandra and John moved to the bathroom.",
+     "p": "The bathroom is where John and Sandra shifted.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Mary went to the kitchen.",
+     "p": "Mary and Daniel arrived in the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Which room is Mary currently standing in?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Daniel and John moved to the office.",
+     "p": "Daniel and John transferred to the office.",
+     "a": null
+    },
+    {
+     "s": "Mary and Sandra went to the bedroom.",
+     "p": "Sandra and Mary headed to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Sandra can be found in which room?",
+     "a": "bedroom"
+    },
+    {
+     "s": "John and Sandra travelled to the bathroom.",
+     "p": "Sandra and John journeyed over to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra and John went back to the kitchen.",
+     "p": "Once again John and Sandra went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "What room is Sandra now in?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Daniel and John moved to the bedroom.",
+     "p": "The bedroom is where Daniel and John went.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John moved to the bathroom.",
+     "p": "Later on John and Daniel ended up in the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "In what room is John present now?",
+     "a": "bathroom"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 29,
+   "sentences": [
+    {
+     "s": "Daniel and John moved to the hallway.",
+     "p": "John and Daniel stepped into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Daniel journeyed to the bathroom.",
+     "p": "Daniel and Sandra headed off to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Which room is Sandra in?",
+     "a": "bathroom"
+    },
+    {
+     "s": "Mary and John went back to the bathroom.",
+     "p": "John and Mary returned to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Mary and Daniel journeyed to the hallway.",
+     "p": "Daniel and Mary traveled to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Mary is found in what room?",
+     "a": "hallway"
+    },
+    {
+     "s": "John and Sandra journeyed to the bedroom.",
+     "p": "Sandra and John set out for the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra and John travelled to the garden.",
+     "p": "Sandra and John took the trip to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "What room is Sandra located in at present?",
+     "a": "garden"
+    },
+    {
+     "s": "John and Daniel journeyed to the bathroom.",
+     "p": "The bathroom is where John and Daniel went.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Mary travelled to the bedroom.",
+     "p": "Mary and Sandra arrived at the bedroom together.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "John can be found in which room?",
+     "a": "bathroom"
+    },
+    {
+     "s": "Sandra and John moved to the garden.",
+     "p": "Sandra and John later ended up in the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra travelled to the office.",
+     "p": "Sandra and Daniel took a trip to the office.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "In which room is Mary at this point?",
+     "a": "bedroom"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 30,
+   "sentences": [
+    {
+     "s": "Sandra and Mary moved to the garden.",
+     "p": "Mary and Sandra shifted into the garden.",
+     "a": null
+    },
+    {
+     "s": "John and Mary went to the bedroom.",
+     "p": "Mary and John reached the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Which room is Mary now standing in?",
+     "a": "bedroom"
+    },
+    {
+     "s": "John and Sandra went to the hallway.",
+     "p": "Sandra and John reached the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary and Daniel travelled to the kitchen.",
+     "p": "Daniel and Mary went as far as the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Sandra is currently in what room?",
+     "a": "hallway"
+    },
+    {
+     "s": "John and Daniel travelled to the garden.",
+     "p": "The garden was the destination of John and Daniel.",
+     "a": null
+    },
+    {
+     "s": "Sandra and John went to the office.",
+     "p": "Sandra and John entered the office.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "In which room will John be found?",
+     "a": "office"
+    },
+    {
+     "s": "Sandra and John went to the bathroom.",
+     "p": "Sandra and John later went into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra and John went to the hallway.",
+     "p": "Afterwards Sandra and John moved to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "John is located in which room now?",
+     "a": "hallway"
+    },
+    {
+     "s": "Sandra and Mary moved to the bathroom.",
+     "p": "Mary and Sandra relocated to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Daniel journeyed to the hallway.",
+     "p": "Daniel and Sandra headed over to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "What room is John currently in?",
+     "a": "hallway"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 31,
+   "sentences": [
+    {
+     "s": "John and Mary travelled to the bedroom.",
+     "p": "Mary and John went to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary and Sandra travelled to the hallway.",
+     "p": "Sandra went to the hallway together with Mary.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "In which room is Sandra now?",
+     "a": "hallway"
+    },
+    {
+     "s": "Mary and Sandra went back to the kitchen.",
+     "p": "The kitchen is where Sandra and Mary returned.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John went back to the bathroom.",
+     "p": "John and Daniel returned to the bathroom again.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "John is in which room at the moment?",
+     "a": "bathroom"
+    },
+    {
+     "s": "John and Mary moved to the bedroom.",
+     "p": "Mary and John shifted over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary and Daniel moved to the kitchen.",
+     "p": "Daniel and Mary transferred to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Which room is Daniel now located in?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Mary and John journeyed to the bathroom.",
+     "p": "The bathroom is where Mary and John went.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John travelled to the hallway.",
+     "p": "John and Daniel made the trip to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Mary has been found in what room?",
+     "a": "bathroom"
+    },
+    {
+     "s": "Daniel and Mary moved to the bedroom.",
+     "p": "The bedroom received Mary and Daniel.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John moved to the garden.",
+     "p": "Daniel and John went over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Daniel is in what room now?",
+     "a": "garden"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 32,
+   "sentences": [
+    {
+     "s": "Daniel and John travelled to the hallway.",
+     "p": "John and Daniel took the road to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Mary went back to the office.",
+     "p": "Mary and Sandra came back to the office.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Sandra is found in which room?",
+     "a": "office"
+    },
+    {
+     "s": "John and Mary journeyed to the bathroom.",
+     "p": "Mary and John set out toward the bathroom.",
+     "a": null
+    },
+    {
+     "s": "John and Mary went to the office.",
+     "p": "The office is where John and Mary headed.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Which room would John be located in?",
+     "a": "office"
+    },
+    {
+     "s": "John and Daniel went back to the kitchen.",
+     "p": "Daniel and John returned to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra and John moved to the garden.",
+     "p": "John and Sandra headed out into the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "At this point John is in which room?",
+     "a": "garden"
+    },
+    {
+     "s": "Sandra and Mary journeyed to the kitchen.",
+     "p": "Mary and Sandra headed to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Mary travelled to the office.",
+     "p": "Next Mary and Sandra journeyed to the office.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Which room is Sandra located in now?",
+     "a": "office"
+    },
+    {
+     "s": "Mary and John journeyed to the bedroom.",
+     "p": "The bedroom was visited by Mary and John.",
+     "a": null
+    },
+    {
+     "s": "Mary and John travelled to the hallway.",
+     "p": "Mary and John then headed to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "In what room can Mary be located?",
+     "a": "hallway"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 33,
+   "sentences": [
+    {
+     "s": "Mary and John travelled to the garden.",
+     "p": "John and Mary journeyed out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John moved to the office.",
+     "p": "John and Daniel shifted into the office.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Which room is Mary standing in?",
+     "a": "garden"
+    },
+    {
+     "s": "Mary and Sandra travelled to the bedroom.",
+     "p": "Sandra and Mary went to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John journeyed to the kitchen.",
+     "p": "John and Daniel went out to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Mary is currently located in what room?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Sandra and Daniel went to the hallway.",
+     "p": "Daniel and Sandra walked into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Daniel journeyed to the bathroom.",
+     "p": "Daniel and Sandra made the journey to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Which room holds John right now?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Mary and John travelled to the garden.",
+     "p": "Mary and John went over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Mary and Daniel went to the bedroom.",
+     "p": "Daniel and Mary headed into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Daniel is located in what room?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Sandra and Daniel moved to the office.",
+     "p": "Daniel and Sandra transferred over to the office.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra went to the kitchen.",
+     "p": "Sandra and Daniel reached the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "What room has Daniel reached?",
+     "a": "kitchen"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 34,
+   "sentences": [
+    {
+     "s": "Daniel and Mary went to the office.",
+     "p": "Mary and Daniel headed for the office.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra moved to the garden.",
+     "p": "Sandra and Daniel relocated to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Which room holds Mary now?",
+     "a": "office"
+    },
+    {
+     "s": "John and Daniel moved to the bedroom.",
+     "p": "Daniel and John were relocated to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary and Sandra journeyed to the bathroom.",
+     "p": "Sandra and Mary made a trip to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Daniel is found in which room now?",
+     "a": "bedroom"
+    },
+    {
+     "s": "John and Sandra journeyed to the hallway.",
+     "p": "John and Sandra went out into the hallway.",
+     "a": null
+    },
+    {
+     "s": "John and Mary travelled to the kitchen.",
+     "p": "Mary and John took the trip to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Which room is Sandra in at present?",
+     "a": "hallway"
+    },
+    {
+     "s": "John and Mary journeyed to the office.",
+     "p": "The office was where John and Mary went.",
+     "a": null
+    },
+    {
+     "s": "Mary and Daniel went back to the bathroom.",
+     "p": "Daniel and Mary returned to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "John is in what room right now?",
+     "a": "office"
+    },
+    {
+     "s": "John and Daniel went back to the kitchen.",
+     "p": "Daniel and John came back to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary and John went to the bedroom.",
+     "p": "John and Mary headed to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Which room has Daniel ended up in?",
+     "a": "kitchen"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 35,
+   "sentences": [
+    {
+     "s": "Mary and John went back to the hallway.",
+     "p": "John and Mary returned to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary and John moved to the bedroom.",
+     "p": "The bedroom received Mary and John.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "In which room is Mary located?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Daniel and Mary travelled to the kitchen.",
+     "p": "Mary and Daniel took a trip to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John and Daniel travelled to the hallway.",
+     "p": "Daniel and John journeyed to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Mary can be found in which room?",
+     "a": "kitchen"
+    },
+    {
+     "s": "John and Sandra went back to the garden.",
+     "p": "Sandra and John returned to the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Mary journeyed to the bathroom.",
+     "p": "Mary and Sandra traveled to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "What room is Sandra in right now?",
+     "a": "bathroom"
+    },
+    {
+     "s": "John and Mary moved to the bedroom.",
+     "p": "Mary and John shifted into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "John and Mary moved to the kitchen.",
+     "p": "Next John and Mary went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Mary is situated in which room?",
+     "a": "kitchen"
+    },
+    {
+     "s": "Mary and Daniel went to the bedroom.",
+     "p": "Daniel and Mary arrived at the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary and Sandra moved to the garden.",
+     "p": "Sandra and Mary headed out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Which room is Mary in at this moment?",
+     "a": "garden"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 36,
+   "sentences": [
+    {
+     "s": "Sandra and John moved to the hallway.",
+     "p": "John and Sandra shifted to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Mary travelled to the kitchen.",
+     "p": "Daniel traveled to the kitchen with Mary.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Which room is Sandra standing in?",
+     "a": "hallway"
+    },
+    {
+     "s": "Sandra and Mary moved to the bathroom.",
+     "p": "Mary and Sandra headed over to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra moved to the garden.",
+     "p": "Daniel and Sandra arrived in the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "In what room can Daniel be found?",
+     "a": "garden"
+    },
+    {
+     "s": "Sandra and Mary moved to the kitchen.",
+     "p": "Sandra and Mary went to the kitchen instead.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra went to the hallway.",
+     "p": "Sandra and Daniel walked to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Which room is Daniel located in now?",
+     "a": "hallway"
+    },
+    {
+     "s": "Sandra and Daniel moved to the bedroom.",
+     "p": "Daniel and Sandra shifted to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra went back to the office.",
+     "p": "Sandra and Daniel returned to the office.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Sandra is found in what room?",
+     "a": "office"
+    },
+    {
+     "s": "Mary and John travelled to the garden.",
+     "p": "Mary and John set out for the garden.",
+     "a": null
+    },
+    {
+     "s": "John and Mary moved to the hallway.",
+     "p": "John and Mary ended up in the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Could you say which room Sandra is in?",
+     "a": "office"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 37,
+   "sentences": [
+    {
+     "s": "Sandra and Mary travelled to the bedroom.",
+     "p": "Mary and Sandra journeyed to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary and Daniel travelled to the hallway.",
+     "p": "Daniel and Mary went over to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Which room is Daniel now in?",
+     "a": "hallway"
+    },
+    {
+     "s": "John and Sandra went to the kitchen.",
+     "p": "The kitchen is where John and Sandra headed.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Mary moved to the bathroom.",
+     "p": "Next Sandra and Mary shifted to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Sandra is in which room now?",
+     "a": "bathroom"
+    },
+    {
+     "s": "Daniel and Mary went back to the garden.",
+     "p": "Mary and Daniel returned to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra travelled to the bedroom.",
+     "p": "Daniel and Sandra arrived at the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Which room holds Daniel at this point?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Daniel and John went to the bathroom.",
+     "p": "John and Daniel walked to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "John and Daniel travelled to the hallway.",
+     "p": "The hallway saw John and Daniel arrive.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Daniel can be found in what room?",
+     "a": "hallway"
+    },
+    {
+     "s": "Sandra and Daniel journeyed to the bathroom.",
+     "p": "Daniel and Sandra traveled to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel and John travelled to the kitchen.",
+     "p": "Daniel and John set off for the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "In which room is John located?",
+     "a": "kitchen"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 38,
+   "sentences": [
+    {
+     "s": "Sandra and Daniel journeyed to the bedroom.",
+     "p": "Daniel and Sandra went to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary and John moved to the bathroom.",
+     "p": "The bathroom received John and Mary.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Which room is John in right now?",
+     "a": "bathroom"
+    },
+    {
+     "s": "John and Sandra moved to the office.",
+     "p": "Sandra and John relocated to the office.",
+     "a": null
+    },
+    {
+     "s": "Daniel and Sandra travelled to the hallway.",
+     "p": "Sandra and Daniel journeyed as far as the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Which room holds John at the moment?",
+     "a": "office"
+    },
+    {
+     "s": "Sandra and Mary went to the bedroom.",
+     "p": "Mary and Sandra headed into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Mary went back to the office.",
+     "p": "Sandra and Mary returned to the office.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Which room has Mary reached?",
+     "a": "office"
+    },
+    {
+     "s": "Mary and Sandra journeyed to the kitchen.",
+     "p": "The kitchen became the goal of Mary and Sandra.",
+     "a": null
+    },
+    {
+     "s": "Mary and Daniel went to the bedroom.",
+     "p": "Mary and Daniel reached the bedroom eventually.",
+     "a": null
+    },
+    {
+     "s": "Where is Daniel?",
+     "p": "Which room is Daniel located in at present?",
+     "a": "bedroom"
+    },
+    {
+     "s": "Mary and Sandra moved to the garden.",
+     "p": "Mary and Sandra ended up in the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Daniel journeyed to the hallway.",
+     "p": "Daniel and Sandra headed to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Sandra is located in what room?",
+     "a": "hallway"
+    }
+   ]
+  },
+  {
+   "part": "train",
+   "id": 39,
+   "sentences": [
+    {
+     "s": "Sandra and John moved to the bedroom.",
+     "p": "John and Sandra shifted to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "John and Sandra went back to the hallway.",
+     "p": "Sandra and John returned to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "What room is Sandra located in now?",
+     "a": "hallway"
+    },
+    {
+     "s": "John and Sandra journeyed to the kitchen.",
+     "p": "Sandra and John went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John and Mary travelled to the office.",
+     "p": "Mary and John took a trip to the office.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "In which room will Mary be found?",
+     "a": "office"
+    },
+    {
+     "s": "Daniel and Mary went back to the kitchen.",
+     "p": "Daniel and Mary came back to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Mary moved to the garden.",
+     "p": "Sandra and Mary went over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Where is Sandra?",
+     "p": "Which room has Sandra gone into?",
+     "a": "garden"
+    },
+    {
+     "s": "Mary and John travelled to the kitchen.",
+     "p": "John and Mary journeyed to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra and John journeyed to the office.",
+     "p": "John and Sandra headed to the office.",
+     "a": null
+    },
+    {
+     "s": "Where is John?",
+     "p": "Could you name the room John is in?",
+     "a": "office"
+    },
+    {
+     "s": "Mary and Daniel moved to the hallway.",
+     "p": "Daniel and Mary transferred to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Sandra and Mary went back to the bedroom.",
+     "p": "Mary and Sandra returned to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Where is Mary?",
+     "p": "Which room is Mary now in?",
+     "a": "bedroom"
+    }
+   ]
+  }
+ ]
+}

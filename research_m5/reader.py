@@ -20,7 +20,8 @@ choose a reading for a sentence in ANY wording. Two things keep it right where i
 
 What is given to the reader beyond the learner: nothing about the task. The names of things are those the learner met
 in argument places; a candidate reading is one of the learner's schemes with those names in its roles; a role with few
-values (a direction, a time) may be named by any word. With --vectors every word also brings a vector made elsewhere
+values (a direction, a time) may be named by any word, and so may any role with few values in a sentence that cannot
+be read otherwise ("tiredness has overtaken jason"). With --vectors every word also brings a vector made elsewhere
 from plain text (GloVe): a dictionary. --school lets the reader first learn the lessons other tasks left (--lessons).
 """
 import argparse
@@ -42,6 +43,7 @@ import core as G
 
 ERR = (IndexError, KeyError, ValueError, TypeError)
 CLOSED = ("D", "T")     # roles with few values (directions, times): a word the learner never met may name one of them
+FEW = 6                 # any role with no more values than this may go unnamed in a sentence that cannot be read otherwise
 
 
 def load_vectors(path, limit=50000):
@@ -77,6 +79,7 @@ def load_free(folder, name):
 class Reader:
     def __init__(self, mind, template, vectors=None):
         self.m, norm = mind, mind.lex.norm
+        self.vals = {}                                           # the things met in every role
         self.names, self.kinds = set(), {}                       # the things met alone in an argument place, in the form
         self.shapes, self.sorts = {}, {}                         # the learner's lexicon gives them, and their sorts; the
         self.closed, self.turn = {}, {}                          # schemes with their roles; which sorts stand in a role;
@@ -106,6 +109,7 @@ class Reader:
                     self.closed.setdefault((key, r), set()).update(vals)
                 elif r != "N":
                     self.sorts.setdefault((key, r), set()).update(*(self.kinds[v] for v in vals))
+                    self.vals.setdefault((key, r), set()).update(vals)
         self.longest = max([len(n.split()) for n in self.names] + [1])
         self.cvals = {tuple(v.split()) for vals in self.closed.values() for v in vals}       # the words of closed roles
         self.clong = max([len(v) for v in self.cvals] + [1])
@@ -186,37 +190,48 @@ class Reader:
                 pos = e
             return toks + list(words[pos:])
         out = [(None, 0, {}, tokens("NOP", {}), ("NOP",))]
-        for (q, kind, k), shapes in self.shapes.items():
-            if q != quest:
-                continue
-            for roles in sorted(shapes, key=lambda r: -shapes[r])[:2]:
-                slots = [r for r, n in roles for _ in range(n) if r not in CLOSED]
-                given = [r for r, n in roles for _ in range(n) if r in CLOSED]
-                if len(slots) > len(ment):
+
+        def build(spare):
+            for (q, kind, k), shapes in self.shapes.items():
+                if q != quest:
                     continue
-                for pick in itertools.permutations(range(len(ment)), len(slots)):
-                    if any((slots[i] == "N") != ment[j][2] for i, j in enumerate(pick)):
-                        continue
-                    if any(slots[i] != "N" and not self.kinds[ment[j][3]] & self.sorts[((q, kind, k), slots[i])] for i, j in enumerate(pick)):
-                        continue                                 # a thing of a sort the learner never met in this role
-                    if any(slots[i] == slots[i2] and pick[i] > pick[i2] for i in range(len(slots)) for i2 in range(i + 1, len(slots))):
-                        continue                                 # the same role twice: one order is enough
-                    at = {j: slots[i] for i, j in enumerate(pick)}
-                    ways = []                                    # a closed role: the closed word of the sentence, if it
-                    for r in given:                              # has one; else every value the role had is offered, and
-                        here = [j for j, c in enumerate(cw) if c[2] in self.closed[((q, kind, k), r)]]    # the network
-                        ways.append([("@", j) for j in here] or [("=", v) for v in sorted(self.closed[((q, kind, k), r)])])
-                    for vals in itertools.product(*ways):        # tells which the words mean
-                        a = {}
-                        for i, j in enumerate(pick):
-                            a.setdefault(slots[i], []).append(ment[j][3])
-                        for r, (how, v) in zip(given, vals):
-                            a.setdefault(r, []).append(cw[v][2] if how == "@" else v)
-                        more = [f"<{r}{how}{v}>" for r, (how, v) in zip(given, vals)]
-                        sig = (kind, k, tuple(zip(slots, pick)), tuple(zip(given, vals)))
-                        out.append((kind, list(k) if isinstance(k, tuple) else k, a, tokens(f"{kind}:{k}", at, more), sig))
-                        if (q, kind, k) in self.turn:            # the same, turned round
-                            out.append((kind, out[-1][1], dict(a, O=[self.turn[(q, kind, k)]]), tokens(f"{kind}:{k}~", at, more), sig + ("~",)))
+                for roles in sorted(shapes, key=lambda r: -shapes[r])[:2]:
+                    every = [r for r, n in roles for _ in range(n) if r not in CLOSED]
+                    few = [r for r in every if every.count(r) == 1 and r != "N" and len(self.vals[(q, kind, k), r]) <= FEW]
+                    for off in (few if spare else [None]):       # one role may go unnamed, if it has few values
+                        slots = [r for r in every if r != off]
+                        given = [r for r, n in roles for _ in range(n) if r in CLOSED] + ([off] if off else [])
+                        if len(slots) > len(ment):
+                            continue
+                        for pick in itertools.permutations(range(len(ment)), len(slots)):
+                            if any((slots[i] == "N") != ment[j][2] for i, j in enumerate(pick)):
+                                continue
+                            if any(slots[i] != "N" and not self.kinds[ment[j][3]] & self.sorts[((q, kind, k), slots[i])] for i, j in enumerate(pick)):
+                                continue                         # a thing of a sort the learner never met in this role
+                            if any(slots[i] == slots[i2] and pick[i] > pick[i2] for i in range(len(slots)) for i2 in range(i + 1, len(slots))):
+                                continue                         # the same role twice: one order is enough
+                            at = {j: slots[i] for i, j in enumerate(pick)}
+                            ways = []                            # a closed role: the closed word of the sentence, if it
+                            for r in given:                      # has one; else every value the role had is offered,
+                                if r == off:                     # and the network tells which the words mean
+                                    ways.append([("=", v) for v in sorted(self.vals[(q, kind, k), r])])
+                                    continue
+                                here = [j for j, c in enumerate(cw) if c[2] in self.closed[((q, kind, k), r)]]
+                                ways.append([("@", j) for j in here] or [("=", v) for v in sorted(self.closed[((q, kind, k), r)])])
+                            for vals in itertools.product(*ways):
+                                a = {}
+                                for i, j in enumerate(pick):
+                                    a.setdefault(slots[i], []).append(ment[j][3])
+                                for r, (how, v) in zip(given, vals):
+                                    a.setdefault(r, []).append(cw[v][2] if how == "@" else v)
+                                more = [f"<{r}{how}{v}>" for r, (how, v) in zip(given, vals)]
+                                sig = (kind, k, tuple(zip(slots, pick)), tuple(zip(given, vals)))
+                                out.append((kind, list(k) if isinstance(k, tuple) else k, a, tokens(f"{kind}:{k}", at, more), sig))
+                                if (q, kind, k) in self.turn:    # the same, turned round
+                                    out.append((kind, out[-1][1], dict(a, O=[self.turn[(q, kind, k)]]), tokens(f"{kind}:{k}~", at, more), sig + ("~",)))
+        build(False)
+        if len(out) == 1:                                        # nothing can be read in the sentence as it is: then a role
+            build(True)                                          # with few values may be named by words not met before
         return out
 
     # ---------------------------------------------------------------- the ground
@@ -502,7 +517,7 @@ def main():
                 if any(o in mind.lex.flip for o in p[2].get("O", ())):
                     want[2]["O"] = [r.turn[(gold is not None, p[0], tuple(p[1]) if isinstance(p[1], list) else p[1])]]
             hit = [i for i, c in enumerate(cands) if (c[0] is None and want is None) or
-                   (want and c[0] == want[0] and c[1] == want[1] and {k: sorted(v) for k, v in c[2].items()} == want[2])]
+                   (want and c[0] == want[0] and c[4][1] == (tuple(want[1]) if isinstance(want[1], list) else want[1]) and {k: sorted(v) for k, v in c[2].items()} == want[2])]
             if hit:
                 lessons.append((cands, hit[0]))
                 r.known[r.pattern(words, gold is not None)] = cands[hit[0]][4]

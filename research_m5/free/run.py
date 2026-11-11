@@ -27,6 +27,8 @@ TASKS = [
     ("a1", "A", 1, "held-out 1"), ("a3", "A", 3, "held-out 1"), ("k4", "B", 4, "held-out 1"),
     ("b9", "en", 9, "held-out 2"), ("b14", "en", 14, "held-out 2"), ("b18", "en", 18, "held-out 2"),
     ("b19", "en", 19, "held-out 2"), ("a10", "A", 10, "held-out 2"), ("a11", "A", 11, "held-out 2"),
+    ("b8", "en", 8, "held-out 3"), ("b12", "en", 12, "held-out 3"), ("b16", "en", 16, "held-out 3"),
+    ("b20", "en", 20, "held-out 3"), ("c5", "C", 5, "held-out 3"), ("k7", "B", 7, "held-out 3"),
 ]
 
 
@@ -39,7 +41,7 @@ def main():
     ap.add_argument("--babi", required=True, help="the folder tasks_1-20_v1-2")
     ap.add_argument("--new", required=True, help="the folder with the new task sets A, B, C")
     ap.add_argument("--out", default="free_out")
-    ap.add_argument("--only", default="", help="names of tasks, or a group (dev, held-out 1, held-out 2)")
+    ap.add_argument("--only", default="", help="names of tasks, or a group (dev, held-out 1, held-out 2, held-out 3)")
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--vectors", default="", help="a GloVe file for the reader's dictionary ('get' fetches the 50-number one)")
     ap.add_argument("--school", action="store_true", help="every task is read after the lessons of all the other tasks")

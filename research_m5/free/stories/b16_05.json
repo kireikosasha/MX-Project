@@ -1,0 +1,1125 @@
+{
+ "task": "b16",
+ "stories": [
+  {
+   "part": "test",
+   "id": 60,
+   "sentences": [
+    {
+     "s": "Bernhard is a lion.",
+     "p": "A lion is the animal that Bernhard turns out to be.",
+     "a": null
+    },
+    {
+     "s": "Lily is a lion.",
+     "p": "The animal named Lily is in fact a lion.",
+     "a": null
+    },
+    {
+     "s": "Lily is yellow.",
+     "p": "Yellow is the color that describes Lily.",
+     "a": null
+    },
+    {
+     "s": "Greg is a rhino.",
+     "p": "A rhino is what Greg happens to be.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is yellow.",
+     "p": "Yellow is the shade Bernhard has.",
+     "a": null
+    },
+    {
+     "s": "Julius is a rhino.",
+     "p": "Julius is known to be a rhino.",
+     "a": null
+    },
+    {
+     "s": "Greg is green.",
+     "p": "Green is the color of Greg.",
+     "a": null
+    },
+    {
+     "s": "Brian is a frog.",
+     "p": "A frog is the thing Brian is.",
+     "a": null
+    },
+    {
+     "s": "Brian is white.",
+     "p": "White describes the color of Brian.",
+     "a": null
+    },
+    {
+     "s": "What color is Julius?",
+     "p": "Which color does Julius have?",
+     "a": "green"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 61,
+   "sentences": [
+    {
+     "s": "Julius is a lion.",
+     "p": "Julius has been identified as a lion.",
+     "a": null
+    },
+    {
+     "s": "Greg is a rhino.",
+     "p": "The species of Greg is rhino.",
+     "a": null
+    },
+    {
+     "s": "Greg is green.",
+     "p": "The color of Greg is green.",
+     "a": null
+    },
+    {
+     "s": "Julius is gray.",
+     "p": "Julius has the color gray.",
+     "a": null
+    },
+    {
+     "s": "Lily is a swan.",
+     "p": "Lily gets classified as a swan.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a lion.",
+     "p": "Bernhard counts among the lions.",
+     "a": null
+    },
+    {
+     "s": "Lily is gray.",
+     "p": "Gray belongs to Lily.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is yellow.",
+     "p": "Bernhard is the one colored yellow.",
+     "a": null
+    },
+    {
+     "s": "Brian is a swan.",
+     "p": "The swan species includes Brian.",
+     "a": null
+    },
+    {
+     "s": "What color is Brian?",
+     "p": "Which hue does Brian display?",
+     "a": "gray"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 62,
+   "sentences": [
+    {
+     "s": "Bernhard is a frog.",
+     "p": "The frog role goes to Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is gray.",
+     "p": "Gray is the hue worn by Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Lily is a lion.",
+     "p": "Lily has been named a lion.",
+     "a": null
+    },
+    {
+     "s": "Brian is a rhino.",
+     "p": "A rhino describes Brian.",
+     "a": null
+    },
+    {
+     "s": "Lily is yellow.",
+     "p": "Yellow is the hue that marks Lily.",
+     "a": null
+    },
+    {
+     "s": "Julius is a lion.",
+     "p": "Julius is found to be a lion.",
+     "a": null
+    },
+    {
+     "s": "Brian is green.",
+     "p": "Brian shows the green color.",
+     "a": null
+    },
+    {
+     "s": "Julius is green.",
+     "p": "The color green fits Julius.",
+     "a": null
+    },
+    {
+     "s": "Greg is a frog.",
+     "p": "The frog is the animal Greg is.",
+     "a": null
+    },
+    {
+     "s": "What color is Greg?",
+     "p": "What color does Greg have?",
+     "a": "gray"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 63,
+   "sentences": [
+    {
+     "s": "Greg is a rhino.",
+     "p": "The rhino identity fits Greg.",
+     "a": null
+    },
+    {
+     "s": "Brian is a swan.",
+     "p": "Brian has been labeled a swan.",
+     "a": null
+    },
+    {
+     "s": "Brian is green.",
+     "p": "Green is the hue Brian wears.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a rhino.",
+     "p": "Bernhard is classed as a rhino.",
+     "a": null
+    },
+    {
+     "s": "Lily is a frog.",
+     "p": "Lily counts as a frog.",
+     "a": null
+    },
+    {
+     "s": "Lily is gray.",
+     "p": "Lily displays the color gray.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is gray.",
+     "p": "The shade gray goes with Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Greg is gray.",
+     "p": "Gray is the shade of Greg.",
+     "a": null
+    },
+    {
+     "s": "Julius is a frog.",
+     "p": "Julius is the frog in question.",
+     "a": null
+    },
+    {
+     "s": "What color is Julius?",
+     "p": "Which color best fits Julius?",
+     "a": "gray"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 64,
+   "sentences": [
+    {
+     "s": "Bernhard is a rhino.",
+     "p": "A rhino fits the description of Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is gray.",
+     "p": "Gray is the tint of Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Greg is a frog.",
+     "p": "Frog is the label given to Greg.",
+     "a": null
+    },
+    {
+     "s": "Julius is a lion.",
+     "p": "Julius is part of the lions.",
+     "a": null
+    },
+    {
+     "s": "Julius is white.",
+     "p": "White is the color Julius shows.",
+     "a": null
+    },
+    {
+     "s": "Lily is a frog.",
+     "p": "Lily has been called a frog.",
+     "a": null
+    },
+    {
+     "s": "Greg is green.",
+     "p": "The green color suits Greg.",
+     "a": null
+    },
+    {
+     "s": "Brian is a rhino.",
+     "p": "Brian ranks as a rhino.",
+     "a": null
+    },
+    {
+     "s": "Brian is yellow.",
+     "p": "Brian is shown in yellow.",
+     "a": null
+    },
+    {
+     "s": "What color is Lily?",
+     "p": "Lily has which color?",
+     "a": "green"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 65,
+   "sentences": [
+    {
+     "s": "Greg is a rhino.",
+     "p": "Greg falls into the rhino category.",
+     "a": null
+    },
+    {
+     "s": "Greg is green.",
+     "p": "Green is a color Greg displays.",
+     "a": null
+    },
+    {
+     "s": "Lily is a frog.",
+     "p": "A frog is the form Lily takes.",
+     "a": null
+    },
+    {
+     "s": "Julius is a rhino.",
+     "p": "Julius is known as a rhino.",
+     "a": null
+    },
+    {
+     "s": "Brian is a rhino.",
+     "p": "Brian has the identity of a rhino.",
+     "a": null
+    },
+    {
+     "s": "Brian is green.",
+     "p": "The hue of Brian is green.",
+     "a": null
+    },
+    {
+     "s": "Lily is yellow.",
+     "p": "Lily shows up in yellow.",
+     "a": null
+    },
+    {
+     "s": "Julius is green.",
+     "p": "The shade green belongs to Julius.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a rhino.",
+     "p": "Bernhard is classed among the rhinos.",
+     "a": null
+    },
+    {
+     "s": "What color is Bernhard?",
+     "p": "What shade is Bernhard showing?",
+     "a": "green"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 66,
+   "sentences": [
+    {
+     "s": "Lily is a lion.",
+     "p": "Lily is categorized as a lion.",
+     "a": null
+    },
+    {
+     "s": "Lily is gray.",
+     "p": "Gray is worn by Lily.",
+     "a": null
+    },
+    {
+     "s": "Greg is a rhino.",
+     "p": "Greg is one of the rhinos.",
+     "a": null
+    },
+    {
+     "s": "Brian is a frog.",
+     "p": "The frog title belongs to Brian.",
+     "a": null
+    },
+    {
+     "s": "Julius is a frog.",
+     "p": "Julius takes the role of a frog.",
+     "a": null
+    },
+    {
+     "s": "Greg is white.",
+     "p": "Greg is shown in white.",
+     "a": null
+    },
+    {
+     "s": "Julius is green.",
+     "p": "Green is the color seen on Julius.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a lion.",
+     "p": "Bernhard is in the lion category.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is yellow.",
+     "p": "Yellow is the hue Bernhard carries.",
+     "a": null
+    },
+    {
+     "s": "What color is Brian?",
+     "p": "Then which color describes Brian?",
+     "a": "green"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 67,
+   "sentences": [
+    {
+     "s": "Lily is a lion.",
+     "p": "The lion title suits Lily.",
+     "a": null
+    },
+    {
+     "s": "Brian is a swan.",
+     "p": "Swan is the label on Brian.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a swan.",
+     "p": "The swan designation fits Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Lily is white.",
+     "p": "Lily appears in white.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is white.",
+     "p": "Bernhard displays the color white.",
+     "a": null
+    },
+    {
+     "s": "Greg is a rhino.",
+     "p": "Greg is grouped with the rhinos.",
+     "a": null
+    },
+    {
+     "s": "Julius is a rhino.",
+     "p": "A rhino describes Julius.",
+     "a": null
+    },
+    {
+     "s": "Greg is yellow.",
+     "p": "Yellow is what Greg shows.",
+     "a": null
+    },
+    {
+     "s": "Julius is yellow.",
+     "p": "Julius is tinted yellow.",
+     "a": null
+    },
+    {
+     "s": "What color is Brian?",
+     "p": "Brian shows which color?",
+     "a": "white"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 68,
+   "sentences": [
+    {
+     "s": "Lily is a lion.",
+     "p": "A lion is the identity Lily carries.",
+     "a": null
+    },
+    {
+     "s": "Lily is white.",
+     "p": "White is the shade worn by Lily.",
+     "a": null
+    },
+    {
+     "s": "Brian is a swan.",
+     "p": "Brian has been put in the swan group.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a rhino.",
+     "p": "Bernhard is seen as a rhino.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is gray.",
+     "p": "The shade Bernhard shows is gray.",
+     "a": null
+    },
+    {
+     "s": "Greg is a frog.",
+     "p": "Greg falls under the frog heading.",
+     "a": null
+    },
+    {
+     "s": "Julius is a lion.",
+     "p": "Julius qualifies as a lion.",
+     "a": null
+    },
+    {
+     "s": "Greg is yellow.",
+     "p": "Greg is the one colored yellow.",
+     "a": null
+    },
+    {
+     "s": "Brian is gray.",
+     "p": "Brian appears gray.",
+     "a": null
+    },
+    {
+     "s": "What color is Julius?",
+     "p": "Which color is Julius showing?",
+     "a": "white"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 69,
+   "sentences": [
+    {
+     "s": "Lily is a swan.",
+     "p": "The swan role is held by Lily.",
+     "a": null
+    },
+    {
+     "s": "Brian is a rhino.",
+     "p": "Brian is one of the rhinos.",
+     "a": null
+    },
+    {
+     "s": "Lily is white.",
+     "p": "White is the hue of Lily.",
+     "a": null
+    },
+    {
+     "s": "Greg is a frog.",
+     "p": "Greg is grouped as a frog.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a lion.",
+     "p": "The lion label goes to Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is white.",
+     "p": "Bernhard holds the color white.",
+     "a": null
+    },
+    {
+     "s": "Julius is a swan.",
+     "p": "The swan kind describes Julius.",
+     "a": null
+    },
+    {
+     "s": "Greg is green.",
+     "p": "Green is the shade Greg carries.",
+     "a": null
+    },
+    {
+     "s": "Brian is white.",
+     "p": "The white color belongs to Brian.",
+     "a": null
+    },
+    {
+     "s": "What color is Julius?",
+     "p": "Which shade does Julius have?",
+     "a": "white"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 70,
+   "sentences": [
+    {
+     "s": "Lily is a swan.",
+     "p": "Lily is typed as a swan.",
+     "a": null
+    },
+    {
+     "s": "Julius is a frog.",
+     "p": "Frog is the kind Julius belongs to.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a rhino.",
+     "p": "The rhino category covers Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is green.",
+     "p": "Green is the color borne by Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Lily is white.",
+     "p": "Lily is found in white.",
+     "a": null
+    },
+    {
+     "s": "Julius is yellow.",
+     "p": "Julius is seen in yellow.",
+     "a": null
+    },
+    {
+     "s": "Greg is a rhino.",
+     "p": "A rhino is what Greg counts as.",
+     "a": null
+    },
+    {
+     "s": "Greg is white.",
+     "p": "Greg displays white.",
+     "a": null
+    },
+    {
+     "s": "Brian is a frog.",
+     "p": "Brian is an example of a frog.",
+     "a": null
+    },
+    {
+     "s": "What color is Brian?",
+     "p": "Then what color does Brian have?",
+     "a": "yellow"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 71,
+   "sentences": [
+    {
+     "s": "Brian is a lion.",
+     "p": "Brian has the lion identity.",
+     "a": null
+    },
+    {
+     "s": "Brian is white.",
+     "p": "Brian comes across as white.",
+     "a": null
+    },
+    {
+     "s": "Greg is a rhino.",
+     "p": "The rhino type applies to Greg.",
+     "a": null
+    },
+    {
+     "s": "Julius is a rhino.",
+     "p": "Julius falls under the rhino type.",
+     "a": null
+    },
+    {
+     "s": "Julius is white.",
+     "p": "Julius presents a white color.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a lion.",
+     "p": "Bernhard counts as a lion.",
+     "a": null
+    },
+    {
+     "s": "Greg is white.",
+     "p": "The shade white fits Greg.",
+     "a": null
+    },
+    {
+     "s": "Lily is a rhino.",
+     "p": "A rhino is what Lily ends up as.",
+     "a": null
+    },
+    {
+     "s": "Lily is white.",
+     "p": "Lily carries the color white.",
+     "a": null
+    },
+    {
+     "s": "What color is Bernhard?",
+     "p": "The color of Bernhard is what?",
+     "a": "white"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 72,
+   "sentences": [
+    {
+     "s": "Greg is a swan.",
+     "p": "Greg takes the swan role.",
+     "a": null
+    },
+    {
+     "s": "Julius is a lion.",
+     "p": "Julius sits in the lion group.",
+     "a": null
+    },
+    {
+     "s": "Brian is a frog.",
+     "p": "Brian can be called a frog.",
+     "a": null
+    },
+    {
+     "s": "Lily is a lion.",
+     "p": "The lion category holds Lily.",
+     "a": null
+    },
+    {
+     "s": "Brian is gray.",
+     "p": "Brian is colored gray.",
+     "a": null
+    },
+    {
+     "s": "Lily is green.",
+     "p": "Lily has the color green.",
+     "a": null
+    },
+    {
+     "s": "Julius is green.",
+     "p": "Julius takes on green.",
+     "a": null
+    },
+    {
+     "s": "Greg is yellow.",
+     "p": "Greg appears yellow.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a swan.",
+     "p": "Bernhard belongs with the swans.",
+     "a": null
+    },
+    {
+     "s": "What color is Bernhard?",
+     "p": "What hue is Bernhard?",
+     "a": "yellow"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 73,
+   "sentences": [
+    {
+     "s": "Lily is a frog.",
+     "p": "Frog is the title Lily holds.",
+     "a": null
+    },
+    {
+     "s": "Lily is yellow.",
+     "p": "Yellow appears on Lily.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a lion.",
+     "p": "Lions include Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is green.",
+     "p": "Bernhard is seen as green.",
+     "a": null
+    },
+    {
+     "s": "Greg is a swan.",
+     "p": "Greg falls in the swan group.",
+     "a": null
+    },
+    {
+     "s": "Brian is a swan.",
+     "p": "The swan label fits Brian.",
+     "a": null
+    },
+    {
+     "s": "Greg is white.",
+     "p": "White is the color for Greg.",
+     "a": null
+    },
+    {
+     "s": "Julius is a lion.",
+     "p": "Lions are where Julius belongs.",
+     "a": null
+    },
+    {
+     "s": "Julius is yellow.",
+     "p": "Yellow is the shade held by Julius.",
+     "a": null
+    },
+    {
+     "s": "What color is Brian?",
+     "p": "Which color is shown by Brian?",
+     "a": "white"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 74,
+   "sentences": [
+    {
+     "s": "Greg is a swan.",
+     "p": "Greg fits the swan description.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a rhino.",
+     "p": "The rhino name suits Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Julius is a frog.",
+     "p": "Frog best describes Julius.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is white.",
+     "p": "Bernhard is in white.",
+     "a": null
+    },
+    {
+     "s": "Brian is a rhino.",
+     "p": "Brian is considered a rhino.",
+     "a": null
+    },
+    {
+     "s": "Julius is green.",
+     "p": "Green is the shade assigned to Julius.",
+     "a": null
+    },
+    {
+     "s": "Greg is white.",
+     "p": "White is the hue Greg has.",
+     "a": null
+    },
+    {
+     "s": "Brian is green.",
+     "p": "Brian takes the color green.",
+     "a": null
+    },
+    {
+     "s": "Lily is a swan.",
+     "p": "Lily is a member of the swans.",
+     "a": null
+    },
+    {
+     "s": "What color is Lily?",
+     "p": "Which color is Lily showing?",
+     "a": "white"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 75,
+   "sentences": [
+    {
+     "s": "Brian is a frog.",
+     "p": "The frog kind suits Brian.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a rhino.",
+     "p": "Bernhard is recognized as a rhino.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is yellow.",
+     "p": "Yellow is worn by Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Julius is a lion.",
+     "p": "Julius is considered a lion.",
+     "a": null
+    },
+    {
+     "s": "Julius is white.",
+     "p": "Julius holds white as a color.",
+     "a": null
+    },
+    {
+     "s": "Brian is green.",
+     "p": "Brian shows the color green.",
+     "a": null
+    },
+    {
+     "s": "Lily is a swan.",
+     "p": "Swan is the species held by Lily.",
+     "a": null
+    },
+    {
+     "s": "Lily is green.",
+     "p": "Lily is colored in green.",
+     "a": null
+    },
+    {
+     "s": "Greg is a swan.",
+     "p": "Greg is classed among the swans.",
+     "a": null
+    },
+    {
+     "s": "What color is Greg?",
+     "p": "What shade does Greg have?",
+     "a": "green"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 76,
+   "sentences": [
+    {
+     "s": "Brian is a swan.",
+     "p": "The swan identity describes Brian.",
+     "a": null
+    },
+    {
+     "s": "Lily is a lion.",
+     "p": "Lily has the lion type.",
+     "a": null
+    },
+    {
+     "s": "Julius is a frog.",
+     "p": "The frog form matches Julius.",
+     "a": null
+    },
+    {
+     "s": "Julius is yellow.",
+     "p": "Yellow suits Julius.",
+     "a": null
+    },
+    {
+     "s": "Lily is green.",
+     "p": "The shade green goes to Lily.",
+     "a": null
+    },
+    {
+     "s": "Brian is green.",
+     "p": "Brian has a green shade.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a lion.",
+     "p": "A lion describes Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Greg is a frog.",
+     "p": "Greg falls under frog.",
+     "a": null
+    },
+    {
+     "s": "Greg is white.",
+     "p": "White is the hue given to Greg.",
+     "a": null
+    },
+    {
+     "s": "What color is Bernhard?",
+     "p": "Which shade does Bernhard show?",
+     "a": "green"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 77,
+   "sentences": [
+    {
+     "s": "Julius is a frog.",
+     "p": "Frog describes Julius.",
+     "a": null
+    },
+    {
+     "s": "Julius is gray.",
+     "p": "Julius is colored gray.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a lion.",
+     "p": "Lion is the classification of Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is gray.",
+     "p": "Gray sits on Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Lily is a swan.",
+     "p": "Lily is taken as a swan.",
+     "a": null
+    },
+    {
+     "s": "Lily is white.",
+     "p": "Lily is the color white.",
+     "a": null
+    },
+    {
+     "s": "Greg is a lion.",
+     "p": "A lion is the category Greg falls under.",
+     "a": null
+    },
+    {
+     "s": "Greg is gray.",
+     "p": "Greg is the color gray.",
+     "a": null
+    },
+    {
+     "s": "Brian is a frog.",
+     "p": "A frog best fits Brian.",
+     "a": null
+    },
+    {
+     "s": "What color is Brian?",
+     "p": "What hue belongs to Brian?",
+     "a": "gray"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 78,
+   "sentences": [
+    {
+     "s": "Greg is a rhino.",
+     "p": "Greg is marked as a rhino.",
+     "a": null
+    },
+    {
+     "s": "Lily is a swan.",
+     "p": "Lily falls among the swans.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is a lion.",
+     "p": "The lion status belongs to Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is green.",
+     "p": "Green is the hue for Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Julius is a rhino.",
+     "p": "Julius takes up the rhino role.",
+     "a": null
+    },
+    {
+     "s": "Lily is white.",
+     "p": "White is what Lily shows.",
+     "a": null
+    },
+    {
+     "s": "Greg is yellow.",
+     "p": "Greg is covered in yellow.",
+     "a": null
+    },
+    {
+     "s": "Brian is a swan.",
+     "p": "Brian is a swan by species.",
+     "a": null
+    },
+    {
+     "s": "Julius is yellow.",
+     "p": "Julius appears yellow.",
+     "a": null
+    },
+    {
+     "s": "What color is Brian?",
+     "p": "Which color does Brian carry?",
+     "a": "white"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 79,
+   "sentences": [
+    {
+     "s": "Bernhard is a frog.",
+     "p": "A frog suits Bernhard.",
+     "a": null
+    },
+    {
+     "s": "Bernhard is gray.",
+     "p": "Bernhard is shown as gray.",
+     "a": null
+    },
+    {
+     "s": "Brian is a frog.",
+     "p": "Brian belongs with the frogs.",
+     "a": null
+    },
+    {
+     "s": "Greg is a rhino.",
+     "p": "Greg matches the rhino profile.",
+     "a": null
+    },
+    {
+     "s": "Greg is green.",
+     "p": "Green shows up on Greg.",
+     "a": null
+    },
+    {
+     "s": "Julius is a rhino.",
+     "p": "The rhino form belongs to Julius.",
+     "a": null
+    },
+    {
+     "s": "Lily is a frog.",
+     "p": "Frog applies to Lily.",
+     "a": null
+    },
+    {
+     "s": "Brian is green.",
+     "p": "Green belongs to Brian.",
+     "a": null
+    },
+    {
+     "s": "Lily is green.",
+     "p": "Lily has green as the shade.",
+     "a": null
+    },
+    {
+     "s": "What color is Julius?",
+     "p": "Julius displays which color?",
+     "a": "green"
+    }
+   ]
+  }
+ ]
+}

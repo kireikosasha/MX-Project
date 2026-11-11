@@ -1,0 +1,2055 @@
+{
+ "task": "b8",
+ "stories": [
+  {
+   "part": "test",
+   "id": 40,
+   "sentences": [
+    {
+     "s": "Daniel grabbed the milk there.",
+     "p": "Daniel took hold of the milk there.",
+     "a": null
+    },
+    {
+     "s": "John went to the bedroom.",
+     "p": "John walked over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which object is Daniel holding right now?",
+     "a": "milk"
+    },
+    {
+     "s": "Sandra travelled to the garden.",
+     "p": "Sandra headed off toward the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel journeyed to the garden.",
+     "p": "Over to the garden went Daniel.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What object does Daniel have in hand?",
+     "a": "milk"
+    },
+    {
+     "s": "John grabbed the football there.",
+     "p": "The football was picked up by John there.",
+     "a": null
+    },
+    {
+     "s": "Mary got the apple there.",
+     "p": "Mary came to hold the apple there.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "Which item is Mary holding at the moment?",
+     "a": "apple"
+    },
+    {
+     "s": "Mary put down the apple.",
+     "p": "The apple was set down by Mary.",
+     "a": null
+    },
+    {
+     "s": "John left the football there.",
+     "p": "John left the football lying there.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "What object is Mary still holding?",
+     "a": "nothing"
+    },
+    {
+     "s": "John got the football there.",
+     "p": "Right there John collected the football.",
+     "a": null
+    },
+    {
+     "s": "John moved to the garden.",
+     "p": "John went over to the garden then.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which thing is John holding at present?",
+     "a": "football"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 41,
+   "sentences": [
+    {
+     "s": "John journeyed to the office.",
+     "p": "John set out for the office.",
+     "a": null
+    },
+    {
+     "s": "John got the milk there.",
+     "p": "The milk was collected by John there.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which object is John holding currently?",
+     "a": "milk"
+    },
+    {
+     "s": "Mary picked up the apple there.",
+     "p": "Mary scooped up the apple there.",
+     "a": null
+    },
+    {
+     "s": "Daniel went back to the office.",
+     "p": "Daniel returned to the office again.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "What is the object Mary is holding?",
+     "a": "apple"
+    },
+    {
+     "s": "Sandra journeyed to the garden.",
+     "p": "Sandra made a trip to the garden.",
+     "a": null
+    },
+    {
+     "s": "John went back to the bathroom.",
+     "p": "John returned to the bathroom once more.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "Which item has Mary got in hand?",
+     "a": "apple"
+    },
+    {
+     "s": "Daniel journeyed to the kitchen.",
+     "p": "Heading into the kitchen went Daniel.",
+     "a": null
+    },
+    {
+     "s": "John discarded the milk.",
+     "p": "The milk got thrown away by John.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which object does John still have?",
+     "a": "nothing"
+    },
+    {
+     "s": "John went back to the kitchen.",
+     "p": "Back to the kitchen John walked again.",
+     "a": null
+    },
+    {
+     "s": "Daniel went back to the office.",
+     "p": "Daniel once again headed for the office.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What is John holding right at this moment?",
+     "a": "nothing"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 42,
+   "sentences": [
+    {
+     "s": "Sandra journeyed to the office.",
+     "p": "Sandra walked into the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the bedroom.",
+     "p": "The bedroom was the next stop for Sandra.",
+     "a": null
+    },
+    {
+     "s": "Daniel journeyed to the kitchen.",
+     "p": "Daniel proceeded toward the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the bedroom.",
+     "p": "Mary shifted over into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "John went back to the garden.",
+     "p": "Back out to the garden stepped John.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the bedroom.",
+     "p": "The bedroom is where Daniel ended up.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the kitchen.",
+     "p": "Mary came back into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John got the milk there.",
+     "p": "John took possession of the milk there.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which object is John holding?",
+     "a": "milk"
+    },
+    {
+     "s": "John put down the milk there.",
+     "p": "John placed the milk down right there.",
+     "a": null
+    },
+    {
+     "s": "John picked up the football there.",
+     "p": "There the football got lifted up by John.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which thing is John holding now?",
+     "a": "football"
+    },
+    {
+     "s": "John put down the football.",
+     "p": "John laid the football aside.",
+     "a": null
+    },
+    {
+     "s": "John travelled to the bathroom.",
+     "p": "John went on to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which item is John currently carrying?",
+     "a": "nothing"
+    },
+    {
+     "s": "Daniel journeyed to the office.",
+     "p": "To the office Daniel traveled off.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the bedroom.",
+     "p": "Daniel moved along to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which object does John still hold?",
+     "a": "nothing"
+    },
+    {
+     "s": "John moved to the kitchen.",
+     "p": "John then relocated to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the hallway.",
+     "p": "Mary headed into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary picked up the apple there.",
+     "p": "Mary collected the apple from there.",
+     "a": null
+    },
+    {
+     "s": "Mary discarded the apple.",
+     "p": "Mary threw the apple away.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "Which thing does Mary have now?",
+     "a": "nothing"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 43,
+   "sentences": [
+    {
+     "s": "Mary went to the office.",
+     "p": "Mary arrived at the office.",
+     "a": null
+    },
+    {
+     "s": "John grabbed the apple there.",
+     "p": "John seized the apple right there.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which item is John holding?",
+     "a": "apple"
+    },
+    {
+     "s": "John travelled to the kitchen.",
+     "p": "The kitchen is where John headed.",
+     "a": null
+    },
+    {
+     "s": "John dropped the apple.",
+     "p": "John let go of the apple.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What object does John have at present?",
+     "a": "nothing"
+    },
+    {
+     "s": "Daniel took the football there.",
+     "p": "Daniel grasped the football there.",
+     "a": null
+    },
+    {
+     "s": "Daniel put down the football.",
+     "p": "Daniel placed the football down.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel holding right now?",
+     "a": "nothing"
+    },
+    {
+     "s": "John grabbed the apple there.",
+     "p": "John took hold of the apple there.",
+     "a": null
+    },
+    {
+     "s": "Daniel took the football there.",
+     "p": "Daniel also seized the football there.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which object has John got right now?",
+     "a": "apple"
+    },
+    {
+     "s": "Daniel discarded the football.",
+     "p": "Daniel tossed the football aside.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the garden.",
+     "p": "Sandra headed toward the garden.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What is John holding in the end?",
+     "a": "apple"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 44,
+   "sentences": [
+    {
+     "s": "Daniel took the football there.",
+     "p": "Daniel seized the football over there.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the hallway.",
+     "p": "Mary entered the hallway.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel holding at this point?",
+     "a": "football"
+    },
+    {
+     "s": "Sandra went back to the bathroom.",
+     "p": "Sandra made the return trip to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the hallway.",
+     "p": "Sandra went along to the hallway.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which item is Daniel holding now?",
+     "a": "football"
+    },
+    {
+     "s": "John went to the garden.",
+     "p": "John set off for the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the kitchen.",
+     "p": "Next Sandra went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John moved to the bedroom.",
+     "p": "John shifted into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the bathroom.",
+     "p": "Mary went over to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel went back to the bedroom.",
+     "p": "Daniel walked back to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "John got the milk there.",
+     "p": "There John acquired the milk.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which thing is John holding?",
+     "a": "milk"
+    },
+    {
+     "s": "Daniel left the football.",
+     "p": "The football got left behind by Daniel.",
+     "a": null
+    },
+    {
+     "s": "Sandra moved to the bedroom.",
+     "p": "Sandra changed location to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What does Daniel hold at the moment?",
+     "a": "nothing"
+    },
+    {
+     "s": "Sandra grabbed the football there.",
+     "p": "Sandra clutched the football there.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the garden.",
+     "p": "Sandra then went out to the garden.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which object is Daniel still holding?",
+     "a": "nothing"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 45,
+   "sentences": [
+    {
+     "s": "Daniel journeyed to the kitchen.",
+     "p": "The kitchen was where Daniel went.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the garden.",
+     "p": "Mary returned to the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the bedroom.",
+     "p": "Sandra walked into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "John went back to the garden.",
+     "p": "John headed back out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel journeyed to the office.",
+     "p": "Daniel traveled to the office instead.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the garden.",
+     "p": "Sandra moved on to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the bathroom.",
+     "p": "Daniel made the bathroom the destination.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the office.",
+     "p": "Sandra then traveled to the office.",
+     "a": null
+    },
+    {
+     "s": "Daniel picked up the football there.",
+     "p": "There Daniel lifted the football up.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the kitchen.",
+     "p": "Mary took a trip to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What object is Daniel holding?",
+     "a": "football"
+    },
+    {
+     "s": "Mary grabbed the milk there.",
+     "p": "Mary snatched up the milk there.",
+     "a": null
+    },
+    {
+     "s": "Mary left the milk.",
+     "p": "Mary put the milk aside.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "What is Mary holding at this point?",
+     "a": "nothing"
+    },
+    {
+     "s": "Daniel discarded the football there.",
+     "p": "Daniel got rid of the football there.",
+     "a": null
+    },
+    {
+     "s": "Mary grabbed the milk there.",
+     "p": "The milk was grabbed there by Mary.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "Which item is Mary holding?",
+     "a": "milk"
+    },
+    {
+     "s": "Daniel went to the hallway.",
+     "p": "Daniel ended up in the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel journeyed to the bedroom.",
+     "p": "Next Daniel went to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which thing does Daniel have now?",
+     "a": "nothing"
+    },
+    {
+     "s": "Mary journeyed to the office.",
+     "p": "Mary proceeded to the office.",
+     "a": null
+    },
+    {
+     "s": "John went back to the bedroom.",
+     "p": "John once more walked to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "What object does Mary currently hold?",
+     "a": "milk"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 46,
+   "sentences": [
+    {
+     "s": "Sandra went back to the garden.",
+     "p": "Sandra came back out into the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel got the milk there.",
+     "p": "Daniel acquired the milk there.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel carrying at this time?",
+     "a": "milk"
+    },
+    {
+     "s": "Daniel went back to the kitchen.",
+     "p": "Daniel came back to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the garden.",
+     "p": "Mary shifted to the garden.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which thing is Daniel holding at present?",
+     "a": "milk"
+    },
+    {
+     "s": "John went to the hallway.",
+     "p": "John reached the hallway.",
+     "a": null
+    },
+    {
+     "s": "John moved to the kitchen.",
+     "p": "Next John relocated to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which item does Daniel currently have?",
+     "a": "milk"
+    },
+    {
+     "s": "Mary journeyed to the bathroom.",
+     "p": "Mary took a trip into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the office.",
+     "p": "Daniel went over to the office.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the hallway.",
+     "p": "Mary moved over to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel dropped the milk.",
+     "p": "Daniel let the milk fall.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel holding after that?",
+     "a": "nothing"
+    },
+    {
+     "s": "Mary went back to the bedroom.",
+     "p": "Mary returned to the bedroom again.",
+     "a": null
+    },
+    {
+     "s": "Mary grabbed the football there.",
+     "p": "Mary got hold of the football there.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel holding in the end?",
+     "a": "nothing"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 47,
+   "sentences": [
+    {
+     "s": "John journeyed to the kitchen.",
+     "p": "John headed for the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary took the milk there.",
+     "p": "Mary seized the milk there.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "Which object is Mary holding?",
+     "a": "milk"
+    },
+    {
+     "s": "Sandra went back to the office.",
+     "p": "Sandra returned to the office.",
+     "a": null
+    },
+    {
+     "s": "Mary discarded the milk.",
+     "p": "Mary threw out the milk.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "Which item is Mary carrying now?",
+     "a": "nothing"
+    },
+    {
+     "s": "John went to the bathroom.",
+     "p": "John went over to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra went back to the kitchen.",
+     "p": "Sandra went back into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "What is Mary still holding?",
+     "a": "nothing"
+    },
+    {
+     "s": "Daniel moved to the bathroom.",
+     "p": "Daniel relocated to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the office.",
+     "p": "Mary walked to the office.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "What object does Mary have now?",
+     "a": "nothing"
+    },
+    {
+     "s": "John journeyed to the garden.",
+     "p": "John traveled off to the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the bedroom.",
+     "p": "Sandra set out for the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra got the apple there.",
+     "p": "The apple was collected by Sandra there.",
+     "a": null
+    },
+    {
+     "s": "John got the milk there.",
+     "p": "John took the milk there.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which thing is John holding?",
+     "a": "milk"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 48,
+   "sentences": [
+    {
+     "s": "Sandra journeyed to the bedroom.",
+     "p": "Sandra traveled over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the office.",
+     "p": "Mary set out toward the office.",
+     "a": null
+    },
+    {
+     "s": "Daniel got the apple there.",
+     "p": "There Daniel obtained the apple.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the bedroom.",
+     "p": "Mary also went to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What item is Daniel carrying presently?",
+     "a": "apple"
+    },
+    {
+     "s": "Daniel put down the apple.",
+     "p": "Daniel set the apple down.",
+     "a": null
+    },
+    {
+     "s": "Daniel grabbed the apple there.",
+     "p": "Daniel picked the apple back up there.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What item does Daniel have right now?",
+     "a": "apple"
+    },
+    {
+     "s": "John travelled to the kitchen.",
+     "p": "The kitchen is where John went.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the office.",
+     "p": "Sandra went to the office.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which thing is Daniel holding at present?",
+     "a": "apple"
+    },
+    {
+     "s": "Sandra journeyed to the garden.",
+     "p": "Sandra walked over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the bedroom.",
+     "p": "Sandra came to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What object is Daniel holding at this point?",
+     "a": "apple"
+    },
+    {
+     "s": "Daniel dropped the apple.",
+     "p": "Daniel released the apple.",
+     "a": null
+    },
+    {
+     "s": "Sandra went back to the bathroom.",
+     "p": "Sandra returned to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel carrying after that?",
+     "a": "nothing"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 49,
+   "sentences": [
+    {
+     "s": "John moved to the kitchen.",
+     "p": "John shifted into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Daniel went back to the office.",
+     "p": "Daniel walked back to the office.",
+     "a": null
+    },
+    {
+     "s": "John went to the garden.",
+     "p": "Off to the garden John went.",
+     "a": null
+    },
+    {
+     "s": "John travelled to the hallway.",
+     "p": "John proceeded to the hallway.",
+     "a": null
+    },
+    {
+     "s": "John picked up the milk there.",
+     "p": "The milk was lifted up by John there.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the bedroom.",
+     "p": "Into the bedroom Daniel moved.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which item is John holding now?",
+     "a": "milk"
+    },
+    {
+     "s": "Sandra went back to the office.",
+     "p": "Sandra came back to the office.",
+     "a": null
+    },
+    {
+     "s": "John moved to the bedroom.",
+     "p": "John relocated to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What object does John have at the moment?",
+     "a": "milk"
+    },
+    {
+     "s": "Sandra travelled to the hallway.",
+     "p": "Sandra made the trip to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the bedroom.",
+     "p": "Mary walked into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the bathroom.",
+     "p": "John headed to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "John put down the milk there.",
+     "p": "John set the milk down there.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What is John holding after this?",
+     "a": "nothing"
+    },
+    {
+     "s": "Mary went to the garden.",
+     "p": "Mary went out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the bathroom.",
+     "p": "Sandra went over to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which thing is John still carrying?",
+     "a": "nothing"
+    },
+    {
+     "s": "John grabbed the football there.",
+     "p": "John took the football there.",
+     "a": null
+    },
+    {
+     "s": "Sandra picked up the milk there.",
+     "p": "Sandra lifted the milk up there.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What object is John holding right now?",
+     "a": "football"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 50,
+   "sentences": [
+    {
+     "s": "Daniel went back to the garden.",
+     "p": "Daniel returned to the garden.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the hallway.",
+     "p": "John traveled over to the hallway.",
+     "a": null
+    },
+    {
+     "s": "John travelled to the kitchen.",
+     "p": "Next John went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the bathroom.",
+     "p": "John walked into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the kitchen.",
+     "p": "The kitchen is where Mary moved.",
+     "a": null
+    },
+    {
+     "s": "John moved to the office.",
+     "p": "John shifted to the office.",
+     "a": null
+    },
+    {
+     "s": "John went to the bedroom.",
+     "p": "John went to the bedroom then.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the hallway.",
+     "p": "John ended up in the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the garden.",
+     "p": "Mary headed out to the garden.",
+     "a": null
+    },
+    {
+     "s": "John got the milk there.",
+     "p": "There John acquired the milk.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What is John holding?",
+     "a": "milk"
+    },
+    {
+     "s": "Sandra moved to the hallway.",
+     "p": "Sandra changed position to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel journeyed to the bedroom.",
+     "p": "Daniel took a trip to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What object is John holding at this point?",
+     "a": "milk"
+    },
+    {
+     "s": "Daniel went to the bathroom.",
+     "p": "To the bathroom went Daniel.",
+     "a": null
+    },
+    {
+     "s": "John went to the kitchen.",
+     "p": "John later went into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which item is John carrying?",
+     "a": "milk"
+    },
+    {
+     "s": "Sandra went to the kitchen.",
+     "p": "Sandra reached the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John went back to the bedroom.",
+     "p": "John headed back to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the hallway.",
+     "p": "Daniel moved along to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the hallway.",
+     "p": "Mary went into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Sandra moved to the garden.",
+     "p": "Sandra ended up in the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the kitchen.",
+     "p": "Daniel took the trip to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the bathroom.",
+     "p": "Mary made the bathroom the stop.",
+     "a": null
+    },
+    {
+     "s": "Mary took the football there.",
+     "p": "Mary grabbed the football there.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "Which object does Mary have?",
+     "a": "football"
+    },
+    {
+     "s": "John dropped the milk.",
+     "p": "John let the milk go.",
+     "a": null
+    },
+    {
+     "s": "Sandra went back to the office.",
+     "p": "Sandra went back to the office once again.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which thing is John holding after that?",
+     "a": "nothing"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 51,
+   "sentences": [
+    {
+     "s": "Daniel got the apple there.",
+     "p": "The apple was obtained by Daniel there.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the bathroom.",
+     "p": "John went out to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What object is Daniel holding?",
+     "a": "apple"
+    },
+    {
+     "s": "Mary went back to the hallway.",
+     "p": "Mary came back to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the office.",
+     "p": "Mary then went back to the office.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which item is Daniel holding at present?",
+     "a": "apple"
+    },
+    {
+     "s": "John travelled to the office.",
+     "p": "John went to the office.",
+     "a": null
+    },
+    {
+     "s": "Mary took the milk there.",
+     "p": "The milk was taken up by Mary there.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "Which object is Mary holding now?",
+     "a": "milk"
+    },
+    {
+     "s": "John went back to the hallway.",
+     "p": "John returned to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel discarded the apple.",
+     "p": "Daniel threw the apple away.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel holding after that?",
+     "a": "nothing"
+    },
+    {
+     "s": "Sandra went back to the kitchen.",
+     "p": "Sandra came back into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Daniel journeyed to the garden.",
+     "p": "Daniel went to the garden.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which thing is Daniel carrying in the end?",
+     "a": "nothing"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 52,
+   "sentences": [
+    {
+     "s": "John went to the bedroom.",
+     "p": "John walked to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "John travelled to the bathroom.",
+     "p": "John headed to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra moved to the bedroom.",
+     "p": "Sandra went over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the kitchen.",
+     "p": "Mary went into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John travelled to the bedroom.",
+     "p": "John moved to the bedroom again.",
+     "a": null
+    },
+    {
+     "s": "Daniel moved to the office.",
+     "p": "Daniel shifted into the office.",
+     "a": null
+    },
+    {
+     "s": "Daniel went back to the bathroom.",
+     "p": "Daniel returned to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "John travelled to the bathroom.",
+     "p": "John went to the bathroom again.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the office.",
+     "p": "Mary walked into the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the garden.",
+     "p": "Sandra went out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the hallway.",
+     "p": "Mary arrived in the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the kitchen.",
+     "p": "The kitchen was reached by Daniel.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the bathroom.",
+     "p": "Daniel went to the bathroom next.",
+     "a": null
+    },
+    {
+     "s": "Mary took the apple there.",
+     "p": "Mary seized the apple there.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "What object does Mary have?",
+     "a": "apple"
+    },
+    {
+     "s": "Daniel moved to the kitchen.",
+     "p": "Daniel relocated to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the garden.",
+     "p": "Daniel went over to the garden.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "Which item is Mary holding at this point?",
+     "a": "apple"
+    },
+    {
+     "s": "Mary journeyed to the bathroom.",
+     "p": "Mary went on to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Mary put down the apple.",
+     "p": "Mary set the apple down.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "What is Mary holding now?",
+     "a": "nothing"
+    },
+    {
+     "s": "John grabbed the apple there.",
+     "p": "John collected the apple there.",
+     "a": null
+    },
+    {
+     "s": "John discarded the apple.",
+     "p": "John threw the apple out.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which object is John carrying at the end?",
+     "a": "nothing"
+    },
+    {
+     "s": "Mary travelled to the office.",
+     "p": "Mary went to the office afterwards.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the bathroom.",
+     "p": "Daniel went into the bathroom then.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which object is John holding?",
+     "a": "nothing"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 53,
+   "sentences": [
+    {
+     "s": "Mary went back to the office.",
+     "p": "Mary returned to the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the garden.",
+     "p": "Sandra went over to the garden.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the garden.",
+     "p": "Mary proceeded to the garden.",
+     "a": null
+    },
+    {
+     "s": "John went to the kitchen.",
+     "p": "John went into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John went to the office.",
+     "p": "John walked over to the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra went back to the office.",
+     "p": "Sandra came back to the office.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the garden.",
+     "p": "John headed toward the garden.",
+     "a": null
+    },
+    {
+     "s": "Sandra moved to the kitchen.",
+     "p": "Sandra shifted to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the bedroom.",
+     "p": "Mary moved into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the hallway.",
+     "p": "Sandra went off to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the garden.",
+     "p": "Daniel traveled into the garden.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the hallway.",
+     "p": "Mary returned to the hallway again.",
+     "a": null
+    },
+    {
+     "s": "Sandra got the football there.",
+     "p": "Sandra collected the football there.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the bathroom.",
+     "p": "Daniel headed to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "Which object is Sandra holding?",
+     "a": "football"
+    },
+    {
+     "s": "Sandra dropped the football.",
+     "p": "Sandra let the football fall.",
+     "a": null
+    },
+    {
+     "s": "Daniel went back to the garden.",
+     "p": "Daniel came back to the garden.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "What is Sandra holding right now?",
+     "a": "nothing"
+    },
+    {
+     "s": "Sandra picked up the football there.",
+     "p": "There Sandra lifted the football.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the office.",
+     "p": "Daniel went over to the office.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "Which thing is Sandra carrying now?",
+     "a": "football"
+    },
+    {
+     "s": "Sandra put down the football.",
+     "p": "Sandra placed the football down.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the office.",
+     "p": "Sandra headed for the office.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "What does Sandra have at this point?",
+     "a": "nothing"
+    },
+    {
+     "s": "Mary went back to the garden.",
+     "p": "Mary came back out to the garden.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the kitchen.",
+     "p": "Mary went back into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "What item is Sandra holding in the end?",
+     "a": "nothing"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 54,
+   "sentences": [
+    {
+     "s": "John went to the hallway.",
+     "p": "John moved into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel travelled to the hallway.",
+     "p": "Daniel went to the hallway as well.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the bathroom.",
+     "p": "Mary walked to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel got the football there.",
+     "p": "Daniel acquired the football there.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which item does Daniel have in hand?",
+     "a": "football"
+    },
+    {
+     "s": "Mary journeyed to the office.",
+     "p": "Mary went over to the office.",
+     "a": null
+    },
+    {
+     "s": "Daniel grabbed the apple there.",
+     "p": "The apple was picked up there by Daniel.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which two objects is Daniel holding together?",
+     "a": "football,apple"
+    },
+    {
+     "s": "Mary journeyed to the kitchen.",
+     "p": "Mary headed to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the bedroom.",
+     "p": "Daniel walked to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What objects is Daniel holding at present?",
+     "a": "football,apple"
+    },
+    {
+     "s": "Daniel dropped the football there.",
+     "p": "Daniel let the football fall there.",
+     "a": null
+    },
+    {
+     "s": "Daniel grabbed the football there.",
+     "p": "Daniel took hold of the football there.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel holding after these steps?",
+     "a": "football,apple"
+    },
+    {
+     "s": "Sandra went back to the kitchen.",
+     "p": "Sandra came back to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the bathroom.",
+     "p": "Mary went into the bathroom.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel holding at the end?",
+     "a": "football,apple"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 55,
+   "sentences": [
+    {
+     "s": "Mary took the milk there.",
+     "p": "Mary picked up the milk there.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the garden.",
+     "p": "Mary went to the garden.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "What is Mary holding?",
+     "a": "milk"
+    },
+    {
+     "s": "Mary put down the milk.",
+     "p": "The milk was set down by Mary.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the garden.",
+     "p": "Sandra went out to the garden.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "Which object is Mary holding now?",
+     "a": "nothing"
+    },
+    {
+     "s": "Mary moved to the hallway.",
+     "p": "Mary shifted to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Sandra went to the bedroom.",
+     "p": "Sandra walked to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is Mary carrying?",
+     "p": "What is Mary holding after these moves?",
+     "a": "nothing"
+    },
+    {
+     "s": "John journeyed to the bathroom.",
+     "p": "John went to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel went back to the hallway.",
+     "p": "Daniel returned to the hallway.",
+     "a": null
+    },
+    {
+     "s": "Sandra got the apple there.",
+     "p": "Sandra took the apple there.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the garden.",
+     "p": "Mary went to the garden again.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "Which item is Sandra holding?",
+     "a": "apple"
+    },
+    {
+     "s": "John went to the hallway.",
+     "p": "John reached the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel moved to the garden.",
+     "p": "Daniel relocated to the garden.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "What object does Sandra have now?",
+     "a": "apple"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 56,
+   "sentences": [
+    {
+     "s": "John journeyed to the bathroom.",
+     "p": "John traveled to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the kitchen.",
+     "p": "Mary shifted to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra picked up the football there.",
+     "p": "The football was lifted by Sandra there.",
+     "a": null
+    },
+    {
+     "s": "Mary moved to the bedroom.",
+     "p": "Mary went over to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "Which object is Sandra holding?",
+     "a": "football"
+    },
+    {
+     "s": "Sandra left the football there.",
+     "p": "Sandra set the football down there.",
+     "a": null
+    },
+    {
+     "s": "Mary went to the hallway.",
+     "p": "Mary walked into the hallway.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "What is Sandra holding now?",
+     "a": "nothing"
+    },
+    {
+     "s": "Mary went back to the kitchen.",
+     "p": "Mary came back into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Mary travelled to the hallway.",
+     "p": "Mary moved on to the hallway.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "What does Sandra have at this time?",
+     "a": "nothing"
+    },
+    {
+     "s": "Daniel went to the office.",
+     "p": "Daniel walked into the office.",
+     "a": null
+    },
+    {
+     "s": "John grabbed the football there.",
+     "p": "John took hold of the football there.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which item is John holding?",
+     "a": "football"
+    },
+    {
+     "s": "Daniel travelled to the kitchen.",
+     "p": "Daniel went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the bedroom.",
+     "p": "Daniel went to the bedroom then.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What object is John holding after these moves?",
+     "a": "football"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 57,
+   "sentences": [
+    {
+     "s": "Daniel grabbed the apple there.",
+     "p": "Daniel seized the apple there.",
+     "a": null
+    },
+    {
+     "s": "John journeyed to the bedroom.",
+     "p": "John headed to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel holding?",
+     "a": "apple"
+    },
+    {
+     "s": "John moved to the garden.",
+     "p": "John shifted to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel left the apple.",
+     "p": "The apple was put down by Daniel.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which object does Daniel have now?",
+     "a": "nothing"
+    },
+    {
+     "s": "Sandra travelled to the garden.",
+     "p": "Sandra went to the garden.",
+     "a": null
+    },
+    {
+     "s": "John took the milk there.",
+     "p": "John grabbed the milk there.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel holding at this moment?",
+     "a": "nothing"
+    },
+    {
+     "s": "John discarded the milk there.",
+     "p": "John threw the milk away there.",
+     "a": null
+    },
+    {
+     "s": "Daniel got the apple there.",
+     "p": "Daniel acquired the apple there.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which object is Daniel holding?",
+     "a": "apple"
+    },
+    {
+     "s": "Daniel went to the hallway.",
+     "p": "Daniel moved to the hallway.",
+     "a": null
+    },
+    {
+     "s": "John took the football there.",
+     "p": "John picked up the football there.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What is John holding?",
+     "a": "football"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 58,
+   "sentences": [
+    {
+     "s": "Sandra journeyed to the bedroom.",
+     "p": "Sandra went to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Mary journeyed to the bathroom.",
+     "p": "Mary went to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the garden.",
+     "p": "Daniel walked to the garden.",
+     "a": null
+    },
+    {
+     "s": "Daniel went back to the bathroom.",
+     "p": "Daniel came back to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra journeyed to the hallway.",
+     "p": "Sandra headed into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Daniel went to the hallway.",
+     "p": "Daniel went into the hallway.",
+     "a": null
+    },
+    {
+     "s": "Mary went back to the office.",
+     "p": "Mary returned to the office.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the kitchen.",
+     "p": "Sandra traveled to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John travelled to the kitchen.",
+     "p": "John went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "John went to the bedroom.",
+     "p": "John walked into the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra picked up the apple there.",
+     "p": "The apple was picked up there by Sandra.",
+     "a": null
+    },
+    {
+     "s": "John travelled to the hallway.",
+     "p": "John moved on to the hallway.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "What is Sandra holding?",
+     "a": "apple"
+    },
+    {
+     "s": "John got the milk there.",
+     "p": "John acquired the milk there.",
+     "a": null
+    },
+    {
+     "s": "Daniel went back to the office.",
+     "p": "Daniel returned to the office.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "Which object is Sandra holding now?",
+     "a": "apple"
+    },
+    {
+     "s": "Mary travelled to the bedroom.",
+     "p": "Mary headed to the bedroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the hallway.",
+     "p": "Sandra moved to the hallway.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "Which item is John holding?",
+     "a": "milk"
+    },
+    {
+     "s": "Sandra dropped the apple.",
+     "p": "Sandra let the apple fall.",
+     "a": null
+    },
+    {
+     "s": "John went back to the kitchen.",
+     "p": "John walked back into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "What is Sandra holding after that?",
+     "a": "nothing"
+    },
+    {
+     "s": "John discarded the milk.",
+     "p": "John threw out the milk.",
+     "a": null
+    },
+    {
+     "s": "Sandra travelled to the bathroom.",
+     "p": "Sandra headed off to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "What is John carrying?",
+     "p": "What is John holding?",
+     "a": "nothing"
+    }
+   ]
+  },
+  {
+   "part": "test",
+   "id": 59,
+   "sentences": [
+    {
+     "s": "Sandra got the milk there.",
+     "p": "Sandra took the milk there.",
+     "a": null
+    },
+    {
+     "s": "Daniel journeyed to the kitchen.",
+     "p": "Daniel moved to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "Which object is Sandra holding?",
+     "a": "milk"
+    },
+    {
+     "s": "Sandra travelled to the bathroom.",
+     "p": "Sandra went to the bathroom.",
+     "a": null
+    },
+    {
+     "s": "Sandra put down the milk.",
+     "p": "The milk was put down by Sandra.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "What is Sandra holding now?",
+     "a": "nothing"
+    },
+    {
+     "s": "Daniel got the football there.",
+     "p": "Daniel picked up the football there.",
+     "a": null
+    },
+    {
+     "s": "Daniel left the football.",
+     "p": "Daniel set the football down.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "What is Daniel holding?",
+     "a": "nothing"
+    },
+    {
+     "s": "Sandra went to the kitchen.",
+     "p": "Sandra walked into the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra grabbed the football there.",
+     "p": "Sandra took hold of the football there.",
+     "a": null
+    },
+    {
+     "s": "What is Daniel carrying?",
+     "p": "Which object is Daniel holding?",
+     "a": "nothing"
+    },
+    {
+     "s": "John travelled to the kitchen.",
+     "p": "John went to the kitchen.",
+     "a": null
+    },
+    {
+     "s": "Sandra dropped the football.",
+     "p": "Sandra released the football.",
+     "a": null
+    },
+    {
+     "s": "What is Sandra carrying?",
+     "p": "Which thing is Sandra holding?",
+     "a": "nothing"
+    }
+   ]
+  }
+ ]
+}
