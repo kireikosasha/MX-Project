@@ -54,6 +54,11 @@ QUERIES = {
     "PATH": (("A1", "A2"), (), "m"),             # the steps from A1 to A2
 }
 KINDS = {**STATEMENTS, **QUERIES}
+# a question can only ask about what statements tell: which questions read what which statements write
+READS = {"SET": {"VAL", "BEFORE", "IS", "NEXT"}, "UNSET": {"VAL", "IS"}, "ANY": {"VAL", "IS"},
+         "ATTACH": {"VAL", "BEFORE", "COUNT", "LIST"}, "DETACH": {"VAL", "BEFORE", "COUNT", "LIST"},
+         "PASS": {"VAL", "BEFORE", "COUNT", "LIST", "P_WHAT", "P_FROM", "P_TO"}, "ISA": {"VAL"},
+         "ORDER": {"MORE"}, "LINK": {"L_A1", "L_A2", "L_IS", "PATH"}}
 N_ATTR, N_ORDER, N_MAP = 5, 2, 2
 
 INV = {"n": "s", "s": "n", "e": "w", "w": "e"}
