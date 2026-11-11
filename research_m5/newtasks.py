@@ -39,7 +39,8 @@ def stories(text):
         assert int(num) == n, f"numbering: {line!r}"
         if "\t" in rest:
             q, a = rest.split("\t")[:2]
-            assert q.rstrip().endswith("?") and a.strip() and a == a.lower(), f"question: {line!r}"
+            assert q.rstrip().endswith("?") and a.strip(), f"question: {line!r}"
+            line = f"{num} {q}\t{a.strip().lower()}"                # the reader takes answers in small letters anyway
         else:
             assert rest.rstrip().endswith("."), f"statement: {line!r}"
         out.append(line.rstrip())
