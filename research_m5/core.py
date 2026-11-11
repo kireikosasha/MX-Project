@@ -41,6 +41,7 @@ STATEMENTS = {
     "TRADE": (("A1", "A2", "A3", "A4"), (), ""), # A2 passes from A1 to A3, and A4 from A3 to A1
     "HAS": (("A1", "A2"), (), "h"),              # A1 is one of the A2 (a set it belongs to, a property it has)
     "EVERY": (("A1", "A2"), (), "h"),            # every A1 is one of the A2
+    "NEVER": (("A1", "A2"), (), "h"),            # no A1 is one of the A2
     "QSET": (("A1", "N"), ("A2",), ""),          # A1 has N (of A2)
     "QADD": (("A1", "N"), ("A2",), ""),          # N more
     "QSUB": (("A1", "N"), ("A2",), ""),          # N less
@@ -78,18 +79,23 @@ QUERIES = {
     "O_MIN": (("A1",), (), "o"),                 # less than the others
     "QVAL": (("A1",), ("A2",), ""),              # how many (of A2) A1 has
     "QIS": (("A1", "N"), ("A2",), ""),           # has it N
+    "QMORE": (("A1", "N"), ("A2",), ""),         # has it more than N
+    "QLESS": (("A1", "N"), ("A2",), ""),         # less than N
     "QMAX": (("A2",), (), ""),                   # who has most of A2
     "L_LIST": (("A2", "D"), (), "m"),            # everything in the direction D from A2
+    "O_TOP": ((), (), "o"),                      # the one that is more than all the others (less, if the word turns it)
+    "L_END": (("D",), (), "m"),                  # the one that lies in the direction D from all the others
 }
 KINDS = {**STATEMENTS, **QUERIES}
 # a question can only ask about what statements tell: which questions read what which statements write
 _A = {"VAL", "BEFORE", "IS", "NEXT", "TOP", "V2", "V2_IS", "IS_T", "INV", "INV_N", "SAME", "WHO"}
 _H = {"VAL", "BEFORE", "COUNT", "LIST", "HOLDER", "HELD"}
+_Q = {"QVAL", "QIS", "QMAX", "QMORE", "QLESS"}
 READS = {"SET": _A, "UNSET": {"VAL", "IS", "SAME", "INV", "INV_N"}, "ANY": {"VAL", "IS"}, "RISE": _A, "SWAP": _A | _H,
          "ATTACH": _H, "DETACH": _H, "PASS": _H | {"P_WHAT", "P_FROM", "P_TO"}, "TRADE": _H | {"P_WHAT", "P_FROM", "P_TO"},
-         "ISA": {"VAL"}, "ORDER": {"MORE", "O_MAX", "O_MIN"}, "LINK": {"L_A1", "L_A2", "L_IS", "PATH", "L_LIST"},
-         "HAS": {"H_IS", "H_LIST", "H_INV"}, "EVERY": {"H_IS", "H_LIST", "H_INV"},
-         "QSET": {"QVAL", "QIS", "QMAX"}, "QADD": {"QVAL", "QIS", "QMAX"}, "QSUB": {"QVAL", "QIS", "QMAX"}, "QPASS": {"QVAL", "QIS", "QMAX"}}
+         "ISA": {"VAL"}, "ORDER": {"MORE", "O_MAX", "O_MIN", "O_TOP"}, "LINK": {"L_A1", "L_A2", "L_IS", "PATH", "L_LIST", "L_END"},
+         "HAS": {"H_IS", "H_LIST", "H_INV"}, "EVERY": {"H_IS", "H_LIST", "H_INV"}, "NEVER": {"H_IS", "H_LIST", "H_INV"},
+         "QSET": _Q, "QADD": _Q, "QSUB": _Q, "QPASS": _Q, "NOP": set()}
 # what a question of each kind answers with - t a thing, l several things, s a sign (yes, no, a step), n a number:
 # (what it is asked for, what else it may answer: "nothing" where a thing was asked, a number said as a word)
 GIVES = {"VAL": ("t", "s"), "BEFORE": ("t", ""), "IS": ("s", ""), "COUNT": ("ns", ""), "LIST": ("tl", "s"), "P_WHAT": ("t", ""),
@@ -97,11 +103,11 @@ GIVES = {"VAL": ("t", "s"), "BEFORE": ("t", ""), "IS": ("s", ""), "COUNT": ("ns"
          "L_IS": ("s", ""), "PATH": ("sl", ""), "TOP": ("t", ""), "V2": ("t", ""), "V2_IS": ("s", ""), "IS_T": ("s", ""),
          "INV": ("tl", "s"), "INV_N": ("ns", ""), "SAME": ("s", ""), "WHO": ("t", ""), "HOLDER": ("t", "s"), "HELD": ("s", ""),
          "H_IS": ("s", ""), "H_LIST": ("tl", "s"), "H_INV": ("tl", "s"), "O_MAX": ("t", ""), "O_MIN": ("t", ""),
-         "QVAL": ("ns", ""), "QIS": ("s", ""), "QMAX": ("t", ""), "L_LIST": ("tl", "s")}
+         "QVAL": ("ns", ""), "QIS": ("s", ""), "QMORE": ("s", ""), "QLESS": ("s", ""), "QMAX": ("t", ""), "L_LIST": ("tl", "s"), "O_TOP": ("t", ""), "L_END": ("t", "")}
 # of two readings that answer equally well the plainer one is taken: the first schemes are plain, the rest are built on them
-PLAIN = ("SET", "UNSET", "ANY", "ATTACH", "DETACH", "PASS", "ISA", "ORDER", "LINK", "HAS", "EVERY", "QSET", "QADD", "QSUB", "QPASS",
+PLAIN = ("SET", "UNSET", "ANY", "ATTACH", "DETACH", "PASS", "ISA", "ORDER", "LINK", "HAS", "EVERY", "NEVER", "QSET", "QADD", "QSUB", "QPASS",
          "VAL", "BEFORE", "IS", "COUNT", "LIST", "P_WHAT", "P_FROM", "P_TO", "NEXT", "MORE", "L_A1", "L_A2", "L_IS", "PATH",
-         "H_IS", "H_LIST", "H_INV", "QVAL", "QIS", "HOLDER", "HELD")
+         "H_IS", "H_LIST", "H_INV", "QVAL", "QIS", "QMORE", "QLESS", "HOLDER", "HELD")
 COST = {k: 0 if k in PLAIN else 2 if k == "WHO" else 1 for k in KINDS}
 # the first schemes are tried first; the others only when a task is not learnt with them
 FIRST = ("SET", "UNSET", "ANY", "ATTACH", "DETACH", "PASS", "ISA", "ORDER", "LINK", "VAL", "BEFORE", "IS", "COUNT", "LIST",
@@ -126,12 +132,13 @@ class Lexicon:
         self.like = "kind"      # like the others of its kind: "kind" the one introduced last, "told" the one described last, "most" most of them
         self.gave = "last"      # what passed from A1 to A3: the last time or the first
         self.flip = set()       # words that turn a relation round ("shorter" where "taller" is the plain way)
+        self.skip = set()       # words that are not part of a name of several words ("a" in "a cow", "every" in "every cow")
         self.map = "grid"       # directions: "grid" every step is one square of a grid, "axis" only more or less along two axes
 
     def copy(self):
         c = Lexicon()
         c.pron, c.dirs, c.times, c.alias, c.kb = set(self.pron), dict(self.dirs), dict(self.times), dict(self.alias), dict(self.kb)
-        c.like, c.gave, c.map, c.flip = self.like, self.gave, self.map, set(self.flip)
+        c.like, c.gave, c.map, c.flip, c.skip = self.like, self.gave, self.map, set(self.flip), set(self.skip)
         return c
 
     def norm(self, w):
@@ -139,7 +146,8 @@ class Lexicon:
         if w in self.alias:
             return self.alias[w]
         if " " in w:
-            return " ".join(self.alias.get(x, x) for x in w.split())
+            parts = [x for x in w.split() if x not in self.skip] or w.split()
+            return " ".join(self.alias.get(x, x) for x in parts)
         return w
 
     def direction(self, w):
@@ -168,6 +176,7 @@ class World:
         self.links = [[] for _ in range(N_MAP)]      # (a, direction, b): a is in that direction from b
         self.by = [{} for _ in range(N_ATTR)]        # thing -> what stood by when its attribute was last set
         self.sup, self.single = {}, []               # a thing or a set -> {(a set it is in, number)}; the single things
+        self.never = set()                           # (a set, a set): none of the first is of the second
         self.qty = {}                                # (thing, of what) -> how many
         self.last = []
 
@@ -211,6 +220,8 @@ class World:
 
     def tell(self, kind, k, a):
         self.n += 1
+        if kind == "NOP":                                        # a word of the sentence says that it tells nothing here
+            return
         a = self.turned(a)
         g = lambda r: [self.name(x) for x in a.get(r, [])]              # noqa: E731
         if kind == "SET":
@@ -271,6 +282,8 @@ class World:
                     self.carried[frm].remove(o)
                 self._take(to, o)
                 self.passes.append((frm, o, to))
+        elif kind == "NEVER":
+            self.never.add((g("A1")[0], g("A2")[0]))
         elif kind in ("HAS", "EVERY"):
             self.sup.setdefault(g("A1")[0], set()).add((g("A2")[0], k))
             if kind == "HAS" and g("A1")[0] not in self.single:
@@ -402,24 +415,39 @@ class World:
             return e(self.carrier.get(g("A2")[0])) or ("s", "nothing")
         if kind == "HELD":
             return yes(self.carrier.get(g("A2")[0]) == x)
-        if kind == "H_IS":
-            return yes(any(y == g("A2")[0] for y, _ in self._sets(x)))
-        if kind == "H_LIST":
-            return some(sorted({y for y, kk in self._sets(x) if kk == k}))
-        if kind == "H_INV":
-            return some([o for o in self.single if any(y == g("A2")[0] for y, _ in self._sets(o))])
+        if kind in ("H_IS", "H_LIST", "H_INV"):
+            def among(o, y):                                     # is o one of the y: told so, and not told that none of its sets is
+                mine = {o} | {z for z, _ in self._sets(o)}
+                return y in mine and y != o and not any((z, y) in self.never for z in mine)
+            if kind == "H_IS":
+                return yes(among(x, g("A2")[0]))
+            if kind == "H_LIST":
+                return some(sorted({y for y, kk in self._sets(x) if kk == k and among(x, y)}))
+            return some([o for o in self.single if among(o, g("A2")[0])])
+        if kind == "O_TOP":
+            big = self._closure(k)
+            if any(o in self.lex.flip for o in a.get("O", ())):
+                big = {(q, p) for p, q in big}
+            top = {p for p, _ in big} - {q for _, q in big}
+            return e(next(iter(top))) if len(top) == 1 else None
+        if kind == "L_END":
+            d, ed0 = self.lex.direction(g("D")[0]), self._edges(k)
+            ends = [o for o in ed0 if all(self._towards(k, o, d, y) for y in ed0 if y != o)]
+            return e(ends[0]) if len(ends) == 1 else None
         if kind in ("O_MAX", "O_MIN"):
             big, named = self._closure(k), g("A1")
             for c in named:
                 if all(((c, o) if kind == "O_MAX" else (o, c)) in big for o in named if o != c):
                     return e(c)
             return None
-        if kind in ("QVAL", "QIS", "QMAX"):
+        if kind in ("QVAL", "QIS", "QMAX", "QMORE", "QLESS"):
             of = g("A2")[0] if g("A2") else ""
             if kind == "QVAL":
                 return ("s", f"n{self.qty.get((x, of), 0)}")
             if kind == "QIS":
                 return yes(self.qty.get((x, of), 0) == int(g("N")[0]))
+            if kind in ("QMORE", "QLESS"):
+                return yes(self.qty.get((x, of), 0) > int(g("N")[0]) if kind == "QMORE" else self.qty.get((x, of), 0) < int(g("N")[0]))
             have = sorted(((n, p) for (p, o), n in self.qty.items() if o == of), reverse=True)
             return e(have[0][1]) if have and (len(have) == 1 or have[0][0] > have[1][0]) else None
         if kind == "BEFORE":

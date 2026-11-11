@@ -88,7 +88,10 @@ class Mind:
         self.signs = set()                 # answers that are not names of things (yes, no, a number), though the word may occur in a story
         self.asked = {}                    # the build of a question -> what its answers look like
         self.free = set()                  # answers that are never named in their stories
+        self.sayable = set()               # the words a sign may be said with
         self.tier = 1                      # which schemes are tried: 0 only the first ones, 1 all
+        self.lifted = {}                   # forms in which a word that never varies is taken as an argument -> which argument
+        self.usual = {}                    # the build of a question -> its most frequent answer (said when nothing better is known)
         self.work = 0                      # sentences read so far: the clock of the learner
         self.seen = []                     # the stories learnt from
         self.tasks = []                    # the same stories, task by task
@@ -100,6 +103,43 @@ class Mind:
     def now(self):
         """the time of the learner is the work it has done, in sentences read: a run then gives the same on any machine"""
         return self.work / RATE
+
+    def meanings(self, forms, lex, stories):
+        """a word in a place that does not matter may itself say what is done or asked ("takes" - "drops", "what" -
+        "how many"): for every such word of these forms, the scheme of the same roles with which most answers are right"""
+        def total(verbs):
+            with self.with_forms(forms, lex, verbs):
+                return self.judge([r for s in stories for r in self.run(s)])[0]
+        mine, seen = dict(forms), defaultdict(set)
+        with self.with_forms(forms, lex):
+            for story in stories:
+                for words, gold in story:
+                    quest = gold is not None
+                    p = self.parse(words, quest)
+                    h = mine.get(self._read_by.get((words, quest)))
+                    if p and h and "O" in h[2]:
+                        for w in p[2].get("O", ()):
+                            seen[("?" if quest else "") + w].add((tuple(sorted(set(h[2]) - {"O"})), h[0], h[1]))
+        verbs, have = {}, total(None)
+        if not 2 <= len(seen) <= 12:
+            return verbs
+        for word in sorted(seen):
+            best = None
+            for kind2, (need, may, num) in (G.QUERIES if word.startswith("?") else G.STATEMENTS).items():
+                if G.TIER[kind2] > self.tier or num == "aa" or all(kind2 == kind0 for _, kind0, _ in seen[word]) \
+                        or not all(set(need) <= set(r) <= set(need) | set(may) for r, _, _ in seen[word]):
+                    continue
+                k0 = max((k for _, kind0, k in seen[word] if isinstance(k, int) and G.KINDS[kind0][2] == num), default=0)
+                sc = total(dict(verbs, **{word: (kind2, k0 if num else 0)}))
+                if sc > (best[0] if best else have):
+                    best = (sc, kind2, k0 if num else 0)
+            if best:
+                have, verbs[word] = best[0], best[1:]
+        return verbs
+
+    def cost(self, forms):
+        """how far a reading is from the plain ones: schemes built on others, words lifted to arguments"""
+        return sum(G.COST[h[0]] + (f in self.lifted) for f, h in forms)
 
     def sort_of(self, filler):
         """the sort of a word or of several words standing as one (a tuple)"""
@@ -155,8 +195,8 @@ class Mind:
                 if not ones:
                     continue
                 self.single |= set(ones)
-                self.joint |= {f for f in fillers if len(f) > 1}
-                many = [f for f in fillers if len(f) > 1 and not any(w in self.single for w in f[1:])]
+                self.joint |= {f for f in fillers if len(f) > 1 and not any(w.isdigit() for w in f)}
+                many = [f for f in fillers if len(f) > 1 and not any(w in self.single or w.isdigit() for w in f[1:]) and not f[0].isdigit()]
                 self.multi |= set(many)                    # several words standing where one word can stand
                 apart |= {(a, b) for a in ones + many for b in ones + many if a != b}
             known = self.single | self.multi
@@ -166,6 +206,29 @@ class Mind:
             sorts()
             if (len(self.single), len(self.multi), len(apart)) == size:
                 break
+        # last: in a sentence with at most one varying word, a word varies if another word can stand in its place
+        # whatever that varying word is ("the box is red", "the lamp is on": box and lamp)
+        keys = defaultdict(set)
+        for words, quest in sents:
+            seen, pos = [], 0
+            for s0, e0 in self.places(words):
+                seen += [(w, False) for w in words[pos:s0]] + [(None, True)]
+                pos = e0
+            seen += [(w, False) for w in words[pos:]]
+            if sum(k for _, k in seen) > 1:
+                continue                                         # only where a sentence is short of things to speak of
+            around = [("any",) if k else w for w, k in seen]
+            for i, (w, k) in enumerate(seen):
+                if not k and w not in ".?,":
+                    keys[(quest, tuple(around[:i]), tuple(around[i + 1:]))].add(w)
+        grew = False
+        for fillers in keys.values():
+            if len(fillers) > 1:
+                grew = grew or not fillers <= self.single
+                self.single |= fillers
+                apart |= {(a, b) for a in fillers for b in fillers if a != b}
+        if grew:
+            sorts()
         # words that look alike and never stand against each other in one place may be one word
         words = sorted((self.single | {g for g in golds if " " not in g}) - self.signs)       # a sign (yes, maybe) is not a form of a word
         group = {w: {w} for w in words}
@@ -217,6 +280,10 @@ class Mind:
                         golds.setdefault(key, set()).add(gold[0])
         self.signs = {g for key, gs in golds.items() if self.asked[key][0] for g in gs}
         self.free = set().union(*(v[0] for v in self.asked.values())) if self.asked else set()
+        self.sayable = set()        # the words a sign may be said with: answers that are not names - and, where a question
+        for key, gs in golds.items():                            # has two or three answers in all (yes, no), all of them
+            free = self.asked[key][0]
+            self.sayable |= gs if free and len(gs) <= 3 else free & gs
         self._named.clear()
 
     def places(self, words):
@@ -240,11 +307,12 @@ class Mind:
         if (words, quest) in self._keys:
             return self._keys[(words, quest)]
         pl = self.places(words)[:7]
+        num = [words[s].isdigit() for s, _ in pl]                         # a number is never part of a name of several words
         out = []
         for mark in itertools.product((0, 1, 2), repeat=len(pl)):       # 0 fixed, 1 an argument, 2 an argument joined to the previous one
             if sum(m == 1 for m in mark) > 4:                          # at most four arguments
                 continue
-            ok = all(m != 2 or (i > 0 and mark[i - 1] > 0 and pl[i - 1][1] == pl[i][0]) for i, m in enumerate(mark))
+            ok = all(m != 2 or (i > 0 and mark[i - 1] > 0 and pl[i - 1][1] == pl[i][0] and not num[i] and not num[i - 1]) for i, m in enumerate(mark))
             if not ok:
                 continue
             runs = []
@@ -259,6 +327,24 @@ class Mind:
                 pos = e
             form += list(words[pos:])
             out.append((tuple(form), tuple((s, e) for s, e, _ in runs)))
+        if len(pl) <= 1:                    # hardly a place: a word that is always the same may be what the sentence speaks of
+            have = {f for f, _ in out}      # ("the lamp is on"): one fixed word taken as an argument
+            for i, w in enumerate(words):
+                if w in ".?," or any(s <= i < e for s, e in pl):
+                    continue
+                pl2 = sorted(pl + [(i, i + 1)])
+                for mark in itertools.product((0, 1), repeat=len(pl)):
+                    marks = iter(mark)
+                    runs = [(s, e) for s, e in pl2 if (s, e) == (i, i + 1) or next(marks)]
+                    form, pos = [quest], 0
+                    for s, e in runs:
+                        form += list(words[pos:s]) + [STAR]
+                        pos = e
+                    form = tuple(form + list(words[pos:]))
+                    if form not in have:
+                        have.add(form)
+                        self.lifted.setdefault(form, runs.index((i, i + 1)))
+                        out.append((form, tuple(runs)))
         self._keys[(words, quest)] = out
         for form, _ in out:
             self._by_form[form].add((words, quest))
@@ -286,8 +372,10 @@ class Mind:
                 a.setdefault(r, []).append(" ".join(words[s:e]))
                 if r != "O":
                     continue
-                if not quest and " ".join(words[s:e]) in self.verbs:         # the word in this place says what is done
-                    v = self.verbs[" ".join(words[s:e])]
+                v = self.verbs.get(("?" if quest else "") + " ".join(words[s:e]))      # the word in this place says what is done or asked
+                if v and v[0] == "NOP":
+                    kind, k = v
+                elif v:
                     need, may, _ = G.KINDS[v[0]]
                     if set(need) <= set(roles) - {"O"} <= set(need) | set(may):
                         kind, k = v
@@ -317,7 +405,7 @@ class Mind:
             kinds = {k: v for k, v in kinds.items() if k in can}
         first, out = [], []
         for form, runs in self.keys(words, quest):
-            if (form in self.forms and not again) or not runs:
+            if (form in self.forms and not again) or not runs or (form in self.lifted and self.tier == 0):
                 continue
             # by likeness: a form already known with one more place (a time, a word that does not matter)
             stars = [i for i, w in enumerate(form) if w in (STAR, STARS)]
@@ -346,10 +434,12 @@ class Mind:
                         if set(roles) - {"O"} != set(want) or any(roles.count(r) > 1 for r in ("D", "T", "N", "A4")) \
                                 or sum(roles.count(r) > 1 for r in ("A1", "A2", "A3")) > 1:
                             continue
-                        if roles.count("O") > 1 and len({words[s0:e0] for (s0, e0), r in zip(runs, roles) if r == "O"}) > 1:
-                            continue                         # only the same word twice may stand in the place that does not matter
+                        if roles.count("O") > 1 and self.tier == 0 and len({words[s0:e0] for (s0, e0), r in zip(runs, roles) if r == "O"}) > 1:
+                            continue                         # with the first schemes only the same word twice may stand in places that do not matter
                         if any((r == "N") != num_at[i] and r != "O" for i, r in enumerate(roles)):
                             continue                         # a number stands only where a number is said, and nothing else does
+                        if form in self.lifted and roles[self.lifted[form]] not in ("A1", "A2", "A3"):
+                            continue                         # a word lifted from the form is a thing spoken of
                         if num == "":
                             ks = [0]
                         elif num == "aa":
@@ -359,7 +449,7 @@ class Mind:
                             new = len(used[num])
                             ks = ([new] if new < room[num] else []) + list(range(min(new, room[num])))
                         out += [(form, (kind, k, roles)) for k in ks]
-        out.sort(key=lambda g: (G.COST[g[1][0]], len(g[1][2]), len(g[1][2]) - len(set(g[1][2]))))      # the plainer guess first
+        out.sort(key=lambda g: (self.cost([g]), len(g[1][2]), len(g[1][2]) - len(set(g[1][2]))))      # the plainer guess first
         self._like = set(first)
         self._like_join = {g for g in first if STARS in g[0] and self.forms.get(tuple(STAR if w == STARS else w for w in g[0]), ())[:3] == g[1]}
         seen, both = set(), []
@@ -408,8 +498,8 @@ class Mind:
         for ans, gold in results:
             if self._named.get(id(gold)):
                 continue
-            if ans and ans[0] == "s" and len(gold) == 1 and not gold[0].isdigit():
-                now[ans[1]][gold[0]] += 1
+            if ans and ans[0] == "s" and len(gold) == 1 and not gold[0].isdigit() and (gold[0] in self.sayable or not self.sayable):
+                now[ans[1]][gold[0]] += 1                         # a sign is said only with a word that is somewhere not a name
             elif ans and ans[0] == "p" and len(ans[1]) == len(gold):
                 for step, g in zip(ans[1], gold):
                     now["step " + step][g] += 1
@@ -613,6 +703,12 @@ class Mind:
                 self._parse.clear()
                 best = plain[0]
         self.tier = 1
+        usual = defaultdict(Counter)                              # what is answered most often to each build of question
+        for story in self.seen:
+            for words, gold in story:
+                if gold:
+                    usual[self.build(words)][tuple(gold)] += 1
+        self.usual = {b: list(c.most_common(1)[0][0]) for b, c in usual.items()}
         self.words(stories, best)
         self.prune(set(self.forms) - known_before)
         best = self.score(stories)[0]
@@ -776,7 +872,7 @@ class Mind:
             together where one word can stand ("red square" for "triangle") are one argument"""
             runs = []
             for s0, e0 in self.places(words):
-                if runs and runs[-1][1] == s0 and tuple(words[runs[-1][0]:e0]) in self.joint:
+                if runs and runs[-1][1] == s0 and tuple(words[runs[-1][0]:e0]) in self.joint and not any(w.isdigit() for w in words[runs[-1][0]:e0]):
                     runs[-1][1:] = [e0, STARS]
                 else:
                     runs.append([s0, e0, STAR])
@@ -825,6 +921,40 @@ class Mind:
         def total(forms, lex, where=some):
             with self.with_forms(forms, lex):
                 return self.judge([r for s in where for r in self.run(s)])[0]
+
+        def drops(s_forms, lex):
+            """the first words of names of several words may be no part of the name ("a cow", "every cow"): the same
+            lexicon with all such words dropped, and with all but one"""
+            first = set()
+            for f, _ in s_forms:
+                if STARS in f:
+                    for words, quest in list(self._by_form.get(f, ()))[:40]:
+                        for ff, runs in self.keys(words, quest):
+                            if ff == f:
+                                first |= {words[s0] for s0, e0 in runs if e0 - s0 > 1}
+            base = lex or self.lex
+            first -= base.skip
+            out = []
+            if 1 <= len(first) <= 5:
+                for keep in [None] + (sorted(first) if len(first) > 1 else []):
+                    new = base.copy()
+                    new.skip |= first - {keep}
+                    out.append(new)
+            return out
+
+        def skips(s_forms, lex):
+            """one of two or three words that stand in a place that does not matter may say that the sentence tells
+            nothing here ("no" beside "every"): the readings with one such word switched off"""
+            if not any("O" in h[2] for _, h in s_forms):
+                return []
+            seen, mine = set(), {f for f, _ in s_forms}
+            with self.with_forms(s_forms, lex):
+                for story in some:
+                    for words, gold in story:
+                        p = self.parse(words, False) if gold is None else None
+                        if p and self._read_by.get((words, False)) in mine:
+                            seen |= set(p[2].get("O", ()))
+            return [{w: ("NOP", 0)} for w in sorted(seen) if w not in self.verbs] if 2 <= len(seen) <= 3 else []
 
         def tally(s_forms, lex, q_cands, can):
             """the statements read in one way; every reading of every question is asked in the same pass over the
@@ -908,7 +1038,7 @@ class Mind:
                     continue                                     # a statement no question can ask about is not guessed here
                 can = set().union(*(G.READS[k] for k in told | {h[0] for _, h in s_forms})) if (told or s_forms) else set()
                 for lex in lexes:
-                    options = [lex] + turns(s_forms, lex)
+                    options = [lex] + turns(s_forms, lex) + drops(s_forms, lex)
                     if any(h[0] in loose_kinds or "D" in h[2] or "T" in h[2] for _, h in s_forms):
                         options += self.orders(list(s_forms), lex, some)[:48]      # the words of the statements in those roles
                     elif not s_forms and any(h[0] in loose_kinds for group in q_cands for forms in group for _, h in forms):
@@ -928,21 +1058,22 @@ class Mind:
                                     chosen += forms
                                     score += sc - base
                                     break
-                        cost = sum(G.COST[h[0]] for _, h in chosen)
+                        cost = self.cost(chosen)
                         if score > 0 and (score, -cost) > ((top[0], -top[3]) if top else (0, -99)):
                             top = (score, chosen, lex2, cost)        # as many right answers by plainer schemes: better
             if not top:
                 return None
+            verbs = self.meanings(top[1], top[2], some) or None  # the words that say what is done or asked, chosen with the forms
             snap = self.snapshot()                               # with what is like the new forms taken too
-            self.take(top[1], top[2])
+            self.take(top[1], top[2], verbs)
             self.adopt(every)
             sc = self.score(every)[0]
             added = [(f, h[:3]) for f, h in self.forms.items() if snap[0].get(f, ())[:3] != h[:3]]
             lex = self.lex
             self.restore(snap)
-            if (tuple(added), ()) in self.bad:                   # this was tried, and spoiled what was learnt before
+            if (tuple(added), tuple(sorted((verbs or {}).items()))) in self.bad:      # this was tried, and spoiled what was learnt before
                 return None
-            return (added, sc, lex, None, None) if sc > best and sc >= enough * n_all else None
+            return (added, sc, lex, verbs, None) if sc > best and sc >= enough * n_all else None
 
         s_kinds, q_kinds = list(dark_s.items()), list(dark_q.items())
         size_of = lambda key: sum(w == STAR for w in key)        # noqa: E731
@@ -980,6 +1111,7 @@ class Mind:
             q_cands = [second(x) for x in q_cands]
             asked = {h[0] for group in q_cands for forms in group for _, h in forms}      # each time the readings that add most
             beam, done = [(0, 0, [], frozenset(range(len(s_lists))))], []                   # (right answers, -cost, forms, kinds left)
+            held = {}                                            # the words found to switch a sentence off
             while beam and self.now() < until:
                 grown = []
                 for got, _, chosen, left in beam:
@@ -996,12 +1128,21 @@ class Mind:
                                 if chosen and near != all(G.READS[h[0]] & reads for _, h in forms):
                                     continue
                                 can = set().union(*(G.READS[k] for k in told | {h[0] for _, h in s_forms}))
-                                cost = sum(G.COST[h[0]] for _, h in s_forms)
-                                for lex in lexes + turns(s_forms, None):
+                                cost = self.cost(s_forms)
+                                for lex in lexes + turns(s_forms, None) + drops(s_forms, None):
                                     base, est = tally(s_forms, lex, q_cands, can)
                                     sc = base + sum(max([est.get((gi, ci), 0) - base for ci in range(len(group))] + [0]) for gi, group in enumerate(q_cands))
                                     if sc > got:
                                         steps.append((sc, -cost, s_forms, left - {bi}))
+                                for off in skips(forms, None):               # ... or with a word that switches the sentence off
+                                    if any(w in self.verbs for w in off):
+                                        continue
+                                    with self.with_forms([], None, off):
+                                        base, est = tally(s_forms, None, q_cands, can)
+                                    sc = base + sum(max([est.get((gi, ci), 0) - base for ci in range(len(group))] + [0]) for gi, group in enumerate(q_cands))
+                                    if sc > got:
+                                        held.update(off)
+                                        steps.append((sc, -cost - 1, s_forms, left - {bi}))
                         if steps:
                             break
                     if steps:
@@ -1015,10 +1156,15 @@ class Mind:
                         seen_sets.add(key)
                         beam.append(st)
             best_found = None
-            for got, _, chosen, left in sorted(done + beam, key=lambda x: (-x[0], -x[1]))[:2]:
-                found = search([chosen], q_cands, 0.5) if chosen else None
-                if found and (best_found is None or found[1] > best_found[1]):
-                    best_found = found
+            states = sorted(done + beam, key=lambda x: (-x[0], -x[1]))[:2]
+            for got, _, chosen, left in states:
+                for off in ([None, held] if held else [None]):
+                    with self.with_forms([], None, off):
+                        found = search([chosen], q_cands, 0.5) if chosen else None
+                    if found and off:                            # the words switched off stay so unless a meaning was found for them
+                        found = found[:3] + (dict(off, **(found[3] or {})),) + found[4:]
+                    if found and (best_found is None or found[1] > best_found[1]):
+                        best_found = found
             return best_found
         s_cands = [[f for part in c for f in part] for c in itertools.product(*s_lists)]
         s_cands = [c for c in s_cands if len({f for f, _ in c}) == len(c)]
@@ -1028,32 +1174,32 @@ class Mind:
         """a word that stands in a place which is not an argument may itself say what is done ("got", "dropped"):
         guess the meaning of such a word in the sentences before the question; it then holds in every form"""
         top, seen = None, set()
-        for words, gold in reversed(story[:li]):
-            if gold is not None or words in seen or len(seen) >= 8:
+        for words, quest in [(story[li][0], True)] + [(w, False) for w, g in reversed(story[:li]) if g is None]:
+            if (words, quest) in seen or len(seen) >= 9:
                 continue
-            seen.add(words)
+            seen.add((words, quest))
             hit = None
-            for form, runs in self.keys(words, False):
+            for form, runs in self.keys(words, quest):
                 f = self.forms.get(form)
                 if f and (hit is None or (len(runs), f[3]) < (len(hit[1]), hit[0][3])):
                     hit = (f, runs)
-            if not hit or "O" not in hit[0][2]:
+            if not hit or "O" not in hit[0][2] or (quest and self.tier == 0):
                 continue
             (kind, k, roles, _), runs = hit
-            s0, e0 = runs[roles.index("O")]
-            word = " ".join(words[s0:e0])
             used = {"a": len({f[1] for f in self.forms.values() if G.KINDS[f[0]][2] == "a"}), "o": G.N_ORDER - 1, "m": G.N_MAP - 1, "h": G.N_SET - 1}
-            for kind2, (need, may, num) in G.STATEMENTS.items():
-                if G.TIER[kind2] > self.tier or not set(need) <= set(roles) - {"O"} <= set(need) | set(may):
-                    continue
-                for k2 in ([0] if num == "" else range(min({"a": G.N_ATTR, "o": G.N_ORDER, "m": G.N_MAP, "h": G.N_SET}[num], used[num] + 1))):
-                    verbs = {word: (kind2, k2)}
-                    if self.verbs.get(word, (kind, k)) == (kind2, k2) or ((), tuple(sorted(verbs.items()))) in self.bad or word in self.frozen:
+            for oi in [i for i, r in enumerate(roles) if r == "O"]:
+                word = ("?" if quest else "") + " ".join(words[runs[oi][0]:runs[oi][1]])
+                for kind2, (need, may, num) in (G.QUERIES if quest else G.STATEMENTS).items():
+                    if G.TIER[kind2] > self.tier or num == "aa" or not set(need) <= set(roles) - {"O"} <= set(need) | set(may):
                         continue
-                    with self.with_forms([], None, verbs):
-                        sc = self.judge([r for s in stories for r in self.run(s)])[0]
-                    if sc > (top[0] if top else best):
-                        top = (sc, verbs)
+                    for k2 in ([0] if num == "" else range(min({"a": G.N_ATTR, "o": G.N_ORDER, "m": G.N_MAP, "h": G.N_SET}[num], used[num] + 1))):
+                        verbs = {word: (kind2, k2)}
+                        if self.verbs.get(word, (kind, k)) == (kind2, k2) or ((), tuple(sorted(verbs.items()))) in self.bad or word in self.frozen:
+                            continue
+                        with self.with_forms([], None, verbs):
+                            sc = self.judge([r for s in stories for r in self.run(s)])[0]
+                        if sc > (top[0] if top else best):
+                            top = (sc, verbs)
         return ([], top[0], None, top[1]) if top else None
 
     def lexicons(self, group, combo):
@@ -1187,7 +1333,7 @@ class Mind:
                 if sc > best:
                     found.append((sc, len(found), combo, lex2))
         top = None
-        for sc, _, combo, lex in sorted(found, key=lambda x: (-x[0], sum(G.COST[h[0]] for _, h in x[2]), x[1]))[:6]:
+        for sc, _, combo, lex in sorted(found, key=lambda x: (-x[0], self.cost(x[2]), x[1]))[:6]:
             if not self.flat(combo, lex, stories):            # always the same answer is not an answer
                 top = (sc, combo, lex)
                 break
@@ -1227,6 +1373,11 @@ class Mind:
                 if p:
                     for r, vals in p[2].items():
                         roles[r] |= set(vals)
+        for w in sorted({v.split()[0] for r in ("A1", "A2", "A3") for v in roles[r] if " " in v}):
+            if w not in self.lex.skip:
+                better(lambda w=w: self.lex.skip.add(w), lambda w=w: self.lex.skip.discard(w))
+            else:                                                 # or it is part of the name after all ("no owl" is not "owl")
+                better(lambda w=w: self.lex.skip.discard(w), lambda w=w: self.lex.skip.add(w))
         for w in sorted(roles["O"]):
             if w not in self.lex.flip:
                 better(lambda w=w: self.lex.flip.add(w), lambda w=w: self.lex.flip.discard(w))
@@ -1291,7 +1442,7 @@ class Mind:
             text = " ".join(next(it) if w == STAR else next(it) + "+" if w == STARS else w for w in form[1:])
             out.append(f"{'?' if form[0] else ' '} {text:55s} {kind}{'' if G.KINDS[kind][2] == '' else ' ' + str(k)}")
         for w, (kind, k) in sorted(self.verbs.items()):
-            out.append(f"  the word '{w}' means {kind}{'' if G.KINDS[kind][2] == '' else ' ' + str(k)}")
+            out.append(f"  the word '{w}' means {kind}{'' if kind == 'NOP' or G.KINDS[kind][2] == '' else ' ' + str(k)}")
         return "\n".join(out)
 
 
@@ -1319,15 +1470,24 @@ def main():
     mind.trace = a.trace
     def test(k):
         f = glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0]
-        res = [r for s in read(f) for r in mind.run(s)]
         say = dict(mind.said_all, **{s: c.most_common(1)[0][0] for s, c in mind.said_n.items()})
         for s, c in mind.said_n.items():                         # every way a sign was said
             for g in c:
                 if g not in say.values() and not s.startswith("step "):
                     say[("also", g)] = max(mind.said_n, key=lambda x: mind.said_n[x][g])
-        r = sum(mind.right(ans, gold, say) for ans, gold in res)
-        rows.append((k, r, len(res)))
-        print(f"test {k:2d}: {r}/{len(res)} = {100 * r / len(res):.1f}%", flush=True)
+        r = n = usual = 0
+        for story in read(f):
+            res, qi = mind.run(story), 0
+            for words, gold in story:
+                if gold is None:
+                    continue
+                ans, qi, n = res[qi][0], qi + 1, n + 1
+                if mind.right(ans, gold, say):
+                    r += 1
+                elif ans is None and sorted(mind.usual.get(mind.build(words), [])) == sorted(gold):
+                    r, usual = r + 1, usual + 1                  # nothing was understood: the usual answer to such a question
+        rows.append((k, r, n))
+        print(f"test {k:2d}: {r}/{n} = {100 * r / n:.1f}%" + (f"   ({usual} of them by the usual answer)" if usual else ""), flush=True)
 
     for n, k in enumerate(only):
         if a.apart:
