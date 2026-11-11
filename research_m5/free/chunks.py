@@ -36,14 +36,15 @@ def main():
     ap.add_argument("--src", default="src")
     ap.add_argument("--done", default="stories")
     ap.add_argument("--first", type=int, default=20, help="the first training story to take (those before it are the template ones)")
+    ap.add_argument("--per", type=int, default=20, help="stories in a file")
     a = ap.parse_args()
     if a.what == "cut":
         os.makedirs(a.out, exist_ok=True)
         train = stories(glob.glob(os.path.join(a.data, f"qa{a.k}_*train.txt"))[0])[a.first:a.first + 40]
         test = stories(glob.glob(os.path.join(a.data, f"qa{a.k}_*test.txt"))[0])[:80]
         both = [{"part": "train", "id": i, "sentences": s} for i, s in enumerate(train)] + [{"part": "test", "id": i, "sentences": s} for i, s in enumerate(test)]
-        for c in range(0, len(both), 20):
-            json.dump({"task": a.name, "stories": both[c:c + 20]}, open(os.path.join(a.out, f"{a.name}_{c // 20:02d}.json"), "w", encoding="utf-8"), indent=0)
+        for c in range(0, len(both), a.per):
+            json.dump({"task": a.name, "stories": both[c:c + a.per]}, open(os.path.join(a.out, f"{a.name}_{c // a.per:02d}.json"), "w", encoding="utf-8"), indent=0)
         print(a.name, len(both), "stories,", sum(len(s["sentences"]) for s in both), "sentences")
         return
     bad = 0
