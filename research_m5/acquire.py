@@ -259,13 +259,14 @@ class Mind:
         if quest and gold:
             things = ("VAL", "BEFORE", "P_WHAT", "P_FROM", "P_TO", "NEXT", "L_A1", "L_A2", "LIST")
             signs = ("IS", "MORE", "L_IS", "COUNT", "LIST", "PATH")
+            named = {self.same(w) for w in gold[0].split()} <= {self.same(w) for w in text}
             if len(gold) > 1:
                 can = ("LIST", "PATH")
-            elif any(gold[0] in c for c in self.said_n.values()):   # a word already learnt as a way to say yes, no, a number
-                can = signs + things
-            elif {self.same(w) for w in gold[0].split()} <= {self.same(w) for w in text}:     # the answer is named in the story: a thing is asked
+            elif named and any(gold[0] in c for c in self.said_n.values()):
+                can = signs + things          # named in the story, but already learnt as a way to say yes, no or a number
+            elif named:                       # the answer is named in the story: a thing is asked
                 can = things
-            else:                                                   # it is not: yes or no, a number, a step
+            else:                             # it is not: yes or no, a number, a step
                 can = signs
             kinds = {k: v for k, v in kinds.items() if k in can}
         first, out = [], []
