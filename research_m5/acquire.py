@@ -156,7 +156,7 @@ class Mind:
             if (len(self.single), len(self.multi), len(apart)) == size:
                 break
         # words that look alike and never stand against each other in one place may be one word
-        words = sorted(self.single | {g for g in golds if " " not in g})
+        words = sorted((self.single | {g for g in golds if " " not in g}) - self.signs)       # a sign (yes, maybe) is not a form of a word
         group = {w: {w} for w in words}
         pairs = sorted(((alike(a, b), a, b) for i, a in enumerate(words) for b in words[i + 1:] if alike(a, b)), reverse=True)
         for _, a, b in pairs:
@@ -517,6 +517,16 @@ class Mind:
                 stuck.clear()
                 continue
             new, sc, lex, verbs, unit = step
+            if lex is not None:                                  # of the word forms that came with the guess, only those it needs
+                def with_lex(x):
+                    with self.with_forms(new, x, verbs):
+                        return self.score(stories)[0]
+                have = with_lex(lex)
+                for w in sorted(set(lex.alias) - set(self.lex.alias)):
+                    trial = lex.copy()
+                    trial.alias.pop(w)
+                    if with_lex(trial) >= have:
+                        lex = trial
             snap = self.snapshot()
             self.take(new, lex, verbs)
             if any(self.score(t)[0] < b for t, b in zip(self.tasks, before)):
