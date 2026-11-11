@@ -257,12 +257,16 @@ class Mind:
         room = {"a": G.N_ATTR, "o": G.N_ORDER, "m": G.N_MAP}
         kinds = G.QUERIES if quest else G.STATEMENTS
         if quest and gold:
+            things = ("VAL", "BEFORE", "P_WHAT", "P_FROM", "P_TO", "NEXT", "L_A1", "L_A2", "LIST")
+            signs = ("IS", "MORE", "L_IS", "COUNT", "LIST", "PATH")
             if len(gold) > 1:
                 can = ("LIST", "PATH")
+            elif any(gold[0] in c for c in self.said_n.values()):   # a word already learnt as a way to say yes, no, a number
+                can = signs + things
             elif {self.same(w) for w in gold[0].split()} <= {self.same(w) for w in text}:     # the answer is named in the story: a thing is asked
-                can = ("VAL", "BEFORE", "P_WHAT", "P_FROM", "P_TO", "NEXT", "L_A1", "L_A2", "LIST")
+                can = things
             else:                                                   # it is not: yes or no, a number, a step
-                can = ("IS", "MORE", "L_IS", "COUNT", "LIST", "PATH")
+                can = signs
             kinds = {k: v for k, v in kinds.items() if k in can}
         first, out = [], []
         for form, runs in self.keys(words, quest):
@@ -761,6 +765,8 @@ class Mind:
             added = [(f, h[:3]) for f, h in self.forms.items() if snap[0].get(f, ())[:3] != h[:3]]
             lex = self.lex
             self.restore(snap)
+            if (tuple(added), ()) in self.bad:                   # this was tried, and spoiled what was learnt before
+                return None
             return (added, sc, lex, None, None) if sc > best and sc >= enough * n_all else None
 
         s_kinds, q_kinds = list(dark_s.items()), list(dark_q.items())
@@ -858,7 +864,7 @@ class Mind:
                         ds |= set(p[2].get("D", ()))
                         ts |= set(p[2].get("T", ()))
         base, out = lex or self.lex, []
-        ds, ts = sorted(ds), sorted(ts)
+        ds, ts = sorted({base.norm(d) for d in ds}), sorted({base.norm(t) for t in ts})
         d_opts = [dict(zip(ds, perm)) for perm in itertools.permutations(G.CODES, len(ds))] if 0 < len(ds) <= 4 else [None]
         t_opts = [dict(zip(ts, perm)) for perm in itertools.permutations(range(len(ts)))] if 1 < len(ts) <= 4 else [None]
         for d in d_opts:
@@ -897,7 +903,8 @@ class Mind:
             t, v = ans
             al = (lex or self.lex).alias
             return (t == "e" and len(gold) == 1 and al.get(gold[0], gold[0]) == v) or (t == "l" and sorted(v) == sorted(al.get(g, g) for g in gold)) \
-                or (t == "s" and len(gold) == 1 and not set(gold[0].split()) & text and self.said.get(v, gold[0]) == gold[0]) \
+                or (t == "s" and len(gold) == 1 and (not set(gold[0].split()) & text or any(gold[0] in c for c in self.said_n.values()))
+                    and self.said.get(v, gold[0]) == gold[0]) \
                 or (t == "p" and len(v) == len(gold) and all(self.said.get("step " + s, g) == g for s, g in zip(v, gold)))
 
         told = set()                                             # what the statements of this story tell
@@ -993,20 +1000,20 @@ class Mind:
             if w not in self.lex.pron:
                 better(lambda w=w: self.lex.pron.add(w), lambda w=w: self.lex.pron.discard(w))
         for _ in range(2):
-            for w in sorted(roles["D"]):
+            for w in sorted({self.lex.norm(d) for d in roles["D"]}):
                 for c in G.CODES:
                     old = self.lex.dirs.get(w)
                     if c != old:
                         better(lambda c=c: self.lex.dirs.__setitem__(w, c),
                                lambda: self.lex.dirs.pop(w, None) if old is None else self.lex.dirs.__setitem__(w, old))
-        ts = sorted(roles["T"])
+        ts = sorted({self.lex.norm(t) for t in roles["T"]})
         if 1 < len(ts) <= 5:
             old = dict(self.lex.times)
             for perm in itertools.permutations(range(len(ts))):
                 new = dict(old, **dict(zip(ts, perm)))
                 if better(lambda new=new: setattr(self.lex, "times", new), lambda: setattr(self.lex, "times", old)):
                     old = new
-        ds = sorted(roles["D"])
+        ds = sorted({self.lex.norm(d) for d in roles["D"]})
         if 0 < len(ds) <= 4:
             old = dict(self.lex.dirs)
             for perm in itertools.permutations(G.CODES, len(ds)):

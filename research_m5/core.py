@@ -84,11 +84,21 @@ class Lexicon:
         c.like, c.gave = self.like, self.gave
         return c
 
+    def norm(self, w):
+        """a name with its words in their main form ("This morning" - "this morning")"""
+        if w in self.alias:
+            return self.alias[w]
+        if " " in w:
+            return " ".join(self.alias.get(x, x) for x in w.split())
+        return w
+
     def direction(self, w):
         """a word not learnt yet is some direction, always the same one"""
+        w = self.norm(w)
         return self.dirs.get(w) or CODES[sum(map(ord, w)) % 4]
 
     def time(self, w):
+        w = self.norm(w)
         return self.times.get(w, 100 + sum(map(ord, w)) % 50)
 
 
@@ -109,7 +119,7 @@ class World:
         self.last = []
 
     def name(self, w):
-        return self.lex.alias.get(w, w)
+        return self.lex.norm(w)
 
     def who(self, names):
         if any(x in self.lex.pron for x in names):
