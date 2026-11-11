@@ -561,6 +561,8 @@ def main():
     ap.add_argument("--pairs", type=int, default=16, help="the ledger also scores pairs of roles (the size of the pair vectors, 0: no)")
     ap.add_argument("--distract", type=float, default=0.5, help="share of problems that get a copy with a number that does not matter, every epoch")
     ap.add_argument("--world", type=int, default=0, help="problems from the micro-world (mathworld.py) added every epoch")
+    ap.add_argument("--limit", type=int, default=0, help="use only so many of the training problems (how much is learnt from how little)")
+    ap.add_argument("--eval-every", type=int, default=1)
     ap.add_argument("--show", type=int, default=0)
     a = ap.parse_args()
     if a.ask:
@@ -581,6 +583,14 @@ def main():
     rng.shuffle(usable)
     n_val = len(usable) // 10
     val, train = usable[:n_val], usable[n_val:] + extra
+    if a.limit:                                              # the words are then also only those of what is used
+        train = usable[n_val:][:a.limit] + extra
+        seen = [mathworld.problem(random.Random(a.seed + 7)) for _ in range(2000)] if a.world else []
+        vocab = build_vocab(train + seen, a.min_df)
+        for p in train:
+            prepare(p, vocab, not a.equations or p["eq"] is None)
+        for p in val + test:
+            prepare(p, vocab, True)
     print(f"train {len(train)} (of them generated {len(extra)}), held out {len(val)}, test {len(test)} of {n_test}; "
           f"the right value exists among the expressions for {reach} test problems, among the readings of the ledger for {reach_l}; "
           f"words {n_vocab(vocab)}", flush=True)
@@ -631,6 +641,8 @@ def main():
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
             tot += loss.item()
+        if (ep + 1) % a.eval_every and ep + 1 < a.epochs:
+            continue
         va, _ = accuracy(model, val)
         te, _ = accuracy(model, test, n_test)
         if va[mode] >= chosen[0]:
