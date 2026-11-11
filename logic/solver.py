@@ -52,6 +52,8 @@ import mathworld
 from engine import singular
 from translator import MillenniumLSTM
 
+DEV = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+USE_LEDGER = True                # the readings of the ledger are listed for every problem (not needed with --heads expr)
 BUCKETS = 96
 N_TOKF, N_NUMF = 3, 12
 N_FACTS = C.N_FACTS + 2
@@ -89,10 +91,16 @@ def read_jsonl(path):
 QSTART = {"how", "what", "find", "calculate", "which", "who", "when", "where"}
 
 
+def tokenize(text):
+    """lower case; numbers, words, signs; 's and n't stand apart, as in the training files"""
+    text = text.lower().replace("\u2019", "'").replace("\u201c", '"').replace("\u201d", '"')
+    text = re.sub(r"(\w)(n't|'s|'re|'ve|'ll|'d|'m)\b", r"\1 \2", text)
+    return re.findall(r"\d+(?:,\d{3})*(?:\.\d+)?|n't|'[a-z]+|[a-z]+|[^\sa-z\d]", text)
+
+
 def from_text(text, answer=None):
-    toks = re.findall(r"\d+(?:,\d{3})*(?:\.\d+)?|[a-z]+(?:'[a-z]+)?|[^\sa-z\d]", text.lower())
     words, nums = [], []
-    for t in toks:
+    for t in tokenize(text):
         if t[0].isdigit():
             words.append(f"number{len(nums)}")
             nums.append(Fraction(t.replace(",", "")))
@@ -112,12 +120,13 @@ def stem(w):
     return singular(w) if w.isalpha() else w
 
 
-def build_vocab(problems, min_df=3):
+def build_vocab(problems, min_df=3, ids=None):
+    """the words with their own vector; ids: the words of a reader that has already read plain text"""
     df = Counter(w for p in problems for w in set(p["words"]) if not SLOT.fullmatch(w))
     n = len(problems)
     own = sorted(w for w, c in df.items() if c >= min_df)
-    return {"ids": {w: i + 2 for i, w in enumerate(own)},                 # 0 padding, 1 a number
-            "df": {w: df[w] for w in own},
+    ids = dict(ids) if ids else {w: i + 2 for i, w in enumerate(own)}     # 0 padding, 1 a number
+    return {"ids": ids, "df": {w: df[w] for w in ids},
             "common": sorted(w for w, c in df.items() if c >= 0.1 * n or not w.isalpha())}
 
 
@@ -224,7 +233,7 @@ def prepare(p, vocab, answers_only):
         g = C.find(p["eq"], k, 2 if k <= 5 else 1)
         p["gold"] = [keep.index(g)] if g is not None and g in keep else []
     # the ledger: every well formed reading (roles of the numbers, kind of the question) with its answer
-    if k <= 7:
+    if k <= 7 and USE_LEDGER:
         T, kind = L.readings(k)
         out, ok = L.compute(k, [float(x) for x in nums])
         T, kind, out = T[ok], kind[ok], out[ok]
@@ -354,10 +363,10 @@ def distract(p, rng, units, vocab):
 
 # ---------------------------------------------------------------- the network
 class Solver(torch.nn.Module):
-    def __init__(self, n_words, dim=96, hid=128, d=128, drop=0.4, marks=True, facts=True, ledger=False, pairs=0):
+    def __init__(self, n_words, dim=96, hid=128, d=128, drop=0.4, marks=True, facts=True, ledger=False, pairs=0, layers=1):
         super().__init__()
         self.cfg = {"n_words": n_words, "dim": dim, "hid": hid, "d": d, "drop": drop, "marks": marks, "facts": facts,
-                    "ledger": ledger, "pairs": pairs}
+                    "ledger": ledger, "pairs": pairs, "layers": layers}
         self.marks, self.use_facts, self.ledger, self.pairs = marks, facts, ledger, pairs
         if ledger:                                  # the second head: the role of every number, the kind of the question
             self.role = torch.nn.Sequential(torch.nn.Linear(3 * d, d), torch.nn.Tanh(), torch.nn.Linear(d, len(L.ROLES)))
@@ -368,6 +377,8 @@ class Solver(torch.nn.Module):
         self.emb = torch.nn.Embedding(n_words, dim, padding_idx=0)
         self.tokf = torch.nn.Linear(N_TOKF, dim, bias=False)
         self.fw, self.bw = MillenniumLSTM(dim, hid), MillenniumLSTM(dim, hid)
+        self.more = torch.nn.ModuleList([torch.nn.ModuleList([MillenniumLSTM(2 * hid, hid), MillenniumLSTM(2 * hid, hid)])
+                                         for _ in range(layers - 1)])
         self.num = torch.nn.Linear(2 * hid + N_NUMF, d)
         self.att = torch.nn.Linear(2 * hid, 1)
         self.q = torch.nn.Linear(4 * hid, d)
@@ -386,6 +397,19 @@ class Solver(torch.nn.Module):
                 out[m] = torch.tanh(self.comp[o](z[m]))
         return out
 
+    def read(self, ids, tokf=None):
+        """the reader: word ids (B, T) -> the state at every word (B, T, 2 hid), and which places are words"""
+        mask = (ids != 0).float()
+        x = self.emb(ids)
+        if tokf is not None and self.marks:
+            x = x + self.tokf(tokf)
+        x = self.drop(x)
+        h = torch.cat([self.fw(x, mask), self.bw(x, mask, reverse=True)], -1)
+        for fw, bw in self.more:                                # further layers read the states of the layer below
+            z = self.drop(h)
+            h = h + torch.cat([fw(z, mask), bw(z, mask, reverse=True)], -1)
+        return h, mask
+
     def forward(self, batch):
         """-> for every problem the scores of its expressions and the scores of its readings in the ledger"""
         B, T = len(batch), max(len(p["ids"]) for p in batch)
@@ -397,12 +421,9 @@ class Solver(torch.nn.Module):
             ids[i, :n] = torch.tensor(p["ids"])
             tokf[i, :n] = torch.tensor(p["tokf"])
             qm[i, :n] = torch.tensor(p["qmask"], dtype=torch.float)
-        mask = (ids != 0).float()
-        x = self.emb(ids)
-        if self.marks:
-            x = x + self.tokf(tokf)
-        x = self.drop(x)
-        h = self.drop(torch.cat([self.fw(x, mask), self.bw(x, mask, reverse=True)], -1))
+        ids, tokf, qm = ids.to(DEV), tokf.to(DEV), qm.to(DEV)
+        h, mask = self.read(ids, tokf)
+        h = self.drop(h)
         a = torch.softmax(self.att(h).squeeze(-1).masked_fill(mask == 0, -1e30), -1)
         whole = (a.unsqueeze(-1) * h).sum(1)
         qn = (qm.unsqueeze(-1) * h).sum(1) / qm.sum(1, keepdim=True).clamp(min=1)                 # the question part
@@ -414,14 +435,16 @@ class Solver(torch.nn.Module):
             cols += p["pos"]
             numf += p["numf"]
             off.append(off[-1] + len(p["pos"]))
-        numf = torch.tensor(numf)
+        numf = torch.tensor(numf, device=DEV)
         if not self.marks:
             numf = torch.zeros_like(numf)
         N = torch.tanh(self.num(torch.cat([h[rows, cols], numf], -1)))                            # (all numbers, d)
         # expressions with one operation, then with two
-        one = torch.tensor([(o, a + off[i], b + off[i]) for i, p in enumerate(batch) for o, a, b in p["one"]], dtype=torch.long).reshape(-1, 3)
+        one = torch.tensor([(o, a + off[i], b + off[i]) for i, p in enumerate(batch) for o, a, b in p["one"]],
+                           dtype=torch.long, device=DEV).reshape(-1, 3)
         two = torch.tensor([(o2, s, o1, a + off[i], b + off[i], c + off[i]) for i, p in enumerate(batch) for o2, s, o1, a, b, c in p["two"]],
-                           dtype=torch.long).reshape(-1, 6)
+                           dtype=torch.long, device=DEV).reshape(-1, 6)
+        facts = torch.tensor([f for p in batch for f in p["facts"]], device=DEV) if self.use_facts else None
         node1 = self.compose(one[:, 0], N[one[:, 1]], N[one[:, 2]])
         if len(two):
             inner = self.compose(two[:, 2], N[two[:, 3]], N[two[:, 4]])
@@ -432,11 +455,11 @@ class Solver(torch.nn.Module):
         for i, p in enumerate(batch):
             n1, n2 = len(p["one"]), len(p["two"])
             node = node1[i1:i1 + n1] if n2 == 0 else torch.cat([node1[i1:i1 + n1], node2[i2:i2 + n2]], 0)
-            i1, i2 = i1 + n1, i2 + n2
             node = self.drop(node)
             z = self.s_node(node) + self.s_mix(node * quest[i])
             if self.use_facts:
-                z = z + self.s_fact(torch.tensor(p["facts"]))
+                z = z + self.s_fact(facts[i1 + i2:i1 + i2 + n1 + n2])
+            i1, i2 = i1 + n1, i2 + n2
             scores.append(self.out(torch.tanh(z)).squeeze(-1))
         reads = [None] * B
         if self.ledger:
@@ -446,13 +469,13 @@ class Solver(torch.nn.Module):
                 k = n.shape[0]
                 other = (n.sum(0, keepdim=True) - n) / max(1, k - 1)                      # what the other numbers are
                 feats = torch.cat([n, quest[i].expand(k, -1), other], -1)
-                T = p["l_roles"]
-                reads[i] = torch.log_softmax(self.role(feats), -1).gather(1, T.t()).sum(0) + kind_lp[i, p["l_kind"]]
+                T, kinds = p["l_roles"].to(DEV), p["l_kind"].to(DEV)
+                reads[i] = torch.log_softmax(self.role(feats), -1).gather(1, T.t()).sum(0) + kind_lp[i, kinds]
                 if self.pairs and len(T):
                     e = self.pair(feats).view(k, len(L.ROLES), self.pairs)
-                    e = e[torch.arange(k)[None, :], T] * (T != 0).unsqueeze(-1)            # (readings, k, pairs)
+                    e = e[torch.arange(k, device=DEV)[None, :], T] * (T != 0).unsqueeze(-1)   # (readings, k, pairs)
                     total = e.sum(1)
-                    ke = self.kind_pair(quest[i]).view(len(L.QUERIES), self.pairs)[p["l_kind"]]
+                    ke = self.kind_pair(quest[i]).view(len(L.QUERIES), self.pairs)[kinds]
                     reads[i] = reads[i] + 0.5 * (total.pow(2).sum(-1) - e.pow(2).sum((1, 2))) + (ke * total).sum(-1)
         return scores, reads
 
@@ -512,10 +535,27 @@ def accuracy(model, problems, total=None):
     return {m: sum(right(p, g[m]) for p, g in zip(problems, got)) / n for m in ("expr", "ledger", "both")}, got
 
 
-def ask(path, text):
+def load(path):
     ck = torch.load(path, map_location="cpu", weights_only=False)
     model = Solver(**ck["cfg"])
     model.load_state_dict(ck["state"])
+    return model.to(DEV), ck["vocab"]
+
+
+def measure(path, test_path):
+    """a trained model on a file of problems"""
+    model, vocab = load(path)
+    test = read_csv(test_path)
+    n = len(test)
+    test = [p for p in test if prepare(p, vocab, True)]
+    encode(test, vocab)
+    acc, got = accuracy(model, test, n)
+    print(f"{n} problems: expressions {100 * acc['expr']:.1f}" + (f", ledger {100 * acc['ledger']:.1f}" if model.ledger else ""))
+
+
+def ask(path, text):
+    model, vocab = load(path)
+    ck = {"vocab": vocab}
     p = from_text(text)
     if not p or not prepare(p, ck["vocab"], True):
         print("the text needs at least two numbers")
@@ -539,7 +579,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--train", default="")
     ap.add_argument("--test", default="")
-    ap.add_argument("--model", default="", help="with --ask: a trained model")
+    ap.add_argument("--model", default="", help="a trained model: with --ask it answers, with --test it is measured")
     ap.add_argument("--ask", default="", help="a problem as text: prints the expressions the model prefers")
     ap.add_argument("--extra", default="", help="more problems: jsonl with text and answer (answers only)")
     ap.add_argument("--out", default="")
@@ -561,16 +601,26 @@ def main():
     ap.add_argument("--pairs", type=int, default=16, help="the ledger also scores pairs of roles (the size of the pair vectors, 0: no)")
     ap.add_argument("--distract", type=float, default=0.5, help="share of problems that get a copy with a number that does not matter, every epoch")
     ap.add_argument("--world", type=int, default=0, help="problems from the micro-world (mathworld.py) added every epoch")
+    ap.add_argument("--layers", type=int, default=1, help="layers of the reader")
+    ap.add_argument("--pretrained", default="", help="a reader that has read plain text (pretrain.py): its words, its size, its weights")
+    ap.add_argument("--sets", type=int, default=0, help="make the problems of code for so many epochs once and go round them (0: new every epoch)")
     ap.add_argument("--limit", type=int, default=0, help="use only so many of the training problems (how much is learnt from how little)")
     ap.add_argument("--eval-every", type=int, default=1)
     ap.add_argument("--show", type=int, default=0)
     a = ap.parse_args()
     if a.ask:
         return ask(a.model, a.ask)
+    if a.model:
+        return measure(a.model, a.test)
+    global USE_LEDGER
+    USE_LEDGER = a.heads != "expr"
     torch.manual_seed(a.seed)
     rng = random.Random(a.seed)
     train_all, test = read_csv(a.train), read_csv(a.test)
-    vocab = build_vocab(train_all, a.min_df)
+    reader = torch.load(a.pretrained, map_location="cpu", weights_only=False) if a.pretrained else None
+    if reader:
+        a.dim, a.hid, a.layers = reader["cfg"]["dim"], reader["cfg"]["hid"], reader["cfg"]["layers"]
+    vocab = build_vocab(train_all, a.min_df, reader["ids"] if reader else None)
     extra = read_jsonl(a.extra) if a.extra else []
     n_test = len(test)
     train_all = [p for p in train_all if prepare(p, vocab, not a.equations)]
@@ -586,7 +636,7 @@ def main():
     if a.limit:                                              # the words are then also only those of what is used
         train = usable[n_val:][:a.limit] + extra
         seen = [mathworld.problem(random.Random(a.seed + 7)) for _ in range(2000)] if a.world else []
-        vocab = build_vocab(train + seen, a.min_df)
+        vocab = build_vocab(train + seen, a.min_df, reader["ids"] if reader else None)
         for p in train:
             prepare(p, vocab, not a.equations or p["eq"] is None)
         for p in val + test:
@@ -594,28 +644,40 @@ def main():
     print(f"train {len(train)} (of them generated {len(extra)}), held out {len(val)}, test {len(test)} of {n_test}; "
           f"the right value exists among the expressions for {reach} test problems, among the readings of the ledger for {reach_l}; "
           f"words {n_vocab(vocab)}", flush=True)
-    model = Solver(n_vocab(vocab), a.dim, a.hid, a.d, a.drop, not a.no_marks, not a.no_facts, a.heads != "expr", a.pairs)
+    model = Solver(reader["cfg"]["n_words"] if reader else n_vocab(vocab), a.dim, a.hid, a.d, a.drop, not a.no_marks, not a.no_facts,
+                   a.heads != "expr", a.pairs, a.layers)
+    if reader:                                                   # the reader starts from what it has read
+        left = model.load_state_dict(reader["state"], strict=False)
+        assert not left.unexpected_keys, left.unexpected_keys
+    model.to(DEV)
     mode = "ledger" if a.heads == "ledger" else "expr"            # with both heads the expressions answer, the ledger explains
-    print("parameters:", sum(x.numel() for x in model.parameters()), flush=True)
+    print("parameters:", sum(x.numel() for x in model.parameters()), "on", DEV, flush=True)
     opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=1e-2)
     encode(val + test, vocab)
     base, units = train, unit_words(train, vocab)
-    chosen = (-1.0, 0, None)
-    t0 = time.time()
-    for ep in range(a.epochs):
-        model.train()
-        train = list(base)
+
+    def made():
+        """the problems made by code for one epoch: copies with a number that does not matter, the micro-world"""
+        out = []
         for p in base:
             if rng.random() < a.distract:
                 p2 = distract(p, rng, units, vocab)
                 if p2 and rng.random() < 0.3:                # sometimes two such numbers
                     p2 = distract(p2, rng, units, vocab) or p2
                 if p2:
-                    train.append(p2)
+                    out.append(p2)
         for _ in range(a.world):
             p2 = mathworld.problem(rng)
             if prepare(p2, vocab, True) and (p2["gold"] or p2["l_gold"]):
-                train.append(p2)
+                out.append(p2)
+        return out
+
+    sets = [made() for _ in range(a.sets)]
+    chosen = (-1.0, 0, None)
+    t0 = time.time()
+    for ep in range(a.epochs):
+        model.train()
+        train = list(base) + (sets[ep % a.sets] if a.sets else made())
         encode(train, vocab, rng, a.word_drop)
         order = list(range(len(train)))
         rng.shuffle(order)
@@ -646,7 +708,7 @@ def main():
         va, _ = accuracy(model, val)
         te, _ = accuracy(model, test, n_test)
         if va[mode] >= chosen[0]:
-            chosen = (va[mode], ep, {k: v.clone() for k, v in model.state_dict().items()})
+            chosen = (va[mode], ep, {k: v.detach().cpu().clone() for k, v in model.state_dict().items()})
         print(f"epoch {ep + 1}: loss {tot / len(batches):.3f}  held out {100 * va[mode]:.1f}  test: expressions {100 * te['expr']:.1f}, "
               f"ledger {100 * te['ledger']:.1f}, both {100 * te['both']:.1f}  ({time.time() - t0:.0f} s)", flush=True)
     model.load_state_dict(chosen[2])
@@ -671,7 +733,7 @@ def main():
             print("   ", " ".join(p["words"]), "|", [float(x) for x in p["nums"]], "| chose", g[mode], "| expression", C.show(p["cand"][g["j"]], p["nums"]),
                   "| ledger", led, "| right", p["answer"], p["eq_text"])
     if a.out:
-        torch.save({"state": model.state_dict(), "cfg": model.cfg, "vocab": vocab}, a.out)
+        torch.save({"state": {k: v.cpu() for k, v in model.state_dict().items()}, "cfg": model.cfg, "vocab": vocab}, a.out)
 
 
 if __name__ == "__main__":
