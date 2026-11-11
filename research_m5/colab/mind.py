@@ -12,6 +12,7 @@ import os
 import subprocess
 import sys
 import tarfile
+import time
 import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -24,7 +25,7 @@ def main():
     ap.add_argument("--work", default="/content/mx-mind")
     ap.add_argument("--runs", default="en:20,hn:20,shuffled:20,en:5,en:10,en:50",
                     help="language:stories of every task to learn from - one run for each pair")
-    ap.add_argument("--budget", type=int, default=150, help="seconds for one task")
+    ap.add_argument("--budget", type=int, default=300, help="seconds for one task (Colab processors are about half as fast)")
     a = ap.parse_args()
     os.makedirs(a.work, exist_ok=True)
     base = os.path.join(a.work, "tasks_1-20_v1-2")
@@ -35,6 +36,7 @@ def main():
             t.extractall(a.work, filter="data")
     runs = [(r.split(":")[0], int(r.split(":")[1])) for r in a.runs.split(",")]
     many = max(1, min(4, (os.cpu_count() or 2)))
+    seen = time.time()
     for i in range(0, len(runs), many):                       # several runs at once, one per processor
         procs = []
         for lang, n in runs[i:i + many]:
@@ -44,9 +46,18 @@ def main():
             print("start:", name, flush=True)
             procs.append(subprocess.Popen([sys.executable, ROOT + "/acquire.py", "--data", f"{base}/{lang}", "--stories", str(n),
                                            "--budget", str(a.budget), "--state", f"{a.work}/{name}.pkl", "--out", f"{a.work}/{name}.json"],
-                                          cwd=ROOT, stdout=open(f"{a.work}/{name}.log", "a"), stderr=subprocess.STDOUT))
-        for p in procs:
-            p.wait()
+                                          cwd=ROOT, stdout=open(f"{a.work}/{name}.log", "a"), stderr=subprocess.STDOUT,
+                                          env=dict(os.environ, PYTHONHASHSEED="0")))
+        names = [f"{lang}{n}" for lang, n in runs[i:i + many]]
+        while any(p.poll() is None for p in procs):           # a line now and then, to see that it is alive
+            time.sleep(20)
+            if time.time() - seen > 300:
+                seen = time.time()
+                done = {}
+                for name in names:
+                    log = f"{a.work}/{name}.log"
+                    done[name] = sum(line.startswith("task") for line in open(log, encoding="utf-8")) if os.path.exists(log) else 0
+                print("   tasks learnt: " + ", ".join(f"{name} {k}/20" for name, k in done.items()), flush=True)
     rows = ["| language | stories a task | right on the test, % | tasks at 100 % | tasks at 95 % and more |", "| --- | --- | --- | --- | --- |"]
     for lang, n in runs:
         f = f"{a.work}/{lang}{n}.json"
