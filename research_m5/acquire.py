@@ -92,6 +92,10 @@ class Mind:
         filler = filler[0] if len(filler) == 1 else tuple(filler)
         return self.sort.get(filler, filler)
 
+    def same(self, word):
+        """a word, or the word it may be a form of ("mice" - "mouse"): to see that an answer is named in a story"""
+        return self.lex.alias.get(word) or self.maybe_alias.get(word, word)
+
     def find_places(self, stories):
         golds = {g for story in stories for _, gold in story for g in (gold or ())}
         sents = sorted({(words, gold is not None) for story in stories for words, gold in story})   # in a fixed order
@@ -253,7 +257,7 @@ class Mind:
         if quest and gold:
             if len(gold) > 1:
                 can = ("LIST", "PATH")
-            elif set(gold[0].split()) <= set(text):                 # the answer is named in the story: a thing is asked
+            elif {self.same(w) for w in gold[0].split()} <= {self.same(w) for w in text}:     # the answer is named in the story: a thing is asked
                 can = ("VAL", "BEFORE", "P_WHAT", "P_FROM", "P_TO", "NEXT", "L_A1", "L_A2", "LIST")
             else:                                                   # it is not: yes or no, a number, a step
                 can = ("IS", "MORE", "L_IS", "COUNT", "LIST", "PATH")
