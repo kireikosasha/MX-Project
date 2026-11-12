@@ -1,0 +1,132 @@
+task  1: learnt from 20 episodes (asked for 20 more), 136/136 of their questions right, 5 of 5 kinds of records and 8 of 8 kinds of queries read (1376 s)
+    ej k            rise F0 of (0,)
+    mv b b          set F0 of (0, 1)
+    mv b r          set F0 of (0, 1)
+    pt k b          set F0 of (0, 1)
+    pt k r          set F0 of (0, 1)
+  ? cn b b          has 0 [>>F0] 1
+  ? cn b r          has 0 [>>F0] 1
+  ? cn k b          has 0 [>>F0] 1
+  ? cn k r          has 0 [>>F0] 1
+  ? nm b            num 0 (count [<<F0] None)
+  ? nm r            num 0 (count [<<F0] None)
+  ? rm b            list 0 [^F0] r
+  ? rm k            list 0 [^F0] r
+test  1: 1538/1538 = 100.0%
+test  1 in R3: 1538/1538 = 100.0%
+test  1 in R10: 1575/1575 = 100.0%
+task  2: learnt from 20 episodes (asked for 5 more), 72/72 of their questions right, 4 of 4 kinds of records and 3 of 3 kinds of queries read (170 s)
+    kel p b p b      swap F0 of (1, 3)
+    nup p b p        set F0 of (1, 0)
+    ptn b p          set F0 of (0, 1)
+    zof p b p        set F0 of (1, 2)
+  ? qh b            list 0 [>F0] p
+  ? qi p            list 0 [<F0] b
+  ? qn p            num 0 (count [<F0] None)
+test  2: 1361/1361 = 100.0%
+test  2 in R3: 1548/1548 = 100.0%
+test  2 in R10: 1495/1495 = 100.0%
+task  3: learnt from 20 episodes (asked for 10 more), 88/101 of their questions right, 3 of 3 kinds of records and 5 of 5 kinds of queries read (131 s)
+    tox h h          qpass Q0 of (0, 1); tie E0 of (0, 1)
+    vuz h h          qpass Q0 of (1, 0)
+    zeq h #          qsame Q0 of (0, -1)
+  ? qis h h          cmp 1 0 (sum [=E0] 0) >
+  ? rav h h h        least (q 0)
+  ? rav h h h h      least (q 0) (else h4)
+  ? vok h h h        most (q 0) (else h8)
+  ? vok h h h h      most (count [<<E0] None) (else h6)
+test  3: 1067/1381 = 77.3%
+test  3 in R3: 1140/1443 = 79.0%
+test  3 in R10: 1120/1422 = 78.8%
+task  4: learnt from 20 episodes (asked for 10 more), 93/93 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (50 s)
+    bav k k          tie E0 of (0, 1)
+    lum k p          tie E0 of (0, 1)
+    ziq x k          tie E0 of (0, 1)
+  ? mez x p          has 0 [>>E0] 1
+  ? qok x            list 0 [>>E0] k
+  ? tuv x            list 0 [>>E0] p
+test  4: 1431/1431 = 100.0%
+test  4 in R3: 1463/1463 = 100.0%
+test  4 in R10: 1475/1475 = 100.0%
+task  5: learnt from 20 episodes (asked for 5 more), 72/74 of their questions right, 3 of 3 kinds of records and 4 of 4 kinds of queries read (25 s)
+    kuv i g          set F0 of (1, 0); set F1 of (0, 1)
+    mir r g          copy F0 of (1, 0); tie E0 of (0, 1)
+    zeb i r          set F0 of (1, 0); set F1 of (0, 1)
+  ? ks i            newest 0 [>F1 =E0] g
+  ? lu g            list 0 [~F0] i
+  ? lu r            list 0 [~F0] i
+  ? ro i            newest 0 [<~F0] r
+test  5: 1214/1404 = 86.5%
+test  5 in R3: 1125/1533 = 73.4%
+test  5 in R10: 789/1495 = 52.8%
+task  6: learnt from 20 episodes (asked for 0 more), 65/65 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (27 s)
+    jn k k          copy F0 of (0, 1)
+    mv k p          set F0 of (0, 1)
+  ? bf k p          before 0 0 1
+  ? fs p k k        first 0 1 2 0
+  ? nx k p          after 0 0 1
+test  6: 1465/1465 = 100.0%
+test  6 in R3: 1515/1515 = 100.0%
+test  6 in R10: 1535/1535 = 100.0%
+task  7: learnt from 20 episodes (asked for 0 more), 60/60 of their questions right, 4 of 4 kinds of records and 3 of 3 kinds of queries read (6 s)
+    kov h #          qsub Q0 of (0,)
+    lew h h #        qpass Q0 of (0, 1)
+    pim h #          qadd Q0 of (0,)
+    zad h #          qset Q0 of (0,)
+  ? amt h            num 0 (q 0)
+  ? gtr h h          cmp 0 1 (q 0) >=
+  ? tpx #            rank 0 0 h True
+test  7: 1367/1367 = 100.0%
+test  7 in R3: 1425/1425 = 100.0%
+test  7 in R10: 1459/1459 = 100.0%
+task  8: learnt from 20 episodes (asked for 0 more), 45/57 of their questions right, 1 of 1 kinds of records and 3 of 3 kinds of queries read (1 s)
+    vek p # p #      link L0 of (0, 1, -10)
+  ? mup p p          path 0 0 1 1 1 {}
+  ? qeb p p          dir 0 0 1 {#1/#3,#2/#4}
+  ? zul p p          steps 0 0 1 {#1/#3,#2/#4}
+test  8: 1203/1458 = 82.5%
+test  8 in R3: 1185/1497 = 79.2%
+test  8 in R10: 1083/1462 = 74.1%
+task  9: learnt from 20 episodes (asked for 10 more), 96/96 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (60 s)
+    dro k            unset F0 of (0,)
+    lut k k          set F0 of (0, 1)
+  ? abv k k          has 0 [<<F0] 1
+  ? kop k            list 0 [>F0 >F0] k
+  ? tep k            list 0 [^F0] k
+test  9: 1515/1515 = 100.0%
+test  9 in R3: 1525/1525 = 100.0%
+test  9 in R10: 1525/1525 = 100.0%
+task 10: learnt from 20 episodes (asked for 5 more), 78/78 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (23 s)
+    jn p g          set F0 of (0, 1)
+    mv p g          set F0 of (0, 1)
+    xt p            unset F0 of (0,)
+  ? ct g            num 0 (count [<F0] None)
+  ? mb g            list 0 [<F0] p
+  ? wh p            list 0 [>F0] g
+test 10: 1537/1537 = 100.0%
+test 10 in R3: 1501/1501 = 100.0%
+test 10 in R10: 1515/1515 = 100.0%
+task 11: learnt from 20 episodes (asked for 13 more), 94/94 of their questions right, 6 of 6 kinds of records and 3 of 3 kinds of queries read (507 s)
+    jaq u #          qset Q0 of (0,)
+    pyl g #          qset Q0 of (0,)
+    qep g g          untie E1 of (0, 1)
+    ruk u g          tie E1 of (0, 1)
+    vem u g          untie E1 of (0, 1)
+    zov g g          tie E1 of (0, 1)
+  ? heq u g          has 0 [>>E1] 1
+  ? lok u            list 0 [>>E1] g
+  ? scu u            num 0 (sum [=E1] 0)
+test 11: 1440/1440 = 100.0%
+test 11 in R3: 1407/1407 = 100.0%
+test 11 in R10: 1511/1511 = 100.0%
+task 12: learnt from 20 episodes (asked for 10 more), 102/104 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (63 s)
+    fg p f          tie E1 of (1, 0)
+    kn p f          tie E0 of (0, 1)
+    tl p p          tie E0 of (1, 0)
+  ? cn p            num 0 (count [>>E0] f)
+  ? hk p f          has 0 [>E0 >>E0] 1
+  ? wh f            list 0 [=E1 <<E0] p
+test 12: 1371/1462 = 93.8%
+test 12 in R3: 1094/1487 = 73.6%
+test 12 in R10: 847/1550 = 54.6%
+all: 16509/17359 = 95.10%
