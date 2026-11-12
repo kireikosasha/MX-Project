@@ -184,6 +184,8 @@ def main():
     ap.add_argument("--tasks", default="")
     ap.add_argument("--stories", type=int, default=20)
     ap.add_argument("--limit", type=float, default=records.WORK)
+    ap.add_argument("--ask", type=int, default=0, help="how many more stories it may ask the answers of (those on which its readings part)")
+    ap.add_argument("--more", default="", help="take more stories where what is learnt fails on fresh ones: e.g. 60,200")
     ap.add_argument("--show", action="store_true")
     a = ap.parse_args()
     files = glob.glob(os.path.join(a.data, "qa*_train.txt"))
@@ -191,11 +193,12 @@ def main():
     right = total = 0
     for k in tasks:
         t0 = time.time()
-        train = stories(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], a.stories)
-        reader = Reader(train, a.limit / 4)
-        m = records.Learner(reader.rows(train))
-        got, n = m.learn(a.limit)
-        print(f"task {k:2d}: {len(reader.code)} things of {len({c[0] for c in reader.code.values()})} kinds; learnt from {a.stories} stories, {got}/{n} of their "
+        more = [int(x) for x in a.more.split(",") if x]
+        raw = stories(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], max([a.stories + 200 * bool(a.ask)] + more))
+        reader = Reader(raw[:a.stories], a.limit / 4)             # what a thing is, is settled on the first stories
+        m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask)
+        got, n = m.run(m.episodes)
+        print(f"task {k:2d}: {len(reader.code)} things of {len({c[0] for c in reader.code.values()})} kinds; learnt from {used} stories" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their "
               f"questions right, {sum(bool(p) for p in m.rec.values())} of {len(m.rec)} kinds of statements and {len(m.ask)} of "
               f"{len(m.forms) - len(m.rec)} kinds of questions read ({time.time() - t0:.0f} s)", flush=True)
         if reader.guessed:

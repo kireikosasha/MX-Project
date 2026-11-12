@@ -35,7 +35,12 @@ K = {"F": 3, "Q": 2, "E": 2, "L": 1, "T": 1}
 ME = "@"                                                  # the one who writes the log, when a row does not say who acts
 KINDS = {ME: ME}
 OP = "!"                                                  # the operation code of a row, when it stands for a thing (a direction)
-SPACE = ("dir", "dist", "route", "isdir", "aligned", "hops", "path")
+SPACE = ("dir", "dist", "route", "isdir", "aligned", "hops", "path", "steps")
+
+
+def taken(t, numbers, pick):
+    """the things a move works on; a number of the row can stand for a thing (a direction given as a code)"""
+    return tuple(t[i] if i > -10 else "#%d" % numbers[-10 - i] for i in pick)
 WORK = 600000                                             # how much work one step of learning may take, in episodes played
 PRICE = 0.25                                              # what a part of a guess costs, in questions answered beyond chance
 
@@ -310,7 +315,7 @@ SAME_LAST_TWO = ("eunion", "einter", "qmin", "qmax", "qsum")
 # how many things of its row a query uses (those not here use all of them)
 USES = {"list": 1, "seq": 1, "eldest": 1, "newest": 1, "some": 1, "pos": 1, "num": 1, "cmpn": 1, "qat": 1, "which": 0, "rank": 0,
         "has": 2, "same": 2, "cmp": 2, "diff": 2, "before": 2, "after": 2, "when": 2, "span": 2, "dir": 2, "dist": 2, "route": 2,
-        "hops": 2, "path": 2, "aligned": 2}
+        "hops": 2, "path": 2, "aligned": 2, "steps": 2}
 
 
 # ---------------------------------------------------------------- the steps of a walk
@@ -539,7 +544,7 @@ def answer(s, p, t, nums, memo):
         if way is None:
             return None
         if name == "route":
-            return ",".join(d for _, d in way)
+            return ",".join(d.lstrip("#") for _, d in way)
         if name == "hops":
             return str(len(way))
         nodes = [t[p[2]]] + [x for x, _ in way]
@@ -555,9 +560,11 @@ def answer(s, p, t, nums, memo):
             return None
         return pos.get(d, 0) > 0 if d < opposite[d] else pos.get(opposite[d], 0) < 0
     far = [(d, n) for d, n in pos.items() if n]
+    if name == "steps":                                          # along the one axis and then along the other
+        return str(sum(abs(n) for _, n in far))
     if len(far) != 1:
         return None
-    return str(abs(far[0][1])) if name == "dist" else far[0][0] if far[0][1] > 0 else opposite[far[0][0]]
+    return str(abs(far[0][1])) if name == "dist" else (far[0][0] if far[0][1] > 0 else opposite[far[0][0]]).lstrip("#")
 
 
 def shape(gold):
@@ -591,6 +598,12 @@ class Learner:
                 for t in things:
                     names.setdefault(kind(t), set()).add(t)
         self.names = {k: sorted(v) for k, v in names.items()}
+        self.codes = {}                                          # (record form, which number of the row) -> the values it takes, if they are few
+        for ep in episodes:
+            for op, quest, things, numbers, kinds, gold in ep:
+                for i, v in enumerate(numbers if not quest else ()):
+                    self.codes.setdefault(((op, quest, kinds), i), set()).add(v)
+        self.codes = {k: v for k, v in self.codes.items() if len(v) <= 6}
         self.own = {}                                            # of what kind the things of the answers are
         for f, golds in self.forms.items():
             if f[1]:
@@ -619,6 +632,8 @@ class Learner:
                         out.append((name, k, pick, n))
                 if name == "link" and nt == 2:                   # the operation itself is the direction
                     out += [(name, k, pick + (-2,), n) for pick in ((0, 1), (1, 0)) for n in (range(nn) if nn else [None])]
+                    out += [(name, k, pick + (-10 - d,), n) for pick in ((0, 1), (1, 0)) for d in range(nn)      # or a number of the row is
+                            for n in ([x for x in range(nn) if x != d] or [None])]
         return sorted(out, key=lambda m: -1 in m[2])             # the one who is not named comes last
 
     def rows(self, nt, nn, top, sorts):
@@ -644,7 +659,7 @@ class Learner:
         for form, moves in rec.items():
             tk = [x for x in form[2] if x != "#"] + [OP, ME]
             for name, k, pick, _ in moves:
-                ks = [tk[i] for i in pick]
+                ks = [tk[i] if i > -10 else "#" for i in pick]
                 sort = MOVES[name][1]
                 if name in ("set", "setat", "tie", "claim", "wait"):
                     types.setdefault((sort, k), set()).add((ks[0], ks[1]))
@@ -663,6 +678,8 @@ class Learner:
                     types.setdefault((sort, k), set()).add(tuple(ks))
                     if ks[2] == OP:
                         types.setdefault(("L!", k), set()).add(form[0])
+                    if ks[2] == "#":
+                        types.setdefault(("L#", k), set()).update("#%d" % v for v in self.codes.get((form, -10 - pick[2]), ()))
         return types
 
     def queries(self, form, types):
@@ -742,7 +759,7 @@ class Learner:
             if sort != "L":
                 continue
             for ka, kb, kd in sorted(types[(sort, k)]):
-                marks = sorted(types.get(("L!", k), ())) if kd == OP else self.names.get(kd, [])
+                marks = sorted(types.get(("L!", k), ())) if kd == OP else sorted(types.get(("L#", k), ())) if kd == "#" else self.names.get(kd, [])
                 opps = [tuple(sorted(o.items())) for o in pairings(marks)] if len(marks) % 2 == 0 and 2 <= len(marks) <= 6 else []
                 for i in range(nt):
                     for j in range(nt):
@@ -753,7 +770,7 @@ class Learner:
                             out += [(name, k, i, j, opp) for opp in opps for name in ("dir", "route")]
                         elif sh == "n":
                             out.append(("hops", k, i, j, ()))
-                            out += [("dist", k, i, j, opp) for opp in opps]
+                            out += [(name, k, i, j, opp) for opp in opps for name in ("dist", "steps") + (("dir",) if kd == "#" else ())]
                         else:
                             out += [("isdir", k, i, j, d, opp) for opp in opps for d in range(nt) if tk[d] == kd]
                             out += [("aligned", k, i, j, opp) for opp in opps]
@@ -812,16 +829,17 @@ class Learner:
                     for x in things:
                         s.born.setdefault(x, s.now)
                     for name, k, pick, n in rec.get(form, ()):
-                        MOVES[name][0](s, k, tuple(t[i] for i in pick), (numbers[n],) if n is not None else ())
+                        MOVES[name][0](s, k, taken(t, numbers, pick), (numbers[n],) if n is not None else ())
         self.runs += 1
         self.work += len(episodes)
         return outs
 
-    def fit(self, rec):
+    def fit(self, rec, even=None):
         """for the moves chosen, the best program of every query -> (right beyond chance less the price, right), the programs.
-        One operation mostly means one thing: a program shared by the forms of an operation is paid for once."""
+        One operation mostly means one thing: a program shared by the forms of an operation is paid for once.
+        even: a dict to fill with the other programs of every query that answer as many questions as the chosen one"""
         key = tuple(sorted(rec.items()))
-        if key in self.cache:
+        if key in self.cache and even is None:
             return self.cache[key]
         types = self.types(rec)
         tkey = tuple(sorted((k, tuple(sorted(v))) for k, v in types.items()))
@@ -869,8 +887,67 @@ class Learner:
                     right += marks[f][c][1]
         for moves in {(() if self.words else (f[0],)) + size(f) + (m,) for f, m in rec.items() if m}:    # the same said by one operation
             score -= PRICE * sum(1 + (-1 in m[2]) for m in moves[-1])                                     # (in words: of one shape) is paid for once
+        for f, (p, flip, default) in ask.items() if even is not None else ():
+            got = marks[f][(p, flip)][1]
+            even[f] = sorted((c for c, g in marks[f].items() if g[1] == got and c != (p, flip)), key=lambda c: self.price(*c, size(f)[0]))[:4]
+            even[f] = [(c[0], bool(c[1]), marks[f][c][2]) for c in even[f]]
         self.cache[key] = ((round(score, 6), right), ask)
         return self.cache[key]
+
+    def rivals(self, most=80):
+        """other readings that explain the episodes learnt from as well as the chosen one: a query read another way, a
+        record read another way -> [(the moves, the programs)]"""
+        even = {}
+        (_, right), ask = self.fit(self.rec, even)
+        out = [(self.rec, {**ask, f: c}) for f, cs in even.items() for c in cs]
+        for rec in getattr(self, "views", ()):                   # the other views of the world, if they explain nearly as much
+            if rec != self.rec and self.fit(rec)[0][1] >= right - 2:
+                out.append((rec, self.fit(rec)[1]))
+        groups = {}
+        for f in self.rec:
+            groups.setdefault((f[0],) + size(f), []).append(f)
+        units = [tuple(g) for g in groups.values()] + [(f,) for g in groups.values() if len(g) > 1 for f in g]
+        for u in units:
+            for m in self.rows(*size(u[0]), self.top(self.rec, u), "FQEL") + [()]:
+                trial = {**self.rec, **{f: m for f in u}}
+                if trial != self.rec and len(out) < most:
+                    (_, got), other = self.fit(trial)
+                    if got >= right:
+                        out.append((trial, other))
+        return out
+
+    def answers(self, episodes, rec=None, ask=None):
+        """what is said to every question of every episode (the answers written there are not looked at)"""
+        rec, ask = rec or self.rec, ask or self.ask
+        out = []
+        for ep in episodes:
+            s, said = State(), []
+            for s.now, (op, quest, things, numbers, kinds, gold) in enumerate(ep):
+                form = (op, quest, kinds)
+                t = things + (op, ME)
+                if quest:
+                    got = self.near(ask, form)
+                    if got is None:
+                        said.append(None)
+                        continue
+                    p, flip, default = got
+                    try:
+                        o = answer(s, p[:-1] + (dict(p[-1]),) if p[0] in SPACE else p, t, numbers, {})
+                    except (KeyError, IndexError, ValueError, TypeError):
+                        o = None
+                    if o.__class__ is bool:
+                        o = "yes" if o != flip else "no"
+                    said.append(default if o is None else o)
+                else:
+                    for x in things:
+                        s.born.setdefault(x, s.now)
+                    for name, k, pick, n in self.near(rec, form) or ():
+                        try:
+                            MOVES[name][0](s, k, taken(t, numbers, pick), (numbers[n],) if n is not None else ())
+                        except (KeyError, IndexError, ValueError, TypeError):
+                            pass
+            out.append(tuple(said))
+        return out
 
     # ------------------------------------------------------------ the search
     def top(self, rec, but=()):
@@ -990,20 +1067,25 @@ class Learner:
                 break
         return best, rec
 
-    def learn(self, limit=WORK, seed=None, wide=True):
+    def learn(self, limit=WORK, seed=None, wide=True, every=False):
         """limit: how much work may be done, in episodes played (not in seconds: the same on any machine);
-        seed: what was learnt from fewer episodes, to go on from; wide: look for another reading from nothing as well"""
+        seed: what was learnt from fewer episodes, to go on from (or several such readings: the one that explains these
+        episodes best is taken); wide: look for another reading from nothing as well; every: go through all the views
+        of the world even when the first explains everything (the others are kept in self.views, to compare with)"""
         t0 = self.work
         total = sum(len(g) for f, g in self.forms.items() if f[1])
-        best = None
+        best, self.views = None, []
         if seed:
-            start = {f: self.near(seed, f) or () for f in self.rec}
+            starts = [{f: self.near(sd, f) or () for f in self.rec} for sd in (seed if seed.__class__ is list else [seed])]
+            start = max(starts, key=lambda st: self.fit(st)[0])
             best = self.climb("FQEL", t0 + limit / (4 if wide else 1), start=start)
+            self.views = starts
         views = ("FQEL", "QEL", "FQL", "QL") if wide or not seed else ()     # the world as it comes; all in links; all in values; all in amounts
         for part, sorts in enumerate(views):
-            if best and best[0][1] == total and all(best[1].values()):
+            if best and best[0][1] == total and all(best[1].values()) and not every:
                 break
             got, rec = self.climb(sorts, t0 + limit * (part + 1 + bool(seed)) / (len(views) + 1 + bool(seed)))
+            self.views.append(rec)
             if best is None or got > best[0]:
                 best = (got, rec)
         if views and not (best[0][1] == total and all(best[1].values())):
@@ -1056,7 +1138,7 @@ class Learner:
                     self.gaps += not moves
                     for name, k, pick, n in moves:
                         try:
-                            MOVES[name][0](s, k, tuple(t[i] for i in pick), (numbers[n],) if n is not None else ())
+                            MOVES[name][0](s, k, taken(t, numbers, pick), (numbers[n],) if n is not None else ())
                         except (KeyError, IndexError, ValueError, TypeError):
                             pass
         return right, total
@@ -1081,14 +1163,33 @@ class Learner:
         return "\n".join(out)
 
 
-def study(path, stories=20, more=(), limit=WORK):
-    """learn from the first episodes; check what is learnt on the next ones; where the check fails, learn from them too
-    -> the learner, how many episodes it learnt from, what the checks said"""
-    data = read(path, max((stories,) + tuple(more)))
+def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200):
+    """learn from the first episodes. Then, if it may ask: find the other readings that explain these episodes as well,
+    look (without the answers) for the episodes of the pool on which the readings part, ask for the answers of a few of
+    those, learn again. Then, if there are more episodes to take: check what is learnt on the next ones; where the
+    check fails, learn from them too -> the learner, how many episodes it learnt from, what the checks said"""
+    data = read(path, max((stories,) + tuple(more) + ((stories + pool,) if ask else ()))) if path.__class__ is str else path
     steps = (stories,) + tuple(n for n in more if n > stories)
     m = Learner(data[:stories])
-    m.learn(limit)
+    m.learn(limit, every=bool(ask))
     used, notes = stories, []
+    train, asked, rest = list(data[:stories]), [], data[stories:stories + pool]
+    while len(asked) < ask:
+        mine = m.answers(rest)
+        votes = [10 * sum(m.near(m.ask if row[1] else m.rec, row[:2] + (row[4],)) is None for row in ep) for ep in rest]   # rows of a kind never met
+        for rec, other in m.rivals():
+            for i, said in enumerate(m.answers(rest, rec, other)):
+                votes[i] += said != mine[i]
+        new = sorted((i for i in range(len(rest)) if votes[i] and i not in asked), key=lambda i: -votes[i])[:min(5, ask - len(asked))]
+        if not new:
+            break
+        asked += new
+        train += [rest[i] for i in new]
+        again = Learner(train)
+        again.learn(limit / 8, seed=[m.rec] + m.views, wide=False)
+        m = again
+    if ask:
+        notes.append(f"asked for {len(asked)} more")
     for part, n in enumerate(steps[1:]):
         right, total = m.run(data[used:n])
         notes.append(f"{right}/{total} on the next {n - used}" + (f", {m.gaps} rows not read" if m.gaps else ""))
@@ -1106,6 +1207,7 @@ def main():
     ap.add_argument("--tasks", default="")
     ap.add_argument("--stories", type=int, default=20)
     ap.add_argument("--more", default="", help="take more episodes where what is learnt fails on fresh ones: e.g. 60,200")
+    ap.add_argument("--ask", type=int, default=0, help="how many more episodes it may ask the answers of (those on which its readings part)")
     ap.add_argument("--limit", type=float, default=WORK, help="how much work may be done for one step of learning, in episodes played")
     ap.add_argument("--also", default="", help="more folders with test files of the same tasks (bigger episodes), comma-separated")
     ap.add_argument("--show", action="store_true")
@@ -1115,7 +1217,7 @@ def main():
     right = total = 0
     for k in tasks:
         t0 = time.time()
-        m, used, notes = study(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], a.stories, [int(x) for x in a.more.split(",") if x], a.limit)
+        m, used, notes = study(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], a.stories, [int(x) for x in a.more.split(",") if x], a.limit, a.ask)
         got, n = m.run(m.episodes)
         print(f"task {k:2d}: learnt from {used} episodes" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their questions right, "
               f"{sum(bool(p) for p in m.rec.values())} of {len(m.rec)} kinds of records and {len(m.ask)} of {len(m.forms) - len(m.rec)} kinds of queries read "
