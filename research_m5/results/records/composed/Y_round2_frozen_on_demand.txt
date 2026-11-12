@@ -1,0 +1,84 @@
+task  1: learnt from 20 episodes (119/119 on the next 40), 65/65 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (16 s)
+    ali n n          tie2 E0 of (0, 1)
+    drp n n          untie2 E0 of (0, 1)
+    unl n            cut E0 of (0,)
+  ? eqv n n          has 0 [>>E0] 1
+  ? grp n            list 0 [=E0] n
+  ? sz n            num 0 (count [=E0] None)
+test  1: 1524/1524 = 100.0%
+test  1 in Y3: 1503/1503 = 100.0%
+test  1 in Y10: 1530/1530 = 100.0%
+task  2: learnt from 200 episodes (116/129 on the next 40, 97 rows not read) (364/397 on the next 140, 355 rows not read), 535/586 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (197 s)
+    clr p p          unset F0 of (1,)
+    dbt p p #        set F0 of (1, 0); qset Q0 of (1,)
+    pyt p p #        set F0 of (0, 1); qset Q0 of (0,)
+  ? hds p p          has 0 [<F0] 1
+  ? ttl p            num 0 (sum [<~F0] 0)
+  ? wdb p            list 0 [~F0] p
+test  2: 1253/1449 = 86.5%
+test  2 in Y3: 1054/1540 = 68.4%
+test  2 in Y10: 648/1474 = 44.0%
+task  3: learnt from 200 episodes (112/113 on the next 40) (390/411 on the next 140), 569/580 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (188 s)
+    fg a m          tie2 E1 of (0, 1)
+    kn a m          tie E0 of (1, 0)
+    pz a a          tie E0 of (0, 1); ecopy E1 of (1, 0)
+  ? ct a            num 0 (count [=E1 <<E0] m)
+  ? hs a m          has 0 [=E1 <<E0] 1
+  ? wh m            list 0 [=E1 >>E0] a
+test  3: 1419/1474 = 96.3%
+test  3 in Y3: 1255/1507 = 83.3%
+test  3 in Y10: 747/1488 = 50.2%
+task  4: learnt from 200 episodes (106/112 on the next 40) (383/414 on the next 140), 549/589 of their questions right, 1 of 1 kinds of records and 3 of 3 kinds of queries read (9 s)
+    pex t t #        tie2 E0 of (0, 1); qadd Q0 of (0,)
+  ? duk t            list 0 [>E0] t
+  ? ruv t t          has 0 [>E0] 1
+  ? zim t t          plus (q 0)
+test  4: 1375/1459 = 94.2%
+test  4 in Y3: 1263/1521 = 83.0%
+test  4 in Y10: 1032/1499 = 68.8%
+task  5: learnt from 60 episodes (91/93 on the next 40, 122 rows not read) (304/304 on the next 140), 148/148 of their questions right, 4 of 4 kinds of records and 3 of 3 kinds of queries read (36 s)
+    acq b            cut E1 of (0,)
+    rvt p b          untie E1 of (1, 0)
+    wdr b            tie E1 of (0, -1)
+    zor p b          tie E1 of (1, 0)
+  ? avl b            some 0 [>E1] (turned over)
+  ? cnt p            num 0 (count [<E1] None)
+  ? hld p            list 0 [<E1] b
+test  5: 1173/1173 = 100.0%
+test  5 in Y3: 1488/1488 = 100.0%
+test  5 in Y10: 1468/1468 = 100.0%
+task  6: learnt from 200 episodes (113/118 on the next 40, 52 rows not read) (389/424 on the next 140, 156 rows not read), 565/600 of their questions right, 4 of 4 kinds of records and 3 of 3 kinds of queries read (61 s)
+    lom i            qadd Q0 of (0,)
+    quv d            qsub Q0 of (0,)
+    vek d i          tie E0 of (0, 1)
+    zib i            qsub Q0 of (0,)
+  ? gop d            list 0 [>E0] i
+  ? pex d            pos 0 (sum [=E0] 0)
+  ? rud i            list 0 [<E0] d
+test  6: 1438/1541 = 93.3%
+test  6 in Y3: 1323/1497 = 88.4%
+test  6 in Y10: 1308/1481 = 88.3%
+task  7: learnt from 200 episodes (109/126 on the next 40) (418/441 on the next 140), 604/636 of their questions right, 4 of 4 kinds of records and 6 of 6 kinds of queries read (239 s)
+    mrg p p          tie2 E0 of (0, 1)
+    mrg u u          tie2 E0 of (0, 1)
+    vxl p #          qset Q0 of (0,)
+    vxl u #          qset Q0 of (0,)
+  ? qrp p            eldest 0 [=E0] p
+  ? qrp u            eldest 0 [=E0] u
+  ? qsm p p          has 0 [>>E0] 1
+  ? qsm u u          has 0 [>>E0] 1
+  ? qtt p            num 0 (sum [=E0] 0)
+  ? qtt u            num 0 (sum [=E0] 0)
+test  7: 1579/1661 = 95.1%
+test  7 in Y3: 1391/1602 = 86.8%
+test  7 in Y10: 1199/1541 = 77.8%
+task  8: learnt from 20 episodes (126/126 on the next 40), 70/70 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (4 s)
+    ps m p          set F0 of (1, 0)
+    sw p p          swap F0 of (0, 1)
+  ? wa p            list 0 [>F0] m
+  ? wh m            list 0 [<F0] p
+  ? yn m p          has 0 [<F0] 1
+test  8: 1518/1518 = 100.0%
+test  8 in Y3: 1489/1489 = 100.0%
+test  8 in Y10: 1525/1525 = 100.0%
+all: 11279/11799 = 95.59%
