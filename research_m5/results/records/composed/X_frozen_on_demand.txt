@@ -1,0 +1,83 @@
+task  1: learnt from 200 episodes (94/121 on the next 40) (303/430 on the next 140), 470/620 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (51 s)
+    blk r # #        claim F0 of (0, -1); qadd Q0 of (0,)
+    bok p r # #      setat F0 of (1, 0); qadd Q0 of (1,)
+  ? fre r # #        cmpn 0 (q 0) > 0 (turned over)
+  ? hld r #          list 0 [>F0] p
+  ? ovl p p          some 1 [<F0]
+test  1: 1105/1483 = 74.5%
+test  1 in X3: 861/1505 = 57.2%
+test  1 in X10: 624/1455 = 42.9%
+task  2: learnt from 20 episodes (124/124 on the next 40), 54/54 of their questions right, 2 of 2 kinds of records and 2 of 2 kinds of queries read (8 s)
+    ln n n          tie E0 of (0, 1)
+    rl n n          tie E0 of (0, 1)
+  ? xr n n          has 0 [>>E0] 1
+  ? zw n            list 0 [<<E0] n
+test  2: 1541/1541 = 100.0%
+test  2 in X3: 1500/1500 = 100.0%
+test  2 in X10: 1522/1522 = 100.0%
+task  3: learnt from 200 episodes (92/127 on the next 40, 45 rows not read) (324/438 on the next 140, 213 rows not read), 467/626 of their questions right, 2 of 3 kinds of records and 3 of 3 kinds of queries read (68 s)
+    pn p #          set F0 of (-1, 0); qsub Q0 of (0,)
+    rd #            -
+    sc p #          pair F0 of (0, -1); qadd Q0 of (0,)
+  ? ahd p p          cmp 0 1 (q 0) >
+  ? pt p #          num 0 (q 0)
+  ? rk #            list -1 [>F0] p
+test  3: 1159/1508 = 76.9%
+test  3 in X3: 984/1519 = 64.8%
+test  3 in X10: 789/1517 = 52.0%
+task  4: learnt from 200 episodes (90/122 on the next 40) (316/418 on the next 140), 459/594 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (702 s)
+    dak a a          set F0 of (1, 0)
+    qo a            claim F0 of (-1, 0); set F1 of (0, -1)
+    zep a a          set F0 of (0, 1)
+  ? lum a            list 0 [<<F0 >>F0] a
+  ? pok a            list 0 [>F1 >F0] a
+  ? vor a a          has 0 [<<F0 >>F0] 1
+test  4: 1110/1457 = 76.2%
+test  4 in X3: 794/1445 = 54.9%
+test  4 in X10: 665/1455 = 45.7%
+task  5: learnt from 20 episodes (116/116 on the next 40), 69/69 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (29 s)
+    fg p d          untie E0 of (0, 1)
+    mk p d          tie E0 of (0, 1)
+    tl p p d        tie E0 of (1, 2)
+  ? ct d            num 0 (count [<<E0] None)
+  ? kn p d          has 0 [>>E0] 1
+  ? wo d            list 0 [<<E0] p
+test  5: 1459/1459 = 100.0%
+test  5 in X3: 1473/1473 = 100.0%
+test  5 in X10: 1482/1482 = 100.0%
+task  6: learnt from 200 episodes (79/102 on the next 40, 51 rows not read) (271/345 on the next 140, 185 rows not read), 424/505 of their questions right, 6 of 6 kinds of records and 6 of 6 kinds of queries read (409 s)
+    kipu c            rise F0 of (0,)
+    kipu p            rise F0 of (0,)
+    tev c c          pair F0 of (0, 1)
+    tev p p          pair F0 of (0, 1)
+    vulp c c          moveall F0 of (0, 1)
+    vulp p p          moveall F0 of (1, 0)
+  ? fyz c c          has 0 [~F0] 1
+  ? fyz p p          has 0 [~F0] 1
+  ? kot c            num 0 (count [>F0 ^F0] None)
+  ? kot p            num 0 (count [>F0 ^F0] None)
+  ? nax c            list 0 [~F0] c
+  ? nax p            list 0 [~F0] p
+test  6: 1086/1304 = 83.3%
+test  6 in X3: 1071/1368 = 78.3%
+test  6 in X10: 890/1514 = 58.8%
+task  7: learnt from 200 episodes (90/123 on the next 40) (288/418 on the next 140), 434/610 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (146 s)
+    lnk n n          pair F0 of (0, 1); set F1 of (0, 1)
+    tg n t          set F1 of (1, 0); rise F0 of (0,)
+  ? xeq n n          some 0 [~F0 <F0]
+  ? xsz n            num 0 (count [<<F1] None)
+  ? xtg n            list 0 [~F0 <<F1] t
+test  7: 1015/1500 = 67.7%
+test  7 in X3: 932/1487 = 62.7%
+test  7 in X10: 970/1555 = 62.4%
+task  8: learnt from 200 episodes (53/113 on the next 40) (297/426 on the next 140), 448/600 of their questions right, 4 of 4 kinds of records and 2 of 2 kinds of queries read (359 s)
+    ja w w w        set F0 of (0, 2)
+    ku w w w        qsame Q0 of (2, 0)
+    ne w w          qsub Q0 of (1,)
+    sv w #          qset Q0 of (0,)
+  ? hx w            some 0 [<~F0] (turned over)
+  ? tx w w          cmp 0 1 (q 0) =
+test  8: 1117/1482 = 75.4%
+test  8 in X3: 1003/1554 = 64.5%
+test  8 in X10: 858/1488 = 57.7%
+all: 9592/11734 = 81.75%

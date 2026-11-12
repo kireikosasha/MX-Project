@@ -1,0 +1,142 @@
+task  1: learnt from 20 episodes, 49/49 of their questions right, 10 of 10 kinds of records and 3 of 4 kinds of queries read (389 s)
+    swp c c          swap F0 of (0, 1)
+    swp c i          swap F0 of (0, 1)
+    swp i c          swap F0 of (0, 1)
+    swp i i          swap F0 of (0, 1)
+    xtk c            unset F0 of (0,)
+    xtk i            unset F0 of (0,)
+    zor c c          set F0 of (0, 1)
+    zor c r          set F0 of (0, 1)
+    zor i c          set F0 of (0, 1)
+    zor i r          set F0 of (0, 1)
+  ? qin c c          -
+  ? qin i c          has 0 [>F0] 1
+  ? qrm c            list 0 [^F0] r (else r2)
+  ? qrm i            list 0 [^F0] r
+test  1: 1179/1225 = 96.2%
+test  1 in P3: 1334/1413 = 94.4%
+test  1 in P10: 1420/1479 = 96.0%
+task  2: learnt from 20 episodes, 68/73 of their questions right, 4 of 4 kinds of records and 3 of 3 kinds of queries read (30 s)
+    bk o            swap F0 of (0, -1)
+    gv o a          set F0 of (0, 1)
+    ob o a #        qset Q0 of (0,); set F0 of (0, 1)
+    sw o o          swap F0 of (0, 1)
+  ? cn a            num 0 (sum [<F0] 0)
+  ? hl a            list 0 [<F0] o
+  ? wh o            list 0 [>F0] a
+test  2: 1236/1390 = 88.9%
+test  2 in P3: 1290/1464 = 88.1%
+test  2 in P10: 1340/1575 = 85.1%
+task  3: learnt from 20 episodes, 52/52 of their questions right, 2 of 2 kinds of records and 7 of 7 kinds of queries read (18 s)
+    ro k k          tie E0 of (1, 0)
+    xu k k          tie E0 of (0, 1)
+  ? bt k k          over 0
+  ? bt k k k        over 0
+  ? bt k k k k      over 0
+  ? hy k k          has 0 [<<E0] 1
+  ? tp k k          under 0
+  ? tp k k k        under 0
+  ? tp k k k k      under 0
+test  3: 1170/1170 = 100.0%
+test  3 in P3: 1361/1361 = 100.0%
+test  3 in P10: 1405/1405 = 100.0%
+task  4: learnt from 20 episodes, 64/64 of their questions right, 4 of 5 kinds of records and 3 of 3 kinds of queries read (84 s)
+    kex a k          tie E0 of (0, 1)
+    lun k #          qset Q0 of (0,)
+    miq a p          -
+    ruv k k          tie E0 of (0, 1)
+    zog k p          tie E0 of (0, 1)
+  ? pif a            list 0 [>>E0] p
+  ? wex a p          has 0 [>>E0] 1
+  ? yuk a            num 0 (sum [>>E0] 0)
+test  4: 1447/1458 = 99.2%
+test  4 in P3: 1466/1553 = 94.4%
+test  4 in P10: 1212/1515 = 80.0%
+task  5: learnt from 20 episodes, 41/54 of their questions right, 5 of 5 kinds of records and 4 of 4 kinds of queries read (30 s)
+    cpy k k          set F0 of (0, 1)
+    mk k g h        set F0 of (0, 1); claim F1 of (1, 0)
+    swz k k          swapall F0 of (0, 1)
+    vbe k g          set F0 of (0, 1); swap F1 of (0, 1)
+    zmu k h          set F0 of (1, 0)
+  ? whi g            list 0 [<<F0] k
+  ? whi h            list 0 [~F0] k
+  ? wlo k            list 0 [<F0] h (else h2)
+  ? wst k            list 0 [>F0 <F1] g (else g2)
+test  5: 696/1239 = 56.2%
+test  5 in P3: 686/1439 = 47.7%
+test  5 in P10: 522/1492 = 35.0%
+task  6: learnt from 20 episodes, 39/63 of their questions right, 1 of 2 kinds of records and 3 of 3 kinds of queries read (0 s)
+    gox k p          set F0 of (0, 1); wait F1 of (1, 0)
+    tik #            -
+  ? clk k p          num 0 (count [~F0 ?W1] None)
+  ? fst p k k        first 0 1 2 0
+  ? vor k p          before 0 0 1
+test  6: 866/1472 = 58.8%
+test  6 in P3: 708/1442 = 49.1%
+test  6 in P10: 385/1472 = 26.2%
+task  7: learnt from 20 episodes, 51/66 of their questions right, 4 of 4 kinds of records and 5 of 5 kinds of queries read (100 s)
+    kes h #          qsub Q0 of (0,)
+    pol h #          pair F0 of (0, -1); qadd Q0 of (0,)
+    vut h h #        moveall F0 of (0, 1); qpass Q0 of (0, 1)
+    zar h #          qset Q0 of (0,); moveall F0 of (-1, 0)
+  ? ket h            num 0 (q 0)
+  ? lis #            list -1 [>>F0] h
+  ? mox h h          most (q 0)
+  ? mox h h h        most (q 0)
+  ? mox h h h h      most (q 0)
+test  7: 1116/1543 = 72.3%
+test  7 in P3: 1128/1498 = 75.3%
+test  7 in P10: 1130/1519 = 74.4%
+task  8: learnt from 20 episodes, 40/71 of their questions right, 4 of 4 kinds of records and 2 of 3 kinds of queries read (135 s)
+    ve p p          set F0 of (1, 0)
+    vn p p          set F0 of (1, 0)
+    vs p p          set F0 of (0, 1)
+    vw p p          claim F0 of (0, 1)
+  ? hp p p          plus (count [>>F0] None)
+  ? ln p p          same 0 1 [<~F0]
+  ? rt p p          -
+test  8: 640/1513 = 42.3%
+test  8 in P3: 569/1495 = 38.1%
+test  8 in P10: 586/1513 = 38.7%
+task  9: learnt from 20 episodes, 54/54 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (2 s)
+    dro u            unset F0 of (0,)
+    hvo u u          set F0 of (0, 1)
+  ? nkd u            num 0 (count [>>F0] None)
+  ? twa u            list 0 [>F0 >F0] u
+  ? xtp u            list 0 [^F0] u
+test  9: 1473/1473 = 100.0%
+test  9 in P3: 1521/1521 = 100.0%
+test  9 in P10: 1495/1495 = 100.0%
+task 10: learnt from 20 episodes, 67/67 of their questions right, 4 of 4 kinds of records and 3 of 3 kinds of queries read (13 s)
+    jn p g          set F0 of (0, 1)
+    lv p            unset F0 of (0,)
+    mg g g          moveall F0 of (0, 1)
+    mv p g          set F0 of (0, 1)
+  ? ql p            list 0 [>F0] g
+  ? qm g            list 0 [<F0] p
+  ? qn g            num 0 (count [<F0] None)
+test 10: 1449/1449 = 100.0%
+test 10 in P3: 1450/1450 = 100.0%
+test 10 in P10: 1501/1501 = 100.0%
+task 11: learnt from 20 episodes, 78/78 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (6 s)
+    kol f f          tie E0 of (0, 1)
+    zib k f          tie E0 of (0, 1)
+  ? mup f            num 0 (count [<<E0] k)
+  ? qex k f          has 0 [>>E0] 1
+  ? zor f            list 0 [<<E0] k
+test 11: 1799/1799 = 100.0%
+test 11 in P3: 1710/1710 = 100.0%
+test 11 in P10: 1699/1699 = 100.0%
+task 12: learnt from 20 episodes, 39/41 of their questions right, 3 of 5 kinds of records and 3 of 3 kinds of queries read (162 s)
+    cp m m          swap F0 of (0, 1)
+    qa m k          set F0 of (0, 1)
+    vo m k          -
+    xi m m m        -
+    ze m m m        swap F0 of (0, 2)
+  ? hv m k          has 0 [>F0] 1
+  ? ls m            list 0 [~F0] k
+  ? nu m            num 0 (count [>F0] None)
+test 12: 929/1176 = 79.0%
+test 12 in P3: 835/1324 = 63.1%
+test 12 in P10: 581/1450 = 40.1%
+all: 14000/16907 = 82.81%

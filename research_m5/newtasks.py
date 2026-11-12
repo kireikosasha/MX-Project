@@ -31,7 +31,7 @@ def check(text):
     imports = {n.module or "" for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)} | \
               {a.name for n in ast.walk(tree) if isinstance(n, ast.Import) for a in n.names}
     imports = {m.split(".")[0] for m in imports}
-    extra = imports - {"random", "sys", "itertools", "collections", "string", "math", "typing", "copy", "functools", "dataclasses", "enum"}
+    extra = imports - {"random", "sys", "itertools", "collections", "string", "math", "typing", "copy", "functools", "dataclasses", "enum", "argparse"}
     return (hit.group(0) if hit else None) or (", ".join(sorted(extra)) if extra else None)
 
 
