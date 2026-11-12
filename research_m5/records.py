@@ -579,6 +579,8 @@ def size(form):
 
 
 class Learner:
+    words = False                                                # the rows are sentences: different operations may mean the same
+
     def __init__(self, episodes):
         self.episodes = episodes
         self.forms = {}                                          # (operation, query, kinds) -> the answers of its rows
@@ -632,6 +634,8 @@ class Learner:
                 if nn and "Q" in sorts:
                     out += [(("set", a, (who, i), None), ("qset", q, (who,), 0)) for i in rest for a in range(min(K["F"], f + 1))
                             for q in range(min(K["Q"], top["Q"] + 1))]
+                for i, j in itertools.combinations(rest, 2) if self.words else ():      # two things get the same value at once
+                    out += [(("set", a, (i, who), None), ("set", a, (j, who), None)) for a in range(min(K["F"], f + 1))]
         return out
 
     def types(self, rec):
@@ -863,8 +867,8 @@ class Learner:
                 if c:
                     ask[f] = (c[0], bool(c[1]), marks[f][c][2])
                     right += marks[f][c][1]
-        for moves in {(f[0],) + size(f) + (m,) for f, m in rec.items() if m}:
-            score -= PRICE * sum(1 + (-1 in m[2]) for m in moves[-1])
+        for moves in {(() if self.words else (f[0],)) + size(f) + (m,) for f, m in rec.items() if m}:    # the same said by one operation
+            score -= PRICE * sum(1 + (-1 in m[2]) for m in moves[-1])                                     # (in words: of one shape) is paid for once
         self.cache[key] = ((round(score, 6), right), ask)
         return self.cache[key]
 
@@ -884,6 +888,11 @@ class Learner:
         for f in records:                                        # one operation mostly means one thing, whatever the kinds of its things
             groups.setdefault((f[0],) + size(f), []).append(f)
         whole = [tuple(g) for g in groups.values()]
+        alike = {}
+        for f in records:                                        # operations over things of the same kinds may mean the same (as words do)
+            alike.setdefault(f[2], []).append(f)
+        if self.words:
+            whole = [tuple(g) for g in alike.values() if len({f[0] for f in g}) > 1] + whole
         units = whole + [(f,) for g in groups.values() if len(g) > 1 for f in g]
         trace = os.environ.get("TRACE")
         beam = [(self.fit(start or {f: () for f in self.rec})[0], 0, start or {f: () for f in self.rec})]
