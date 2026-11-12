@@ -31,17 +31,18 @@ import re
 import time
 from collections import Counter
 
-K = {"F": 3, "Q": 2, "E": 2, "L": 1, "T": 1}
+K = {"F": 3, "Q": 2, "E": 2, "L": 1, "T": 1, "N": 1}
 ME = "@"                                                  # the one who writes the log, when a row does not say who acts
 KINDS = {ME: ME}
 OP = "!"                                                  # the operation code of a row, when it stands for a thing (a direction)
-SPACE = ("dir", "dist", "route", "isdir", "aligned", "hops", "path", "steps")
+SPACE = ("dir", "dist", "route", "isdir", "aligned", "hops", "path", "steps", "lhead", "ltail")
 
 
 def taken(t, numbers, pick):
     """the things a move works on; a number of the row can stand for a thing (a direction given as a code)"""
     return tuple(t[i] if i > -10 else "#%d" % numbers[-10 - i] for i in pick)
 WORK = 600000                                             # how much work one step of learning may take, in episodes played
+KEPT = 3000                                               # of how many runs of an episode the answers are kept
 PRICE = 0.25                                              # what a part of a guess costs, in questions answered beyond chance
 
 
@@ -82,6 +83,8 @@ class State:
         self.E = [set() for _ in range(K["E"])]           # (a, b): a leads to b; ((a, b), c): a and b together lead to c
         self.L = [[] for _ in range(K["L"])]              # (a, b, direction, n): a lies n steps along the direction from b
         self.W = [{} for _ in range(K["F"])]              # thing -> those who wait to be its value, in the order they came
+        self.U = [{} for _ in range(K["F"])]              # thing -> the values one of which it has, when it is not known which
+        self.N = [[] for _ in range(K["N"])]              # what happened, as it was said: the things of an event, in the order of time
         self.now = 0                                      # the row
         self.clock = 0                                    # the time the log itself keeps, if it does
         self.snap = {}                                    # the amounts as they were when the clock came to a time
@@ -91,6 +94,7 @@ class State:
         h = self.H[k].get(a, ())
         h = h + (((self.clock, self.now), b),) if when is None else tuple(sorted(h + (((when, self.now), b),), key=lambda x: x[0]))
         self.H[k][a] = h
+        self.U[k].pop(a, None)
         if h[-1][1] is None:
             self.F[k].pop(a, None)
         else:
@@ -130,6 +134,11 @@ def m_unset(s, k, a, n):
     if a[0] in s.F[k]:
         line = s.W[k].get(a[0])
         s.put(k, a[0], line.pop(0) if line else None)
+
+
+def m_either(s, k, a, n):
+    s.put(k, a[0], None)
+    s.U[k][a[0]] = {a[1], a[2]}
 
 
 def m_claim(s, k, a, n):
@@ -204,6 +213,10 @@ def m_back(s, k, a, n):
 
 def m_copy(s, k, a, n):
     s.put(k, a[0], s.F[k].get(a[1]))
+
+
+def m_note(s, k, a, n):
+    s.N[k].append(tuple(a))
 
 
 def m_tie(s, k, a, n):
@@ -304,6 +317,7 @@ def m_link(s, k, a, n):
 MOVES = {"set": (m_set, "F", 2, 0), "unset": (m_unset, "F", 1, 0), "rise": (m_rise, "F", 1, 0), "swap": (m_swap, "F", 2, 0),
          "moveall": (m_moveall, "F", 2, 0), "swapall": (m_swapall, "F", 2, 0), "pair": (m_pair, "F", 2, 0), "unpair": (m_unpair, "F", 1, 0),
          "setat": (m_setat, "F", 2, 1), "claim": (m_claim, "F", 2, 0), "wait": (m_wait, "F", 2, 0), "back": (m_back, "F", 1, 0),
+         "either": (m_either, "F", 3, 0), "note": (m_note, "N", 3, 0),
          "copy": (m_copy, "F", 2, 0), "tie": (m_tie, "E", 2, 0), "untie": (m_untie, "E", 2, 0), "tieboth": (m_tieboth, "E", 3, 0),
          "tie2": (m_tie2, "E", 2, 0), "untie2": (m_untie2, "E", 2, 0), "cut": (m_cut, "E", 1, 0), "ecopy": (m_ecopy, "E", 2, 0),
          "eunion": (m_eunion, "E", 3, 0), "einter": (m_einter, "E", 3, 0),
@@ -311,11 +325,12 @@ MOVES = {"set": (m_set, "F", 2, 0), "unset": (m_unset, "F", 1, 0), "rise": (m_ri
          "qsame": (m_qsame, "Q", 2, 0), "qmin": (m_qmin, "Q", 3, 0), "qmax": (m_qmax, "Q", 3, 0), "qsum": (m_qsum, "Q", 3, 0),
          "qnot": (m_qnot, "Q", 2, 0), "link": (m_link, "L", 3, 2), "tick": (m_tick, "T", 0, 2), "clock": (m_clock, "T", 0, 1)}
 SAME_BOTH_WAYS = ("swap", "swapall", "pair", "tieboth", "tie2", "untie2")
-SAME_LAST_TWO = ("eunion", "einter", "qmin", "qmax", "qsum")
+SAME_LAST_TWO = ("eunion", "einter", "qmin", "qmax", "qsum", "either")
+SENTENCES = ("either", "note")                                  # moves tried only when the rows are sentences
 # how many things of its row a query uses (those not here use all of them)
 USES = {"list": 1, "seq": 1, "eldest": 1, "newest": 1, "some": 1, "pos": 1, "num": 1, "cmpn": 1, "qat": 1, "which": 0, "rank": 0,
         "has": 2, "same": 2, "cmp": 2, "diff": 2, "before": 2, "after": 2, "when": 2, "span": 2, "dir": 2, "dist": 2, "route": 2,
-        "hops": 2, "path": 2, "aligned": 2, "steps": 2}
+        "hops": 2, "path": 2, "aligned": 2, "steps": 2, "assoc": 1, "both": 2, "maybe": 2, "lhead": 2, "ltail": 2}
 
 
 # ---------------------------------------------------------------- the steps of a walk
@@ -466,6 +481,28 @@ def answer(s, p, t, nums, memo):
     if name in ("eldest", "newest"):
         xs = sorted((s.born.get(x, 0), x) for x in walk(s, memo, t[p[1]], p[2]) if p[3] is None or kind(x) == p[3])
         return xs[0 if name == "eldest" else -1][1] if xs else None
+    if name == "assoc":                                          # the answer goes with what the walk comes to: a table learnt from the answers
+        S = walk(s, memo, t[p[1]], p[2])
+        if len(S) != 1:
+            return None
+        return ("@", next(iter(S))) if len(p) == 3 else dict(p[3]).get(next(iter(S)))
+    if name == "recall":                                         # the last event with these things in these places: its other thing
+        for e in reversed(s.N[p[1]]):
+            if all(e[place] == t[i] for i, place in enumerate(p[3:])):
+                return e[p[2]]
+        return None
+    if name == "both":                                           # those that the one walk and the other both come to
+        xs = [x for x in walk(s, memo, t[p[1]], p[2]) & walk(s, memo, t[p[3]], p[4]) if p[5] is None or kind(x) == p[5]]
+        return ",".join(sorted(xs)) if xs else None
+    if name in ("lhead", "ltail"):                               # what lies from this thing in this direction; from what this thing lies so
+        x, d, opposite = t[p[2]], t[p[3]], p[-1]                 # (said either way: a is north of b, or b is south of a)
+        if name == "ltail":
+            d = opposite.get(d)
+        xs = {a for a, b, lab, n in s.L[p[1]] if lab == d and b == x} | {b for a, b, lab, n in s.L[p[1]] if a == x and opposite.get(lab) == d}
+        return ",".join(sorted(xs)) if xs else None
+    if name == "maybe":                                          # is it so; or is it one of the things it may be
+        x, v = t[p[2]], t[p[3]]
+        return "yes" if s.F[p[1]].get(x) == v else "maybe" if v in s.U[p[1]].get(x, ()) else "no"
     if name == "has":
         return t[p[3]] in walk(s, memo, t[p[1]], p[2])
     if name == "some":
@@ -613,12 +650,15 @@ class Learner:
         self.rec = {f: () for f in self.forms if not f[1]}       # nothing is understood at first
         self.ask = {}
         self.cache, self.options, self.runs, self.work = {}, {}, 0, 0
+        self.inside, self.played, self.lists = None, {}, {}
 
     # ------------------------------------------------------------ what a row may be
     def moves(self, nt, nn, top, sorts):
         out = []
         for name, (fn, sort, t, num) in MOVES.items():
-            if (sort not in sorts and sort != "T") or (num == 1 and not nn) or t > nt + 1 or (t > nt and t == 1):
+            if (sort not in sorts and sort not in "TN") or (num == 1 and not nn) or t > nt + 1 or (t > nt and t == 1):
+                continue
+            if name in SENTENCES and not self.words:
                 continue
             idx = list(range(nt)) + ([-1] if t == nt + 1 else [])
             for k in range(min(K[sort], top[sort] + 1)):
@@ -666,7 +706,9 @@ class Learner:
             for name, k, pick, _ in moves:
                 ks = [tk[i] if i > -10 else "#" for i in pick]
                 sort = MOVES[name][1]
-                if name in ("set", "setat", "tie", "claim", "wait"):
+                if name == "either":
+                    types.setdefault((sort, k), set()).update([(ks[0], ks[1]), (ks[0], ks[2])])
+                elif name in ("set", "setat", "tie", "claim", "wait"):
                     types.setdefault((sort, k), set()).add((ks[0], ks[1]))
                     if name == "wait":
                         types.setdefault(("W", k), set()).add((ks[0], ks[1]))
@@ -679,6 +721,8 @@ class Learner:
                 elif name == "qsame":
                     for q in range(K["Q"]):
                         types.setdefault((sort, q), set()).update(ks)
+                elif name == "note":
+                    types.setdefault((sort, k), set()).add(tuple(ks))
                 elif name == "link":
                     types.setdefault((sort, k), set()).add(tuple(ks))
                     if ks[2] == OP:
@@ -735,6 +779,10 @@ class Learner:
                 if nn and own in types[("Q", k)]:
                     out += [("which", k, c, n, own) for c in CMP for n in range(nn)]
                     out += [("rank", k, n, own, most) for n in range(nn) for most in (True, False)]
+            if self.words:
+                out += [("assoc", i, path) for i in starts for path in [()] + [w for w, _ in W[i] if len(w) == 1]]
+                out += [("both", i, a, j, b, own) for i in range(nt) for j in range(i + 1, nt) for a, ea in W[i] for b, eb in W[j]
+                        if len(a) == len(b) == 1 and own in ea and own in eb]
         elif sh == "n":
             for i in starts:
                 out += [("num", i, e) for e in amounts(i)]
@@ -760,12 +808,23 @@ class Learner:
             for k in fs:
                 out += [("sooner", k, i, j, v) for i in range(nt) for j in range(nt) for v in range(nt)
                         if len({i, j, v}) == 3 and (tk[i], tk[j]) in types[("F", k)] and (tk[i], tk[v]) in types[("F", k)]]
+        if self.words and sh == "t" and 1 <= nt <= 2:            # an event is recalled by some of its things, another of them is the answer
+            for (sort, k) in sorted(types):
+                for ks in sorted(types[(sort, k)]) if sort == "N" else ():
+                    out += [("recall", k, o) + places for o in range(3) if own in (ks[o], None)
+                            for places in itertools.permutations([x for x in range(3) if x != o], nt)
+                            if all(ks[x] == tk[i] for i, x in enumerate(places))]
+        if self.words and "maybe" in self.forms[form]:
+            out += [("maybe", k, i, j) for k in fs for i in range(nt) for j in range(nt) if i != j and (tk[i], tk[j]) in types[("F", k)]]
         for (sort, k) in sorted(types):                          # what lies where
             if sort != "L":
                 continue
             for ka, kb, kd in sorted(types[(sort, k)]):
                 marks = sorted(types.get(("L!", k), ())) if kd == OP else sorted(types.get(("L#", k), ())) if kd == "#" else self.names.get(kd, [])
                 opps = [tuple(sorted(o.items())) for o in pairings(marks)] if len(marks) % 2 == 0 and 2 <= len(marks) <= 6 else []
+                if self.words and sh == "t":                     # the link itself, asked for by one of its ends and its direction
+                    out += [(name, k, i, d, opp) for opp in opps for name in ("lhead", "ltail") for i in range(nt) for d in range(nt)
+                            if i != d and tk[d] == kd and tk[i] in (ka, kb)]
                 for i in range(nt):
                     for j in range(nt):
                         if i == j or {tk[i], tk[j]} - {ka, kb}:
@@ -789,6 +848,14 @@ class Learner:
     def grade(outs, golds, yesno):
         """-> for the query as it is and (yes/no) turned over: (right beyond chance, right, what to say when there is nothing to say)"""
         out = []
+        if any(x.__class__ is tuple for x in outs):              # an answer that goes with a value: for every question, the answer
+            seen = {}                                            # most often met with this value in the other questions
+            for x, g in zip(outs, golds):
+                if x.__class__ is tuple:
+                    seen.setdefault(x[1], Counter())[g] += 1
+            outs = [((seen[x[1]] - Counter([g])).most_common(1) or [(None,)])[0][0] if x.__class__ is tuple else x for x, g in zip(outs, golds)]
+        if not yesno:
+            outs = [("yes" if x else "no") if x.__class__ is bool else x for x in outs]
         for flip in ((False, True) if yesno else (False,)):
             o = [None if x is None else ("yes" if x != flip else "no") for x in outs] if yesno else outs
             miss = Counter(g for x, g in zip(o, golds) if x is None)
@@ -813,30 +880,49 @@ class Learner:
                 c += len(x)
             elif x.__class__ is tuple and x and x[0] in ("count", "sum"):
                 c += 1 + len(x[1])
+        if p[0] == "assoc":
+            c += 2 + len(p[2])                                   # a table is more to say than a walk
         return c
 
-    def play(self, episodes, rec, progs):
-        """run the episodes -> for every query form, what every one of its programs says to every question"""
+    def play(self, rec, progs):
+        """run the learner's episodes -> for every query form, what every one of its programs says to every question.
+        An episode is run again only if a row of it is read anew or is asked something new: what it gave is kept"""
+        if self.inside is None:
+            self.inside = [(sorted({(op, q, kinds) for op, q, _, _, kinds, _ in ep if not q}),
+                            sorted({(op, q, kinds) for op, q, _, _, kinds, _ in ep if q})) for ep in self.episodes]
         outs = {f: [[] for _ in ps] for f, ps in progs.items()}
-        for ep in episodes:
-            s = State()
-            for s.now, (op, quest, things, numbers, kinds, gold) in enumerate(ep):
-                form = (op, quest, kinds)
-                t = things + (op, ME)
-                if quest:
-                    memo = {}
-                    for p, o in zip(progs.get(form, ()), outs.get(form, ())):
-                        try:
-                            o.append(answer(s, p[:-1] + (dict(p[-1]),) if p[0] in SPACE else p, t, numbers, memo))
-                        except (KeyError, IndexError, ValueError, TypeError):
-                            o.append(None)
-                else:
-                    for x in things:
-                        s.born.setdefault(x, s.now)
-                    for name, k, pick, n in rec.get(form, ()):
-                        MOVES[name][0](s, k, taken(t, numbers, pick), (numbers[n],) if n is not None else ())
+        fresh = 0
+        for i, ep in enumerate(self.episodes):
+            recs, asks = self.inside[i]
+            key = (i, tuple(rec.get(f, ()) for f in recs), tuple(id(progs[f]) for f in asks))
+            got = self.played.get(key)
+            if got is None:
+                got = {f: [[] for _ in progs[f]] for f in asks}
+                s = State()
+                for s.now, (op, quest, things, numbers, kinds, gold) in enumerate(ep):
+                    form = (op, quest, kinds)
+                    t = things + (op, ME)
+                    if quest:
+                        memo = {}
+                        for p, o in zip(progs[form], got[form]):
+                            try:
+                                o.append(answer(s, p[:-1] + (dict(p[-1]),) if p[0] in SPACE else p, t, numbers, memo))
+                            except (KeyError, IndexError, ValueError, TypeError):
+                                o.append(None)
+                    else:
+                        for x in things:
+                            s.born.setdefault(x, s.now)
+                        for name, k, pick, n in rec.get(form, ()):
+                            MOVES[name][0](s, k, taken(t, numbers, pick), (numbers[n],) if n is not None else ())
+                fresh += 1
+                self.played[key] = got
+                if len(self.played) > KEPT:
+                    self.played.pop(next(iter(self.played)))
+            for f, lists in got.items():
+                for o, part in zip(outs[f], lists):
+                    o.extend(part)
         self.runs += 1
-        self.work += len(episodes)
+        self.work += fresh if self.words else len(self.episodes)     # (the records are counted as they were when their runs were made)
         return outs
 
     def fit(self, rec, even=None):
@@ -852,9 +938,10 @@ class Learner:
         for f in self.forms:
             if f[1]:
                 if (f, tkey) not in self.options:
-                    self.options[(f, tkey)] = self.queries(f, types)
+                    ps = tuple(self.queries(f, types))
+                    self.options[(f, tkey)] = self.lists.setdefault((f, ps), ps)     # one list for all the kinds of slots that give it
                 progs[f] = self.options[(f, tkey)]
-        outs = self.play(self.episodes, rec, progs)
+        outs = self.play(rec, progs)
         marks, ops = {}, {}                                  # form -> {(program, turned over): (beyond, right, default)}
         for f, ps in progs.items():
             golds = self.forms[f]
@@ -888,13 +975,21 @@ class Learner:
                 if best[1] in marks[f] and (f not in own or marks[f][best[1]][0] >= own[f][0][0]):
                     c = best[1]
                 if c:
-                    ask[f] = (c[0], bool(c[1]), marks[f][c][2])
+                    prog = c[0]
+                    if prog[0] == "assoc":                       # the table itself: what the answer was most often for every value
+                        table = {}
+                        for x, g in zip(outs[f][progs[f].index(prog)], self.forms[f]):
+                            if x.__class__ is tuple:
+                                table.setdefault(x[1], Counter())[g] += 1
+                        prog = prog + (tuple(sorted((v, n.most_common(1)[0][0]) for v, n in table.items())),)
+                    ask[f] = (prog, bool(c[1]), marks[f][c][2])
                     right += marks[f][c][1]
         for moves in {(() if self.words else (f[0],)) + size(f) + (m,) for f, m in rec.items() if m}:    # the same said by one operation
             score -= PRICE * sum(1 + (-1 in m[2]) for m in moves[-1])                                     # (in words: of one shape) is paid for once
         for f, (p, flip, default) in ask.items() if even is not None else ():
+            p = p[:3] if p[0] == "assoc" else p                  # (without its table)
             got = marks[f][(p, flip)][1]
-            even[f] = sorted((c for c, g in marks[f].items() if g[1] == got and c != (p, flip)), key=lambda c: self.price(*c, size(f)[0]))[:4]
+            even[f] = sorted((c for c, g in marks[f].items() if g[1] == got and c != (p, flip) and c[0][0] != "assoc"), key=lambda c: self.price(*c, size(f)[0]))[:4]
             even[f] = [(c[0], bool(c[1]), marks[f][c][2]) for c in even[f]]
         self.cache[key] = ((round(score, 6), right), ask)
         return self.cache[key]
@@ -973,8 +1068,11 @@ class Learner:
         alike = {}
         for f in records:                                        # operations over things of the same kinds may mean the same (as words do)
             alike.setdefault(f[2], []).append(f)
-        if self.words:
-            whole = [tuple(g) for g in alike.values() if len({f[0] for f in g}) > 1] + whole
+        first = whole
+        if self.words:                                           # to begin with, words used alike are taken to mean the same
+            merged = [tuple(g) for g in alike.values() if len({f[0] for f in g}) > 1]
+            first = merged + [u for u in whole if not any(set(u) <= set(g) for g in merged)]
+            whole = merged + whole
         units = whole + [(f,) for g in groups.values() if len(g) > 1 for f in g]
         trace = os.environ.get("TRACE")
         beam = [(self.fit(start or {f: () for f in self.rec})[0], 0, start or {f: () for f in self.rec})]
@@ -982,7 +1080,7 @@ class Learner:
             pool, seen = [], {tuple(sorted(r.items())) for _, _, r in beam}
             for sc, _, rec in beam:
                 n = 0
-                for u in whole:
+                for u in first:
                     for m in self.offer(u, self.rows(*size(u[0]), self.top(rec, u), sorts)) + [()]:
                         n += 1
                         trial = {**rec, **{f: m for f in u}}
@@ -1002,8 +1100,20 @@ class Learner:
             if trace:
                 print("  beam", [x[0] for x in beam], flush=True)
         best, _, rec = beam[0]
+
+        def spread(rec, best, among=None):
+            """what one word turned out to mean is tried at once for the words used as it is"""
+            for g in alike.values() if self.words else ():
+                for f in g if among is None or among in g else ():
+                    for m in list(dict.fromkeys(rec[x] for x in g if rec[x])):
+                        if m != rec[f] and self.work < until:
+                            got = self.fit({**rec, f: m})[0]
+                            if got > best:
+                                best, rec = got, {**rec, f: m}
+            return rec, best
         while self.work < until:
             moved = False
+            rec, best = spread(rec, best)
             for u in units:                                      # one operation at a time
                 found = simpler = None
                 now = {rec[f] for f in u}
@@ -1021,6 +1131,7 @@ class Learner:
                         break
                 if found:
                     rec, moved = found, True
+                    rec, best = spread(rec, best, u[0])
                 elif simpler:
                     rec = simpler
                     if trace:

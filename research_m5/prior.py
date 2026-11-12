@@ -24,7 +24,7 @@ import numpy as np
 
 import records
 
-NAMES = list(records.MOVES)
+NAMES = ["set", "unset", "rise", "swap", "moveall", "swapall", "pair", "unpair", "setat", "claim", "wait", "back", "copy", "tie", "untie", "tieboth", "tie2", "untie2", "cut", "ecopy", "eunion", "einter", "qset", "qadd", "qsub", "qpass", "qsame", "qmin", "qmax", "qsum", "qnot", "link", "tick", "clock"]   # the moves the network knows (those of records.py when it was taught)
 WHO = (0, 1, 2, 3, -1, -2, "#", None)                        # a thing of the row by its place, the one not named, the operation, a number, nothing
 ALL = {sort: n for sort, n in records.K.items()}
 
@@ -139,9 +139,9 @@ def readings(path):
         if t:
             k = int(t.group(1))
             out[k] = {}
-        r = re.match(r"^    (\S+) (.*?)\s+((?:\w+ [FQELT]\d of \([^)]*\)(?:; )?)+|-)\s*$", line)
+        r = re.match(r"^    (\S+) (.*?)\s+((?:\w+ [FQELTN]\d of \([^)]*\)(?:; )?)+|-)\s*$", line)
         if r and k is not None:
-            moves = [] if r.group(3) == "-" else re.findall(r"(\w+) [FQELT]\d of \(([^)]*)\)", r.group(3))
+            moves = [] if r.group(3) == "-" else re.findall(r"(\w+) [FQELTN]\d of \(([^)]*)\)", r.group(3))
             out[k][(r.group(1), tuple(r.group(2).split()))] = tuple((name, tuple(int(x) for x in pick.replace(" ", "").split(",") if x)) for name, pick in moves)
     return out
 

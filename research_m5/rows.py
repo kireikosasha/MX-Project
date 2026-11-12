@@ -58,17 +58,20 @@ def stories(path, limit=None):
 
 
 class Reader:
+    hint = None                                                  # the network that says which readings to try first, if there is one
+
     def __init__(self, train, limit=0):
         """which words are things, and of what kinds"""
         self.same = forms(train)
         self.raw, self.things, self.pointers = train, set(), set()
         train = self.plain(train)
         places = {}                                              # (question?, the sentence with one word out) -> the words met there
-        things = set()
+        things, said = set(), set()
         for story in train:
             for words, gold in story:
                 if gold:
                     things.update(w for w in gold if w not in PLAIN and not w.isdigit())
+                    said.update(gold)
                 for i, w in enumerate(words):
                     if not w.isdigit():
                         places.setdefault((gold is not None, words[:i] + ("*",) + words[i + 1:]), set()).add(w)
@@ -97,8 +100,12 @@ class Reader:
         if limit:                                                # the other kinds of words: by what explains more
             rest = [ws for ws in kinds.values() if not ws & self.things and len(ws) > 1]
             rest.sort(key=lambda ws: len({self.op(words, self.things | ws) for story in train for words, gold in story}))
+            total = sum(gold is not None for story in train for words, gold in story)
+            seeded = [ws for ws in kinds.values() if ws <= self.things and not ws & said]
             best = self.worth(limit)
             for ws in rest[:4]:
+                if best[1] == total:                             # nothing is left to explain
+                    break
                 self.things |= ws                                # are they things too (people never asked about, verbs that mean the same)
                 self.name()
                 as_things = self.worth(limit)
@@ -115,6 +122,18 @@ class Reader:
                     else:
                         self.pointers |= ws
                     self.guessed.append(("things: " if as_things >= as_pointers else "pointers: ") + " ".join(sorted(ws)))
+            for ws in sorted(seeded, key=sorted):
+                if best[1] == total:
+                    break
+                self.things -= ws                                # words that take turns in a question and are never an answer:
+                self.name()                                      # things, or words of the question itself (who gave, who received)
+                apart = self.worth(limit)
+                if apart > best:
+                    best = apart
+                    self.guessed.append("words of the sentence itself: " + " ".join(sorted(ws)))
+                else:
+                    self.things |= ws
+                    self.name()
 
     def root(self, w):
         while self.kind[w] != w:
@@ -135,6 +154,7 @@ class Reader:
 
     def worth(self, limit):
         m = records.Learner(self.rows(self.raw))
+        m.hint = self.hint
         m.learn(limit)
         return m.fit(m.rec)[0]
 
@@ -186,8 +206,13 @@ def main():
     ap.add_argument("--limit", type=float, default=records.WORK)
     ap.add_argument("--ask", type=int, default=0, help="how many more stories it may ask the answers of (those on which its readings part)")
     ap.add_argument("--more", default="", help="take more stories where what is learnt fails on fresh ones: e.g. 60,200")
+    ap.add_argument("--hint", default="", help="a network that says which readings of a row to try first (made by prior.py)")
     ap.add_argument("--show", action="store_true")
     a = ap.parse_args()
+    hint = None
+    if a.hint:
+        import prior
+        hint = Reader.hint = prior.Hint(a.hint)
     files = glob.glob(os.path.join(a.data, "qa*_train.txt"))
     tasks = [int(x) for x in a.tasks.split(",") if x] or sorted(int(re.match(r"qa(\d+)_", os.path.basename(f)).group(1)) for f in files)
     right = total = 0
@@ -196,11 +221,11 @@ def main():
         more = [int(x) for x in a.more.split(",") if x]
         raw = stories(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], max([a.stories + 200 * bool(a.ask)] + more))
         reader = Reader(raw[:a.stories], a.limit / 4)             # what a thing is, is settled on the first stories
-        m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask)
+        m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint)
         got, n = m.run(m.episodes)
         print(f"task {k:2d}: {len(reader.code)} things of {len({c[0] for c in reader.code.values()})} kinds; learnt from {used} stories" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their "
               f"questions right, {sum(bool(p) for p in m.rec.values())} of {len(m.rec)} kinds of statements and {len(m.ask)} of "
-              f"{len(m.forms) - len(m.rec)} kinds of questions read ({time.time() - t0:.0f} s)", flush=True)
+              f"{len(m.forms) - len(m.rec)} kinds of questions read ({time.time() - t0:.0f} s, {m.spent} episodes played)", flush=True)
         if reader.guessed:
             print("  taken by what they explain -", "; ".join(reader.guessed), flush=True)
         if a.show:
