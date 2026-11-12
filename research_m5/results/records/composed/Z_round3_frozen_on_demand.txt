@@ -1,0 +1,85 @@
+task  1: learnt from 200 episodes (50/69 on the next 40) (196/251 on the next 140), 281/356 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (121 s)
+    asg p s          qadd Q0 of (0,); tie E0 of (0, 1)
+    nox p s          tie2 E0 of (0, 1)
+  ? xat p            newest 0 [>E0 <<E0] s
+  ? xls p            list 0 [>E0 <<E0] s
+  ? xok p s          pos 0 (q 0) (turned over)
+test  1: 703/891 = 78.9%
+test  1 in Z3: 855/1269 = 67.4%
+test  1 in Z10: 865/1393 = 62.1%
+task  2: learnt from 200 episodes (39/113 on the next 40) (204/418 on the next 140), 295/591 of their questions right, 4 of 4 kinds of records and 5 of 5 kinds of queries read (158 s)
+    cst v c          set F0 of (0, 1)
+    swp v v          swap F0 of (0, 1)
+    wdr v            copy F0 of (0, -1)
+    wgt v #          set F0 of (-1, 0); tie E0 of (0, -1)
+  ? bst c c          most (count [<<F0] None)
+  ? bst c c c        most (count [<<F0] None)
+  ? bst c c c c      most (count [<<F0] None)
+  ? cnt c            num 0 (count [<<F0 =E0] None)
+  ? hld v            list 0 [>F0] c
+test  2: 669/1398 = 47.9%
+test  2 in Z3: 806/1540 = 52.3%
+test  2 in Z10: 671/1457 = 46.1%
+task  3: learnt from 200 episodes (105/113 on the next 40) (359/414 on the next 140), 530/584 of their questions right, 4 of 4 kinds of records and 5 of 5 kinds of queries read (325 s)
+    dro a a          untie E0 of (1, 0)
+    dro p a          untie E0 of (1, 0)
+    vop a a          tie E0 of (1, 0)
+    vop p a          tie E0 of (1, 0)
+  ? cnt a            num 0 (count [>>E0] p)
+  ? xin a a          has 0 [<<E0] 1
+  ? xin p a          has 0 [<<E0] 1
+  ? zul a            list 0 [<E0 <E0] a
+  ? zul p            newest 0 [<<E0 <E0] a
+test  3: 1305/1455 = 89.7%
+test  3 in Z3: 1295/1476 = 87.7%
+test  3 in Z10: 1322/1524 = 86.7%
+task  4: learnt from 60 episodes (121/136 on the next 40, 49 rows not read) (422/422 on the next 140), 191/191 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (224 s)
+    kov m m          set F1 of (0, 1)
+    ruk p m          set F0 of (0, 1); qadd Q0 of (1,)
+    zef p m          set F0 of (1, 0)
+  ? cnt m            num 0 (q 0)
+  ? lik p p          has 0 [~F0 >F0] 1
+  ? tov m            list 0 [>F1 >F0] p
+test  4: 1500/1500 = 100.0%
+test  4 in Z3: 1458/1458 = 100.0%
+test  4 in Z10: 1514/1514 = 100.0%
+task  5: learnt from 60 episodes (111/122 on the next 40, 58 rows not read) (421/421 on the next 140), 176/176 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (13 s)
+    gk p d          set F0 of (1, 0)
+    rq d a          set F0 of (1, 0)
+  ? nq a            num 0 (count [~F0 >F0] None)
+  ? uq p a          has 0 [<<F0] 1
+  ? wq a            list 0 [~F0 >F0] p
+test  5: 1468/1468 = 100.0%
+test  5 in Z3: 1527/1539 = 99.2%
+test  5 in Z10: 1380/1508 = 91.5%
+task  6: learnt from 200 episodes (96/109 on the next 40, 109 rows not read) (430/436 on the next 140, 371 rows not read), 597/605 of their questions right, 1 of 3 kinds of records and 3 of 3 kinds of queries read (415 s)
+    dsq r            -
+    hov r r          set F0 of (0, 1); pair F1 of (0, 1)
+    stg r            -
+  ? cnt r            num 0 (count [<~F0] None)
+  ? hld r            some 0 [<F0 >F1]
+  ? lst r            list 0 [~F0] r
+test  6: 1451/1476 = 98.3%
+test  6 in Z3: 1344/1470 = 91.4%
+test  6 in Z10: 1280/1528 = 83.8%
+task  7: learnt from 200 episodes (132/136 on the next 40) (392/420 on the next 140), 591/628 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (36 s)
+    ceq s            cut E1 of (0,)
+    kag v k          tie E0 of (0, 1); tieboth E1 of (0, 1, -1)
+    oru s            tie E1 of (-1, 0)
+  ? hob v            some 0 [>E0]
+  ? sco v            newest 0 [=E0 >>E1] s
+  ? xup v            newest 0 [>>E0] k
+test  7: 1407/1532 = 91.8%
+test  7 in Z3: 1167/1467 = 79.6%
+test  7 in Z10: 906/1509 = 60.0%
+task  8: learnt from 200 episodes (118/119 on the next 40, 25 rows not read) (364/371 on the next 140), 527/535 of their questions right, 4 of 4 kinds of records and 2 of 2 kinds of queries read (208 s)
+    cgr p c          tie E0 of (0, 1)
+    dq j c          unset F0 of (0,)
+    lp p c          untie E0 of (0, 1)
+    rq j c          wait F0 of (0, 1)
+  ? nc p            num 0 (count [>E0] None)
+  ? qy p j          has 0 [>E0 <~F0] 1
+test  8: 1354/1365 = 99.2%
+test  8 in Z3: 1462/1485 = 98.5%
+test  8 in Z10: 1520/1547 = 98.3%
+all: 9857/11085 = 88.92%

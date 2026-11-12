@@ -1,0 +1,135 @@
+task  1: learnt from 200 episodes (103/116 on the next 40, 20 rows not read) (399/412 on the next 140), 589/592 of their questions right, 7 of 7 kinds of records and 7 of 7 kinds of queries read (328 s)
+    dek b b          set F0 of (0, 1)
+    dek b p          set F0 of (0, 1)
+    dek k b          set F0 of (0, 1)
+    dek k p          set F0 of (0, 1)
+    fuz b            rise F0 of (0,)
+    fuz k            rise F0 of (0,)
+    gor b p          set F0 of (0, 1)
+  ? pimo p            num 0 (count [<<F0] k)
+  ? qeb b b          has 0 [^F0 <<F0] 1
+  ? qeb b k          has 0 [^F0 <<F0] 1
+  ? qeb k b          has 0 [^F0 <<F0] 1
+  ? qeb k k          has 0 [^F0 <<F0] 1
+  ? zuv b            list 0 [^F0] p
+  ? zuv k            list 0 [^F0] p
+test  1: 1467/1468 = 99.9%
+test  1 in S3: 1507/1509 = 99.9%
+test  1 in S10: 1543/1545 = 99.9%
+task  2: learnt from 60 episodes (104/114 on the next 40) (436/436 on the next 140), 166/166 of their questions right, 4 of 4 kinds of records and 3 of 3 kinds of queries read (88 s)
+    dax b k          set F0 of (1, 0)
+    mev b k b        set F0 of (1, 2)
+    swp b k b k      swap F0 of (1, 3)
+    zoq b k          unset F0 of (1,)
+  ? hol k            list 0 [>F0] b
+  ? kep b            list 0 [<F0] k
+  ? ynq b k          has 0 [<F0] 1
+test  2: 1461/1461 = 100.0%
+test  2 in S3: 1527/1527 = 100.0%
+test  2 in S10: 1510/1510 = 100.0%
+task  3: learnt from 200 episodes (59/110 on the next 40) (271/415 on the next 140), 403/591 of their questions right, 2 of 2 kinds of records and 5 of 5 kinds of queries read (513 s)
+    qen k k          claim F0 of (0, 1); link L0 of (0, 1, -2)
+    zor k k          claim F0 of (1, 0); link L0 of (0, 1, -2)
+  ? mx k k k        least (count [>>F0] None)
+  ? mx k k k k      least (count [>>F0] None)
+  ? ruk k k k        path 0 2 0 0 0 {}
+  ? ruk k k k k      path 0 3 1 0 0 {}
+  ? xo k k          cmp 0 1 (count [<<F0] None) >=
+test  3: 987/1450 = 68.1%
+test  3 in S3: 943/1472 = 64.1%
+test  3 in S10: 1008/1522 = 66.2%
+task  4: learnt from 20 episodes (103/103 on the next 40), 50/50 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (12 s)
+    bev i c          tie E0 of (1, 0)
+    hax c p          tie E0 of (1, 0)
+    lod c c          tie E0 of (1, 0)
+  ? gip i            list 0 [<<E0] p
+  ? qhp i p          has 0 [<<E0] 1
+  ? qkn i            list 0 [<<E0] c
+test  4: 1132/1132 = 100.0%
+test  4 in S3: 1398/1398 = 100.0%
+test  4 in S10: 1449/1449 = 100.0%
+task  5: learnt from 20 episodes (97/97 on the next 40), 40/40 of their questions right, 3 of 3 kinds of records and 4 of 4 kinds of queries read (3 s)
+    fx b s          set F0 of (0, 1)
+    mv k b          set F0 of (0, 1)
+    rm k            unset F0 of (0,)
+  ? ls b            list 0 [<F0] k
+  ? ls s            list 0 [<F0] b
+  ? sb b            list 0 [>F0] s
+  ? wh k            list 0 [>F0] b
+test  5: 986/986 = 100.0%
+test  5 in S3: 1353/1353 = 100.0%
+test  5 in S10: 1440/1440 = 100.0%
+task  6: learnt from 20 episodes (111/111 on the next 40), 56/56 of their questions right, 1 of 1 kinds of records and 3 of 3 kinds of queries read (1 s)
+    zom e p          set F0 of (0, 1)
+  ? kor p e e        first 0 1 2 0
+  ? rav e p          before 0 0 1
+  ? tuk e p          after 0 0 1
+test  6: 1493/1493 = 100.0%
+test  6 in S3: 1492/1492 = 100.0%
+test  6 in S10: 1489/1489 = 100.0%
+task  7: learnt from 20 episodes (125/125 on the next 40), 69/69 of their questions right, 4 of 4 kinds of records and 5 of 5 kinds of queries read (49 s)
+    fip p #          qadd Q0 of (0,)
+    gom p #          qsub Q0 of (0,)
+    vrq p p #        qpass Q0 of (0, 1)
+    zet p #          qset Q0 of (0,)
+  ? geq p #          cmpn 0 (q 0) >= 0
+  ? hav p            num 0 (q 0)
+  ? mxo p p          most (q 0)
+  ? mxo p p p        most (q 0)
+  ? mxo p p p p      most (q 0)
+test  7: 1516/1516 = 100.0%
+test  7 in S3: 1486/1486 = 100.0%
+test  7 in S10: 1448/1448 = 100.0%
+task  8: learnt from 200 episodes (101/106 on the next 40) (346/383 on the next 140), 524/543 of their questions right, 4 of 4 kinds of records and 3 of 3 kinds of queries read (98 s)
+    kuv p p          link L0 of (1, 0, -2); qnot Q0 of (0, 1)
+    pem p p          link L0 of (0, 1, -2)
+    tiz p p          link L0 of (0, 1, -2); qsub Q0 of (0,)
+    vob p p          link L0 of (0, 1, -2); qpass Q1 of (0, 1)
+  ? qeu p p          cmp 0 1 (q 1) >
+  ? qnu p p          cmp 0 1 (q 0) >
+  ? qpa p p          path 0 0 1 1 0 {}
+test  8: 1322/1370 = 96.5%
+test  8 in S3: 1381/1494 = 92.4%
+test  8 in S10: 1317/1459 = 90.3%
+task  9: learnt from 200 episodes (115/118 on the next 40) (401/416 on the next 140), 593/608 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (69 s)
+    xul m            unset F0 of (0,)
+    zor m m          set F0 of (0, 1)
+  ? jiv m m          has 0 [<<F0] 1
+  ? qor m            list 0 [^F0] m
+  ? vup m #          eldest 0 [>F0 >>F0] m
+test  9: 1423/1467 = 97.0%
+test  9 in S3: 1451/1540 = 94.2%
+test  9 in S10: 1331/1441 = 92.4%
+task 10: learnt from 20 episodes (114/114 on the next 40), 52/52 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (10 s)
+    jn p g          set F0 of (0, 1)
+    lv p g          unset F0 of (0,)
+    mv p g          set F0 of (0, 1)
+  ? ct g            num 0 (count [<F0] None)
+  ? mb g            list 0 [<F0] p
+  ? wg p            list 0 [>F0] g
+test 10: 1374/1374 = 100.0%
+test 10 in S3: 1455/1455 = 100.0%
+test 10 in S10: 1420/1420 = 100.0%
+task 11: learnt from 60 episodes (87/101 on the next 40, 70 rows not read) (370/370 on the next 140), 152/152 of their questions right, 5 of 5 kinds of records and 3 of 3 kinds of queries read (53 s)
+    bzi a c          tie E0 of (0, 1)
+    fom c p          tie E0 of (0, 1)
+    hel a p          tie E0 of (0, 1)
+    ulk c c          tie E0 of (0, 1)
+    wgt a #          qset Q0 of (0,)
+  ? hez a p          has 0 [>>E0] 1
+  ? mun p            list 0 [<<E0] a
+  ? nuq p            num 0 (sum [<<E0] 0)
+test 11: 1384/1384 = 100.0%
+test 11 in S3: 1497/1497 = 100.0%
+test 11 in S10: 1507/1507 = 100.0%
+task 12: learnt from 200 episodes (81/106 on the next 40) (303/340 on the next 140), 440/488 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (94 s)
+    cst v o          set F0 of (0, 1); qadd Q0 of (0,)
+    rtr v            unset F0 of (0,); tie2 E0 of (0, -1)
+    wgt v #          qset Q0 of (0,); qset Q1 of (0,)
+  ? qld o o          most (sum [<F0] 0) (else o4)
+  ? qtl o            num 0 (sum [<~F0 =E0] 1)
+  ? qwh o            list 0 [<F0] v
+test 12: 1098/1259 = 87.2%
+test 12 in S3: 1123/1379 = 81.4%
+test 12 in S10: 1089/1453 = 74.9%
+all: 15643/16360 = 95.62%
