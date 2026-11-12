@@ -1,0 +1,137 @@
+task  1: 13 things of 1 kinds; learnt from 20 stories (asked for 20 more), 116/116 of their questions right, 13 of 13 kinds of statements and 4 of 4 kinds of questions read (2882 s, 390284 episodes played)
+  things: apple=a1 jar=a10 key=a11 kitchen=a12 office=a13 bag=a2 ball=a3 basket=a4 book=a5 box=a6 coin=a7 garden=a8 hall=a9
+    ana moved the * to the * a a          set F0 of (0, 1)
+    ana put the * in the * a a          set F0 of (0, 1)
+    ana took the * out of the * a a          rise F0 of (0,)
+    mia moved the * to the * a a          set F0 of (0, 1)
+    mia put the * in the * a a          set F0 of (0, 1)
+    mia took the * out of the * a a          rise F0 of (0,)
+    sam moved the * to the * a a          set F0 of (0, 1)
+    sam put the * in the * a a          set F0 of (0, 1)
+    sam took the * out of the * a a          rise F0 of (0,)
+    the * is in the * a a          set F0 of (0, 1)
+    tom moved the * to the * a a          set F0 of (0, 1)
+    tom put the * in the * a a          set F0 of (0, 1)
+    tom took the * out of the * a a          rise F0 of (0,)
+  ? how many things are in the * a            num 0 (count [<F0] None)
+  ? is the * in the * a a          has 0 [>>F0] 1
+  ? what is in the * a            list 0 [<F0] a
+  ? where is the * a            list 0 [^F0] a
+test  1: 1446/1446 = 100.0%
+task  2: 10 things of 3 kinds; learnt from 20 stories (asked for 10 more), 94/94 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (799 s, 374841 episodes played)
+  things: ann=a1 ben=a2 cal=a3 dee=a4 ball=b1 book=b2 cup=b3 hat=b4 key=b5 nobody=c1
+    * gave the * to * a b a        set F0 of (1, 2)
+    * got the * a b          set F0 of (1, 0)
+    * got the * from * a b a        set F0 of (1, 0)
+    * lost the * a b          unset F0 of (1,)
+    * traded the * to * for the * a b a b      swap F0 of (1, 3)
+  ? does * have the * a b          has 0 [<F0] 1
+  ? how many things does * have a            num 0 (count [<F0] None)
+  ? what does * have a            list 0 [<F0] b (else nothing)
+  ? who has the * b            list 0 [>F0] a (else c1)
+test  2: 1299/1299 = 100.0%
+task  3: 12 things of 1 kinds; learnt from 20 stories (asked for 15 more), 99/99 of their questions right, 2 of 2 kinds of statements and 2 of 2 kinds of questions read (199 s, 52851 episodes played)
+  things: ada=a1 ruben=a10 tomas=a11 yuki=a12 clara=a2 felix=a3 hugo=a4 iris=a5 lena=a6 mira=a7 nadia=a8 omar=a9
+    * is shorter than * a a          tie E0 of (1, 0)
+    * is taller than * a a          tie E0 of (0, 1)
+  ? is * taller than * a a          has 0 [>>E0] 1
+  ? who is the tallest of * and * and * a a a        over 0
+test  3: 1197/1197 = 100.0%
+task  4: 19 things of 3 kinds; learnt from 20 stories (asked for 10 more), 115/115 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (516 s, 351072 episodes played)
+  things: ann=a1 ben=a2 cal=a3 dana=a4 eli=a5 fay=a6 gus=a7 hal=a8 big=b1 cold=b2 fast=b3 green=b4 loud=b5 wet=b6 bird=c1 cat=c2 creature=c3 fish=c4 frog=c5
+    * is * a b          set F0 of (0, 1)
+    * is a * a c          tie E0 of (0, 1)
+    every * is * c b          set F0 of (0, 1)
+    every * is a * c c          tie E0 of (0, 1)
+  ? is * * a b          has 0 [>>E0 ~F0] 1
+  ? is * a * a c          has 0 [>>E0] 1
+  ? which properties does * have a            list 0 [=E0 ~F0] b
+test  4: 1767/1767 = 100.0%
+task  5: 13 things of 3 kinds; learnt from 20 stories (asked for 0 more), 45/50 of their questions right, 3 of 3 kinds of statements and 3 of 3 kinds of questions read (173 s, 99178 episodes played)
+  things: ann=a1 ben=a2 cy=a3 dora=a4 closed=b1 closes=b2 off=b3 on=b4 open=b5 door=c1 fan=c2 gate=c3 lamp=c4
+    * * the * a b c        set F0 of (2, 0); set F1 of (2, 1)
+    * turns * the * a b c        set F0 of (2, 0); set F1 of (2, 1)
+    the * copies the * c c          claim F1 of (0, 1); set F0 of (0, 1)
+  ? is the * * c b          has 0 [^F1] 1
+  ? which devices are * b            list 0 [<<F1] c
+  ? who last changed the * c            list 0 [^F0] a
+test  5: 1118/1360 = 82.2%
+task  6: 19 things of 4 kinds; learnt from 20 stories (asked for 20 more), 70/84 of their questions right, 3 of 3 kinds of statements and 2 of 2 kinds of questions read (1239 s, 439339 episodes played)
+  things: after=a1 before=a2 ann=b1 ben=b2 cy=b3 dana=b4 eli=b5 fay=b6 gus=b7 farm=c1 lake=c2 park=c3 school=c4 shop=c5 friday=d1 monday=d2 thursday=d3 tuesday=d4 wednesday=d5
+    * went to the * * * went to the * b c a b c    tie E0 of (1, 0)
+    * went to the * on * b c d        tie2 E0 of (0, 1)
+    on * * went to the * d b c        tie2 E0 of (1, 2)
+  ? where was * * * went to the * b a b c      newest 0 [<E0] c
+  ? where was * on * b d          newest 0 [=E0 <<E0] c
+test  6: 762/930 = 81.9%
+task  7: 10 things of 2 kinds; learnt from 20 stories (asked for 20 more), 84/131 of their questions right, 6 of 6 kinds of statements and 3 of 3 kinds of questions read (2310 s, 450352 episodes played)
+  things: apple=a1 ball=a2 book=a3 coin=a4 pen=a5 john=b1 lily=b2 mary=b3 sandra=b4 tom=b5
+    * buys # * b # a        claim F0 of (1, 0)
+    * finds # * b # a        unset F0 of (0,)
+    * gets # * from * b # a b      swapall F0 of (0, 2)
+    * gives # * to * b # a b      set F0 of (0, 2); qset Q0 of (0,)
+    * has # * b # a        setat F0 of (1, 0)
+    * loses # * b # a        qmin Q0 of (0, 1, -1)
+  ? does * have # * now b # a        cmpn 1 (sum [~F0] 0) >= 0
+  ? how many * does * have now a b          num 0 (count [^F0 <<F0] a)
+  ? who has the most * now a            newest 0 [>>F0] b
+test  7: 737/1467 = 50.2%
+task  8: 10 things of 1 kinds; learnt from 20 stories (asked for 10 more), 101/101 of their questions right, 4 of 4 kinds of statements and 8 of 8 kinds of questions read (1075 s, 208349 episodes played)
+  taken by what they explain - words of the sentence itself: east north south west
+  things: camp=a1 town=a10 cave=a2 farm=a3 fort=a4 lake=a5 mill=a6 park=a7 pier=a8 port=a9
+    the * is east of the * a a          tie E1 of (0, 1)
+    the * is north of the * a a          tie E0 of (0, 1)
+    the * is south of the * a a          tie E0 of (1, 0)
+    the * is west of the * a a          tie E1 of (1, 0)
+  ? is the * east of the * a a          has 0 [>>E1] 1
+  ? is the * north of the * a a          has 0 [>>E0] 1
+  ? is the * south of the * a a          has 0 [<<E0] 1
+  ? is the * west of the * a a          has 0 [<<E1] 1
+  ? what is east of the * a            list 0 [<<E1] a
+  ? what is north of the * a            list 0 [<<E0] a
+  ? what is south of the * a            list 0 [>>E0] a
+  ? what is west of the * a            list 0 [>>E1] a
+test  8: 1472/1472 = 100.0%
+task  9: 15 things of 2 kinds; learnt from 20 stories (asked for 10 more), 66/66 of their questions right, 2 of 2 kinds of statements and 3 of 3 kinds of questions read (314 s, 136064 episodes played)
+  things: boss=a1 parent=a2 teacher=a3 ada=b1 jo=b10 kit=b11 lou=b12 bob=b2 cy=b3 dee=b4 eve=b5 fay=b6 gus=b7 hal=b8 ivy=b9
+    * has * a a * b b a        set F0 of (0, 1)
+    * is the * of * b a b        set F0 of (2, 0)
+  ? is * the * of the * of * b a a b      has 0 [<F0 <F0] 3
+  ? who is the * of the * of * a a b        list 2 [>F0 >F0] b
+  ? who is the top * of * a b          list 1 [^F0] b
+test  9: 966/966 = 100.0%
+task 10: 12 things of 2 kinds; learnt from 20 stories (asked for 20 more), 108/119 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (417 s, 265651 episodes played)
+  things: ann=a1 bob=a2 cal=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 blue=b1 gold=b2 green=b3 red=b4
+    * enters the * team a b          tie2 E1 of (0, 1)
+    * joins the * team a b          tie E1 of (1, 0)
+    * leaves the * team a b          cut E1 of (0,); cut E0 of (1,)
+    * moves from the * team to the * team a b b        tie E1 of (2, 0); tie E0 of (0, 1)
+    * quits the * team a b          cut E1 of (0,); cut E0 of (1,)
+  ? are * and * in the same team a a          has 0 [<E1 >E1] 1
+  ? in which team is * a            newest 0 [=E0 <<E1] b (else 0)
+  ? is * in the same team as * a a          has 0 [<<E1 >>E1] 1
+  ? which team is * in a            newest 0 [<E1] b (else 0)
+test 10: 1131/1262 = 89.6%
+task 11: 24 things of 3 kinds; learnt from 20 stories (asked for 11 more), 96/96 of their questions right, 6 of 6 kinds of statements and 3 of 3 kinds of questions read (616 s, 381841 episodes played)
+  things: ann=a1 jo=a10 ben=a2 cy=a3 dana=a4 eli=a5 fay=a6 gus=a7 hal=a8 ivy=a9 dragon=b1 fox=b2 pilot=b3 robot=b4 sailor=b5 tiger=b6 gentle=c1 green=c2 heavy=c3 loud=c4 quick=c5 round=c6 shiny=c7 sleepy=c8
+    * is * a c          tie E0 of (0, 1)
+    * is a * a b          tie E0 of (0, 1)
+    every * is * b c          tie E0 of (0, 1)
+    every * is a * b b          tie E0 of (0, 1)
+    every * thing is * c c          tie E0 of (0, 1)
+    every * thing is a * c b          tie E0 of (0, 1)
+  ? is * * a c          has 0 [>>E0] 1
+  ? is * a * a b          has 0 [>>E0] 1
+  ? which thing are * c            list 0 [<<E0] a
+test 11: 1415/1415 = 100.0%
+task 12: 16 things of 2 kinds; learnt from 20 stories (asked for 0 more), 49/49 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (99 s, 137786 episodes played)
+  things: ball=a1 book=a2 coin=a3 cup=a4 hat=a5 key=a6 kite=a7 pen=a8 ann=b1 ben=b2 cara=b3 dan=b4 eva=b5 fred=b6 gus=b7 hana=b8
+    * and * swap their things b b          swap F0 of (0, 1)
+    * and * trade what they hold b b          swap F0 of (0, 1)
+    * has the * b a          set F0 of (0, 1)
+    * hold the * b a          set F0 of (0, 1)
+  ? does * hold the * b a          has 0 [>F0] 1
+  ? what does * hold b            list 0 [>F0] a
+  ? who hold the * a            list 0 [<F0] b
+test 12: 1256/1256 = 100.0%
+all 12 tasks: mean 92.00%, 8 tasks at 95% and more, asked for 12.2 stories on average

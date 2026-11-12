@@ -1,0 +1,256 @@
+task  1: 13 things of 2 kinds; learnt from 20 stories (asked for 15 more), 115/115 of their questions right, 6 of 6 kinds of statements and 5 of 6 kinds of questions read (2825 s, 413794 episodes played)
+  things: ann=a1 ben=a2 cal=a3 dan=a4 bag=b1 ball=b2 box=b3 coin=b4 garden=b5 hall=b6 key=b7 kitchen=b8 office=b9
+    * is in the * a b          set F1 of (0, 1)
+    * moved the * to the * a b b        set F1 of (1, 2)
+    * put the * in the * a b b        set F1 of (1, 2)
+    * took the * out of the * a b b        set F1 of (1, 0)
+    * went to the * a b          set F1 of (0, 1)
+    the * is in the * b b          set F1 of (0, 1)
+  ? is * in the * a b          has 0 [>F1] 1
+  ? is the * in the * b b          has 0 [>F1] 1
+  ? what is in the * b            list 0 [<F1] b
+  ? where is * a            list 0 [>F1] b
+  ? where is the * b            list 0 [^F1] b
+  ? who has the * b            -
+test  1: 1420/1420 = 100.0%
+task  2: 13 things of 3 kinds; learnt from 20 stories (asked for 11 more), 91/92 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (663 s, 348214 episodes played)
+  things: ann=a1 bob=a2 cal=a3 dee=a4 eli=a5 fay=a6 ball=b1 book=b2 coin=b3 cup=b4 hat=b5 key=b6 nobody=c1
+    * dropped the * a b          unset F0 of (1,)
+    * gave the * to * a b a        set F0 of (1, 2)
+    * swapped the * with * for the * a b a b      swap F0 of (1, 3)
+    * took the * a b          set F0 of (1, 0)
+  ? does * have the * a b          has 0 [<F0] 1
+  ? what does * have a            assoc 0 [<F0] {} (else nothing)
+  ? who has the * b            list 0 [>F0] a (else c1)
+test  2: 1459/1519 = 96.1%
+task  3: 14 things of 2 kinds; learnt from 20 stories (asked for 20 more), 68/96 of their questions right, 2 of 2 kinds of statements and 1 of 2 kinds of questions read (2198 s, 89569 episodes played)
+  things: ann=a1 jada=a10 kofi=a11 lena=a12 ben=a2 cara=a3 dan=a4 eva=a5 finn=a6 gus=a7 hana=a8 ivan=a9 shortest=b1 tallest=b2
+    * is shorter than * a a          tie E0 of (0, 1)
+    * is taller than * a a          tie E0 of (1, 0)
+  ? is * taller than * a a          has 0 [<<E0] 1
+  ? who is the * b            -
+test  3: 862/1076 = 80.1%
+task  4: 22 things of 3 kinds; learnt from 20 stories (asked for 20 more), 114/118 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (312 s, 449119 episodes played)
+  things: animal=a1 bird=a2 cat=a3 dog=a4 kitten=a5 puppy=a6 ann=b1 ben=b2 cy=b3 dan=b4 eva=b5 fay=b6 gus=b7 hal=b8 big=c1 black=c2 brown=c3 fast=c4 gray=c5 slow=c6 small=c7 white=c8
+    * is a * b a          tie E0 of (0, 1)
+    * is an * b a          tie E0 of (0, 1)
+    every * is * a c          set F0 of (0, 1)
+    every * is a * a a          tie E0 of (0, 1)
+    every * is an * a a          tie E0 of (0, 1)
+  ? is * * b c          has 0 [>>E0 ~F0] 1
+  ? what color is * b            newest 0 [>>E0 >>F0] c
+  ? who is a * a            list 0 [<<E0] b
+  ? who is an * a            list 0 [<<E0] b
+test  4: 1157/1187 = 97.5%
+task  5: 15 things of 5 kinds; learnt from 20 stories (asked for 20 more), 135/136 of their questions right, 15 of 18 kinds of statements and 5 of 5 kinds of questions read (876 s, 451849 episodes played)
+  things: ball=a1 box=a2 key=a3 blue=b1 green=b2 red=b3 closed=c1 dropped=c2 open=c3 took=c4 garden=d1 hall=d2 kitchen=d3 off=e1 on=e2
+    ann * the * c a          set F0 of (0, 1)
+    ann opened the * a            set F0 of (-1, 0)
+    ann put the * in the * a a          set F0 of (0, 1)
+    ann switched the lamp * e            set F0 of (-1, 0)
+    ann went to the * d            -
+    ben * the * c a          set F0 of (0, 1)
+    ben put the * in the * a a          set F0 of (0, 1)
+    ben switched the lamp * e            set F0 of (-1, 0)
+    ben went to the * d            -
+    cara * the * c a          rise F0 of (1,)
+    cara opened the * a            set F0 of (-1, 0)
+    cara put the * in the * a a          set F0 of (0, 1)
+    cara switched the lamp * e            set F0 of (-1, 0)
+    cara went to the * d            -
+    the * is * a b          pair F0 of (0, 1)
+    the * is * a c          pair F0 of (0, 1)
+    the * is in the * a d          set F0 of (0, 1)
+    the lamp is * e            set F0 of (-1, 0)
+  ? is the * * a c          some 1 [>F0 >F0]
+  ? is the * in the * a d          has 0 [~F0] 1
+  ? is the lamp * e            some 0 [<F0]
+  ? what color is the * a            newest 0 [<F0] b
+  ? where is the * a            list 0 [~F0] d
+test  5: 1432/1505 = 95.1%
+task  6: 18 things of 3 kinds; learnt from 20 stories (asked for 20 more), 101/135 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (1682 s, 396546 episodes played)
+  things: ann=a1 ben=a2 cara=a3 dan=a4 eli=a5 fay=a6 harbor=b1 library=b2 market=b3 park=b4 school=b5 friday=c1 monday=c2 saturday=c3 sunday=c4 thursday=c5 tuesday=c6 wednesday=c7
+    * went to the * on * a b c        tie2 E0 of (0, 1); pair F0 of (1, 2)
+    * went to the * the day after * a b c        tie2 E0 of (0, 1); pair F0 of (1, 2)
+    * went to the * the day before * a b c        tie2 E0 of (0, 1); pair F0 of (1, 2)
+  ? was * at the * on * a b c        has 0 [>E0] 1
+  ? where was * after the * a b          newest 0 [<E0] b
+  ? where was * before the * a b          eldest 1 [>>E0] b
+  ? where was * on * a c          list 1 [>F0] b (else b1)
+test  6: 1065/1527 = 69.7%
+task  7: 4 things of 1 kinds; learnt from 20 stories (asked for 20 more), 101/119 of their questions right, 82 of 82 kinds of statements and 12 of 12 kinds of questions read (1805 s, 450395 episodes played)
+  taken by what they explain - words of the sentence itself: ann bob cal dee eli fay
+  things: apple=a1 coin=a2 pear=a3 rock=a4
+    ann finds # * # a          qadd Q1 of (0,)
+    ann gets # * # a          qset Q1 of (0,)
+    ann gives # * to bob # a          qset Q0 of (0,)
+    ann gives # * to cal # a          qset Q0 of (0,)
+    ann gives # * to dee # a          qset Q0 of (0,)
+    ann gives # * to eli # a          qset Q1 of (0,)
+    ann gives # * to fay # a          qset Q0 of (0,)
+    ann has # * # a          qadd Q0 of (0,)
+    ann loses # * # a          qsub Q0 of (0,)
+    ann owns # * # a          qset Q0 of (0,)
+    ann takes # * from bob # a          qset Q1 of (0,)
+    ann takes # * from cal # a          qset Q0 of (0,)
+    ann takes # * from dee # a          qset Q0 of (0,)
+    ann takes # * from eli # a          qset Q0 of (0,)
+    ann takes # * from fay # a          qset Q0 of (0,)
+    bob finds # * # a          qset Q0 of (0,)
+    bob gets # * # a          qset Q0 of (0,)
+    bob gives # * to ann # a          qset Q0 of (0,)
+    bob gives # * to cal # a          qsame Q0 of (0, -1)
+    bob gives # * to dee # a          qsub Q0 of (0,)
+    bob gives # * to eli # a          qset Q0 of (0,)
+    bob gives # * to fay # a          qset Q0 of (0,)
+    bob has # * # a          qset Q0 of (0,)
+    bob loses # * # a          qsub Q0 of (0,)
+    bob owns # * # a          qnot Q0 of (-1, 0)
+    bob takes # * from cal # a          qset Q0 of (0,)
+    bob takes # * from fay # a          qset Q0 of (0,)
+    cal finds # * # a          qset Q0 of (0,)
+    cal gets # * # a          qnot Q0 of (-1, 0)
+    cal gives # * to ann # a          qset Q0 of (0,)
+    cal gives # * to bob # a          qset Q0 of (0,)
+    cal gives # * to dee # a          qset Q0 of (0,)
+    cal gives # * to eli # a          qset Q0 of (0,)
+    cal gives # * to fay # a          qset Q0 of (0,)
+    cal has # * # a          qset Q0 of (0,)
+    cal loses # * # a          qset Q0 of (0,)
+    cal owns # * # a          qadd Q1 of (0,)
+    cal takes # * from ann # a          qset Q0 of (0,)
+    cal takes # * from dee # a          qset Q0 of (0,)
+    cal takes # * from fay # a          qset Q0 of (0,)
+    dee finds # * # a          qset Q0 of (0,)
+    dee gets # * # a          qpass Q1 of (0, -1)
+    dee gives # * to ann # a          qset Q0 of (0,)
+    dee gives # * to bob # a          qsame Q0 of (0, -1)
+    dee gives # * to cal # a          qset Q1 of (0,)
+    dee gives # * to eli # a          qset Q0 of (0,)
+    dee gives # * to fay # a          qset Q0 of (0,)
+    dee has # * # a          qset Q1 of (0,)
+    dee loses # * # a          qset Q0 of (0,)
+    dee owns # * # a          qset Q0 of (0,)
+    dee takes # * from ann # a          qsub Q0 of (0,)
+    dee takes # * from bob # a          qset Q1 of (0,)
+    dee takes # * from cal # a          qsub Q0 of (0,)
+    dee takes # * from eli # a          qset Q0 of (0,)
+    dee takes # * from fay # a          qset Q0 of (0,)
+    eli finds # * # a          qset Q1 of (0,)
+    eli gets # * # a          qadd Q0 of (0,)
+    eli gives # * to ann # a          qadd Q0 of (0,)
+    eli gives # * to bob # a          qset Q0 of (0,)
+    eli gives # * to cal # a          qset Q0 of (0,)
+    eli gives # * to dee # a          qset Q0 of (0,)
+    eli gives # * to fay # a          qset Q1 of (0,)
+    eli has # * # a          qsame Q0 of (0, -1)
+    eli loses # * # a          qset Q1 of (0,)
+    eli owns # * # a          qset Q1 of (0,)
+    eli takes # * from ann # a          qset Q0 of (0,)
+    eli takes # * from bob # a          qset Q0 of (0,)
+    eli takes # * from cal # a          qset Q0 of (0,)
+    eli takes # * from dee # a          qadd Q1 of (0,)
+    eli takes # * from fay # a          qset Q0 of (0,)
+    fay finds # * # a          qset Q1 of (0,)
+    fay gets # * # a          qset Q0 of (0,)
+    fay gives # * to ann # a          qset Q0 of (0,)
+    fay gives # * to bob # a          qset Q0 of (0,)
+    fay gives # * to cal # a          qset Q0 of (0,)
+    fay gives # * to dee # a          qset Q1 of (0,)
+    fay has # * # a          qset Q1 of (0,)
+    fay loses # * # a          qpass Q1 of (0, -1)
+    fay owns # * # a          qset Q0 of (0,)
+    fay takes # * from ann # a          qadd Q0 of (0,)
+    fay takes # * from bob # a          qset Q0 of (0,)
+    fay takes # * from dee # a          qset Q0 of (0,)
+  ? does ann have # * # a          cmpn 0 (q 0) = 0
+  ? does bob have # * # a          cmpn 0 (q 1) >= 0
+  ? does cal have # * # a          cmpn 0 (q 1) >= 0
+  ? does dee have # * # a          cmpn 0 (q 1) >= 0
+  ? does eli have # * # a          pos 0 (q 0)
+  ? does fay have # * # a          pos 0 (q 0) (turned over)
+  ? how many * does ann have a            num 0 (q 0)
+  ? how many * does bob have a            num 0 (q 0)
+  ? how many * does cal have a            num 0 (q 0)
+  ? how many * does dee have a            num 0 (q 1)
+  ? how many * does eli have a            num 0 (q 1)
+  ? how many * does fay have a            num 0 (q 0)
+test  7: 730/1487 = 49.1%
+task  8: 12 things of 1 kinds; learnt from 20 stories (asked for 20 more), 129/130 of their questions right, 8 of 8 kinds of statements and 9 of 12 kinds of questions read (3443 s, 451066 episodes played)
+  taken by what they explain - words of the sentence itself: east north south west
+  things: bridge=a1 park=a10 school=a11 tower=a12 castle=a2 farm=a3 garden=a4 harbor=a5 lake=a6 market=a7 mill=a8 museum=a9
+    the * is east of the * a a          set F0 of (1, 0)
+    the * is north of the * a a          qadd Q0 of (0,)
+    the * is south of the * a a          qpass Q0 of (0, 1)
+    the * is west of the * a a          set F0 of (0, 1)
+    the * lies east of the * a a          set F0 of (1, 0)
+    the * lies north of the * a a          qadd Q0 of (0,)
+    the * lies south of the * a a          qpass Q0 of (0, 1)
+    the * lies west of the * a a          set F0 of (0, 1)
+  ? is the * east of the * a a          cmp 1 0 (count [>F0] None) >
+  ? is the * north of the * a a          cmp 0 1 (q 0) >=
+  ? is the * south of the * a a          cmp 1 0 (q 0) >
+  ? is the * west of the * a a          cmp 0 1 (count [>>F0] None) >=
+  ? what is east of the * and north of the * a a          list 0 [^F0] a
+  ? what is east of the * and south of the * a a          -
+  ? what is north of the * and east of the * a a          list 0 [>F0] a
+  ? what is north of the * and west of the * a a          -
+  ? what is south of the * and east of the * a a          before 0 1 0
+  ? what is south of the * and west of the * a a          -
+  ? what is west of the * and north of the * a a          list 0 [<~F0] a
+  ? what is west of the * and south of the * a a          eldest 0 [<F0 <~F0] a
+test  8: 1192/1259 = 94.7%
+task  9: 16 things of 2 kinds; learnt from 20 stories (asked for 5 more), 84/88 of their questions right, 3 of 3 kinds of statements and 3 of 3 kinds of questions read (466 s, 104641 episodes played)
+  things: ann=a1 joy=a10 kim=a11 leo=a12 mia=a13 noah=a14 bob=a2 cara=a3 dan=a4 eve=a5 finn=a6 gus=a7 hana=a8 ivan=a9 boss=b1 parent=b2
+    * has the * * a b a        tie E0 of (2, 0)
+    * is the * of * a b a        tie E0 of (0, 2)
+    * reports to * a a          tie E0 of (1, 0)
+  ? is * the * of the * of * a b b a      has 0 [>E0 >E0] 3
+  ? who is the * of the * of * b b a        list 2 [<E0 <E0] a
+  ? who is the top of the * chain of * b a          eldest 1 [<E0 <<E0] a
+test  9: 1382/1458 = 94.8%
+task 10: 10 things of 2 kinds; learnt from 20 stories (asked for 5 more), 54/54 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (178 s, 62245 episodes played)
+  things: ann=a1 ben=a2 cal=a3 dee=a4 eli=a5 fay=a6 blue=b1 gold=b2 green=b3 red=b4
+    * joined the * team a b          set F0 of (0, 1)
+    * left the * team a b          unset F0 of (0,)
+    * moved to the * team a b          set F0 of (0, 1)
+  ? are * and * in the same team a a          same 0 1 [>F0]
+  ? how many people are in the * team b            num 0 (count [<F0] None)
+  ? which team is * in a            list 0 [>F0] b (else 0)
+  ? who is in the * team b            list 0 [<F0] a (else 0)
+test 10: 1198/1198 = 100.0%
+task 11: 12 things of 2 kinds; learnt from 20 stories (asked for 20 more), 92/113 of their questions right, 11 of 16 kinds of statements and 2 of 2 kinds of questions read (491 s, 450597 episodes played)
+  taken by what they explain - pointers: bird cat fish frog
+  things: ada=a1 ben=a2 leo=a3 mia=a4 sam=a5 zoe=a6 big=b1 blue=b2 fast=b3 green=b4 red=b5 small=b6
+    * is * a b          claim F0 of (0, 1)
+    * is a * a a          tie E0 of (1, 0)
+    * is a * a b          tie E0 of (1, 0)
+    * is a * is * a a b        copy F0 of (1, 0)
+    * is a bird a            -
+    * is a cat a            -
+    * is a fish a            -
+    * is a frog a            -
+    every * is * a b          set F0 of (0, 1)
+    every * is * b b          tie E0 of (1, 0)
+    every * is * is * a b b        -
+    every * thing is * b b          tie E0 of (1, 0)
+    no * is * a b          qadd Q0 of (1,)
+    no * is * b b          qadd Q0 of (1,)
+    no * is * is * a b b        qadd Q0 of (2,)
+    no * thing is * b b          qadd Q0 of (1,)
+  ? is * * a b          pos 1 (q 0) (turned over)
+  ? who is * b            list 0 [=E0 <~F0] a
+test 11: 1063/1270 = 83.7%
+task 12: 13 things of 5 kinds; learnt from 20 stories (asked for 13 more), 115/115 of their questions right, 4 of 4 kinds of statements and 5 of 5 kinds of questions read (331 s, 379580 episodes played)
+  things: ann=a1 ben=a2 cara=a3 dan=a4 bag=b1 box=b2 book=c1 cup=c2 hat=c3 pen=c4 desk=d1 shelf=d2 nobody=e1
+    * gave the * to * a c a        set F0 of (0, 2); set F0 of (1, 2)
+    * has the * a c          set F0 of (1, 0)
+    * put the * in the * a c b        set F0 of (0, 2); set F0 of (1, 2)
+    the * is on the * b d          set F0 of (0, 1)
+  ? is the * in the * c b          has 0 [>F0] 1
+  ? is the * on the * b d          has 0 [>F0] 1
+  ? what does * have a            list 0 [<F0] c
+  ? where is the * c            list 0 [^F0] d
+  ? who has the * c            list 0 [>F0] a (else e1)
+test 12: 1455/1457 = 99.9%
+all 12 tasks: mean 88.39%, 6 tasks at 95% and more, asked for 15.8 stories on average
