@@ -1,0 +1,458 @@
+task  1: 10 things of 2 kinds; learnt from 20 stories (asked for 5 more), 125/125 of their questions right, 5 of 5 kinds of statements and 1 of 1 kinds of questions read (91 s)
+  things: bathroom=a1 bedroom=a2 garden=a3 hallway=a4 kitchen=a5 office=a6 daniel=b1 john=b2 mary=b3 sandra=b4
+    * journeyed to the * b a          set F0 of (0, 1)
+    * moved to the * b a          set F0 of (0, 1)
+    * travelled to the * b a          set F0 of (0, 1)
+    * went back to the * b a          set F0 of (0, 1)
+    * went to the * b a          set F0 of (0, 1)
+  ? where is * b            list 0 [>F0] a
+test  1: 1000/1000 = 100.0%
+task  6: 10 things of 2 kinds; learnt from 20 stories (asked for 15 more), 175/175 of their questions right, 5 of 41 kinds of statements and 1 of 1 kinds of questions read (369 s)
+  things: bathroom=a1 bedroom=a2 garden=a3 hallway=a4 kitchen=a5 office=a6 daniel=b1 john=b2 mary=b3 sandra=b4
+    * discarded the apple b            -
+    * discarded the apple there b            -
+    * discarded the football b            -
+    * discarded the football there b            -
+    * discarded the milk b            -
+    * discarded the milk there b            -
+    * dropped the apple b            -
+    * dropped the apple there b            -
+    * dropped the football b            -
+    * dropped the football there b            -
+    * dropped the milk b            -
+    * dropped the milk there b            -
+    * got the apple there b            -
+    * got the football there b            -
+    * got the milk there b            -
+    * grabbed the apple there b            -
+    * grabbed the football there b            -
+    * grabbed the milk there b            -
+    * journeyed to the * b a          set F0 of (0, 1)
+    * left the apple b            -
+    * left the apple there b            -
+    * left the football b            -
+    * left the football there b            -
+    * left the milk b            -
+    * left the milk there b            -
+    * moved to the * b a          set F0 of (0, 1)
+    * picked up the apple there b            -
+    * picked up the football there b            -
+    * picked up the milk there b            -
+    * put down the apple b            -
+    * put down the apple there b            -
+    * put down the football b            -
+    * put down the football there b            -
+    * put down the milk b            -
+    * put down the milk there b            -
+    * took the apple there b            -
+    * took the football there b            -
+    * took the milk there b            -
+    * travelled to the * b a          set F0 of (0, 1)
+    * went back to the * b a          set F0 of (0, 1)
+    * went to the * b a          set F0 of (0, 1)
+  ? is * in the * b a          has 0 [>F0] 1
+test  6: 1000/1000 = 100.0%
+task  8: 7 things of 2 kinds; learnt from 20 stories (asked for 15 more), 168/175 of their questions right, 41 of 42 kinds of statements and 1 of 1 kinds of questions read (164 s)
+  things: apple=a1 football=a2 milk=a3 daniel=b1 john=b2 mary=b3 sandra=b4
+    * discarded the * b a          unset F0 of (1,)
+    * discarded the * there b a          -
+    * dropped the * b a          unset F0 of (1,)
+    * dropped the * there b a          unset F0 of (1,)
+    * got the * there b a          set F0 of (1, 0)
+    * grabbed the * there b a          set F0 of (1, 0)
+    * journeyed to the bathroom b            unset F0 of (0,)
+    * journeyed to the bedroom b            unset F0 of (0,)
+    * journeyed to the garden b            unset F0 of (0,)
+    * journeyed to the hallway b            unset F0 of (0,)
+    * journeyed to the kitchen b            unset F0 of (0,)
+    * journeyed to the office b            unset F0 of (0,)
+    * left the * b a          unset F0 of (1,)
+    * left the * there b a          unset F0 of (1,)
+    * moved to the bathroom b            unset F0 of (0,)
+    * moved to the bedroom b            unset F0 of (0,)
+    * moved to the garden b            unset F0 of (0,)
+    * moved to the hallway b            unset F0 of (0,)
+    * moved to the kitchen b            unset F0 of (0,)
+    * moved to the office b            unset F0 of (0,)
+    * picked up the * there b a          set F0 of (1, 0)
+    * put down the * b a          unset F0 of (1,)
+    * put down the * there b a          set F0 of (1, 0)
+    * took the * there b a          set F0 of (1, 0)
+    * travelled to the bathroom b            unset F0 of (0,)
+    * travelled to the bedroom b            unset F0 of (0,)
+    * travelled to the garden b            unset F0 of (0,)
+    * travelled to the hallway b            unset F0 of (0,)
+    * travelled to the kitchen b            unset F0 of (0,)
+    * travelled to the office b            unset F0 of (0,)
+    * went back to the bathroom b            unset F0 of (0,)
+    * went back to the bedroom b            unset F0 of (0,)
+    * went back to the garden b            unset F0 of (0,)
+    * went back to the hallway b            unset F0 of (0,)
+    * went back to the kitchen b            unset F0 of (0,)
+    * went back to the office b            unset F0 of (0,)
+    * went to the bathroom b            unset F0 of (0,)
+    * went to the bedroom b            unset F0 of (0,)
+    * went to the garden b            unset F0 of (0,)
+    * went to the hallway b            unset F0 of (0,)
+    * went to the kitchen b            unset F0 of (0,)
+    * went to the office b            unset F0 of (0,)
+  ? what is * carrying b            list 0 [<F0] a (else nothing)
+test  8: 964/1000 = 96.4%
+task  9: 10 things of 2 kinds; learnt from 20 stories (asked for 5 more), 125/125 of their questions right, 8 of 8 kinds of statements and 1 of 1 kinds of questions read (253 s)
+  things: bathroom=a1 bedroom=a2 garden=a3 hallway=a4 kitchen=a5 office=a6 daniel=b1 john=b2 mary=b3 sandra=b4
+    * is in the * b a          set F0 of (0, 1)
+    * is no longer in the * b a          unset F0 of (0,)
+    * is not in the * b a          unset F0 of (0,)
+    * journeyed to the * b a          set F0 of (0, 1)
+    * moved to the * b a          set F0 of (0, 1)
+    * travelled to the * b a          set F0 of (0, 1)
+    * went back to the * b a          set F0 of (0, 1)
+    * went to the * b a          set F0 of (0, 1)
+  ? is * in the * b a          has 0 [>F0] 1
+test  9: 1000/1000 = 100.0%
+task  2: 13 things of 3 kinds; learnt from 20 stories (asked for 20 more), 196/200 of their questions right, 13 of 13 kinds of statements and 1 of 1 kinds of questions read (420 s)
+  taken by what they explain - things: daniel john mary sandra; pointers: discarded dropped got grabbed left took
+  things: apple=a1 football=a2 milk=a3 bathroom=b1 bedroom=b2 garden=b3 hallway=b4 kitchen=b5 office=b6 daniel=c1 john=c2 mary=c3 sandra=c4
+    * * the * c c a        rise F0 of (2,)
+    * * the * there c c a        set F0 of (2, 0)
+    * got the * there c a          set F0 of (1, 0)
+    * grabbed the * there c a          set F0 of (1, 0)
+    * journeyed to the * c b          set F0 of (0, 1)
+    * moved to the * c b          set F0 of (0, 1)
+    * picked up the * there c a          set F0 of (1, 0)
+    * put down the * c a          rise F0 of (1,)
+    * put down the * there c a          rise F0 of (1,)
+    * took the * there c a          set F0 of (1, 0)
+    * travelled to the * c b          set F0 of (0, 1)
+    * went back to the * c b          set F0 of (0, 1)
+    * went to the * c b          set F0 of (0, 1)
+  ? where is the * a            list 0 [^F0] b
+test  2: 980/1000 = 98.0%
+task  5: 17 things of 4 kinds; learnt from 20 stories (asked for 20 more), 182/200 of their questions right, 14 of 14 kinds of statements and 4 of 4 kinds of questions read (1111 s)
+  taken by what they explain - things: bathroom bedroom garden hallway kitchen office; pointers: discarded dropped got grabbed left took
+  things: apple=a1 football=a2 milk=a3 bathroom=b1 bedroom=b2 garden=b3 hallway=b4 kitchen=b5 office=b6 bill=c1 fred=c2 jeff=c3 mary=c4 gave=d1 handed=d2 passed=d3 received=d4
+    * * the * c c a        copy F0 of (2, 0)
+    * * the * there c c a        set F0 of (2, 1)
+    * * the * to * c d a c      set F0 of (2, 0); set F0 of (3, 0)
+    * got the * there c a          set F0 of (0, 1)
+    * grabbed the * there c a          pair F0 of (0, 1)
+    * journeyed to the * c b          rise F0 of (0,)
+    * moved to the * c b          rise F0 of (0,)
+    * picked up the * there c a          set F0 of (0, 1)
+    * put down the * c a          set F0 of (0, 1)
+    * put down the * there c a          set F0 of (0, 1)
+    * took the * there c a          set F0 of (0, 1)
+    * travelled to the * c b          rise F0 of (0,)
+    * went back to the * c b          rise F0 of (0,)
+    * went to the * c b          rise F0 of (0,)
+  ? what did * give to * c c          eldest 0 [<F0] a
+  ? who * the * d a          eldest 1 [>F0 <~F0] c (else c1)
+  ? who * the * to * d a c        list 1 [>F0] c
+  ? who did * give the * to c a          newest 0 [<<F0] c (else c1)
+test  5: 729/1000 = 72.9%
+task  7: 13 things of 3 kinds; learnt from 20 stories (asked for 20 more), 166/200 of their questions right, 10 of 16 kinds of statements and 1 of 1 kinds of questions read (452 s)
+  taken by what they explain - things: bathroom bedroom garden hallway kitchen office; things: apple football milk; pointers: discarded dropped got grabbed left took
+  things: apple=a1 football=a2 milk=a3 bathroom=b1 bedroom=b2 garden=b3 hallway=b4 kitchen=b5 office=b6 daniel=c1 john=c2 mary=c3 sandra=c4
+    * * the * c c a        moveall F0 of (0, 2)
+    * * the * there c c a        set F0 of (1, 0)
+    * gave the * to * c a c        moveall F0 of (0, 2)
+    * got the * there c a          -
+    * grabbed the * there c a          pair F0 of (0, 1)
+    * handed the * to * c a c        moveall F0 of (0, 2)
+    * journeyed to the * c b          -
+    * moved to the * c b          -
+    * passed the * to * c a c        moveall F0 of (0, 2)
+    * picked up the * there c a          pair F0 of (0, 1)
+    * put down the * c a          copy F0 of (1, 0)
+    * put down the * there c a          moveall F0 of (0, 1)
+    * took the * there c a          pair F0 of (0, 1)
+    * travelled to the * c b          -
+    * went back to the * c b          -
+    * went to the * c b          -
+  ? how many objects is * carrying c            num 0 (count [<F0] None)
+test  7: 826/1000 = 82.6%
+task  4: 10 things of 2 kinds; learnt from 20 stories (asked for 0 more), 19/20 of their questions right, 1 of 1 kinds of statements and 2 of 2 kinds of questions read (3 s)
+  things: bathroom=a1 bedroom=a2 garden=a3 hallway=a4 kitchen=a5 office=a6 east=b1 north=b2 south=b3 west=b4
+    the * is * of the * a b a        set F0 of (0, 2); link L0 of (1, 2, 0)
+  ? what is * of the * b a          dir 0 0 1 {a1/a2,a3/a4,a5/a6}
+  ? what is the * * of a b          newest 0 [<~F0] a
+test  4: 890/1000 = 89.0%
+task 16: 13 things of 3 kinds; learnt from 20 stories (asked for 0 more), 20/20 of their questions right, 2 of 2 kinds of statements and 1 of 1 kinds of questions read (16 s)
+  taken by what they explain - things: frog lion rhino swan
+  things: bernhard=a1 brian=a2 greg=a3 julius=a4 lily=a5 frog=b1 lion=b2 rhino=b3 swan=b4 gray=c1 green=c2 white=c3 yellow=c4
+    * is * a c          tie E0 of (0, 1)
+    * is a * a b          tie2 E0 of (0, 1)
+  ? what color is * a            eldest 0 [>>E0] c
+test 16: 946/1000 = 94.6%
+task 18: 5 things of 1 kinds; learnt from 20 stories (asked for 20 more), 208/208 of their questions right, 5 of 6 kinds of statements and 2 of 6 kinds of questions read (1099 s)
+  things: box=a1 chest=a2 chocolate=a3 container=a4 suitcase=a5
+    the * fit inside the * a a          qadd Q0 of (1,)
+    the * fit inside the * of * a a a        qsub Q0 of (1,)
+    the * is bigger than the * a a          qadd Q0 of (0,)
+    the * is bigger than the * of * a a a        -
+    the * of * fit inside the * a a a        qsub Q0 of (1,)
+    the * of * is bigger than the * a a a        qsub Q0 of (1,)
+  ? does the * fit in the * a a          cmp 1 0 (q 0) >
+  ? does the * fit in the * of * a a a        -
+  ? does the * of * fit in the * a a a        -
+  ? is the * bigger than the * a a          cmp 0 1 (q 0) >
+  ? is the * bigger than the * of * a a a        -
+  ? is the * of * bigger than the * a a a        -
+test 18: 979/1000 = 97.9%
+task 10: 10 things of 2 kinds; learnt from 20 stories (asked for 20 more), 154/200 of their questions right, 6 of 7 kinds of statements and 1 of 1 kinds of questions read (688 s)
+  things: bedroom=a1 cinema=a2 kitchen=a3 office=a4 park=a5 school=a6 bill=b1 fred=b2 julie=b3 mary=b4
+    * is either in the * or the * b a a        -
+    * is in the * b a          link L0 of (0, 1, -2)
+    * journeyed to the * b a          link L0 of (0, 1, -2)
+    * moved to the * b a          link L0 of (0, 1, -2)
+    * travelled to the * b a          link L0 of (0, 1, -2)
+    * went back to the * b a          link L0 of (0, 1, -2)
+    * went to the * b a          link L0 of (0, 1, -2)
+  ? is * in the * b a          aligned 0 0 1 {* is in the */* journeyed to the *,* moved to the */* travelled to the *,* went back to the */* went to the *} (else no)
+test 10: 752/1000 = 75.2%
+task 14: 10 things of 2 kinds; learnt from 20 stories (asked for 20 more), 125/200 of their questions right, 29 of 34 kinds of statements and 1 of 1 kinds of questions read (833 s)
+  taken by what they explain - pointers: journeyed moved travelled went; pointers: afternoon evening morning
+  things: bill=a1 fred=a2 julie=a3 mary=a4 bedroom=b1 cinema=b2 kitchen=b3 office=b4 park=b5 school=b6
+    * * back to the * this * a a b a      tie E1 of (2, 0)
+    * * back to the * yesterday a a b        tie E0 of (0, 2)
+    * * to the * this * a a b a      tie E1 of (2, 0)
+    * * to the * yesterday a a b        tie E0 of (0, 2)
+    * journeyed to the * this morning a b          tie E0 of (0, 1)
+    * journeyed to the * yesterday a b          tie E0 of (0, 1)
+    * moved to the * this morning a b          tie E0 of (0, 1)
+    * moved to the * yesterday a b          tie E0 of (0, 1)
+    * travelled to the * this afternoon a b          -
+    * travelled to the * this morning a b          tie E0 of (0, 1)
+    * travelled to the * yesterday a b          tie E0 of (0, 1)
+    * went back to the * this afternoon a b          -
+    * went back to the * this morning a b          tie E0 of (0, 1)
+    * went back to the * yesterday a b          tie E0 of (0, 1)
+    * went to the * this afternoon a b          -
+    * went to the * this morning a b          tie E0 of (0, 1)
+    * went to the * yesterday a b          tie E0 of (0, 1)
+    this * * * back to the * a a a b      set F0 of (0, 1)
+    this * * * to the * a a a b      tie2 E1 of (1, 3)
+    this afternoon * moved to the * a b          tie E0 of (0, 1)
+    this afternoon * travelled to the * a b          -
+    this afternoon * went to the * a b          -
+    this morning * journeyed to the * a b          tie E0 of (0, 1)
+    this morning * moved to the * a b          tie E0 of (0, 1)
+    this morning * travelled to the * a b          tie E0 of (0, 1)
+    this morning * went back to the * a b          tie E0 of (0, 1)
+    this morning * went to the * a b          tie E0 of (0, 1)
+    yesterday * * back to the * a a b        tie E0 of (0, 2)
+    yesterday * * to the * a a b        tie E0 of (0, 2)
+    yesterday * journeyed to the * a b          tie E0 of (0, 1)
+    yesterday * moved to the * a b          tie E0 of (0, 1)
+    yesterday * travelled to the * a b          tie E0 of (0, 1)
+    yesterday * went back to the * a b          tie E0 of (0, 1)
+    yesterday * went to the * a b          tie E0 of (0, 1)
+  ? where was * before the * a b          newest 0 [>E0 =E1] b
+test 14: 569/1000 = 56.9%
+task 17: 9 things of 4 kinds; learnt from 20 stories (asked for 20 more), 258/320 of their questions right, 12 of 14 kinds of statements and 14 of 14 kinds of questions read (2264 s)
+  things: above=a1 below=a2 blue=b1 red=b2 yellow=b3 left=c1 right=c2 sphere=d1 square=d2
+    the * * is * the * * b d a b d    set F0 of (3, 1); set F1 of (3, 2)
+    the * * is * the pink rectangle b d a        pair F1 of (0, 2)
+    the * * is * the triangle b d a        pair F1 of (0, 2)
+    the * * is to the * of the * * b d c b d    set F0 of (0, 1)
+    the * * is to the * of the pink rectangle b d c        qadd Q0 of (2,)
+    the * * is to the * of the triangle b d c        pair F1 of (0, 2)
+    the pink rectangle is * the * * a b d        set F1 of (1, 0); set F0 of (1, 2)
+    the pink rectangle is * the triangle a            -
+    the pink rectangle is to the * of the * * c b d        qadd Q0 of (0,)
+    the pink rectangle is to the * of the triangle c            set F1 of (0, -1)
+    the triangle is * the * * a b d        set F1 of (1, 0); set F0 of (1, 2)
+    the triangle is * the pink rectangle a            -
+    the triangle is to the * of the * * c b d        qadd Q0 of (0,)
+    the triangle is to the * of the pink rectangle c            set F1 of (0, -1)
+  ? is the * * * the * * b d a b d    has 2 [<F1] 3
+  ? is the * * * the pink rectangle b d a        some 2 [>F1]
+  ? is the * * * the triangle b d a        has 0 [>F0] 1
+  ? is the * * to the * of the * * b d c b d    has 3 [>F0] 4
+  ? is the * * to the * of the pink rectangle b d c        some 1 [<~F0 >F1] (turned over)
+  ? is the * * to the * of the triangle b d c        some 2 [>F1]
+  ? is the pink rectangle * the * * a b d        some 0 [>F1] (turned over)
+  ? is the pink rectangle * the triangle a            some 0 [<F1]
+  ? is the pink rectangle to the * of the * * c b d        some 1 [>F1]
+  ? is the pink rectangle to the * of the triangle c            some 0 [>F1]
+  ? is the triangle * the * * a b d        has 0 [<F1 >F0] 2
+  ? is the triangle * the pink rectangle a            some 0 [<~F1] (turned over)
+  ? is the triangle to the * of the * * c b d        some 0 [>F1] (turned over)
+  ? is the triangle to the * of the pink rectangle c            pos 0 (q 0)
+test 17: 563/1000 = 56.3%
+task 20: 15 things of 4 kinds; learnt from 20 stories (asked for 5 more), 185/268 of their questions right, 7 of 9 kinds of statements and 3 of 3 kinds of questions read (562 s)
+  taken by what they explain - pointers: got grabbed took
+  things: antoine=a1 jason=a2 sumit=a3 yann=a4 apple=b1 football=b2 milk=b3 pajamas=b4 bedroom=c1 garden=c2 kitchen=c3 bored=d1 hungry=d2 thirsty=d3 tired=d4
+    * * is * the * there a a d b      -
+    * * the * there a a b        -
+    * is * a d          tie2 E0 of (0, 1)
+    * journeyed to the * a c          tie2 E0 of (0, 1)
+    * moved to the * a c          tie2 E0 of (0, 1)
+    * picked up the * there a b          tie2 E0 of (0, 1)
+    * travelled to the * a c          tie2 E0 of (0, 1)
+    * went back to the * a c          tie2 E0 of (0, 1)
+    * went to the * a c          tie2 E0 of (0, 1)
+  ? where will * go a            list 0 [>>E0] c
+  ? why did * get the * a b          list 0 [>E0] d
+  ? why did * go to the * a c          list 0 [>E0] d
+test 20: 677/1000 = 67.7%
+task  3: 9 things of 2 kinds; learnt from 20 stories (asked for 20 more), 55/200 of their questions right, 81 of 84 kinds of statements and 1 of 1 kinds of questions read (735 s)
+  things: apple=a1 football=a2 milk=a3 bathroom=b1 bedroom=b2 garden=b3 hallway=b4 kitchen=b5 office=b6
+    daniel discarded the * a            unset F0 of (0,)
+    daniel discarded the * there a            ecopy E0 of (-1, 0)
+    daniel dropped the * a            cut E0 of (0,)
+    daniel dropped the * there a            unset F0 of (0,)
+    daniel got the * a            unset F0 of (0,)
+    daniel got the * there a            unset F0 of (0,)
+    daniel grabbed the * a            unset F0 of (0,)
+    daniel grabbed the * there a            unset F0 of (0,)
+    daniel journeyed to the * b            ecopy E0 of (-1, 0)
+    daniel left the * a            unset F0 of (0,)
+    daniel left the * there a            unset F0 of (0,)
+    daniel moved to the * b            tie E0 of (0, -1)
+    daniel picked up the * a            unset F0 of (0,)
+    daniel picked up the * there a            unset F0 of (0,)
+    daniel put down the * a            unset F0 of (0,)
+    daniel put down the * there a            unset F0 of (0,)
+    daniel took the * a            ecopy E0 of (-1, 0)
+    daniel took the * there a            unset F0 of (0,)
+    daniel travelled to the * b            -
+    daniel went back to the * b            ecopy E0 of (0, -1)
+    daniel went to the * b            ecopy E0 of (-1, 0)
+    john discarded the * a            unset F0 of (0,)
+    john discarded the * there a            unset F0 of (0,)
+    john dropped the * a            unset F0 of (0,)
+    john dropped the * there a            unset F0 of (0,)
+    john got the * a            unset F0 of (0,)
+    john got the * there a            ecopy E0 of (-1, 0)
+    john grabbed the * a            unset F0 of (0,)
+    john grabbed the * there a            unset F0 of (0,)
+    john journeyed to the * b            ecopy E0 of (-1, 0)
+    john left the * a            tie E0 of (0, -1)
+    john left the * there a            unset F0 of (0,)
+    john moved to the * b            tie E0 of (-1, 0)
+    john picked up the * a            unset F0 of (0,)
+    john picked up the * there a            unset F0 of (0,)
+    john put down the * a            unset F0 of (0,)
+    john put down the * there a            unset F0 of (0,)
+    john took the * a            unset F0 of (0,)
+    john took the * there a            unset F0 of (0,)
+    john travelled to the * b            ecopy E0 of (0, -1)
+    john went back to the * b            tie E0 of (-1, 0)
+    john went to the * b            -
+    mary discarded the * a            unset F0 of (0,)
+    mary discarded the * there a            unset F0 of (0,)
+    mary dropped the * a            unset F0 of (0,)
+    mary dropped the * there a            unset F0 of (0,)
+    mary got the * a            tie E0 of (0, -1)
+    mary got the * there a            unset F0 of (0,)
+    mary grabbed the * a            unset F0 of (0,)
+    mary grabbed the * there a            unset F0 of (0,)
+    mary journeyed to the * b            ecopy E0 of (-1, 0)
+    mary left the * a            ecopy E0 of (-1, 0)
+    mary left the * there a            unset F0 of (0,)
+    mary moved to the * b            ecopy E0 of (-1, 0)
+    mary picked up the * a            cut E0 of (0,)
+    mary picked up the * there a            unset F0 of (0,)
+    mary put down the * a            tie2 E0 of (0, -1)
+    mary put down the * there a            ecopy E0 of (-1, 0)
+    mary took the * a            unset F0 of (0,)
+    mary took the * there a            unset F0 of (0,)
+    mary travelled to the * b            ecopy E0 of (-1, 0)
+    mary went back to the * b            ecopy E0 of (-1, 0)
+    mary went to the * b            -
+    sandra discarded the * a            unset F0 of (0,)
+    sandra discarded the * there a            unset F0 of (0,)
+    sandra dropped the * a            unset F0 of (0,)
+    sandra dropped the * there a            unset F0 of (0,)
+    sandra got the * a            unset F0 of (0,)
+    sandra got the * there a            ecopy E0 of (-1, 0)
+    sandra grabbed the * a            unset F0 of (0,)
+    sandra grabbed the * there a            unset F0 of (0,)
+    sandra journeyed to the * b            ecopy E0 of (-1, 0)
+    sandra left the * a            unset F0 of (0,)
+    sandra left the * there a            unset F0 of (0,)
+    sandra moved to the * b            ecopy E0 of (-1, 0)
+    sandra picked up the * a            ecopy E0 of (-1, 0)
+    sandra picked up the * there a            unset F0 of (0,)
+    sandra put down the * a            unset F0 of (0,)
+    sandra put down the * there a            unset F0 of (0,)
+    sandra took the * a            ecopy E0 of (-1, 0)
+    sandra took the * there a            unset F0 of (0,)
+    sandra travelled to the * b            ecopy E0 of (-1, 0)
+    sandra went back to the * b            tie2 E0 of (0, -1)
+    sandra went to the * b            ecopy E0 of (-1, 0)
+  ? where was the * before the * a b          eldest 1 [=E0 <<E0] b
+test  3: 99/1000 = 9.9%
+task 19: 10 things of 5 kinds; learnt from 20 stories (asked for 20 more), 4/40 of their questions right, 2 of 4 kinds of statements and 1 of 1 kinds of questions read (36 s)
+  things: bathroom=a1 bedroom=a2 garden=a3 hallway=a4 kitchen=a5 office=a6 e=b1 n=c1 s=d1 w=e1
+    the * is east of the * a a          -
+    the * is north of the * a a          qpass Q0 of (0, 1)
+    the * is south of the * a a          -
+    the * is west of the * a a          qpass Q0 of (0, 1)
+  ? how do you go from the * to the * a a          most (q 0) (else c1,e1)
+test 19: 51/1000 = 5.1%
+task 11: 10 things of 2 kinds; learnt from 20 stories (asked for 5 more), 125/125 of their questions right, 23 of 23 kinds of statements and 1 of 1 kinds of questions read (149 s)
+  taken by what they explain - pointers: journeyed moved travelled went
+  things: bathroom=a1 bedroom=a2 garden=a3 hallway=a4 kitchen=a5 office=a6 daniel=b1 john=b2 mary=b3 sandra=b4
+    * * back to the * b b a        cut E0 of (0,)
+    * * to the * b b a        cut E0 of (0,)
+    * journeyed to the * b a          set F0 of (0, 1)
+    * moved to the * b a          set F0 of (0, 1)
+    * travelled to the * b a          set F0 of (0, 1)
+    * went back to the * b a          set F0 of (0, 1)
+    * went to the * b a          set F0 of (0, 1)
+    after that he * back to the * b a          set F0 of (0, 1)
+    after that he * to the * b a          set F0 of (0, 1)
+    after that she * back to the * b a          set F0 of (0, 1)
+    after that she * to the * b a          set F0 of (0, 1)
+    afterwards he * back to the * b a          set F0 of (0, 1)
+    afterwards he * to the * b a          set F0 of (0, 1)
+    afterwards she * back to the * b a          set F0 of (0, 1)
+    afterwards she * to the * b a          set F0 of (0, 1)
+    following that he * back to the * b a          set F0 of (0, 1)
+    following that he * to the * b a          set F0 of (0, 1)
+    following that she * back to the * b a          set F0 of (0, 1)
+    following that she * to the * b a          set F0 of (0, 1)
+    then he * back to the * b a          set F0 of (0, 1)
+    then he * to the * b a          set F0 of (0, 1)
+    then she * back to the * b a          set F0 of (0, 1)
+    then she * to the * b a          set F0 of (0, 1)
+  ? where is * b            list 0 [>F0] a
+test 11: 1000/1000 = 100.0%
+task 12: 10 things of 2 kinds; learnt from 20 stories (asked for 0 more), 100/100 of their questions right, 5 of 5 kinds of statements and 1 of 1 kinds of questions read (89 s)
+  things: bathroom=a1 bedroom=a2 garden=a3 hallway=a4 kitchen=a5 office=a6 daniel=b1 john=b2 mary=b3 sandra=b4
+    * and * journeyed to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    * and * moved to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    * and * travelled to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    * and * went back to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    * and * went to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+  ? where is * b            list 0 [>F0] a
+test 12: 1000/1000 = 100.0%
+task 13: 10 things of 2 kinds; learnt from 20 stories (asked for 0 more), 100/100 of their questions right, 13 of 15 kinds of statements and 1 of 1 kinds of questions read (120 s)
+  taken by what they explain - pointers: journeyed moved travelled went
+  things: bathroom=a1 bedroom=a2 garden=a3 hallway=a4 kitchen=a5 office=a6 daniel=b1 john=b2 mary=b3 sandra=b4
+    * and * * back to the * b b b a      -
+    * and * * to the * b b b a      -
+    * and * journeyed to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    * and * moved to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    * and * travelled to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    * and * went back to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    * and * went to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    after that they * and * back to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    after that they * and * to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    afterwards they * and * back to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    afterwards they * and * to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    following that they * and * back to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    following that they * and * to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    then they * and * back to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+    then they * and * to the * b b a        set F0 of (0, 2); set F0 of (1, 2)
+  ? where is * b            list 0 [>F0] a
+test 13: 1000/1000 = 100.0%
+task 15: 8 things of 2 kinds; learnt from 20 stories (asked for 0 more), 80/80 of their questions right, 2 of 2 kinds of statements and 1 of 1 kinds of questions read (7 s)
+  things: cat=a1 mouse=a2 sheep=a3 wolf=a4 emily=b1 gertrude=b2 jessica=b3 winona=b4
+    * are afraid of * a a          set F0 of (0, 1)
+    * is a * b a          set F0 of (0, 1)
+  ? what is * afraid of b            list 0 [>F0 >F0] a
+test 15: 1000/1000 = 100.0%
+all 20 tasks: mean 80.12%, 10 tasks at 95% and more
