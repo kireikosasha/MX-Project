@@ -1168,14 +1168,14 @@ class Learner:
         return "\n".join(out)
 
 
-def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None):
+def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, only=False):
     """learn from the first episodes. Then, if it may ask: find the other readings that explain these episodes as well,
     look (without the answers) for the episodes of the pool on which the readings part, ask for the answers of a few of
     those, learn again. Then, if there are more episodes to take: check what is learnt on the next ones; where the
     check fails, learn from them too -> the learner, how many episodes it learnt from, what the checks said"""
     data = read(path, max((stories,) + tuple(more) + ((stories + pool,) if ask else ()))) if path.__class__ is str else path
     steps = (stories,) + tuple(n for n in more if n > stories)
-    used, notes, spent, m = stories, [], 0, None
+    used, notes, spent, m, best = stories, [], 0, None, None
     for most in ((hint.most, 3 * hint.most) if hint else ()):    # with a hint: only the readings it puts first are tried,
         m = Learner(data[:stories])                              # a few, then three times as many
         m.hint, m.most = hint, most
@@ -1185,7 +1185,12 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None):
         if right == total:
             notes.append(f"by the first {most} readings of a row")
             break
+        if best is None or right > best[0]:
+            best = (right, m)
         m = None
+    if m is None and only and best:                              # the whole search is not allowed: what the hint gave is kept
+        m = best[1]
+        notes.append("the hint was not enough, the whole search is not run")
     if m is None:                                                # no hint, or the episodes are not explained by it: the whole search
         m = Learner(data[:stories])
         m.learn(limit, every=bool(ask))
@@ -1232,6 +1237,7 @@ def main():
     ap.add_argument("--more", default="", help="take more episodes where what is learnt fails on fresh ones: e.g. 60,200")
     ap.add_argument("--ask", type=int, default=0, help="how many more episodes it may ask the answers of (those on which its readings part)")
     ap.add_argument("--hint", default="", help="a network that says which readings of a row to try first (made by prior.py)")
+    ap.add_argument("--only", action="store_true", help="with --hint: never run the whole search, keep what the hinted readings gave")
     ap.add_argument("--limit", type=float, default=WORK, help="how much work may be done for one step of learning, in episodes played")
     ap.add_argument("--also", default="", help="more folders with test files of the same tasks (bigger episodes), comma-separated")
     ap.add_argument("--show", action="store_true")
@@ -1245,7 +1251,7 @@ def main():
         hint = prior.Hint(a.hint)
     for k in tasks:
         t0 = time.time()
-        m, used, notes = study(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], a.stories, [int(x) for x in a.more.split(",") if x], a.limit, a.ask, hint=hint)
+        m, used, notes = study(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], a.stories, [int(x) for x in a.more.split(",") if x], a.limit, a.ask, hint=hint, only=a.only)
         got, n = m.run(m.episodes)
         print(f"task {k:2d}: learnt from {used} episodes" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their questions right, "
               f"{sum(bool(p) for p in m.rec.values())} of {len(m.rec)} kinds of records and {len(m.ask)} of {len(m.forms) - len(m.rec)} kinds of queries read "
