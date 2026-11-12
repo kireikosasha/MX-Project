@@ -587,6 +587,7 @@ def size(form):
 
 class Learner:
     words = False                                                # the rows are sentences: different operations may mean the same
+    hint = None                                                  # what says which readings of a row to try first (prior.Hint)
 
     def __init__(self, episodes):
         self.episodes = episodes
@@ -635,6 +636,10 @@ class Learner:
                     out += [(name, k, pick + (-10 - d,), n) for pick in ((0, 1), (1, 0)) for d in range(nn)      # or a number of the row is
                             for n in ([x for x in range(nn) if x != d] or [None])]
         return sorted(out, key=lambda m: -1 in m[2])             # the one who is not named comes last
+
+    def offer(self, u, cands):
+        """the readings of the rows u to try: all of them, or the few a hint puts first"""
+        return self.hint.keep(self, u, cands) if self.hint else cands
 
     def rows(self, nt, nn, top, sorts):
         """what a row may be: one move, or two things said of one thing at once (its sort and its place; its holder and its amount)"""
@@ -978,7 +983,7 @@ class Learner:
             for sc, _, rec in beam:
                 n = 0
                 for u in whole:
-                    for m in self.rows(*size(u[0]), self.top(rec, u), sorts) + [()]:
+                    for m in self.offer(u, self.rows(*size(u[0]), self.top(rec, u), sorts)) + [()]:
                         n += 1
                         trial = {**rec, **{f: m for f in u}}
                         key = tuple(sorted(trial.items()))
@@ -1002,7 +1007,7 @@ class Learner:
             for u in units:                                      # one operation at a time
                 found = simpler = None
                 now = {rec[f] for f in u}
-                for m in self.rows(*size(u[0]), self.top(rec, u), sorts) + [()]:
+                for m in self.offer(u, self.rows(*size(u[0]), self.top(rec, u), sorts)) + [()]:
                     trial = {**rec, **{f: m for f in u}}
                     if now == {m}:
                         now = None                               # what comes after the present guess is not simpler than it
@@ -1029,11 +1034,11 @@ class Learner:
                     if v == u or set(u) & set(v) or len({rec[f] for f in u}) > 1 or len(rec[u[0]]) > 1 or self.work > until:
                         continue
                     had, found = () if u in weak else rec[u[0]], None
-                    for a in self.moves(*size(u[0]), self.top(rec, v), sorts):
+                    for (a,) in self.offer(u, [(x,) for x in self.moves(*size(u[0]), self.top(rec, v), sorts)]):
                         if had and (MOVES[a[0]][1], a[1]) == (MOVES[had[0][0]][1], had[0][1]):
                             continue
                         mid = {**rec, **{f: had + (a,) for f in u}}
-                        for b in self.moves(*size(v[0]), self.top(mid, v), sorts):
+                        for (b,) in self.offer(v, [(x,) for x in self.moves(*size(v[0]), self.top(mid, v), sorts)]):
                             if MOVES[a[0]][1] != MOVES[b[0]][1] or (a[1] != b[1] and "qsame" not in (a[0], b[0])):
                                 continue
                             trial = {**mid, **{f: (b,) for f in v}}
@@ -1054,7 +1059,7 @@ class Learner:
             for u in units:                                      # a second move of a row
                 if all(len(rec[f]) == 1 for f in u) and len({rec[f] for f in u}) == 1 and self.work < until:
                     first, found = rec[u[0]][0], None
-                    for m in self.moves(*size(u[0]), self.top(rec), sorts):
+                    for (m,) in self.offer(u, [(x,) for x in self.moves(*size(u[0]), self.top(rec), sorts)]):
                         if (MOVES[m[0]][1], m[1]) == (MOVES[first[0]][1], first[1]):
                             continue
                         trial = {**rec, **{f: (first, m) for f in u}}
@@ -1163,16 +1168,30 @@ class Learner:
         return "\n".join(out)
 
 
-def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200):
+def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None):
     """learn from the first episodes. Then, if it may ask: find the other readings that explain these episodes as well,
     look (without the answers) for the episodes of the pool on which the readings part, ask for the answers of a few of
     those, learn again. Then, if there are more episodes to take: check what is learnt on the next ones; where the
     check fails, learn from them too -> the learner, how many episodes it learnt from, what the checks said"""
     data = read(path, max((stories,) + tuple(more) + ((stories + pool,) if ask else ()))) if path.__class__ is str else path
     steps = (stories,) + tuple(n for n in more if n > stories)
-    m = Learner(data[:stories])
-    m.learn(limit, every=bool(ask))
-    used, notes = stories, []
+    used, notes, spent, m = stories, [], 0, None
+    for most in ((hint.most, 3 * hint.most) if hint else ()):    # with a hint: only the readings it puts first are tried,
+        m = Learner(data[:stories])                              # a few, then three times as many
+        m.hint, m.most = hint, most
+        m.learn(limit, every=bool(ask))
+        spent += m.work
+        right, total = m.run(m.episodes)
+        if right == total:
+            notes.append(f"by the first {most} readings of a row")
+            break
+        m = None
+    if m is None:                                                # no hint, or the episodes are not explained by it: the whole search
+        m = Learner(data[:stories])
+        m.learn(limit, every=bool(ask))
+        spent += m.work
+        if hint:
+            notes.append("the hint was not enough")
     train, asked, rest = list(data[:stories]), [], data[stories:stories + pool]
     while len(asked) < ask:
         mine = m.answers(rest)
@@ -1186,7 +1205,9 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200):
         asked += new
         train += [rest[i] for i in new]
         again = Learner(train)
+        again.hint, again.most = m.hint, getattr(m, "most", None)
         again.learn(limit / 8, seed=[m.rec] + m.views, wide=False)
+        spent += again.work
         m = again
     if ask:
         notes.append(f"asked for {len(asked)} more")
@@ -1197,7 +1218,9 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200):
             break
         new = Learner(data[:n])
         new.learn(limit, seed=m.rec, wide=10 * right < 9 * total)
+        spent += new.work
         m, used = new, n
+    m.spent = spent                                              # all the work of learning, in episodes played
     return m, used, notes
 
 
@@ -1208,6 +1231,7 @@ def main():
     ap.add_argument("--stories", type=int, default=20)
     ap.add_argument("--more", default="", help="take more episodes where what is learnt fails on fresh ones: e.g. 60,200")
     ap.add_argument("--ask", type=int, default=0, help="how many more episodes it may ask the answers of (those on which its readings part)")
+    ap.add_argument("--hint", default="", help="a network that says which readings of a row to try first (made by prior.py)")
     ap.add_argument("--limit", type=float, default=WORK, help="how much work may be done for one step of learning, in episodes played")
     ap.add_argument("--also", default="", help="more folders with test files of the same tasks (bigger episodes), comma-separated")
     ap.add_argument("--show", action="store_true")
@@ -1215,13 +1239,17 @@ def main():
     files = glob.glob(os.path.join(a.data, "qa*_train.txt"))
     tasks = [int(x) for x in a.tasks.split(",") if x] or sorted(int(re.match(r"qa(\d+)_", os.path.basename(f)).group(1)) for f in files)
     right = total = 0
+    hint = None
+    if a.hint:
+        import prior
+        hint = prior.Hint(a.hint)
     for k in tasks:
         t0 = time.time()
-        m, used, notes = study(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], a.stories, [int(x) for x in a.more.split(",") if x], a.limit, a.ask)
+        m, used, notes = study(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], a.stories, [int(x) for x in a.more.split(",") if x], a.limit, a.ask, hint=hint)
         got, n = m.run(m.episodes)
         print(f"task {k:2d}: learnt from {used} episodes" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their questions right, "
               f"{sum(bool(p) for p in m.rec.values())} of {len(m.rec)} kinds of records and {len(m.ask)} of {len(m.forms) - len(m.rec)} kinds of queries read "
-              f"({time.time() - t0:.0f} s)", flush=True)
+              f"({time.time() - t0:.0f} s, {m.spent} episodes played)", flush=True)
         if a.show:
             print(m.describe(), flush=True)
         for folder in [a.data] + [x for x in a.also.split(",") if x]:
