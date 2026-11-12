@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from acquire import read  # noqa: E402
 
 MAX_SENTS = 60          # the last sentences of a story the network sees
+BATCH, HEADS = 64, 4    # questions in a step of training; heads of attention
 PAD, CLS, SEP, ASK, UNK = 0, 1, 2, 3, 4
 
 
@@ -141,9 +142,9 @@ def run(root, lang, size, seed, device, width, layers, max_minutes, vectors=None
         train += examples(st[cut:], k)
     vocab = {w: i + 5 for i, w in enumerate(sorted({w for _, told, q, _ in train + held for s in told + (q,) for w in s}))}
     answers = {a: i for i, a in enumerate(sorted({a for *_, a in train + held}))}
-    net = Net(len(vocab) + 5, len(answers), width, layers, vectors=vectors).to(device)
+    net = Net(len(vocab) + 5, len(answers), width, layers, heads=HEADS, vectors=vectors).to(device)
     n_par = sum(p.numel() for p in net.parameters() if p.requires_grad)
-    batch = 64
+    batch = BATCH
     per_epoch = math.ceil(len(train) / batch)
     steps = max(3000, min(60000, per_epoch * 40))               # little data: many passes; much data: at most 40 passes
     opt = torch.optim.AdamW(net.parameters(), lr=3e-4, weight_decay=0.01)
@@ -202,14 +203,16 @@ def main():
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--width", type=int, default=192)
     ap.add_argument("--layers", type=int, default=4)
+    ap.add_argument("--heads", type=int, default=4)
+    ap.add_argument("--batch", type=int, default=64, help="questions in a step of training (a big network needs fewer to fit in memory)")
     ap.add_argument("--minutes", type=float, default=90, help="the longest one training may take")
     ap.add_argument("--vectors", default="", help="a GloVe file (.gz): ready vectors of words, as the reader gets")
     ap.add_argument("--also", default="", help="more folders with test files of the same tasks (say, bigger episodes), comma-separated")
     ap.add_argument("--sents", type=int, default=60, help="the last sentences of a story the network sees")
     ap.add_argument("--out", default="baseline.json")
     a = ap.parse_args()
-    global MAX_SENTS
-    MAX_SENTS = a.sents
+    global MAX_SENTS, BATCH, HEADS
+    MAX_SENTS, BATCH, HEADS = a.sents, a.batch, a.heads
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     vectors = None
     if a.vectors:
