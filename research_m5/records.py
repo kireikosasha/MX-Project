@@ -1216,6 +1216,15 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, onl
         m = again
     if ask:
         notes.append(f"asked for {len(asked)} more")
+    if m.hint and not only and asked:                            # what the hint gave explained the first episodes; does it explain
+        right, total = m.run(m.episodes)                         # those asked for as well? if not nearly all of them: the whole search
+        if 20 * right < 19 * total:
+            whole = Learner(train)
+            whole.learn(limit)
+            spent += whole.work
+            if whole.run(whole.episodes)[0] > right:
+                m = whole
+                notes.append("after asking the hint was not enough")
     for part, n in enumerate(steps[1:]):
         right, total = m.run(data[used:n])
         notes.append(f"{right}/{total} on the next {n - used}" + (f", {m.gaps} rows not read" if m.gaps else ""))

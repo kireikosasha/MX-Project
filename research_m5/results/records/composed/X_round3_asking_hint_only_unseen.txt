@@ -1,0 +1,83 @@
+task  1: learnt from 20 episodes (the hint was not enough, the whole search is not run) (asked for 20 more), 117/149 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (79 s, 27625 episodes played)
+    blk r # #        qset Q0 of (0,); setat F0 of (0, -1)
+    bok p r # #      tie2 E0 of (0, 1); setat F0 of (1, 0)
+  ? fre r # #        cmpn 0 (sum [=E0] 0) >= 0 (turned over)
+  ? hld r #          newest 0 [<E0] p
+  ? ovl p p          some 1 [<F0]
+test  1: 1107/1483 = 74.6%
+test  1 in X3: 913/1505 = 60.7%
+test  1 in X10: 645/1455 = 44.3%
+task  2: learnt from 20 episodes (by the first 8 readings of a row) (asked for 0 more), 54/54 of their questions right, 2 of 2 kinds of records and 2 of 2 kinds of queries read (19 s, 3160 episodes played)
+    ln n n          tie E0 of (0, 1)
+    rl n n          tie E0 of (0, 1)
+  ? xr n n          has 0 [>>E0] 1
+  ? zw n            list 0 [<<E0] n
+test  2: 1541/1541 = 100.0%
+test  2 in X3: 1500/1500 = 100.0%
+test  2 in X10: 1522/1522 = 100.0%
+task  3: learnt from 20 episodes (the hint was not enough, the whole search is not run) (asked for 0 more), 57/61 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (5 s, 11340 episodes played)
+    pn p #          qsub Q0 of (0,)
+    rd #            clock T0 of ()
+    sc p #          qadd Q0 of (0,)
+  ? ahd p p          cmp 0 1 (q 0) >
+  ? pt p #          qat 0 0 0
+  ? rk #            rank 0 0 p True
+test  3: 1429/1508 = 94.8%
+test  3 in X3: 1486/1519 = 97.8%
+test  3 in X10: 1499/1517 = 98.8%
+task  4: learnt from 20 episodes (by the first 24 readings of a row) (asked for 0 more), 54/54 of their questions right, 2 of 3 kinds of records and 3 of 3 kinds of queries read (113 s, 44780 episodes played)
+    dak a a          untie2 E0 of (0, 1)
+    qo a            -
+    zep a a          tie2 E0 of (0, 1)
+  ? lum a            list 0 [=E0] a
+  ? pok a            eldest 0 [=E0] a
+  ? vor a a          has 0 [>>E0] 1
+test  4: 1457/1457 = 100.0%
+test  4 in X3: 1445/1445 = 100.0%
+test  4 in X10: 1455/1455 = 100.0%
+task  5: learnt from 20 episodes (by the first 8 readings of a row) (asked for 5 more), 88/88 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (41 s, 10855 episodes played)
+    fg p d          untie E0 of (0, 1)
+    mk p d          tie E0 of (0, 1)
+    tl p p d        tie2 E0 of (1, 2)
+  ? ct d            num 0 (count [<E0] None)
+  ? kn p d          has 0 [>E0] 1
+  ? wo d            list 0 [<E0] p
+test  5: 1459/1459 = 100.0%
+test  5 in X3: 1473/1473 = 100.0%
+test  5 in X10: 1482/1482 = 100.0%
+task  6: learnt from 20 episodes (by the first 8 readings of a row) (asked for 20 more), 113/113 of their questions right, 6 of 6 kinds of records and 6 of 6 kinds of queries read (301 s, 62115 episodes played)
+    kipu c            cut E0 of (0,)
+    kipu p            cut E0 of (0,)
+    tev c c          tie2 E0 of (0, 1)
+    tev p p          tie2 E0 of (0, 1)
+    vulp c c          untie2 E0 of (0, 1)
+    vulp p p          untie2 E0 of (0, 1)
+  ? fyz c c          has 0 [>E0] 1
+  ? fyz p p          has 0 [>E0] 1
+  ? kot c            num 0 (count [>E0] None)
+  ? kot p            num 0 (count [>E0] None)
+  ? nax c            list 0 [>E0] c
+  ? nax p            list 0 [>E0] p
+test  6: 1304/1304 = 100.0%
+test  6 in X3: 1368/1368 = 100.0%
+test  6 in X10: 1514/1514 = 100.0%
+task  7: learnt from 20 episodes (by the first 8 readings of a row) (asked for 0 more), 69/69 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (9 s, 2880 episodes played)
+    lnk n n          tie2 E0 of (0, 1)
+    tg n t          tie E0 of (0, 1)
+  ? xeq n n          has 0 [>>E0] 1
+  ? xsz n            num 0 (count [=E0] n)
+  ? xtg n            list 0 [>>E0] t
+test  7: 1500/1500 = 100.0%
+test  7 in X3: 1487/1487 = 100.0%
+test  7 in X10: 1555/1555 = 100.0%
+task  8: learnt from 20 episodes (the hint was not enough, the whole search is not run) (asked for 20 more), 114/139 of their questions right, 4 of 4 kinds of records and 2 of 2 kinds of queries read (288 s, 131865 episodes played)
+    ja w w w        ecopy E0 of (1, 0); qsame Q0 of (1, 2)
+    ku w w w        tie2 E0 of (1, 2); set F0 of (1, 2)
+    ne w w          qpass Q0 of (1, 0); tie E0 of (0, 1)
+    sv w #          qset Q0 of (0,); cut E0 of (0,)
+  ? hx w            some 0 [<~F0 >E0]
+  ? tx w w          cmp 0 1 (sum [=E0] 0) =
+test  8: 1088/1482 = 73.4%
+test  8 in X3: 914/1554 = 58.8%
+test  8 in X10: 802/1488 = 53.9%
+all: 10885/11734 = 92.76%

@@ -1,0 +1,135 @@
+task  1: learnt from 20 episodes (by the first 8 readings of a row) (asked for 12 more), 52/52 of their questions right, 7 of 9 kinds of records and 4 of 4 kinds of queries read (87 s, 140659 episodes played)
+    kol b            rise F0 of (0,)
+    kol o            rise F0 of (0,)
+    mek b            -
+    mek o #          qset Q0 of (0,)
+    mek r            -
+    zib b b          set F0 of (0, 1)
+    zib b r          set F0 of (0, 1)
+    zib o b          set F0 of (0, 1)
+    zib o r          set F0 of (0, 1)
+  ? ker b            list 0 [^F0] r
+  ? ker o            list 0 [^F0] r
+  ? lis r            list 0 [<<F0] o
+  ? mot r            num 0 (sum [<<F0] 0)
+test  1: 736/736 = 100.0%
+test  1 in M3: 1134/1134 = 100.0%
+test  1 in M10: 1449/1449 = 100.0%
+task  2: learnt from 20 episodes (by the first 8 readings of a row) (asked for 4 more), 65/65 of their questions right, 4 of 4 kinds of records and 3 of 3 kinds of queries read (40 s, 21204 episodes played)
+    ka i h          set F0 of (0, 1)
+    sw i i          swap F0 of (0, 1)
+    ud i            unset F0 of (0,)
+    xe i h          set F0 of (0, 1)
+  ? fx i            list 0 [>F0] h
+  ? hs i h          has 0 [>F0] 1
+  ? lx h            list 0 [<F0] i
+test  2: 1528/1528 = 100.0%
+test  2 in M3: 1511/1511 = 100.0%
+test  2 in M10: 1497/1497 = 100.0%
+task  3: learnt from 20 episodes (by the first 8 readings of a row) (asked for 5 more), 84/84 of their questions right, 2 of 2 kinds of records and 5 of 5 kinds of queries read (73 s, 3900 episodes played)
+    dosi k k          tie E0 of (0, 1)
+    tavo k k          tie E0 of (1, 0)
+  ? quv k k          has 0 [<<E0] 1
+  ? rhun k k k        over 0
+  ? rhun k k k k      over 0
+  ? zeb k k k        under 0
+  ? zeb k k k k      under 0
+test  3: 1381/1381 = 100.0%
+test  3 in M3: 1446/1446 = 100.0%
+test  3 in M10: 1480/1480 = 100.0%
+task  4: learnt from 20 episodes (by the first 8 readings of a row) (asked for 20 more), 138/138 of their questions right, 3 of 3 kinds of records and 5 of 5 kinds of queries read (138 s, 23916 episodes played)
+    hv k p          tie E0 of (0, 1)
+    qa i k          tie E0 of (0, 1)
+    zo k k          tie E0 of (0, 1)
+  ? gp i p          has 0 [>>E0] 1
+  ? gp k p          has 0 [>>E0] 1
+  ? vx i            list 0 [>>E0] k
+  ? ym i k          has 0 [>>E0] 1
+  ? ym k k          has 0 [>>E0] 1
+test  4: 1449/1449 = 100.0%
+test  4 in M3: 1504/1504 = 100.0%
+test  4 in M10: 1510/1510 = 100.0%
+task  5: learnt from 20 episodes (by the first 8 readings of a row) (asked for 5 more), 52/52 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (5 s, 9755 episodes played)
+    dp b #          qadd Q0 of (0,)
+    mv k b          set F0 of (0, 1)
+    sw b s          set F0 of (0, 1)
+  ? ls s            list 0 [<<F0] k
+  ? tt s            num 0 (sum [<F0] 0)
+  ? ws k            list 0 [^F0] s
+test  5: 875/875 = 100.0%
+test  5 in M3: 1174/1174 = 100.0%
+test  5 in M10: 1330/1330 = 100.0%
+task  6: learnt from 20 episodes (by the first 24 readings of a row) (asked for 0 more), 52/52 of their questions right, 1 of 1 kinds of records and 3 of 3 kinds of queries read (4 s, 1880 episodes played)
+    vx m p #        setat F0 of (0, 1)
+  ? fs m p p        sooner 0 0 1 2
+  ? nx m p          after 0 0 1
+  ? pv m p          before 0 0 1
+test  6: 1245/1245 = 100.0%
+test  6 in M3: 1390/1390 = 100.0%
+test  6 in M10: 1501/1501 = 100.0%
+task  7: learnt from 20 episodes (by the first 8 readings of a row) (asked for 0 more), 66/66 of their questions right, 4 of 4 kinds of records and 5 of 5 kinds of queries read (7 s, 9140 episodes played)
+    dzu h #          qset Q0 of (0,)
+    mvj h h #        qpass Q0 of (0, 1)
+    pix h #          qadd Q0 of (0,)
+    rsk h #          qsub Q0 of (0,)
+  ? gte h #          cmpn 0 (q 0) >= 0
+  ? kqh h            num 0 (q 0)
+  ? mxq h h          most (q 0)
+  ? mxq h h h        most (q 0)
+  ? mxq h h h h      most (q 0)
+test  7: 1465/1465 = 100.0%
+test  7 in M3: 1551/1551 = 100.0%
+test  7 in M10: 1487/1487 = 100.0%
+task  8: learnt from 20 episodes (the hint was not enough, the whole search is not run) (asked for 20 more), 116/132 of their questions right, 5 of 5 kinds of records and 5 of 5 kinds of queries read (2026 s, 457835 episodes played)
+    mk p            set F1 of (-1, 0); pair F0 of (0, -1)
+    mv =de #        qnot Q0 of (-1, 0)
+    mv =dn #        set F0 of (-1, 0)
+    mv =ds #        qnot Q0 of (-1, 0)
+    mv =dw #        set F0 of (-1, 0)
+  ? qd p p =de      cmp 0 1 (count [>>F0] None) >
+  ? qd p p =dn      cmp 1 0 (sum [<F0] 0) >
+  ? qd p p =ds      cmp 0 1 (count [>>F0] None) >
+  ? qd p p =dw      pos 1 (sum [>F0] 0)
+  ? qr p p          span 1 0 1
+test  8: 1259/1521 = 82.8%
+test  8 in M3: 1201/1497 = 80.2%
+test  8 in M10: 1161/1520 = 76.4%
+task  9: learnt from 20 episodes (by the first 8 readings of a row) (asked for 10 more), 101/101 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (22 s, 5870 episodes played)
+    kel p            unset F0 of (0,)
+    zor p p          set F0 of (0, 1)
+  ? gox p            list 0 [>F0 >F0] p
+  ? ruv p            list 0 [^F0] p
+  ? vul p p          has 0 [<<F0] 1
+test  9: 1497/1497 = 100.0%
+test  9 in M3: 1472/1472 = 100.0%
+test  9 in M10: 1513/1513 = 100.0%
+task 10: learnt from 20 episodes (by the first 8 readings of a row) (asked for 5 more), 66/66 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (5 s, 10200 episodes played)
+    jn p g          set F0 of (0, 1)
+    lv p            unset F0 of (0,)
+    mv p g          set F0 of (0, 1)
+  ? ct g            num 0 (count [<F0] None)
+  ? mb g            list 0 [<F0] p
+  ? wg p            list 0 [>F0] g
+test 10: 1347/1347 = 100.0%
+test 10 in M3: 1524/1524 = 100.0%
+test 10 in M10: 1484/1484 = 100.0%
+task 11: learnt from 20 episodes (by the first 8 readings of a row) (asked for 20 more), 114/120 of their questions right, 3 of 3 kinds of records and 3 of 3 kinds of queries read (95 s, 25150 episodes played)
+    gok c c c        set F0 of (2, 1); tie E0 of (2, 1)
+    ruv c c          tie E1 of (0, 1); set F0 of (1, 0)
+    tiq k c          tie E1 of (0, 1)
+  ? nuz c            list 0 [=E0 <<E1] k
+  ? qiv k c          has 0 [>>E1 <~F0] 1
+  ? wex c            num 0 (count [=E0 <<E1] k)
+test 11: 1479/1497 = 98.8%
+test 11 in M3: 1295/1463 = 88.5%
+test 11 in M10: 1345/1524 = 88.3%
+task 12: learnt from 20 episodes (the hint was not enough, the whole search is not run) (asked for 12 more), 89/97 of their questions right, 2 of 2 kinds of records and 3 of 3 kinds of queries read (17 s, 29822 episodes played)
+    dp a l          untie E0 of (0, 1); tie E1 of (0, 1)
+    tk a l          set F0 of (1, 0); tie E0 of (0, 1)
+  ? ct a            num 0 (count [=E1 >>E0] None)
+  ? fr l            some 0 [<E0] (turned over)
+  ? wt l            list 0 [>F0] a
+test 12: 1354/1415 = 95.7%
+test 12 in M3: 1389/1465 = 94.8%
+test 12 in M10: 1378/1473 = 93.6%
+all: 15615/15956 = 97.86%
