@@ -127,15 +127,20 @@ class Reader:
             for ws in sorted(seeded, key=sorted):
                 if best[1] == total:
                     break
+                before = self.sentences()
                 self.things -= ws                                # words that take turns in a question and are never an answer:
                 self.name()                                      # things, or words of the question itself (who gave, who received)
                 apart = self.worth(limit)
-                if apart > best:
-                    best = apart
+                if apart > best and 2 * (apart[1] - best[1]) >= self.sentences() - before:   # more kinds of sentences are more to learn:
+                    best = apart                                 # a question more explained for every two new kinds, or it is not taken
                     self.guessed.append("words of the sentence itself: " + " ".join(sorted(ws)))
                 else:
                     self.things |= ws
                     self.name()
+
+    def sentences(self):
+        """how many kinds of sentences the stories have, as they are read now"""
+        return len({(self.op(words, self.code), gold is None) for story in self.plain(self.raw) for words, gold in story})
 
     def root(self, w):
         while self.kind[w] != w:

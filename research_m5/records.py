@@ -1247,6 +1247,15 @@ class Learner:
                             best, found = got, trial
                     if found:
                         rec, moved = found, True
+            for k in range(K["Q"]) if self.words and not moved else ():
+                # which way an amount counts is a convention: the same reading with gains and losses changed over
+                turned = {f: tuple(({"qadd": "qsub", "qsub": "qadd"}.get(name, name), q, pick[::-1] if name == "qpass" else pick, n)
+                                   if MOVES[name][1] == "Q" and q == k else (name, q, pick, n) for name, q, pick, n in moves)
+                          for f, moves in rec.items()}
+                if turned != rec and self.work < until:
+                    got = self.fit(turned)[0]
+                    if got > best:
+                        best, rec, moved = got, turned, True
             if not moved:
                 break
         return best, rec
