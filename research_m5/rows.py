@@ -23,6 +23,8 @@ import records
 records.Learner.words = True                                     # sentences: different words may say the same
 
 NUMBERS = {"none": 0, "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10}
+NUMBERS.update({"monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6, "sunday": 7,           # words that name a place
+                "yesterday": 0, "morning": 1, "afternoon": 2, "evening": 3, "night": 4, "tomorrow": 5})                           # in an order are numbers too
 PLAIN = ("yes", "no", "maybe", "nothing")
 ODD = {"mice": "mouse", "men": "man", "women": "woman", "children": "child", "geese": "goose", "feet": "foot", "teeth": "tooth"}
 

@@ -38,9 +38,18 @@ OP = "!"                                                  # the operation code o
 SPACE = ("dir", "dist", "route", "isdir", "aligned", "hops", "path", "steps", "lhead", "ltail")
 
 
+def whom(t, i):
+    """a thing of a row by its place; from 100 on: two of its things taken together as one (whose and of what an amount is)"""
+    return t[i] if i < 100 else "+".join(sorted((t[(i - 100) // 10], t[(i - 100) % 10])))
+
+
+def both(i, j):
+    return 100 + 10 * min(i, j) + max(i, j)
+
+
 def taken(t, numbers, pick):
     """the things a move works on; a number of the row can stand for a thing (a direction given as a code)"""
-    return tuple(t[i] if i > -10 else "#%d" % numbers[-10 - i] for i in pick)
+    return tuple(whom(t, i) if i > -10 else "#%d" % numbers[-10 - i] for i in pick)
 WORK = 600000                                             # how much work one step of learning may take, in episodes played
 KEPT = 3000                                               # of how many runs of an episode the answers are kept
 PRICE = 0.25                                              # what a part of a guess costs, in questions answered beyond chance
@@ -48,7 +57,7 @@ PRICE = 0.25                                              # what a part of a gue
 
 def kind(t):
     if t not in KINDS:
-        KINDS[t] = re.match(r"[a-z]*", t).group(0) if re.search(r"\d", t) else "=" + t
+        KINDS[t] = "+".join(kind(x) for x in t.split("+")) if "+" in t else re.match(r"[a-z]*", t).group(0) if re.search(r"\d", t) else "=" + t
     return KINDS[t]
 
 
@@ -201,6 +210,14 @@ def m_setat(s, k, a, n):
     s.put(k, a[0], a[1], n[0])
 
 
+def m_setnext(s, k, a, n):
+    s.put(k, a[0], a[1], n[0] + 1)
+
+
+def m_setprev(s, k, a, n):
+    s.put(k, a[0], a[1], n[0] - 1)
+
+
 def m_back(s, k, a, n):
     h = s.H[k].get(a[0], ())
     if h:
@@ -316,7 +333,7 @@ def m_link(s, k, a, n):
 # name: (the move, the sort of slot, things used, a number: 0 none, 1 needed, 2 taken if there is one); the simple first
 MOVES = {"set": (m_set, "F", 2, 0), "unset": (m_unset, "F", 1, 0), "rise": (m_rise, "F", 1, 0), "swap": (m_swap, "F", 2, 0),
          "moveall": (m_moveall, "F", 2, 0), "swapall": (m_swapall, "F", 2, 0), "pair": (m_pair, "F", 2, 0), "unpair": (m_unpair, "F", 1, 0),
-         "setat": (m_setat, "F", 2, 1), "claim": (m_claim, "F", 2, 0), "wait": (m_wait, "F", 2, 0), "back": (m_back, "F", 1, 0),
+         "setat": (m_setat, "F", 2, 1), "setnext": (m_setnext, "F", 2, 1), "setprev": (m_setprev, "F", 2, 1), "claim": (m_claim, "F", 2, 0), "wait": (m_wait, "F", 2, 0), "back": (m_back, "F", 1, 0),
          "either": (m_either, "F", 3, 0), "note": (m_note, "N", 3, 0),
          "copy": (m_copy, "F", 2, 0), "tie": (m_tie, "E", 2, 0), "untie": (m_untie, "E", 2, 0), "tieboth": (m_tieboth, "E", 3, 0),
          "tie2": (m_tie2, "E", 2, 0), "untie2": (m_untie2, "E", 2, 0), "cut": (m_cut, "E", 1, 0), "ecopy": (m_ecopy, "E", 2, 0),
@@ -326,11 +343,12 @@ MOVES = {"set": (m_set, "F", 2, 0), "unset": (m_unset, "F", 1, 0), "rise": (m_ri
          "qnot": (m_qnot, "Q", 2, 0), "link": (m_link, "L", 3, 2), "tick": (m_tick, "T", 0, 2), "clock": (m_clock, "T", 0, 1)}
 SAME_BOTH_WAYS = ("swap", "swapall", "pair", "tieboth", "tie2", "untie2")
 SAME_LAST_TWO = ("eunion", "einter", "qmin", "qmax", "qsum", "either")
-SENTENCES = ("either", "note")                                  # moves tried only when the rows are sentences
+SENTENCES = ("either", "note", "setnext", "setprev")                                  # moves tried only when the rows are sentences
 # how many things of its row a query uses (those not here use all of them)
 USES = {"list": 1, "seq": 1, "eldest": 1, "newest": 1, "some": 1, "pos": 1, "num": 1, "cmpn": 1, "qat": 1, "which": 0, "rank": 0,
         "has": 2, "same": 2, "cmp": 2, "diff": 2, "before": 2, "after": 2, "when": 2, "span": 2, "dir": 2, "dist": 2, "route": 2,
-        "hops": 2, "path": 2, "aligned": 2, "steps": 2, "assoc": 1, "both": 2, "maybe": 2, "lhead": 2, "ltail": 2}
+        "hops": 2, "path": 2, "aligned": 2, "steps": 2, "assoc": 1, "both": 2, "maybe": 2, "lhead": 2, "ltail": 2,
+        "asof": 1, "wasat": 2, "wason": 2, "top": 1}
 
 
 # ---------------------------------------------------------------- the steps of a walk
@@ -511,15 +529,15 @@ def answer(s, p, t, nums, memo):
         a = walk(s, memo, t[p[1]], p[3])
         return bool(a) and a == walk(s, memo, t[p[2]], p[3])
     if name == "num":
-        return str(amount(s, memo, p[2], t[p[1]]))
+        return str(amount(s, memo, p[2], whom(t, p[1])))
     if name == "diff":
-        return str(amount(s, memo, p[3], t[p[1]]) - amount(s, memo, p[3], t[p[2]]))
+        return str(amount(s, memo, p[3], whom(t, p[1])) - amount(s, memo, p[3], whom(t, p[2])))
     if name == "plus":
         return str(sum(amount(s, memo, p[1], x) for x in t[:-2]))
     if name == "cmpn":
-        return CMP[p[3]](amount(s, memo, p[2], t[p[1]]), nums[p[4]])
+        return CMP[p[3]](amount(s, memo, p[2], whom(t, p[1])), nums[p[4]])
     if name == "cmp":
-        return CMP[p[4]](amount(s, memo, p[3], t[p[1]]), amount(s, memo, p[3], t[p[2]]))
+        return CMP[p[4]](amount(s, memo, p[3], whom(t, p[1])), amount(s, memo, p[3], whom(t, p[2])))
     if name in ("most", "least"):
         v = [amount(s, memo, p[1], x) for x in t[:-2]]
         top = max(v) if name == "most" else min(v)
@@ -558,6 +576,26 @@ def answer(s, p, t, nums, memo):
         if when[0] == when[1]:
             return None
         return t[p[2]] if (when[0] < when[1]) == (name == "first") else t[p[3]]
+    if name == "top":                                            # of those that have an amount together with this thing:
+        vs = {}                                                  # the one that has the most (the least)
+        for key, v in s.Q[p[1]].items():
+            a, _, b = key.partition("+")
+            y = b if a == t[p[2]] else a if b == t[p[2]] else None
+            if y and (p[3] is None or kind(y) == p[3]):
+                vs[y] = v
+        if not vs:
+            return None
+        best = max(vs.values()) if p[4] else min(vs.values())
+        ys = [y for y, v in vs.items() if v == best]
+        return ys[0] if len(ys) == 1 else None
+    if name in ("asof", "wasat", "wason"):                       # what a thing's value was at a time given by a number of the row
+        h, n = s.H[p[1]].get(t[p[2]], ()), nums[p[-1]]
+        if name == "wason":                                      # was it given this value at that very time
+            return any(w[0] == n and y == t[p[3]] for w, y in h)
+        was = [y for w, y in h if w[0] <= n]                     # the value as of that time
+        if name == "wasat":
+            return bool(was) and was[-1] == t[p[3]]
+        return was[-1] if was and was[-1] is not None else None
     if name == "when":
         at = [w for w, y in s.H[p[1]].get(t[p[2]], ()) if y == t[p[3]]]
         return str(at[0][0]) if at else None
@@ -571,7 +609,7 @@ def answer(s, p, t, nums, memo):
             return None
         return q[n - 1][1]
     if name == "pos":
-        return amount(s, memo, p[2], t[p[1]]) > 0
+        return amount(s, memo, p[2], whom(t, p[1])) > 0
     if name == "qat":
         snap = s.snap.get(nums[p[3]])
         return None if snap is None else str(snap[p[1]].get(t[p[2]], 0))
@@ -671,6 +709,11 @@ class Learner:
                         continue
                     for n in (range(nn) if num and nn else [None]):
                         out.append((name, k, pick, n))
+                if self.words and nn and name in ("qset", "qadd", "qsub") and nt >= 2:   # an amount of two things together (whose and
+                    out += [(name, k, (both(i, j),), n) for i in range(nt) for j in range(i + 1, nt) for n in range(nn)]   # of what), given by a number
+                if self.words and nn and name == "qpass" and nt >= 3:                    # and passed between two such: from the one with c
+                    out += [(name, k, (both(i, c), both(j, c)), n) for c in range(nt) for i in range(nt) for j in range(nt)   # to the other with c
+                            if len({i, j, c}) == 3 for n in range(nn)]
                 if name == "link" and nt == 2:                   # the operation itself is the direction
                     out += [(name, k, pick + (-2,), n) for pick in ((0, 1), (1, 0)) for n in (range(nn) if nn else [None])]
                     out += [(name, k, pick + (-10 - d,), n) for pick in ((0, 1), (1, 0)) for d in range(nn)      # or a number of the row is
@@ -704,11 +747,11 @@ class Learner:
         for form, moves in rec.items():
             tk = [x for x in form[2] if x != "#"] + [OP, ME]
             for name, k, pick, _ in moves:
-                ks = [tk[i] if i > -10 else "#" for i in pick]
+                ks = ["#" if i <= -10 else tk[i] if i < 100 else "+".join(sorted((tk[(i - 100) // 10], tk[(i - 100) % 10]))) for i in pick]
                 sort = MOVES[name][1]
                 if name == "either":
                     types.setdefault((sort, k), set()).update([(ks[0], ks[1]), (ks[0], ks[2])])
-                elif name in ("set", "setat", "tie", "claim", "wait"):
+                elif name in ("set", "setat", "setnext", "setprev", "tie", "claim", "wait"):
                     types.setdefault((sort, k), set()).add((ks[0], ks[1]))
                     if name == "wait":
                         types.setdefault(("W", k), set()).add((ks[0], ks[1]))
@@ -814,6 +857,31 @@ class Learner:
                     out += [("recall", k, o) + places for o in range(3) if own in (ks[o], None)
                             for places in itertools.permutations([x for x in range(3) if x != o], nt)
                             if all(ks[x] == tk[i] for i, x in enumerate(places))]
+        for k in fs if self.words and nn else ():                # what was so at a time
+            if sh == "t":
+                out += [("asof", k, i, n) for i in range(nt) for n in range(nn) if any(a == tk[i] and own in (b, None) for a, b in types[("F", k)])]
+            elif sh == "b":
+                out += [(name, k, i, j, n) for name in ("wasat", "wason") for i in range(nt) for j in range(nt) for n in range(nn)
+                        if i != j and (tk[i], tk[j]) in types[("F", k)]]
+        if self.words and sh == "t" and own is not None:         # who has the most of this, the least of this
+            out += [("top", k, i, own, most) for i in range(nt) for k in qs for most in (True, False)
+                    if "+".join(sorted((tk[i], own))) in types[("Q", k)]]
+        if self.words and nt >= 2:                               # an amount of two things of the row together
+            for i in range(nt):
+                for j in range(i + 1, nt):
+                    held = [("q", k) for k in qs if "+".join(sorted((tk[i], tk[j]))) in types[("Q", k)]]
+                    if sh == "n":
+                        out += [("num", both(i, j), e) for e in held]
+                    elif sh == "b":
+                        out += [("pos", both(i, j), e) for e in held]
+                        out += [("cmpn", both(i, j), e, c, n) for e in held for c in CMP for n in range(nn)]
+            for c in range(nt) if nt == 3 else ():               # whose is more, whose is less; by how much
+                i, j = [x for x in range(nt) if x != c]
+                held = [("q", k) for k in qs if tk[i] == tk[j] and "+".join(sorted((tk[i], tk[c]))) in types[("Q", k)]]
+                if sh == "n":
+                    out += [("diff", both(a, c), both(b, c), e) for e in held for a, b in ((i, j), (j, i))]
+                elif sh == "b":
+                    out += [("cmp", both(a, c), both(b, c), e, cm) for e in held for a, b in ((i, j), (j, i)) for cm in CMP if cm != "=" or a < b]
         if self.words and "maybe" in self.forms[form]:
             out += [("maybe", k, i, j) for k in fs for i in range(nt) for j in range(nt) if i != j and (tk[i], tk[j]) in types[("F", k)]]
         for (sort, k) in sorted(types):                          # what lies where
@@ -872,7 +940,7 @@ class Learner:
     def price(p, flip=False, things=0):
         """how much there is in a query: its steps, and what is done over them; a query that leaves things of its row
         unused is a worse reading of the row than one that uses them all"""
-        c = 1 + flip + max(0, things - USES.get(p[0], things)) / 2
+        c = 1 + flip + max(0, things - USES.get(p[0], things) - sum(x.__class__ is int and x >= 100 for x in p[1:])) / 2
         for x in p[1:]:
             if x == -1:
                 c += 1
