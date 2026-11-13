@@ -376,6 +376,62 @@ task 16: 13 things of 3 kinds; learnt from 20 stories (asked for 0 more), 20/20 
     * is a * a b          tie2 E0 of (0, 1)
   ? what color is * a            eldest 0 [>>E0] c
 test 16: 946/1000 = 94.6%
+task 17: 7 things of 3 kinds; learnt from 20 stories (asked for 20 more), 271/320 of their questions right, 24 of 26 kinds of statements and 26 of 26 kinds of questions read (7762 s, 510637 episodes played)
+  taken by what they explain - words of the sentence itself: sphere square
+  things: above=a1 below=a2 blue=b1 red=b2 yellow=b3 left=c1 right=c2
+    the * sphere is * the * square b a b        link L0 of (0, 2, 1)
+    the * sphere is * the pink rectangle b a          qadd Q1 of (1,)
+    the * sphere is * the triangle b a          qadd Q0 of (0,)
+    the * sphere is to the * of the * square b c b        qpass Q1 of (2, 1)
+    the * sphere is to the * of the pink rectangle b c          qadd Q0 of (0,)
+    the * sphere is to the * of the triangle b c          qadd Q0 of (1,)
+    the * square is * the * sphere b a b        qpass Q0 of (0, 1)
+    the * square is * the * square b a b        qpass Q0 of (0, 1)
+    the * square is * the pink rectangle b a          qadd Q1 of (1,)
+    the * square is * the triangle b a          -
+    the * square is to the * of the * sphere b c b        qadd Q0 of (0,)
+    the * square is to the * of the * square b c b        qadd Q0 of (2,)
+    the * square is to the * of the pink rectangle b c          qadd Q1 of (1,)
+    the * square is to the * of the triangle b c          qadd Q0 of (1,)
+    the pink rectangle is * the * sphere a b          qpass Q0 of (1, 0); qadd Q1 of (1,)
+    the pink rectangle is * the * square a b          qpass Q0 of (1, 0)
+    the pink rectangle is * the triangle a            -
+    the pink rectangle is to the * of the * sphere c b          qadd Q0 of (0,)
+    the pink rectangle is to the * of the * square c b          qadd Q0 of (1,)
+    the pink rectangle is to the * of the triangle c            qadd Q0 of (0,)
+    the triangle is * the * sphere a b          qadd Q1 of (0,)
+    the triangle is * the * square a b          qpass Q0 of (1, 0); qadd Q1 of (1,)
+    the triangle is * the pink rectangle a            qadd Q0 of (0,)
+    the triangle is to the * of the * sphere c b          qadd Q0 of (0,)
+    the triangle is to the * of the * square c b          qadd Q1 of (0,)
+    the triangle is to the * of the pink rectangle c            qadd Q0 of (0,)
+  ? is the * sphere * the * square b a b        pos 1 (q 0)
+  ? is the * sphere * the pink rectangle b a          pos 1 (q 0) (turned over)
+  ? is the * sphere * the triangle b a          pos 1 (q 0) (turned over)
+  ? is the * sphere to the * of the * square b c b        cmp 0 2 (q 1) =
+  ? is the * sphere to the * of the pink rectangle b c          pos 1 (q 1)
+  ? is the * sphere to the * of the triangle b c          pos 0 (q 1) (turned over)
+  ? is the * square * the * sphere b a b        pos 1 (q 0) (turned over)
+  ? is the * square * the * square b a b        isdir 0 0 2 1 {a1/a2} (else no)
+  ? is the * square * the pink rectangle b a          pos 1 (q 1)
+  ? is the * square * the triangle b a          pos 0 (q 0) (turned over)
+  ? is the * square to the * of the * sphere b c b        cmp 0 2 (q 0) =
+  ? is the * square to the * of the * square b c b        pos 1 (q 1)
+  ? is the * square to the * of the pink rectangle b c          pos 1 (q 0)
+  ? is the * square to the * of the triangle b c          pos 1 (q 0)
+  ? is the pink rectangle * the * sphere a b          pos 0 (q 0)
+  ? is the pink rectangle * the * square a b          pos 0 (q 1) (turned over)
+  ? is the pink rectangle * the triangle a            pos 0 (q 1) (turned over)
+  ? is the pink rectangle to the * of the * sphere c b          pos 0 (q 1) (turned over)
+  ? is the pink rectangle to the * of the * square c b          pos 0 (q 1)
+  ? is the pink rectangle to the * of the triangle c            pos 0 (q 0)
+  ? is the triangle * the * sphere a b          pos 0 (q 0)
+  ? is the triangle * the * square a b          pos 0 (q 0)
+  ? is the triangle * the pink rectangle a            pos 0 (q 1)
+  ? is the triangle to the * of the * sphere c b          pos 1 (q 1) (turned over)
+  ? is the triangle to the * of the * square c b          pos 1 (q 0)
+  ? is the triangle to the * of the pink rectangle c            pos 0 (q 1)
+test 17: 585/1000 = 58.5%
 task 18: 5 things of 1 kinds; learnt from 20 stories (asked for 20 more), 208/208 of their questions right, 5 of 6 kinds of statements and 2 of 6 kinds of questions read (3201 s, 513602 episodes played)
   things: box=a1 chest=a2 chocolate=a3 container=a4 suitcase=a5
     the * fit inside the * a a          qpass Q0 of (0, 1)
@@ -417,4 +473,4 @@ task 20: 15 things of 4 kinds; learnt from 20 stories (asked for 0 more), 214/21
   ? why did * get the * a b          list 0 [~F0] d
   ? why did * go to the * a c          before 0 0 1
 test 20: 1000/1000 = 100.0%
-task 17 was still running when this file was written
+all 20 tasks: mean 88.05%, 15 tasks at 95% and more, asked for 9.0 stories on average
