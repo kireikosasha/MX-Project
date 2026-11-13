@@ -1,0 +1,190 @@
+task  1: 12 things of 2 kinds; learnt from 20 stories (asked for 20 more), 155/159 of their questions right, 11 of 11 kinds of statements and 5 of 5 kinds of questions read (2433 s, 511298 episodes played)
+  things: apple=a1 bag=a2 ball=a3 box=a4 coin=a5 crate=a6 key=a7 tin=a8 desk=b1 floor=b2 shelf=b3 table=b4
+    ann moved the * to the * a b          set F0 of (0, 1)
+    ann put the * in the * a a          set F0 of (0, 1)
+    ann took the * out of the * and put it on the * a a b        set F0 of (0, 2)
+    ben moved the * to the * a b          set F0 of (0, 1)
+    ben put the * in the * a a          set F0 of (0, 1)
+    ben took the * out of the * and put it on the * a a b        set F0 of (0, 2)
+    kim moved the * to the * a b          set F0 of (0, 1)
+    kim put the * in the * a a          set F0 of (0, 1)
+    kim took the * out of the * and put it on the * a a b        moveall F0 of (1, 2)
+    the * is in the * a a          set F0 of (0, 1)
+    the * is on the * a b          set F0 of (0, 1)
+  ? how many things are in the * a            num 0 (count [<F0] None)
+  ? is the * in the * a a          has 0 [>F0] 1
+  ? what is in the * a            assoc 0 [<F0] {a4/nothing,a8/nothing} (else nothing)
+  ? where is the * a            list 0 [^F0] b
+  ? where is the * now a            list 0 [^F0] b
+test  1: 1438/1514 = 95.0%
+task  2: 10 things of 3 kinds; learnt from 20 stories (asked for 20 more), 134/136 of their questions right, 5 of 5 kinds of statements and 5 of 5 kinds of questions read (911 s, 425934 episodes played)
+  taken by what they explain - words of the sentence itself: drops has holds
+  things: ann=a1 bob=a2 cal=a3 dee=a4 ball=b1 book=b2 cup=b3 hat=b4 key=b5 nobody=c1
+    * drops the * a b          unset F0 of (1,)
+    * gives the * to * a b a        set F0 of (1, 2)
+    * has the * a b          set F0 of (1, 0)
+    * swaps with * a a          swapall F0 of (0, 1)
+    the * is with * b a          set F0 of (0, 1)
+  ? does * have the * a b          has 0 [<F0] 1
+  ? how many things does * have a            num 0 (count [<F0] None)
+  ? what does * have a            assoc 0 [<F0] {} (else nothing)
+  ? who has the * b            list 0 [>F0] a (else c1)
+  ? who holds the * b            list 0 [>F0] a (else c1)
+test  2: 1419/1470 = 96.5%
+task  3: 12 things of 2 kinds; learnt from 20 stories (asked for 15 more), 77/107 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (110 s, 68733 episodes played)
+  taken by what they explain - words of the sentence itself: shorter taller
+  things: ann=a1 jon=a10 bob=a2 cal=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 ivy=a9 shortest=b1 tallest=b2
+    * is shorter than * a a          tie E0 of (1, 0)
+    * is taller than * a a          tie E0 of (0, 1)
+  ? is * taller than * a a          has 0 [>>E0] 1
+  ? who is shorter than * a            list 0 [>>E0] a
+  ? who is taller than * a            list 0 [<<E0] a
+  ? who is the * b            assoc 0 {} {}
+test  3: 827/1212 = 68.2%
+task  4: 20 things of 3 kinds; learnt from 20 stories (asked for 10 more), 76/76 of their questions right, 8 of 8 kinds of statements and 3 of 3 kinds of questions read (415 s, 375780 episodes played)
+  things: ana=a1 lily=a2 max=a3 mia=a4 sam=a5 tom=a6 animal=b1 bird=b2 cat=b3 cow=b4 dog=b5 duck=b6 fish=b7 mammal=b8 owl=b9 fast=c1 loud=c2 quiet=c3 shy=c4 warm=c5
+    * is a * a b          tie E0 of (0, 1)
+    * is an * a b          tie E0 of (0, 1)
+    every * is * b c          qadd Q0 of (1,)
+    every * is a * b b          tie E0 of (0, 1)
+    every * is an * b b          qadd Q0 of (1,)
+    no * is * b c          qsub Q0 of (1,)
+    no * is a * b b          qadd Q0 of (1,)
+    no * is an * b b          tie E0 of (0, 1)
+  ? is * * a c          pos 1 (q 0)
+  ? is * a * a b          has 0 [>>E0] 1
+  ? is * an * a b          pos 1 (q 0)
+test  4: 1062/1072 = 99.1%
+task  5: 17 things of 6 kinds; learnt from 20 stories (asked for 20 more), 129/149 of their questions right, 8 of 8 kinds of statements and 5 of 5 kinds of questions read (419 s, 511048 episodes played)
+  things: ann=a1 bob=a2 cy=a3 dee=a4 blue=b1 green=b2 red=b3 white=b4 closed=c1 closes=c2 open=c3 garden=d1 hall=d2 kitchen=d3 nobody=e1 off=f1 on=f2
+    * * the door a c          qadd Q0 of (1,)
+    * goes to the * a d          set F0 of (0, 1)
+    * is in the * a d          set F0 of (0, 1)
+    * paints the box * a b          either F1 of (-1, 0, 1)
+    * switches the lamp * a f          qadd Q0 of (1,)
+    the box is * b            set F1 of (-1, 0)
+    the door is * c            qadd Q0 of (0,)
+    the lamp is * f            set F0 of (-1, 0)
+  ? is the door * c            pos 0 (q 0)
+  ? is the lamp * f            some 0 [<F0]
+  ? what colour is the box              list -1 [>F1] b
+  ? where is * a            list 0 [>F0] d
+  ? who is in the * d            list 0 [<F0] a (else e1)
+test  5: 1425/1515 = 94.1%
+task  6: 10 things of 2 kinds; learnt from 20 stories (asked for 12 more), 109/122 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (964 s, 132622 episodes played)
+  taken by what they explain - words of the sentence itself: after before
+  things: ann=a1 bob=a2 cal=a3 dee=a4 eli=a5 farm=b1 lake=b2 park=b3 school=b4 shop=b5
+    * went to the * on # a b #        setat F0 of (0, 1)
+    * went to the * the day after # a b #        setnext F0 of (0, 1)
+    on # * went to the * # a b        setat F0 of (0, 1)
+  ? was * at the * on # a b #        wasat 0 0 1 0
+  ? where did * go after # a #          list 0 [>F0] b
+  ? where did * go before # a #          asof 0 0 0
+  ? where was * on # a #          asof 0 0 0
+test  6: 1312/1437 = 91.3%
+task  7: 11 things of 2 kinds; learnt from 20 stories (asked for 10 more), 107/107 of their questions right, 5 of 5 kinds of statements and 3 of 3 kinds of questions read (325 s, 375856 episodes played)
+  things: ann=a1 ben=a2 cara=a3 dan=a4 eli=a5 fay=a6 apples=b1 coins=b2 pens=b3 shells=b4 stones=b5
+    * finds # * a # b        qadd Q0 of (101,)
+    * gets # * from * a # b a      qpass Q0 of (112, 101)
+    * gives # * to * a # b a      qpass Q0 of (101, 112)
+    * has # * a # b        qadd Q0 of (101,)
+    * loses # * a # b        qsub Q0 of (101,)
+  ? does * have more than # * a # b        cmpn 101 (q 0) > 0
+  ? how many * does * have b a          num 101 (q 0)
+  ? who has the most * b            top 0 0 a True
+test  7: 1465/1465 = 100.0%
+task  8: 12 things of 2 kinds; learnt from 20 stories (asked for 10 more), 82/88 of their questions right, 3 of 3 kinds of statements and 3 of 3 kinds of questions read (2833 s, 353489 episodes played)
+  taken by what they explain - pointers: is lie
+  things: bridge=a1 farm=a2 garden=a3 lake=a4 market=a5 park=a6 school=a7 tower=a8 east=b1 north=b2 south=b3 west=b4
+    the * * * of the * a a b a      link L0 of (0, 3, 2); tie2 E0 of (0, 3)
+    the * is * of the * a b a        link L0 of (0, 2, 1)
+    the * lie * of the * a b a        tie2 E0 of (0, 2)
+  ? * the * * of the * a a b a      isdir 0 0 3 2 {b1/b4,b2/b3} (else no)
+  ? does the * * * of the * a a b a      isdir 0 0 3 2 {b1/b4,b2/b3} (else yes)
+  ? what * * of the * a b a        list 2 [>>E0] a
+test  8: 1180/1517 = 77.8%
+task  9: 12 things of 1 kinds; learnt from 20 stories (asked for 15 more), 112/117 of their questions right, 4 of 6 kinds of statements and 5 of 5 kinds of questions read (2347 s, 320220 episodes played)
+  things: ann=a1 jo=a10 kim=a11 leo=a12 ben=a2 cara=a3 dan=a4 eli=a5 fay=a6 gus=a7 hana=a8 ivan=a9
+    * has no boss a            -
+    * has no parent a            -
+    * is the boss of * a a          tie E0 of (1, 0)
+    * is the child of * a a          tie E0 of (0, 1)
+    * is the parent of * a a          tie E0 of (1, 0)
+    * reports to * a a          tie E0 of (0, 1)
+  ? is * the boss of the boss of * a a          has 0 [<E0 <E0] 1
+  ? is * the grandparent of * a a          has 0 [<E0 <E0] 1
+  ? who is at the top above * a            newest 0 [>>E0] a
+  ? who is the boss of the boss of * a            list 0 [>E0 >E0] a
+  ? who is the grandparent of * a            list 0 [>E0 >E0] a
+test  9: 1261/1401 = 90.0%
+task 10: 12 things of 2 kinds; learnt from 20 stories (asked for 15 more), 71/71 of their questions right, 4 of 4 kinds of statements and 5 of 5 kinds of questions read (215 s, 140689 episodes played)
+  things: ann=a1 bob=a2 cara=a3 dan=a4 eve=a5 finn=a6 gus=a7 hana=a8 bears=b1 foxes=b2 hawks=b3 owls=b4
+    * joins the * a b          set F0 of (0, 1)
+    * leaves the * a b          unset F0 of (0,)
+    * quits the * a b          unset F0 of (0,)
+    * signs up for the * a b          set F0 of (0, 1)
+  ? are * and * in the same group a a          same 0 1 [>F0]
+  ? how many are in the * b            num 0 (count [<F0] None)
+  ? is * in the same group as * a a          same 0 1 [>F0]
+  ? which group is * in a            list 0 [>F0] b
+  ? who is in the * b            list 0 [<F0] a
+test 10: 890/890 = 100.0%
+task 11: 11 things of 2 kinds; learnt from 20 stories (asked for 20 more), 54/56 of their questions right, 18 of 48 kinds of statements and 1 of 1 kinds of questions read (447 s, 510826 episodes played)
+  things: hugo=a1 lena=a2 mira=a3 omar=a4 ruth=a5 tomas=a6 loud=b1 quiet=b2 sleepy=b3 small=b4 tall=b5
+    * is a bird a            tie E0 of (0, -1)
+    * is a creature a            tie E0 of (0, -1)
+    * is a fish a            tie E0 of (0, -1)
+    * is a frog a            tie E0 of (0, -1)
+    * is a lizard a            qadd Q1 of (0,)
+    * is a toad a            tie E0 of (0, -1)
+    every bird is * b            cut E0 of (0,)
+    every bird is a creature              -
+    every bird is a fish              -
+    every bird is a frog              -
+    every bird is a lizard              -
+    every bird is a toad              -
+    every creature is * b            cut E0 of (0,)
+    every creature is a bird              -
+    every creature is a fish              -
+    every creature is a frog              -
+    every creature is a lizard              -
+    every creature is a toad              -
+    every fish is * b            qadd Q1 of (0,)
+    every fish is a bird              -
+    every fish is a creature              -
+    every fish is a frog              -
+    every fish is a lizard              -
+    every fish is a toad              -
+    every frog is * b            cut E0 of (0,)
+    every frog is a bird              -
+    every frog is a creature              -
+    every frog is a fish              -
+    every frog is a lizard              -
+    every frog is a toad              -
+    every lizard is * b            qadd Q1 of (0,)
+    every lizard is a bird              -
+    every lizard is a creature              -
+    every lizard is a fish              -
+    every lizard is a frog              -
+    every lizard is a toad              -
+    every toad is * b            cut E0 of (0,)
+    every toad is a bird              -
+    every toad is a creature              -
+    every toad is a fish              -
+    every toad is a frog              -
+    every toad is a lizard              -
+    no bird is * b            tie E0 of (0, -1)
+    no creature is * b            tie E0 of (0, -1)
+    no fish is * b            tie E0 of (0, -1)
+    no frog is * b            tie E0 of (0, -1)
+    no lizard is * b            cut E0 of (0,)
+    no toad is * b            tie E0 of (0, -1)
+  ? is * * a b          has 0 [>E0 <E0] 1 (turned over)
+test 11: 636/718 = 88.6%
+task 12: 12 things of 3 kinds; learnt from 20 stories (asked for 20 more), 63/86 of their questions right, 1 of 1 kinds of statements and 1 of 2 kinds of questions read (75 s, 40950 episodes played)
+  things: bottle=a1 candle=a2 jar=a3 lamp=a4 mug=a5 stool=a6 tower=a7 vase=a8 shorter=b1 taller=b2 shortest=c1 tallest=c2
+    the * is * than the * a b a        link L0 of (0, 2, 1)
+  ? is the * * than the * a b a        isdir 0 0 2 1 {b1/b2}
+  ? which is the * c            -
+test 12: 736/916 = 80.3%
+all 12 tasks: mean 90.07%, 4 tasks at 95% and more, asked for 15.6 stories on average
