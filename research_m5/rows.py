@@ -272,12 +272,10 @@ def main():
         raw = stories(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], max([a.stories + 200 * bool(a.ask)] + more))
         reader, pairs = None, names(raw[:a.stories])
         if pairs:                                                # some things may be named by two words (the pink rectangle): tried only
-            plain = Reader(raw[:a.stories], 0)                   # if the stories are not explained as they are, and first, being the less to learn
-            if plain.worth(a.limit / 4)[1] < sum(gold is not None for story in raw[:a.stories] for words, gold in story):
+            plain = Reader(raw[:a.stories], 0)                   # if a real part of the stories is not explained as they are, and first
+            if 10 * plain.worth(a.limit / 4)[1] < 9 * sum(gold is not None for story in raw[:a.stories] for words, gold in story):   # (a tenth and more)
                 other = Reader(joined(raw[:a.stories], pairs), a.limit / 4)
-                if other.best[1] < other.total:
-                    reader = Reader(raw[:a.stories], a.limit / 4)
-                if reader is None or other.best > reader.best:
+                if other.best[1] == other.total:                 # taken only if everything is explained so
                     reader, raw = other, joined(raw, pairs)
                     reader.guessed.insert(0, "two words name one thing: " + " ".join(sorted("_".join(x) for x in pairs)))
                 else:

@@ -932,9 +932,11 @@ class Learner:
                 continue
             for ka, kb, kd in sorted(types[(sort, k)]):
                 marks = sorted(types.get(("L!", k), ())) if kd == OP else sorted(types.get(("L#", k), ())) if kd == "#" else self.names.get(kd, [])
-                if self.words and kd not in (OP, "#"):           # directions of several kinds in one map (above and below, left and right)
-                    marks = sorted({x for _, _, d in types[(sort, k)] if d not in (OP, "#") for x in self.names.get(d, [])})
                 opps = [tuple(sorted(o.items())) for o in pairings(marks)] if len(marks) % 2 == 0 and 2 <= len(marks) <= 6 else []
+                more = sorted({d for _, _, d in types[(sort, k)] if d not in (OP, "#", kd)}) if self.words and kd not in (OP, "#") else []
+                if opps and more and all(len(self.names.get(d, [])) == 2 for d in more):     # directions of several kinds in one map (above and
+                    rest = [(a, b) for d in more for a, b in (self.names[d], self.names[d][::-1])]   # below, left and right): those of a kind
+                    opps += [tuple(sorted(o + tuple(rest))) for o in opps]                     # are opposite to each other, the kinds do not mix
                 if self.words and sh == "t":                     # the link itself, asked for by one of its ends and its direction
                     out += [(name, k, i, d, opp) for opp in opps for name in ("lhead", "ltail") for i in range(nt) for d in range(nt)
                             if i != d and tk[d] == kd and tk[i] in (ka, kb)]
@@ -1105,8 +1107,8 @@ class Learner:
                     if prog[0] in ("assoc", "way"):              # the table itself: what the answer was most often for every value
                         table = {}
                         for x, g in zip(outs[f][progs[f].index(prog)], self.forms[f]):
-                            for key, part in pieces(x, g) if x.__class__ is tuple else ():
-                                table.setdefault(key, Counter())[part] += 1
+                            for what, part in pieces(x, g) if x.__class__ is tuple else ():
+                                table.setdefault(what, Counter())[part] += 1
                         prog = prog + (tuple(sorted((v, n.most_common(1)[0][0]) for v, n in table.items())),)
                     ask[f] = (prog, bool(c[1]), marks[f][c][2])
                     right += marks[f][c][1]
@@ -1318,9 +1320,10 @@ class Learner:
                 break
         return best, rec
 
-    def together(self, best, until):
+    def together(self, best, total, until):
         """sentences of the same build (the same things alike and apart, whatever their kinds) are given one reading at once:
-        what the search by one kind of sentence cannot reach when two kinds must change together"""
+        what the search by one kind of sentence cannot reach when two kinds must change together. So large a change is
+        taken only if everything is explained with it: a little more explained is no reason to read all anew"""
         got, rec = best
         builds = {}
         for f in rec:
@@ -1334,7 +1337,7 @@ class Learner:
                     break
                 trial = {**rec, **{f: m for f in group}}
                 new = self.fit(trial)[0]
-                if new > got:
+                if new[1] == total and all(trial.values()) and new > got:    # every question answered and every kind of sentence read
                     got, rec = new, trial
         return got, rec
 
@@ -1364,8 +1367,8 @@ class Learner:
                 best = (got, rec)
         if views and not (best[0][1] == total and all(best[1].values())):
             best = self.climb("FQEL", t0 + share * (len(views) + 1 + bool(seed)), start=best[1])      # the finish: from the best view, with everything open
-        if views and self.words and best[0][1] < total:          # and sentences of one build read in one way, all at once (a share of work more)
-            best = self.together(best, t0 + share * (len(views) + 2 + bool(seed)))
+        if views and self.words and 10 * best[0][1] < 9 * total:     # and, if a real part is still not explained (a tenth and more): sentences
+            best = self.together(best, total, t0 + share * (len(views) + 2 + bool(seed)))   # of one build read in one way, all at once (a share of work more)
         self.rec = best[1]
         self.ask = self.fit(self.rec)[1]
         self.usual = {f: Counter(g).most_common(1)[0][0] for f, g in self.forms.items() if f[1]}
