@@ -1274,15 +1274,18 @@ class Learner:
             best = self.climb("FQEL", t0 + limit / (4 if wide else 1), start=start)
             self.views = starts
         views = ("FQEL", "QEL", "FQL", "QL") if wide or not seed else ()     # the world as it comes; all in links; all in values; all in amounts
-        for part, sorts in enumerate(views):
+        share = limit / (len(views) + 1 + bool(seed))            # every view and the finish get as much work
+        if views and self.words:
+            views += ("FEL",)                                    # and with no amounts at all (in sentences they tempt most): a view more,
+        for part, sorts in enumerate(views):                     # with its own share of work on top
             if best and best[0][1] == total and all(best[1].values()) and not every:
                 break
-            got, rec = self.climb(sorts, t0 + limit * (part + 1 + bool(seed)) / (len(views) + 1 + bool(seed)))
+            got, rec = self.climb(sorts, t0 + share * (part + 1 + bool(seed)))
             self.views.append(rec)
             if best is None or got > best[0]:
                 best = (got, rec)
         if views and not (best[0][1] == total and all(best[1].values())):
-            best = self.climb("FQEL", t0 + limit, start=best[1])      # the finish: from the best view, with everything open
+            best = self.climb("FQEL", t0 + share * (len(views) + 1 + bool(seed)), start=best[1])      # the finish: from the best view, with everything open
         self.rec = best[1]
         self.ask = self.fit(self.rec)[1]
         self.usual = {f: Counter(g).most_common(1)[0][0] for f, g in self.forms.items() if f[1]}
