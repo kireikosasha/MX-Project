@@ -1,4 +1,4 @@
-task  1: 13 things of 1 kinds; learnt from 20 stories (asked for 20 more), 114/114 of their questions right, 13 of 13 kinds of statements and 4 of 4 kinds of questions read (1847 s, 450217 episodes played)
+task  1: 13 things of 1 kinds; learnt from 20 stories (asked for 20 more), 114/114 of their questions right, 13 of 13 kinds of statements and 4 of 4 kinds of questions read (1852 s, 450217 episodes played)
   things: apple=a1 jar=a10 key=a11 kitchen=a12 office=a13 bag=a2 ball=a3 basket=a4 book=a5 box=a6 coin=a7 garden=a8 hall=a9
     ana moved the * to the * a a          set F0 of (0, 1)
     ana put the * in the * a a          set F0 of (0, 1)
@@ -18,7 +18,7 @@ task  1: 13 things of 1 kinds; learnt from 20 stories (asked for 20 more), 114/1
   ? what is in the * a            list 0 [<F0] a
   ? where is the * a            list 0 [^F0] a
 test  1: 1446/1446 = 100.0%
-task  2: 10 things of 3 kinds; learnt from 20 stories (asked for 10 more), 94/94 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (954 s, 376094 episodes played)
+task  2: 10 things of 3 kinds; learnt from 20 stories (asked for 10 more), 94/94 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (646 s, 376094 episodes played)
   things: ann=a1 ben=a2 cal=a3 dee=a4 ball=b1 book=b2 cup=b3 hat=b4 key=b5 nobody=c1
     * gave the * to * a b a        set F0 of (1, 2)
     * got the * a b          set F0 of (1, 0)
@@ -30,14 +30,14 @@ task  2: 10 things of 3 kinds; learnt from 20 stories (asked for 10 more), 94/94
   ? what does * have a            list 0 [<F0] b (else nothing)
   ? who has the * b            list 0 [>F0] a (else c1)
 test  2: 1299/1299 = 100.0%
-task  3: 12 things of 1 kinds; learnt from 20 stories (asked for 15 more), 99/99 of their questions right, 2 of 2 kinds of statements and 2 of 2 kinds of questions read (146 s, 52866 episodes played)
+task  3: 12 things of 1 kinds; learnt from 20 stories (asked for 15 more), 99/99 of their questions right, 2 of 2 kinds of statements and 2 of 2 kinds of questions read (173 s, 52866 episodes played)
   things: ada=a1 ruben=a10 tomas=a11 yuki=a12 clara=a2 felix=a3 hugo=a4 iris=a5 lena=a6 mira=a7 nadia=a8 omar=a9
     * is shorter than * a a          tie E0 of (1, 0)
     * is taller than * a a          tie E0 of (0, 1)
   ? is * taller than * a a          has 0 [>>E0] 1
   ? who is the tallest of * and * and * a a a        over 0
 test  3: 1197/1197 = 100.0%
-task  4: 19 things of 3 kinds; learnt from 20 stories (asked for 10 more), 115/115 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (540 s, 351236 episodes played)
+task  4: 19 things of 3 kinds; learnt from 20 stories (asked for 10 more), 115/115 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (520 s, 351236 episodes played)
   things: ann=a1 ben=a2 cal=a3 dana=a4 eli=a5 fay=a6 gus=a7 hal=a8 big=b1 cold=b2 fast=b3 green=b4 loud=b5 wet=b6 bird=c1 cat=c2 creature=c3 fish=c4 frog=c5
     * is * a b          set F0 of (0, 1)
     * is a * a c          tie E0 of (0, 1)
@@ -47,7 +47,7 @@ task  4: 19 things of 3 kinds; learnt from 20 stories (asked for 10 more), 115/1
   ? is * a * a c          has 0 [>>E0] 1
   ? which properties does * have a            list 0 [=E0 ~F0] b
 test  4: 1767/1767 = 100.0%
-task  5: 13 things of 3 kinds; learnt from 20 stories (asked for 0 more), 45/50 of their questions right, 3 of 3 kinds of statements and 3 of 3 kinds of questions read (200 s, 99178 episodes played)
+task  5: 13 things of 3 kinds; learnt from 20 stories (asked for 0 more), 45/50 of their questions right, 3 of 3 kinds of statements and 3 of 3 kinds of questions read (181 s, 99178 episodes played)
   things: ann=a1 ben=a2 cy=a3 dora=a4 closed=b1 closes=b2 off=b3 on=b4 open=b5 door=c1 fan=c2 gate=c3 lamp=c4
     * * the * a b c        set F0 of (2, 0); set F1 of (2, 1)
     * turns * the * a b c        set F0 of (2, 0); set F1 of (2, 1)
@@ -56,7 +56,7 @@ task  5: 13 things of 3 kinds; learnt from 20 stories (asked for 0 more), 45/50 
   ? which devices are * b            list 0 [<<F1] c
   ? who last changed the * c            list 0 [^F0] a
 test  5: 1118/1360 = 82.2%
-task  6: 14 things of 3 kinds; learnt from 20 stories (asked for 15 more), 61/68 of their questions right, 3 of 3 kinds of statements and 2 of 2 kinds of questions read (1433 s, 457442 episodes played)
+task  6: 14 things of 3 kinds; learnt from 20 stories (asked for 15 more), 61/68 of their questions right, 3 of 3 kinds of statements and 2 of 2 kinds of questions read (986 s, 457442 episodes played)
   things: after=a1 before=a2 ann=b1 ben=b2 cy=b3 dana=b4 eli=b5 fay=b6 gus=b7 farm=c1 lake=c2 park=c3 school=c4 shop=c5
     * went to the * * * went to the * b c a b c    pair F0 of (0, 1)
     * went to the * on # b c #        setat F0 of (1, 0)
@@ -64,7 +64,7 @@ task  6: 14 things of 3 kinds; learnt from 20 stories (asked for 15 more), 61/68
   ? where was * * * went to the * b a b c      newest 0 [<~F0] c
   ? where was * on # b #          asof 0 0 0 (else c1)
 test  6: 766/930 = 82.4%
-task  7: 10 things of 2 kinds; learnt from 20 stories (asked for 0 more), 56/56 of their questions right, 6 of 6 kinds of statements and 3 of 3 kinds of questions read (1287 s, 300102 episodes played)
+task  7: 10 things of 2 kinds; learnt from 20 stories (asked for 0 more), 56/56 of their questions right, 6 of 6 kinds of statements and 3 of 3 kinds of questions read (851 s, 300102 episodes played)
   things: apple=a1 ball=a2 book=a3 coin=a4 pen=a5 john=b1 lily=b2 mary=b3 sandra=b4 tom=b5
     * buys # * b # a        qadd Q0 of (101,)
     * finds # * b # a        qadd Q0 of (101,)
@@ -76,7 +76,7 @@ task  7: 10 things of 2 kinds; learnt from 20 stories (asked for 0 more), 56/56 
   ? how many * does * have now a b          num 101 (q 0)
   ? who has the most * now a            top 0 0 b True
 test  7: 1467/1467 = 100.0%
-task  8: 10 things of 1 kinds; learnt from 20 stories (asked for 20 more), 123/127 of their questions right, 4 of 4 kinds of statements and 8 of 8 kinds of questions read (1679 s, 290925 episodes played)
+task  8: 10 things of 1 kinds; learnt from 20 stories (asked for 20 more), 123/127 of their questions right, 4 of 4 kinds of statements and 8 of 8 kinds of questions read (1719 s, 290925 episodes played)
   taken by what they explain - words of the sentence itself: east north south west
   things: camp=a1 town=a10 cave=a2 farm=a3 fort=a4 lake=a5 mill=a6 park=a7 pier=a8 port=a9
     the * is east of the * a a          tie E0 of (1, 0)
@@ -92,7 +92,7 @@ task  8: 10 things of 1 kinds; learnt from 20 stories (asked for 20 more), 123/1
   ? what is south of the * a            list 0 [>>F0] a
   ? what is west of the * a            list 0 [<<E0] a
 test  8: 1454/1472 = 98.8%
-task  9: 15 things of 2 kinds; learnt from 20 stories (asked for 10 more), 66/66 of their questions right, 2 of 2 kinds of statements and 3 of 3 kinds of questions read (345 s, 136084 episodes played)
+task  9: 15 things of 2 kinds; learnt from 20 stories (asked for 10 more), 66/66 of their questions right, 2 of 2 kinds of statements and 3 of 3 kinds of questions read (232 s, 136084 episodes played)
   things: boss=a1 parent=a2 teacher=a3 ada=b1 jo=b10 kit=b11 lou=b12 bob=b2 cy=b3 dee=b4 eve=b5 fay=b6 gus=b7 hal=b8 ivy=b9
     * has * a a * b b a        set F0 of (0, 1)
     * is the * of * b a b        set F0 of (2, 0)
@@ -100,7 +100,7 @@ task  9: 15 things of 2 kinds; learnt from 20 stories (asked for 10 more), 66/66
   ? who is the * of the * of * a a b        list 2 [>F0 >F0] b
   ? who is the top * of * a b          list 1 [^F0] b
 test  9: 966/966 = 100.0%
-task 10: 12 things of 2 kinds; learnt from 20 stories (asked for 20 more), 108/119 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (423 s, 265651 episodes played)
+task 10: 12 things of 2 kinds; learnt from 20 stories (asked for 20 more), 108/119 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (300 s, 265651 episodes played)
   things: ann=a1 bob=a2 cal=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 blue=b1 gold=b2 green=b3 red=b4
     * enters the * team a b          tie2 E1 of (0, 1)
     * joins the * team a b          tie E1 of (1, 0)
@@ -112,7 +112,7 @@ task 10: 12 things of 2 kinds; learnt from 20 stories (asked for 20 more), 108/1
   ? is * in the same team as * a a          has 0 [<<E1 >>E1] 1
   ? which team is * in a            newest 0 [<E1] b (else 0)
 test 10: 1131/1262 = 89.6%
-task 11: 24 things of 3 kinds; learnt from 20 stories (asked for 11 more), 97/97 of their questions right, 6 of 6 kinds of statements and 3 of 3 kinds of questions read (875 s, 433568 episodes played)
+task 11: 24 things of 3 kinds; learnt from 20 stories (asked for 11 more), 97/97 of their questions right, 6 of 6 kinds of statements and 3 of 3 kinds of questions read (906 s, 433568 episodes played)
   things: ann=a1 jo=a10 ben=a2 cy=a3 dana=a4 eli=a5 fay=a6 gus=a7 hal=a8 ivy=a9 dragon=b1 fox=b2 pilot=b3 robot=b4 sailor=b5 tiger=b6 gentle=c1 green=c2 heavy=c3 loud=c4 quick=c5 round=c6 shiny=c7 sleepy=c8
     * is * a c          tie E0 of (0, 1)
     * is a * a b          tie E0 of (0, 1)
@@ -124,7 +124,7 @@ task 11: 24 things of 3 kinds; learnt from 20 stories (asked for 11 more), 97/97
   ? is * a * a b          has 0 [>>E0] 1
   ? which thing are * c            list 0 [<<E0] a
 test 11: 1415/1415 = 100.0%
-task 12: 16 things of 2 kinds; learnt from 20 stories (asked for 0 more), 49/49 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (121 s, 137786 episodes played)
+task 12: 16 things of 2 kinds; learnt from 20 stories (asked for 0 more), 49/49 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (73 s, 137786 episodes played)
   things: ball=a1 book=a2 coin=a3 cup=a4 hat=a5 key=a6 kite=a7 pen=a8 ann=b1 ben=b2 cara=b3 dan=b4 eva=b5 fred=b6 gus=b7 hana=b8
     * and * swap their things b b          swap F0 of (0, 1)
     * and * trade what they hold b b          swap F0 of (0, 1)
