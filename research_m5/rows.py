@@ -59,6 +59,37 @@ def stories(path, limit=None):
     return out
 
 
+def names(data):
+    """pairs of words that take turns with one word in a place of a question: two words that name one thing (the pink rectangle)"""
+    slots = {}
+    for story in data:
+        for words, gold in story:
+            for n in (1, 2) if gold is not None else ():
+                for i in range(len(words) - n + 1):
+                    if not any(w.isdigit() for w in words[i:i + n]):
+                        slots.setdefault(words[:i] + ("*",) + words[i + n:], set()).add(words[i:i + n])
+    return {x for spans in slots.values() if {len(x) for x in spans} == {1, 2} for x in spans if len(x) == 2}
+
+
+def joined(data, pairs):
+    """the stories with every such pair of words written as one word"""
+    out = []
+    for story in data:
+        new = []
+        for words, gold in story:
+            ws, i = [], 0
+            while i < len(words):
+                if words[i:i + 2] in pairs:
+                    ws.append("_".join(words[i:i + 2]))
+                    i += 2
+                else:
+                    ws.append(words[i])
+                    i += 1
+            new.append((tuple(ws), gold))
+        out.append(new)
+    return out
+
+
 class Reader:
     hint = None                                                  # the network that says which readings to try first, if there is one
 
@@ -66,6 +97,7 @@ class Reader:
         """which words are things, and of what kinds"""
         self.same = forms(train)
         self.raw, self.things, self.pointers = train, set(), set()
+        self.ordered = False                                     # whether the order of the words of an answer says something
         train = self.plain(train)
         places = {}                                              # (question?, the sentence with one word out) -> the words met there
         things, said = set(), set()
@@ -99,6 +131,7 @@ class Reader:
                 self.things |= ws
         self.name()
         self.guessed = []
+        self.best = self.total = None
         if limit:                                                # the other kinds of words: by what explains more
             rest = [ws for ws in kinds.values() if not ws & self.things and len(ws) > 1]
             rest.sort(key=lambda ws: len({self.op(words, self.things | ws) for story in train for words, gold in story}))
@@ -137,6 +170,15 @@ class Reader:
                 else:
                     self.things |= ws
                     self.name()
+            if best[1] < total and any(gold and len(gold) > 1 and list(gold) != sorted(gold) for story in train for words, gold in story):
+                self.ordered = True                              # answers of several words: a set of things, or a sequence (the steps of a way)
+                ordered = self.worth(limit)
+                if ordered > best:
+                    best = ordered
+                    self.guessed.append("the order of the words of an answer matters")
+                else:
+                    self.ordered = False
+            self.best, self.total = best, total
 
     def sentences(self):
         """how many kinds of sentences the stories have, as they are read now"""
@@ -199,7 +241,8 @@ class Reader:
                 numbers = tuple(int(w) for w in words if w.isdigit())
                 kinds = tuple("#" if w.isdigit() else records.kind(self.code[w]) for w in words if w.isdigit() or w in self.code)
                 if gold is not None:
-                    gold = ",".join(sorted(self.code.get(w, w) for w in gold))
+                    gold = [self.code.get(w, w) for w in gold]
+                    gold = ",".join(gold if self.ordered else sorted(gold))
                 ep.append((self.op(words, self.code), gold is not None, things, numbers, kinds, gold))
             out.append(ep)
         return out
@@ -227,7 +270,22 @@ def main():
         t0 = time.time()
         more = [int(x) for x in a.more.split(",") if x]
         raw = stories(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], max([a.stories + 200 * bool(a.ask)] + more))
-        reader = Reader(raw[:a.stories], a.limit / 4)             # what a thing is, is settled on the first stories
+        reader, pairs = None, names(raw[:a.stories])
+        if pairs:                                                # some things may be named by two words (the pink rectangle): tried only
+            plain = Reader(raw[:a.stories], 0)                   # if the stories are not explained as they are, and first, being the less to learn
+            if plain.worth(a.limit / 4)[1] < sum(gold is not None for story in raw[:a.stories] for words, gold in story):
+                other = Reader(joined(raw[:a.stories], pairs), a.limit / 4)
+                if other.best[1] < other.total:
+                    reader = Reader(raw[:a.stories], a.limit / 4)
+                if reader is None or other.best > reader.best:
+                    reader, raw = other, joined(raw, pairs)
+                    reader.guessed.insert(0, "two words name one thing: " + " ".join(sorted("_".join(x) for x in pairs)))
+                else:
+                    pairs = ()
+            else:
+                pairs = ()
+        if reader is None:
+            reader = Reader(raw[:a.stories], a.limit / 4)         # what a thing is, is settled on the first stories
         m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint)
         got, n = m.run(m.episodes)
         print(f"task {k:2d}: {len(reader.code)} things of {len({c[0] for c in reader.code.values()})} kinds; learnt from {used} stories" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their "
@@ -238,7 +296,7 @@ def main():
         if a.show:
             print("  things:", " ".join(f"{w}={c}" for w, c in sorted(reader.code.items(), key=lambda x: x[1])))
             print(m.describe(), flush=True)
-        r, t = m.run(reader.rows(stories(glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0])))
+        r, t = m.run(reader.rows(joined(stories(glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0]), pairs)))
         right, total = right + r, total + t
         print(f"test {k:2d}: {r}/{t} = {100 * r / t:.1f}%", flush=True)
     if total:

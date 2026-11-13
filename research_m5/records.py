@@ -133,6 +133,23 @@ class State:
     def was(self, k, a):
         return [v for _, v in self.H[k].get(a, ()) if v is not None]
 
+    def ends(self, k, a):
+        """where the chain of values from a thing ended, as that changed in time (a thing carried goes where its carrier goes)"""
+        events = sorted((stamp, x, v) for x, h in self.H[k].items() for stamp, v in h)
+        f, out = {}, []
+        for _, x, v in events:
+            if v is None:
+                f.pop(x, None)
+            else:
+                f[x] = v
+            y, seen = a, {a}
+            while f.get(y) is not None and f[y] not in seen:
+                y = f[y]
+                seen.add(y)
+            if y != a and (not out or out[-1] != y):
+                out.append(y)
+        return out
+
 
 # ---------------------------------------------------------------- the moves of a record
 def m_set(s, k, a, n):
@@ -348,7 +365,7 @@ SENTENCES = ("either", "note", "setnext", "setprev")                            
 USES = {"list": 1, "seq": 1, "eldest": 1, "newest": 1, "some": 1, "pos": 1, "num": 1, "cmpn": 1, "qat": 1, "which": 0, "rank": 0,
         "has": 2, "same": 2, "cmp": 2, "diff": 2, "before": 2, "after": 2, "when": 2, "span": 2, "dir": 2, "dist": 2, "route": 2,
         "hops": 2, "path": 2, "aligned": 2, "steps": 2, "assoc": 1, "both": 2, "maybe": 2, "lhead": 2, "ltail": 2,
-        "asof": 1, "wasat": 2, "wason": 2, "top": 1}
+        "asof": 1, "wasat": 2, "wason": 2, "top": 1, "was": 2, "way": 2}
 
 
 # ---------------------------------------------------------------- the steps of a walk
@@ -509,6 +526,15 @@ def answer(s, p, t, nums, memo):
             if all(e[place] == t[i] for i, place in enumerate(p[3:])):
                 return e[p[2]]
         return None
+    if name == "way":                                            # the way from one thing to another over the links; how it is said
+        steps = route(s, p[1], t[p[2]], t[p[3]], dict(p[4]))     # is learnt from the answers (a table, as above)
+        if steps is None:
+            return None
+        key = tuple(d for _, d in steps)
+        if len(p) == 5:
+            return ("@", key)
+        said = [dict(p[5]).get(d) for d in key]                  # step by step
+        return None if None in said else ",".join(said)
     if name == "both":                                           # those that the one walk and the other both come to
         xs = [x for x in walk(s, memo, t[p[1]], p[2]) & walk(s, memo, t[p[3]], p[4]) if p[5] is None or kind(x) == p[5]]
         return ",".join(sorted(xs)) if xs else None
@@ -551,6 +577,12 @@ def answer(s, p, t, nums, memo):
         if v not in h:
             return None
         i = h.index(v) + (1 if name == "after" else -1)
+        return h[i] if 0 <= i < len(h) else None
+    if name == "was":                                            # where a chain of values ended before (after) it ended at this thing,
+        h, v = s.ends(p[1], t[p[2]]), t[p[3]]                    # the first time or the last
+        if v not in h:
+            return None
+        i = (len(h) - 1 - h[::-1].index(v) if p[5] else h.index(v)) + (1 if p[4] else -1)
         return h[i] if 0 <= i < len(h) else None
     if name == "span":
         own = [x for x in s.H[p[1]] if t[p[2]] in s.was(p[1], x) and t[p[3]] in s.was(p[1], x)]
@@ -640,6 +672,14 @@ def answer(s, p, t, nums, memo):
     if len(far) != 1:
         return None
     return str(abs(far[0][1])) if name == "dist" else (far[0][0] if far[0][1] > 0 else opposite[far[0][0]]).lstrip("#")
+
+
+def pieces(x, gold):
+    """what goes with what in a table learnt from the answers: the value and the answer; of a way, each step and its word"""
+    if x[1].__class__ is not tuple:
+        return [(x[1], gold)]
+    parts = gold.split(",")
+    return list(zip(x[1], parts)) if len(parts) == len(x[1]) else []
 
 
 def shape(gold):
@@ -818,6 +858,9 @@ class Learner:
             if alike:
                 out += [(name, e) for e in amounts(0, False) for name in ("most", "least")]
                 out += [(name, k) for (sort, k) in sorted(types) if sort == "E" for name in ("over", "under")]
+            if self.words and nt >= 2:                           # the same of a value reached through others (what is carried, by its carrier)
+                out += [("was", k, i, j, later, last) for k in fs for i in range(nt) for j in range(nt) for later in (False, True) for last in (True, False)
+                        if i != j and (tk[i], tk[j]) not in types[("F", k)] and tk[j] in after(types, ("F", k, "^"), {tk[i]})]
             for k in qs:                                         # those that have so much; the one that is n-th
                 if nn and own in types[("Q", k)]:
                     out += [("which", k, c, n, own) for c in CMP for n in range(nn)]
@@ -889,6 +932,8 @@ class Learner:
                 continue
             for ka, kb, kd in sorted(types[(sort, k)]):
                 marks = sorted(types.get(("L!", k), ())) if kd == OP else sorted(types.get(("L#", k), ())) if kd == "#" else self.names.get(kd, [])
+                if self.words and kd not in (OP, "#"):           # directions of several kinds in one map (above and below, left and right)
+                    marks = sorted({x for _, _, d in types[(sort, k)] if d not in (OP, "#") for x in self.names.get(d, [])})
                 opps = [tuple(sorted(o.items())) for o in pairings(marks)] if len(marks) % 2 == 0 and 2 <= len(marks) <= 6 else []
                 if self.words and sh == "t":                     # the link itself, asked for by one of its ends and its direction
                     out += [(name, k, i, d, opp) for opp in opps for name in ("lhead", "ltail") for i in range(nt) for d in range(nt)
@@ -900,6 +945,8 @@ class Learner:
                         if sh == "t":                            # the way itself needs no opposites
                             out += [("path", k, i, j, a, b, ()) for a, b in ((0, 0), (1, 0), (1, 1))]
                             out += [(name, k, i, j, opp) for opp in opps for name in ("dir", "route")]
+                            if self.words:
+                                out += [("way", k, i, j, opp) for opp in opps]
                         elif sh == "n":
                             out.append(("hops", k, i, j, ()))
                             out += [(name, k, i, j, opp) for opp in opps for name in ("dist", "steps") + (("dir",) if kd == "#" else ())]
@@ -918,10 +965,19 @@ class Learner:
         out = []
         if any(x.__class__ is tuple for x in outs):              # an answer that goes with a value: for every question, the answer
             seen = {}                                            # most often met with this value in the other questions
-            for x, g in zip(outs, golds):
-                if x.__class__ is tuple:
-                    seen.setdefault(x[1], Counter())[g] += 1
-            outs = [((seen[x[1]] - Counter([g])).most_common(1) or [(None,)])[0][0] if x.__class__ is tuple else x for x, g in zip(outs, golds)]
+            for x, g in zip(outs, golds):                        # (a way is said step by step: a word of the answer for a step)
+                for key, part in pieces(x, g) if x.__class__ is tuple else ():
+                    seen.setdefault(key, Counter())[part] += 1
+
+            def say(x, g):
+                out, own = [], dict(pieces(x, g))
+                for key in (x[1] if x[1].__class__ is tuple else [x[1]]):
+                    c = seen.get(key, Counter()) - Counter([own[key]] if key in own else [])
+                    if not c:
+                        return None
+                    out.append(c.most_common(1)[0][0])
+                return ",".join(out)
+            outs = [say(x, g) if x.__class__ is tuple else x for x, g in zip(outs, golds)]
         if not yesno:
             outs = [("yes" if x else "no") if x.__class__ is bool else x for x in outs]
         for flip in ((False, True) if yesno else (False,)):
@@ -950,6 +1006,8 @@ class Learner:
                 c += 1 + len(x[1])
         if p[0] == "assoc":
             c += 2 + len(p[2])                                   # a table is more to say than a walk
+        if p[0] == "way":
+            c += 2
         return c
 
     def play(self, rec, progs):
@@ -1044,20 +1102,20 @@ class Learner:
                     c = best[1]
                 if c:
                     prog = c[0]
-                    if prog[0] == "assoc":                       # the table itself: what the answer was most often for every value
+                    if prog[0] in ("assoc", "way"):              # the table itself: what the answer was most often for every value
                         table = {}
                         for x, g in zip(outs[f][progs[f].index(prog)], self.forms[f]):
-                            if x.__class__ is tuple:
-                                table.setdefault(x[1], Counter())[g] += 1
+                            for key, part in pieces(x, g) if x.__class__ is tuple else ():
+                                table.setdefault(key, Counter())[part] += 1
                         prog = prog + (tuple(sorted((v, n.most_common(1)[0][0]) for v, n in table.items())),)
                     ask[f] = (prog, bool(c[1]), marks[f][c][2])
                     right += marks[f][c][1]
         for moves in {(() if self.words else (f[0],)) + size(f) + (m,) for f, m in rec.items() if m}:    # the same said by one operation
             score -= PRICE * sum(1 + (-1 in m[2]) for m in moves[-1])                                     # (in words: of one shape) is paid for once
         for f, (p, flip, default) in ask.items() if even is not None else ():
-            p = p[:3] if p[0] == "assoc" else p                  # (without its table)
+            p = p[:3] if p[0] == "assoc" else p[:5] if p[0] == "way" else p     # (without its table)
             got = marks[f][(p, flip)][1]
-            even[f] = sorted((c for c, g in marks[f].items() if g[1] == got and c != (p, flip) and c[0][0] != "assoc"), key=lambda c: self.price(*c, size(f)[0]))[:4]
+            even[f] = sorted((c for c, g in marks[f].items() if g[1] == got and c != (p, flip) and c[0][0] not in ("assoc", "way")), key=lambda c: self.price(*c, size(f)[0]))[:4]
             even[f] = [(c[0], bool(c[1]), marks[f][c][2]) for c in even[f]]
         self.cache[key] = ((round(score, 6), right), ask)
         return self.cache[key]
@@ -1260,6 +1318,26 @@ class Learner:
                 break
         return best, rec
 
+    def together(self, best, until):
+        """sentences of the same build (the same things alike and apart, whatever their kinds) are given one reading at once:
+        what the search by one kind of sentence cannot reach when two kinds must change together"""
+        got, rec = best
+        builds = {}
+        for f in rec:
+            names = {}
+            builds.setdefault(tuple("#" if k == "#" else names.setdefault(k, len(names)) for k in f[2]), []).append(f)
+        for group in builds.values():
+            if len({f[2] for f in group}) < 2:
+                continue
+            for m in self.rows(*size(group[0]), self.top(rec, group), "FQEL"):
+                if self.work > until:
+                    break
+                trial = {**rec, **{f: m for f in group}}
+                new = self.fit(trial)[0]
+                if new > got:
+                    got, rec = new, trial
+        return got, rec
+
     def learn(self, limit=WORK, seed=None, wide=True, every=False):
         """limit: how much work may be done, in episodes played (not in seconds: the same on any machine);
         seed: what was learnt from fewer episodes, to go on from (or several such readings: the one that explains these
@@ -1286,6 +1364,8 @@ class Learner:
                 best = (got, rec)
         if views and not (best[0][1] == total and all(best[1].values())):
             best = self.climb("FQEL", t0 + share * (len(views) + 1 + bool(seed)), start=best[1])      # the finish: from the best view, with everything open
+        if views and self.words and best[0][1] < total:          # and sentences of one build read in one way, all at once (a share of work more)
+            best = self.together(best, t0 + share * (len(views) + 2 + bool(seed)))
         self.rec = best[1]
         self.ask = self.fit(self.rec)[1]
         self.usual = {f: Counter(g).most_common(1)[0][0] for f, g in self.forms.items() if f[1]}
@@ -1352,7 +1432,9 @@ class Learner:
         for f in sorted(self.forms, key=lambda f: (f[1], f[0], f[2])):
             if f[1]:
                 p = self.ask.get(f)
-                what = "-" if p is None else " ".join(tell(x) for x in p[0]) + (" (turned over)" if p[1] else "") + (f" (else {p[2]})" if p[2] else "")
+                table = p is not None and (p[0][0], len(p[0])) in (("assoc", 4), ("way", 6))        # a table learnt from the answers: what = how it is said
+                what = "-" if p is None else " ".join(tell(x) for x in p[0][:len(p[0]) - table]) + (" {" + ", ".join(f"{a} = {b}" for a, b in p[0][-1]) + "}" if table else "") \
+                    + (" (turned over)" if p[1] else "") + (f" (else {p[2]})" if p[2] else "")
             else:
                 what = "; ".join(f"{name} {MOVES[name][1]}{k} of {pick}" for name, k, pick, n in self.rec[f]) or "-"
             out.append(f"  {'?' if f[1] else ' '} {f[0]} {' '.join(f[2]):12} {what}")
