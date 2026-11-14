@@ -1,0 +1,140 @@
+task  1: 19 things of 5 kinds; learnt from 20 stories (asked for 20 more), 92/94 of their questions right, 11 of 12 kinds of statements and 9 of 9 kinds of questions read (2010 s, 510423 episodes played)
+  things: ann=a1 bob=a2 dan=a3 eve=a4 bag=b1 box=b2 chest=b3 ball=c1 book=c2 coin=c3 key=c4 pen=c5 blue=d1 green=d2 red=d3 garden=e1 hall=e2 kitchen=e3 office=e4
+    * is in the * a e          set F0 of (0, 1)
+    * put the * * in the * a d b e      set F0 of (0, 1)
+    * put the * * in the * * a d b d b    -
+    * put the * in the * a c e        set F0 of (0, 2)
+    * put the * in the * * a c d b      set F0 of (0, 1)
+    * took the * a c          set F0 of (1, 0)
+    * took the * * a d b        set F0 of (1, 0); set F0 of (2, 0)
+    * went to the * a e          set F0 of (0, 1)
+    the * * is in the * d b e        claim F0 of (1, 2)
+    the * * is in the * * d b d b      claim F0 of (1, 3)
+    the * is in the * c e          set F0 of (0, 1)
+    the * is in the * * c d b        set F0 of (0, 2)
+  ? is the * * in the * d b e        has 0 [^F0] 2
+  ? is the * * in the * * d b d b      cmp 0 2 (count [>F0] None) =
+  ? is the * in the * c e          has 0 [^F0] 1
+  ? is the * in the * * c d b        has 0 [>>F0] 2
+  ? what is in the * * d b          list 1 [<F0] c
+  ? where is the * c            list 0 [^F0] e
+  ? where is the * * d b          list 0 [^F0] e (else e2)
+  ? who has the * c            list 0 [>>F0] a
+  ? who has the * * d b          list 0 [>F0] a
+test  1: 799/893 = 89.5%
+task  2: 14 things of 2 kinds; learnt from 20 stories (asked for 0 more), 57/57 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (174 s, 238629 episodes played)
+  things: ann=a1 bob=a2 cal=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 ball=b1 book=b2 cup=b3 hat=b4 key=b5 pen=b6
+    * gives the * to * a b a        swap F0 of (0, 2)
+    * has the * a b          set F0 of (0, 1)
+    * swaps with * a a          swap F0 of (0, 1)
+    * takes the * from * a b a        swap F0 of (0, 2)
+  ? does * have the * a b          has 0 [>F0] 1
+  ? what does * have a            assoc 0 [>F0] {b2 = b2, b4 = b4} (else nothing)
+  ? who has the * b            list 0 [<F0] a
+test  2: 1313/1508 = 87.1%
+task  3: 16 things of 3 kinds; learnt from 20 stories (asked for 5 more), 67/90 of their questions right, 1 of 1 kinds of statements and 2 of 2 kinds of questions read (490 s, 12285 episodes played)
+  things: ann=a1 bob=a2 cal=a3 dan=a4 eva=a5 fay=a6 gus=a7 hal=a8 oldest=b1 shortest=b2 tallest=b3 youngest=b4 older=c1 shorter=c2 taller=c3 younger=c4
+    * is * than * a c a        link L0 of (0, 2, 1)
+  ? is * * than * a c a        isdir 0 0 2 1 {c1/c4,c2/c3}
+  ? who is the * b            assoc 0 {} {b1 = a3, b2 = a7, b3 = a2, b4 = a8}
+test  3: 877/1317 = 66.6%
+task  4: 20 things of 3 kinds; learnt from 20 stories (asked for 5 more), 69/69 of their questions right, 6 of 6 kinds of statements and 4 of 4 kinds of questions read (629 s, 337984 episodes played)
+  things: animal=a1 bird=a2 canine=a3 cat=a4 feline=a5 fish=a6 wolf=a7 fierce=b1 gentle=b2 loud=b3 quiet=b4 swift=b5 ada=c1 ivy=c2 lee=c3 max=c4 ned=c5 ron=c6 sam=c7 tia=c8
+    * is * c b          tie E0 of (0, 1)
+    * is a * c a          tie E0 of (0, 1)
+    * is an * c a          tie E0 of (0, 1)
+    every * is * a b          tie E0 of (0, 1)
+    every * is a * a a          tie E0 of (0, 1)
+    every * is an * a a          tie E0 of (0, 1)
+  ? is * * c b          has 0 [>>E0] 1
+  ? is * a * c a          has 0 [>>E0] 1
+  ? is * an * c a          has 0 [>>E0] 1
+  ? which kinds is * c            list 0 [>>E0] a
+test  4: 1290/1290 = 100.0%
+task  5: 13 things of 4 kinds; learnt from 20 stories (asked for 20 more), 132/132 of their questions right, 8 of 10 kinds of statements and 6 of 6 kinds of questions read (914 s, 511379 episodes played)
+  things: ann=a1 ben=a2 cal=a3 dee=a4 ball=b1 book=b2 cup=b3 key=b4 garden=c1 hall=c2 kitchen=c3 shed=c4 nobody=d1
+    * closed the * door a c          set F0 of (0, 1)
+    * dropped the * a b          rise F0 of (1,)
+    * has the * a b          set F0 of (1, 0)
+    * is in the * a c          set F0 of (0, 1)
+    * opened the * door a c          set F0 of (0, 1)
+    * took the * a b          set F0 of (1, 0)
+    * went to the * a c          set F0 of (0, 1)
+    the * door is closed c            -
+    the * door is open c            -
+    the * is in the * b c          set F0 of (0, 1)
+  ? is * in the * a c          has 0 [>F0] 1
+  ? is the * door open c            pos 0 (count [<~F0] a)
+  ? where is * a            list 0 [>F0] c
+  ? where is the * b            list 0 [^F0] c
+  ? who has the * b            assoc 0 [>F0] {a1 = a1, a2 = a2, a3 = a3, a4 = a4, c1 = d1, c2 = d1, c3 = d1, c4 = d1}
+  ? who is in the * c            list 0 [<F0] a (else d1)
+test  5: 1467/1510 = 97.2%
+task  6: 11 things of 3 kinds; learnt from 20 stories (asked for 20 more), 108/140 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (1008 s, 392679 episodes played)
+  things: ana=a1 ben=a2 cal=a3 dia=a4 eli=a5 at=b1 before=b2 barn=c1 hall=c2 lab=c3 yard=c4
+    * time # * walked to the * b # a c      setnext F0 of (1, 2); setat F1 of (1, 2)
+    * time # * was in the * b # a c      setat F0 of (1, 2); copy F1 of (2, 1)
+    * time # * went to the * b # a c      setnext F0 of (1, 2); setat F1 of (1, 2)
+  ? did * go to the * * time # a c b #      has 0 [~F1] 1
+  ? how many moves did * make * time # a b #        num 0 (count [>>F1 <F0] None)
+  ? where was * * time # a b #        asof 0 0 0
+  ? who was in the * * time # c b #        eldest 0 [<~F0] a
+test  6: 1213/1513 = 80.2%
+task  7: 8 things of 2 kinds; learnt from 20 stories (asked for 12 more), 110/110 of their questions right, 5 of 5 kinds of statements and 2 of 2 kinds of questions read (868 s, 414362 episodes played)
+  things: alice=a1 bob=a2 carol=a3 dan=a4 eve=a5 apples=b1 coins=b2 pens=b3
+    * gets # * a # b        qadd Q0 of (101,)
+    * gives # * to * a # b a      qpass Q0 of (101, 112)
+    * has # * a # b        qset Q0 of (101,)
+    * loses # * a # b        qsub Q0 of (101,)
+    * takes # * from * a # b a      qpass Q0 of (112, 101)
+  ? does * have more * than * a b a        cmp 101 112 (q 0) >
+  ? how many * does * have b a          num 101 (q 0)
+test  7: 1507/1507 = 100.0%
+task  8: 16 things of 3 kinds; learnt from 20 stories (asked for 5 more), 38/64 of their questions right, 1 of 1 kinds of statements and 3 of 3 kinds of questions read (430 s, 22255 episodes played)
+  taken by what they explain - things: is lies
+  things: east=a1 north=a2 south=a3 west=a4 is=b1 lies=b2 bridge=c1 village=c10 farm=c2 hill=c3 lake=c4 market=c5 park=c6 river=c7 school=c8 tower=c9
+    the * * * of the * c b a c      set F0 of (0, 3); set F0 of (2, 3)
+  ? * the * * of the * b c a c      has 2 [^F0 <<F0] 1 (turned over)
+  ? in which direction * the * from the * b c c        list 2 [<~F0] a
+  ? what * * of the * b a c        assoc 2 [~F0] {c1 = c1,c10,c4, c2 = c2,c5, c5 = c2,c8,c9, c7 = c6,c7, c8 = c7,c8, c9 = c8,c9}
+test  8: 420/1269 = 33.1%
+task  9: 14 things of 1 kinds; learnt from 20 stories (asked for 3 more), 89/89 of their questions right, 2 of 2 kinds of statements and 2 of 2 kinds of questions read (99 s, 28727 episodes played)
+  things: ann=a1 jade=a10 kit=a11 lena=a12 max=a13 nina=a14 bob=a2 cole=a3 dana=a4 eli=a5 fay=a6 gus=a7 hana=a8 ivan=a9
+    * is the boss of * a a          tie E0 of (0, 1)
+    * reports to * a a          tie E0 of (1, 0)
+  ? is * the boss of the boss of * a a          has 0 [>E0 >E0] 1
+  ? who is the boss of the boss of * a            list 0 [<E0 <E0] a
+test  9: 1551/1551 = 100.0%
+task 10: 12 things of 2 kinds; learnt from 20 stories (asked for 10 more), 82/92 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (253 s, 130133 episodes played)
+  things: ann=a1 bob=a2 cat=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 blue=b1 gold=b2 green=b3 red=b4
+    * joins the * group a b          set F0 of (0, 1)
+    * leaves the * group a b          unset F0 of (0,)
+    * moves to the * group a b          set F0 of (0, 1)
+  ? how many are in the * group b            num 0 (count [<F0] None)
+  ? is * in the * group a b          has 0 [>F0] 1
+  ? which group is * in a            num 0 (count [>F0] None)
+  ? who is in the * group b            list 0 [<F0] a (else 0)
+test 10: 1473/1530 = 96.3%
+task 11: 16 things of 4 kinds; learnt from 20 stories (asked for 20 more), 140/142 of their questions right, 6 of 6 kinds of statements and 5 of 5 kinds of questions read (758 s, 510903 episodes played)
+  things: ann=a1 bob=a2 cal=a3 dan=a4 eve=a5 fay=a6 attic=b1 hall=b2 shed=b3 bird=c1 cat=c2 dog=c3 pet=c4 coin=d1 hat=d2 key=d3
+    * gives the * to * a d a        tie2 E0 of (1, 2)
+    * goes to the * a b          tie E1 of (0, 1)
+    * has the * a d          tie E0 of (0, 1)
+    * is a * a c          tie E0 of (0, 1)
+    anyone with the * can enter the * d b          tie E0 of (0, 1)
+    every * is a * c c          tie E0 of (0, 1)
+  ? can * enter the * a b          has 0 [>>E0] 1
+  ? is * a * a c          has 0 [>E0 >E0] 1
+  ? where is the * d            list 0 [<E0 >E1] b
+  ? who can enter the * b            newest 0 [<<E0] a
+  ? who has the * d            newest 0 [>E0 =E1] a
+test 11: 1382/1398 = 98.9%
+task 12: 18 things of 3 kinds; learnt from 20 stories (asked for 20 more), 84/103 of their questions right, 2 of 2 kinds of statements and 2 of 3 kinds of questions read (397 s, 219970 episodes played)
+  things: bread=a1 car=a2 fence=a3 floor=a4 soup=a5 window=a6 ann=b1 jo=b10 ben=b2 cara=b3 dan=b4 eli=b5 fay=b6 gus=b7 hana=b8 ivo=b9 first=c1 last=c2
+    * did the * after the * b a a        tie E0 of (2, 1)
+    * did the * before the * b a a        tie E0 of (1, 2)
+  ? of the job named so far which was done * c            utmost 0 0 a {c1/least,c2/most}
+  ? was the * done before the * a a          has 0 [>>E0] 1
+  ? who did the * job named so far c            -
+test 12: 1118/1241 = 90.1%
+all 12 tasks: mean 86.56%, 6 tasks at 95% and more, asked for 11.7 stories on average
