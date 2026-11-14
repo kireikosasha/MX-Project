@@ -327,6 +327,7 @@ def main():
                 reader = other
         m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint)
         got, n = m.run(m.episodes)
+        own = m.tally
         print(f"task {k:2d}: {len(reader.code)} things of {len({c[0] for c in reader.code.values()})} kinds; learnt from {used} stories" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their "
               f"questions right, {sum(bool(p) for p in m.rec.values())} of {len(m.rec)} kinds of statements and {len(m.ask)} of "
               f"{len(m.forms) - len(m.rec)} kinds of questions read ({time.time() - t0:.0f} s, {m.spent} episodes played)", flush=True)
@@ -338,6 +339,9 @@ def main():
         r, t = m.run(reader.rows(joined(stories(glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0]), pairs)))
         right, total = right + r, total + t
         print(f"test {k:2d}: {r}/{t} = {100 * r / t:.1f}%", flush=True)
+        sure = [f for f in m.tally if f in m.ask and f in own and own[f][0] == own[f][1]]      # the kinds of questions it has a reading
+        x, y = sum(m.tally[f][0] for f in sure), sum(m.tally[f][1] for f in sure)             # for and has explained every one of in its
+        print(f"sure {k:2d}: of {len(sure)} of {len(m.tally)} kinds of questions, {x}/{y} right on them; of the others {r - x}/{t - y}", flush=True)     # own stories
     if total:
         print(f"all: {right}/{total} = {100 * right / total:.2f}%", flush=True)
 

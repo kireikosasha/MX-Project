@@ -1668,8 +1668,10 @@ class Learner:
         return None
 
     def run(self, episodes):
-        """-> right answers, all answers (self.gaps: how many rows were of the kinds that are not read)"""
+        """-> right answers, all answers (self.gaps: how many rows were of the kinds that are not read; self.tally: the
+        same count for every kind of query apart, {form: [right, all]})"""
         right = total = self.gaps = 0
+        self.tally = {}
         for ep in episodes:
             s = State()
             for s.now, (op, quest, things, numbers, kinds, gold) in enumerate(ep):
@@ -1678,8 +1680,11 @@ class Learner:
                 if quest:
                     total += 1
                     got = self.near(self.ask, form)
+                    mine = self.tally.setdefault(form if form in self.ask else next((f for f in self.ask if f[:2] == form[:2] and size(f) == size(form)), form), [0, 0])
+                    mine[1] += 1
                     if got is None:                              # not understood: the usual answer
                         right += self.usual.get(form) == gold
+                        mine[0] += self.usual.get(form) == gold
                         self.gaps += 1
                         continue
                     p, flip, default = got
@@ -1690,6 +1695,7 @@ class Learner:
                     if out.__class__ is bool:
                         out = "yes" if out != flip else "no"
                     right += (default if out is None else out) == gold
+                    mine[0] += (default if out is None else out) == gold
                 else:
                     for x in things:
                         s.born.setdefault(x, s.now)
