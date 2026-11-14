@@ -858,9 +858,10 @@ class Learner:
             if alike:
                 out += [(name, e) for e in amounts(0, False) for name in ("most", "least")]
                 out += [(name, k) for (sort, k) in sorted(types) if sort == "E" for name in ("over", "under")]
-            if self.words and nt >= 2:                           # the same of a value reached through others (what is carried, by its carrier)
+            if self.words and nt >= 2:                           # the same of a value reached through others (what is carried, by its carrier);
                 out += [("was", k, i, j, later, last) for k in fs for i in range(nt) for j in range(nt) for later in (False, True) for last in (True, False)
-                        if i != j and (tk[i], tk[j]) not in types[("F", k)] and tk[j] in after(types, ("F", k, "^"), {tk[i]})]
+                        if i != j and tk[j] in after(types, ("F", k, "^"), {tk[i]}) and (last or (tk[i], tk[j]) not in types[("F", k)])]   # and counted from
+                                                                 # the last time it was so, not the first
             for k in qs:                                         # those that have so much; the one that is n-th
                 if nn and own in types[("Q", k)]:
                     out += [("which", k, c, n, own) for c in CMP for n in range(nn)]
