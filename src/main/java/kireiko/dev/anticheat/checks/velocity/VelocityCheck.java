@@ -6,12 +6,13 @@ import kireiko.dev.anticheat.api.events.CTransactionEvent;
 import kireiko.dev.anticheat.api.events.MoveEvent;
 import kireiko.dev.anticheat.api.events.SVelocityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
+import kireiko.dev.anticheat.core.MainThread;
 import kireiko.dev.anticheat.managers.CheckManager;
 import kireiko.dev.anticheat.services.SimulationFlagService;
-import kireiko.dev.anticheat.utils.ConfigCache;
+import kireiko.dev.anticheat.utils.BlockSnapshot;
 import kireiko.dev.millennium.math.Simplification;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 import java.util.Map;
@@ -71,25 +72,30 @@ public final class VelocityCheck implements PacketCheckHandler {
     public void event(Object o) {
         if (!(boolean) localCfg.get("enabled")) return;
         if (o instanceof SVelocityEvent) {
-            SVelocityEvent event = (SVelocityEvent) o;
-            this.totalVlAtY = 25;
-            this.from = profile.getTo().clone();
-            this.applyVelocity(event);
-            //profile.getPlayer().sendMessage("v; " + event.getVelocity());
+            final SVelocityEvent event = (SVelocityEvent) o;
+            final Location from = profile.getTo().clone();
+            MainThread.run(() -> {
+                this.totalVlAtY = 25;
+                this.from = from;
+                this.applyVelocity(event, from);
+            });
         } else if (o instanceof MoveEvent) {
-            MoveEvent event = (MoveEvent) o;
-            checkVelocity(event);
-            this.isOnGroundFrom = profile.isGround();
+            final MoveEvent event = (MoveEvent) o;
+            final boolean ground = profile.isGround();
+            MainThread.run(() -> {
+                checkVelocity(event, ground);
+                this.isOnGroundFrom = ground;
+            });
         } else if (o instanceof CTransactionEvent) {
-            transactionLock = false;
+            MainThread.run(() -> transactionLock = false);
         }
     }
 
-    private void applyVelocity(SVelocityEvent event) {
+    private void applyVelocity(SVelocityEvent event, Location base) {
         transactionLock = true;
         Location[] locationsToCheck = {
-                this.profile.getTo().clone().add(event.getVelocity()),
-                this.profile.getTo().clone().add(event.getVelocity()).add(0, 1, 0)
+                base.clone().add(event.getVelocity()),
+                base.clone().add(event.getVelocity()).add(0, 1, 0)
         };
         boolean allClear = true;
         for (Location loc : locationsToCheck) {
@@ -106,12 +112,12 @@ public final class VelocityCheck implements PacketCheckHandler {
         if (vl > 0) vl -= 5;
     }
 
-    private void checkVelocity(MoveEvent event) {
+    private void checkVelocity(MoveEvent event, boolean ground) {
         final long delay = System.currentTimeMillis() - oldTime;
         Location from = event.getFrom();
         Location to = event.getTo();
 
-        if (isPointWall(to.clone().add(0, 1, 0), 0.75)) {
+        if (velocity != null && isPointWall(to.clone().add(0, 1, 0), 0.75)) {
             velocity = null;
         }
 
@@ -132,7 +138,7 @@ public final class VelocityCheck implements PacketCheckHandler {
                     //this.profile.getPlayer().sendMessage("m: " + x + " " + velocity.getX());
                     double total = abs(xDiff) + abs(zDiff);
                     double multi = 1.0;
-                    if ((!this.profile.isGround() && isOnGroundFrom)) {
+                    if ((!ground && isOnGroundFrom)) {
                         // time for horizontal flag
                         if (total > 0.2 * multi) {
                             this.flag("Velocity", "Horizontal", "[Air] " + total, 0.0f, 14);
@@ -162,24 +168,18 @@ public final class VelocityCheck implements PacketCheckHandler {
     }
 
     private boolean isPointWall(Location location, final double scale) {
-        final double x = location.getX();
-        final double y = location.getY() + 0.1;
-        final double z = location.getZ();
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    final Material material = new Location(this.profile.getTo().getWorld(),
-                            x + (double) dx * scale,
-                            y + (double) dy * scale,
-                            z + (double) dz * scale).getBlock().getType();
-
-                    if (material.isSolid() || ignore(material.toString().toLowerCase()) || material.toString().contains("GRASS")) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        final World world = location.getWorld();
+        if (world == null) return false;
+        return BlockSnapshot.capture(
+                world,
+                location.getX(),
+                location.getY() + 0.1,
+                location.getZ(),
+                scale
+        ).anyMatch(material ->
+                material.isSolid()
+                        || ignore(material.toString().toLowerCase())
+                        || material.toString().contains("GRASS"));
     }
 
     private void flag(final String check, final String component, final String info, final float m, float vl) {

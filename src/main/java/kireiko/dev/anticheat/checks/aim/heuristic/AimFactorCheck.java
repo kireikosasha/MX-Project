@@ -2,12 +2,10 @@ package kireiko.dev.anticheat.checks.aim.heuristic;
 
 import kireiko.dev.anticheat.api.data.ConfigLabel;
 import kireiko.dev.anticheat.api.events.RotationEvent;
-import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.checks.aim.AimHeuristicCheck;
 import kireiko.dev.millennium.math.Simplification;
 import kireiko.dev.millennium.math.Statistics;
 import kireiko.dev.millennium.types.EvictingList;
-import kireiko.dev.millennium.vectors.Pair;
 import kireiko.dev.millennium.vectors.Vec2f;
 
 import java.util.*;

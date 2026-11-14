@@ -16,7 +16,6 @@ public class StatisticML implements Serializable {
     private int stackSize;
     private static final int MIN_VALUES = 10;
     private static final double KURTOSIS_DIVISOR = 10.0;
-    private static final double AVERAGE_DIVISOR = 3.0;
     private static final double OUTLIERS_DIVISOR = 8.0;
 
     private Set<StatisticPattern> parameters;

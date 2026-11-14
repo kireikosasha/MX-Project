@@ -15,13 +15,13 @@ import kireiko.dev.anticheat.checks.movement.GhostBlockAbuseCheck;
 import kireiko.dev.anticheat.checks.protocol.SprintCheck;
 import kireiko.dev.anticheat.checks.velocity.VelocityCheck;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -47,7 +47,6 @@ public class CheckManager {
         ));
     }
 
-    @SneakyThrows
     public void init() {
         instances.clear();
         JavaPlugin plugin = MX.getInstance();
@@ -57,9 +56,16 @@ public class CheckManager {
                         : new YamlConfiguration();
 
         for (Class<? extends PacketCheckHandler> handlerClass : checks) {
-            PacketCheckHandler check = handlerClass
-                            .getConstructor(PlayerProfile.class)
-                            .newInstance((Object) null);
+            PacketCheckHandler check;
+            try {
+                check = handlerClass
+                                .getConstructor(PlayerProfile.class)
+                                .newInstance((Object) null);
+            } catch (ReflectiveOperationException e) {
+                MX.getInstance().getLogger().severe(
+                                "Failed to initialise check " + handlerClass.getName() + ": " + e);
+                continue;
+            }
             ConfigLabel defaultLabel = check.config();
 
             String sectionName = defaultLabel.getName();
@@ -99,7 +105,11 @@ public class CheckManager {
             check.applyConfig(mergedParams);
             instances.put(check.getClass().getName(), check);
         }
-        cfg.save(file);
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            MX.getInstance().getLogger().severe("Failed to save checks.yml: " + e.getMessage());
+        }
     }
     public boolean classCheck(Class<?> clazz) {
         return (CheckManager.getInstances().containsKey(clazz.getName()));
