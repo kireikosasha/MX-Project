@@ -151,18 +151,6 @@ public final class SensitivityProcessor {
                 : this.totalSensitivity);
     }
 
-    private int calculateMode(List<Integer> samples) {
-        Map<Integer, Integer> frequencyMap = new HashMap<>();
-        for (int sample : samples) {
-            frequencyMap.put(sample, frequencyMap.getOrDefault(sample, 0) + 1);
-        }
-
-        return frequencyMap.entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse(0);
-    }
-
     private boolean hasValidSensitivity() {
         return sensitivity >= 0 && sensitivity <= 200;
     }

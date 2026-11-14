@@ -21,7 +21,8 @@ public final class VersionUtil {
     }
 
     public static String getBukkitVersion() {
-        return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        String[] parts = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
+        return parts.length > 3 ? parts[3] : "";
     }
 
     public static boolean is1_8() {
@@ -74,6 +75,14 @@ public final class VersionUtil {
 
     public static boolean is1_21orAbove() {
         return compareVersion("1.21") >= 0;
+    }
+
+    public static boolean is26orAbove() {
+        return compareVersion("26") >= 0;
+    }
+
+    public static boolean is26_3orAbove() {
+        return compareVersion("26.3") >= 0;
     }
 
     private static int compareVersion(String v2) {

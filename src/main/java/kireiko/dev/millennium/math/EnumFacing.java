@@ -128,7 +128,7 @@ public enum EnumFacing {
 
     public static EnumFacing func_176737_a(float p_176737_0_, float p_176737_1_, float p_176737_2_) {
         EnumFacing var3 = NORTH;
-        float var4 = Float.MIN_VALUE;
+        float var4 = -Float.MAX_VALUE;
         EnumFacing[] var5 = values();
         int var6 = var5.length;
 

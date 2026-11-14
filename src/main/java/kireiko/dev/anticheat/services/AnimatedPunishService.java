@@ -9,20 +9,24 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class AnimatedPunishService {
-    private static final List<PlayerProfile> punished
-            = new ArrayList<>();
-    private static List<Object[]> endAnim = new ArrayList<>();
+    private static final Set<PlayerProfile> punished
+            = ConcurrentHashMap.newKeySet();
+    private static final List<Object[]> endAnim = new CopyOnWriteArrayList<>();
 
     public static void punish(PlayerProfile profile, Pair<String, String> bane) {
         profile.setBanAnimPositions(new Pair<>(profile.getTo().clone(), profile.getTo().clone()));
         profile.setBanAnimInfo(bane);
         punished.add(profile);
+    }
+
+    public static void unload(PlayerProfile profile) {
+        punished.remove(profile);
     }
 
     public static void init() {
@@ -35,8 +39,8 @@ public final class AnimatedPunishService {
         }, 0L, 1L);
     }
 
-    private static void punishAnim() {
-        Set<PlayerProfile> rm = new HashSet<>();
+    private static synchronized void punishAnim() {
+        Set<PlayerProfile> rm = ConcurrentHashMap.newKeySet();
         for (PlayerProfile profile : punished) {
             if (profile.punishAnimation > 100) {
                 // end, go to out animation
@@ -64,10 +68,8 @@ public final class AnimatedPunishService {
         rm.clear();
     }
 
-    private static void outAnim() {
-        // animation after kick/ban
-        List<Object[]> endAnimCopy = new ArrayList<>(endAnim); // iteration-safe
-        for (Object[] object : endAnimCopy) {
+    private static synchronized void outAnim() {
+        for (Object[] object : endAnim) {
             Location l = (Location) object[0];
             World w = (World) object[2];
             int progress = (int) object[1];
@@ -86,7 +88,6 @@ public final class AnimatedPunishService {
                 object[1] = ((int) object[1]) + 4;
             }
         }
-        endAnim = endAnimCopy;
     }
 
     private static void playAnimation(PlayerProfile iPlayer, int percent) {
@@ -129,13 +130,6 @@ public final class AnimatedPunishService {
         // thread-safe
         Bukkit.getScheduler().runTask(MX.getInstance(), () -> w.spawnParticle(p, l, c));
     }
-
-    private static void p2(World w, Location l, Particle p) {
-        // thread-safe
-        Bukkit.getScheduler().runTask(MX.getInstance(),
-                () -> w.spawnParticle(p, l, 1, 0, 0, 0, 0));
-    }
-
 
     // interpolation
     private static double circOut(double from, double to, int percent) {

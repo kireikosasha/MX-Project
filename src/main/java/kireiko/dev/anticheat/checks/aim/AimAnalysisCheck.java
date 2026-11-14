@@ -5,13 +5,12 @@ import kireiko.dev.anticheat.api.data.ConfigLabel;
 import kireiko.dev.anticheat.api.events.RotationEvent;
 import kireiko.dev.anticheat.api.events.UseEntityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
-import kireiko.dev.anticheat.api.player.SensitivityProcessor;
 import kireiko.dev.anticheat.managers.CheckManager;
 import kireiko.dev.millennium.math.Statistics;
+import kireiko.dev.millennium.types.ConcurrentEvictingList;
 import kireiko.dev.millennium.vectors.Vec2f;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class AimAnalysisCheck implements PacketCheckHandler {
     private final List<Float> buffer;
@@ -24,11 +23,11 @@ public final class AimAnalysisCheck implements PacketCheckHandler {
 
     public AimAnalysisCheck(PlayerProfile profile) {
         this.profile = profile;
-        this.rawRotations = new CopyOnWriteArrayList<>();
-        this.limitedRotations = new CopyOnWriteArrayList<>();
-        this.longTermAnalysis = new ArrayList<>();
+        this.rawRotations = new ConcurrentEvictingList<>(128);
+        this.limitedRotations = new ConcurrentEvictingList<>(128);
+        this.longTermAnalysis = new ConcurrentEvictingList<>(16);
         this.lastAttack = 0L;
-        this.buffer = new CopyOnWriteArrayList<>();
+        this.buffer = new ConcurrentEvictingList<>(16);
         for (int i = 0; i < 16; i++) this.buffer.add(0.0f);
         if (CheckManager.classCheck(this.getClass()))
             this.localCfg = CheckManager.getConfig(this.getClass());
@@ -183,8 +182,4 @@ public final class AimAnalysisCheck implements PacketCheckHandler {
         this.buffer.set(index, (r < 0) ? 0 : r);
     }
 
-    private void mulBuffer(int index, float v) {
-        float r = this.buffer.get(index) * v;
-        this.buffer.set(index, (r < 0) ? 0 : r);
-    }
 }

@@ -1,7 +1,6 @@
 package kireiko.dev.anticheat.utils.protocol;
 
 import com.comphenix.protocol.injector.temporary.TemporaryPlayer;
-import kireiko.dev.anticheat.utils.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -9,19 +8,13 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public final class ProtocolLib {
 
     private static boolean
             temporaryClass = false;
-
-    private static void checkClass() {
-        temporaryClass = ReflectionUtils.classExists(
-                "com.comphenix.protocol.injector.temporary.TemporaryPlayer"
-        );
-    }
 
     public static boolean isTemporary(OfflinePlayer player) {
         return temporaryClass && player instanceof TemporaryPlayer;
@@ -42,7 +35,7 @@ public final class ProtocolLib {
     public static int getEntityID(Entity entity) {
         if (entity instanceof Player) {
             if (ProtocolLib.isTemporary((Player) entity)) {
-                return new Random().nextInt();
+                return ThreadLocalRandom.current().nextInt();
             } else {
                 return entity.getEntityId();
             }
