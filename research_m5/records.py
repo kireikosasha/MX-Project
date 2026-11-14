@@ -1754,7 +1754,7 @@ class Learner:
         return "\n".join(out)
 
 
-def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, only=False, deep=False):
+def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, only=False):
     """learn from the first episodes. Then, if it may ask: find the other readings that explain these episodes as well,
     look (without the answers) for the episodes of the pool on which the readings part, ask for the answers of a few of
     those, learn again. Then, if there are more episodes to take: check what is learnt on the next ones; where the
@@ -1828,9 +1828,6 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, onl
         new.learn(limit, seed=m.rec, wide=10 * right < 9 * total)
         spent += new.work
         m, used = new, n
-    if deep:                                                     # what is left unexplained: queries composed from operators
-        got = m.deepen()
-        notes += ["composed: " + "; ".join(got)] if got else []
     m.spent = spent                                              # all the work of learning, in episodes played
     return m, used, notes
 

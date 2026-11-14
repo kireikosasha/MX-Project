@@ -326,7 +326,7 @@ def main():
             if other and other.best > reader.best:
                 other.guessed = reader.guessed[:1 if pairs else 0] + ["words that name the same: " + " ".join(f"{v}={w}" for v, w in sorted(alias.items()))] + other.guessed
                 reader = other
-        m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint, deep=a.deep)
+        m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint)
         got, n = m.run(m.episodes)
         own = m.tally
         print(f"task {k:2d}: {len(reader.code)} things of {len({c[0] for c in reader.code.values()})} kinds; learnt from {used} stories" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their "
@@ -337,12 +337,18 @@ def main():
         if a.show:
             print("  things:", " ".join(f"{w}={c}" for w, c in sorted(reader.code.items(), key=lambda x: x[1])))
             print(m.describe(), flush=True)
-        r, t = m.run(reader.rows(joined(stories(glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0]), pairs)))
+        tests = reader.rows(joined(stories(glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0]), pairs))
+        r, t = m.run(tests)
         right, total = right + r, total + t
         print(f"test {k:2d}: {r}/{t} = {100 * r / t:.1f}%", flush=True)
         sure = [f for f in m.tally if f in m.ask and f in own and own[f][0] == own[f][1]]      # the kinds of questions it has a reading
         x, y = sum(m.tally[f][0] for f in sure), sum(m.tally[f][1] for f in sure)             # for and has explained every one of in its
         print(f"sure {k:2d}: of {len(sure)} of {len(m.tally)} kinds of questions, {x}/{y} right on them; of the others {r - x}/{t - y}", flush=True)     # own stories
+        if a.deep:                                               # the kinds of questions left unexplained: queries composed from operators
+            t0 = time.time()
+            took = m.deepen()
+            r2, t2 = m.run(tests) if took else (r, t)
+            print(f"deep {k:2d}: {r2}/{t2} = {100 * r2 / t2:.1f}%" + (f" ({'; '.join(took)}; {time.time() - t0:.0f} s)" if took else " (nothing composed)"), flush=True)
     if total:
         print(f"all: {right}/{total} = {100 * right / total:.2f}%", flush=True)
 
