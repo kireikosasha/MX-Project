@@ -365,7 +365,7 @@ SENTENCES = ("either", "note", "setnext", "setprev")                            
 USES = {"list": 1, "seq": 1, "eldest": 1, "newest": 1, "some": 1, "pos": 1, "num": 1, "cmpn": 1, "qat": 1, "which": 0, "rank": 0,
         "has": 2, "same": 2, "cmp": 2, "diff": 2, "before": 2, "after": 2, "when": 2, "span": 2, "dir": 2, "dist": 2, "route": 2,
         "hops": 2, "path": 2, "aligned": 2, "steps": 2, "assoc": 1, "both": 2, "maybe": 2, "lhead": 2, "ltail": 2,
-        "asof": 1, "wasat": 2, "wason": 2, "top": 1, "was": 2, "way": 2}
+        "asof": 1, "wasat": 2, "wason": 2, "top": 1, "was": 2, "way": 2, "utmost": 1}
 
 
 # ---------------------------------------------------------------- the steps of a walk
@@ -578,6 +578,14 @@ def answer(s, p, t, nums, memo):
             return None
         i = h.index(v) + (1 if name == "after" else -1)
         return h[i] if 0 <= i < len(h) else None
+    if name == "utmost":                                         # the one all the others lead to, or the one that leads to all the others:
+        way = dict(p[4]).get(t[p[2]])                            # which of the two a word of the question asks for is part of the guess
+        nodes = sorted({x for e in s.E[p[1]] for x in e if x.__class__ is str and kind(x) == p[3]})
+        if way is None or len(nodes) < 2:
+            return None
+        reach = {x: s.closure(p[1], {x}) for x in nodes}
+        out = [x for x in nodes if all(x in reach[y] if way == "most" else y in reach[x] for y in nodes)]
+        return out[0] if len(out) == 1 else None
     if name == "was":                                            # where a chain of values ended before (after) it ended at this thing,
         h, v = s.ends(p[1], t[p[2]]), t[p[3]]                    # the first time or the last
         if v not in h:
@@ -858,6 +866,9 @@ class Learner:
             if alike:
                 out += [(name, e) for e in amounts(0, False) for name in ("most", "least")]
                 out += [(name, k) for (sort, k) in sorted(types) if sort == "E" for name in ("over", "under")]
+            if self.words and nt == 1 and own is not None and 1 <= len(self.names.get(tk[0], [])) <= 3:      # the utmost of an order (the tallest,
+                out += [("utmost", k, 0, own, tuple(zip(self.names[tk[0]], ways))) for (sort, k) in sorted(types) if sort == "E" and (own, own) in types[(sort, k)]   # the shortest)
+                        for ways in itertools.product(("most", "least"), repeat=len(self.names[tk[0]]))]
             if self.words and nt >= 2:                           # the same of a value reached through others (what is carried, by its carrier);
                 out += [("was", k, i, j, later, last) for k in fs for i in range(nt) for j in range(nt) for later in (False, True) for last in (True, False)
                         if i != j and tk[j] in after(types, ("F", k, "^"), {tk[i]}) and (last or (tk[i], tk[j]) not in types[("F", k)])]   # and counted from
