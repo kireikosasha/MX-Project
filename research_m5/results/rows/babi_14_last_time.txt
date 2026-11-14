@@ -1,0 +1,25 @@
+task 14: 10 things of 2 kinds; learnt from 20 stories (asked for 15 more), 175/175 of their questions right, 20 of 20 kinds of statements and 1 of 1 kinds of questions read (418 s, 412899 episodes played)
+  things: bill=a1 fred=a2 julie=a3 mary=a4 bedroom=b1 cinema=b2 kitchen=b3 office=b4 park=b5 school=b6
+    # * journeyed to the * # a b        setat F0 of (0, 1)
+    # * moved to the * # a b        setat F0 of (0, 1)
+    # * travelled to the * # a b        setat F0 of (0, 1)
+    # * went back to the * # a b        setat F0 of (0, 1)
+    # * went to the * # a b        setat F0 of (0, 1)
+    * journeyed to the * # a b #        setat F0 of (0, 1)
+    * journeyed to the * this # a b #        setat F0 of (0, 1)
+    * moved to the * # a b #        setat F0 of (0, 1)
+    * moved to the * this # a b #        setat F0 of (0, 1)
+    * travelled to the * # a b #        setat F0 of (0, 1)
+    * travelled to the * this # a b #        setat F0 of (0, 1)
+    * went back to the * # a b #        setat F0 of (0, 1)
+    * went back to the * this # a b #        setat F0 of (0, 1)
+    * went to the * # a b #        setat F0 of (0, 1)
+    * went to the * this # a b #        setat F0 of (0, 1)
+    this # * journeyed to the * # a b        setat F0 of (0, 1)
+    this # * moved to the * # a b        setat F0 of (0, 1)
+    this # * travelled to the * # a b        setat F0 of (0, 1)
+    this # * went back to the * # a b        setat F0 of (0, 1)
+    this # * went to the * # a b        setat F0 of (0, 1)
+  ? where was * before the * a b          was 0 0 1 False True
+test 14: 1000/1000 = 100.0%
+all: 1000/1000 = 100.00%
