@@ -698,6 +698,9 @@ def answer(s, p, t, nums, memo):
         if len(p) == 4:
             return ("?", t[p[2]], tuple(sorted(got.items()))) if got else None
         return got.get(dict(p[4]).get(t[p[2]]))
+    if name == "alg":                                            # a query composed from the operators of algebra.py
+        import algebra
+        return algebra.answer(s, p, t, nums)
     if name == "at":                                             # the same query, asked of the state as it was at a time (a number of the row)
         key = ("at", nums[p[1]], p[2])
         if key not in memo:
@@ -1654,6 +1657,23 @@ class Learner:
         self.usual = {f: Counter(g).most_common(1)[0][0] for f, g in self.forms.items() if f[1]}
         return best[0][1], total
 
+    def deepen(self, depth=4):
+        """the kinds of questions that are not explained in full: with the sentences read as they are, a query composed
+        from the operators of algebra.py is looked for (all the programs up to a depth), and taken if it explains
+        more of the questions -> what was taken, as text"""
+        import algebra
+        self.run(self.episodes)
+        own, notes = dict(self.tally), []
+        for f in sorted((f for f in self.forms if f[1]), key=lambda f: f[0]):
+            right, n = own.get(f, [0, len(self.forms[f])]) if f in self.ask else (0, len(self.forms[f]))
+            if right == n or n < 3:
+                continue
+            got = algebra.find(self, self.rec, f, self.episodes, depth)
+            if got and got[0] > right:
+                self.ask[f] = (got[1], got[2], got[3])
+                notes.append(f"{f[0]}: {right} -> {got[0]} of {n}")
+        return notes
+
     # ------------------------------------------------------------ use
     def near(self, table, form):
         """a row of a form not met in learning is read as the same operation with as many things"""
@@ -1734,7 +1754,7 @@ class Learner:
         return "\n".join(out)
 
 
-def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, only=False):
+def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, only=False, deep=False):
     """learn from the first episodes. Then, if it may ask: find the other readings that explain these episodes as well,
     look (without the answers) for the episodes of the pool on which the readings part, ask for the answers of a few of
     those, learn again. Then, if there are more episodes to take: check what is learnt on the next ones; where the
@@ -1808,6 +1828,9 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, onl
         new.learn(limit, seed=m.rec, wide=10 * right < 9 * total)
         spent += new.work
         m, used = new, n
+    if deep:                                                     # what is left unexplained: queries composed from operators
+        got = m.deepen()
+        notes += ["composed: " + "; ".join(got)] if got else []
     m.spent = spent                                              # all the work of learning, in episodes played
     return m, used, notes
 

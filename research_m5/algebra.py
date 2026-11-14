@@ -288,6 +288,63 @@ def answers(p, cs, own, hs, values, key):
     return outs
 
 
+def find(m, rec, f, eps, depth):
+    """the best composed program for the kind of question f, the sentences read as rec says -> how many of its questions
+    it explains, the query as records.py keeps it, whether it is turned over, what to say when there is nothing to
+    say, and (how many programs were listed, how many differ in what they say, how many are as good)"""
+    types = m.types(rec)
+    stores = sorted({(sort, k) for sort, k in types if sort in "FQEL"} | ({("P", 0)} if any("+" in str(v) for v in types.values()) else set()))
+    timed = any(sort == "F@" for sort, k in types)
+    dkinds = {ks[2] for (sort, k), v in types.items() if sort == "L" for ks in v}
+    marks = sorted(w for dk in dkinds for w in m.names.get(dk, []))
+    pairings = [dict(o) for o in records.pairings(marks)] if marks and len(marks) % 2 == 0 and len(marks) <= 6 else [{}]
+    golds = m.forms[f]
+    tk = [k for k in f[2] if k != "#"]
+    nn = len(f[2]) - len(tk)
+    sh = Counter(records.shape(g) for g in golds).most_common(1)[0][0]
+    own = m.owns.get(f, [None])[0]
+    dirs = [j for j, k in enumerate(tk) if k in dkinds]
+    progs = listing(depth, tk, tk, nn, own, sh, stores, dirs, marks, timed)
+    yesno = all(g in ("yes", "no") for g in golds)
+    best, seen, tie = None, {}, 0
+    for opp in pairings:
+        cs = looks(eps, rec, [f], opp)[f]
+        for p in progs:
+            hs = holes(p)
+            if len(hs) > 1:
+                continue
+            values = marks if hs == {"d"} else ("most", "least")
+            free = [i for i in range(len(tk)) if i not in used(p, tk)]
+            outs = answers(p, cs, own, hs, values, lambda c: tuple(c.t[i] for i in free) or c.t[-2])
+            sig = (tuple(sorted(opp.items())), tuple(outs))
+            if sig in seen:
+                continue
+            seen[sig] = p
+            for flip, g in enumerate(records.Learner.grade(outs, golds, yesno)):
+                size = len(str(p))
+                if best is None or (g[1], -size) > (best[0], -best[1]):
+                    best, tie = (g[1], size, p, bool(flip), g[2], opp, hs, values, free, outs), 1
+                elif g[1] == best[0]:
+                    tie += 1
+    if best is None:
+        return None
+    right, size, p, flip, default, opp, hs, values, free, outs = best
+    table = {}
+    for o, gold in zip(outs, golds) if hs else ():               # which word says what: from the stories learnt from
+        for word, v in records.pieces(o, gold) if o else ():
+            table.setdefault(word, Counter())[v] += 1
+    table = tuple(sorted((w, c.most_common(1)[0][0]) for w, c in table.items()))
+    query = ("alg", p, tuple(sorted(opp.items())), own, tuple(free), table, bool(hs))
+    return right, query, flip, default, (len(progs) * len(pairings), len(seen), tie)
+
+
+def answer(s, q, t, nums):
+    """what a composed query says of a state (as records.answer does for the ends of its list)"""
+    _, p, opp, own, free, table, hole = q
+    key = tuple(t[i] for i in free) or t[-2]
+    return say(run(p, Look(s, t, nums, dict(opp)), dict(table).get(key) if hole else None), own)
+
+
 def study(name, data, task, depth, stories=40):
     raw = rows.stories(glob.glob(os.path.join(data, f"qa{task}_*train.txt"))[0], stories)
     reader = rows.Reader(raw[:20], 0)
@@ -295,63 +352,23 @@ def study(name, data, task, depth, stories=40):
     test = reader.rows(rows.stories(glob.glob(os.path.join(data, f"qa{task}_*test.txt"))[0]))
     m = records.Learner(eps)
     rec = {f: reading(name, f[0], f[2]) for f in m.rec}
-    types = m.types(rec)
-    stores = sorted({(sort, k) for sort, k in types if sort in "FQEL"} | ({("P", 0)} if any("+" in str(v) for v in types.values()) else set()))
-    timed = any(sort == "F@" for sort, k in types)
-    dkinds = {ks[2] for (sort, k), v in types.items() if sort == "L" for ks in v}
-    marks = sorted(w for dk in dkinds for w in m.names.get(dk, []))
-    pairings = [dict(o) for o in records.pairings(marks)] if marks and len(marks) % 2 == 0 else [{}]
-    print(f"{name}: stores {stores}, directions {len(marks)}, {len(pairings)} ways to pair them", flush=True)
+    print(f"{name}:", flush=True)
     for f in sorted((f for f in m.forms if f[1]), key=lambda f: f[0]):
-        golds = m.forms[f]
-        tk = [k for k in f[2] if k != "#"]
-        nn = len(f[2]) - len(tk)
-        sh = Counter(records.shape(g) for g in golds).most_common(1)[0][0]
-        own = m.owns.get(f, [None])[0]
-        dirs = [j for j, k in enumerate(tk) if k in dkinds]
-        progs = listing(depth, tk, tk, nn, own, sh, stores, dirs, marks, timed)
-        yesno = all(g in ("yes", "no") for g in golds)
-        best, seen, t0 = None, {}, time.time()
-        for opp in pairings:
-            cs = looks(eps, rec, [f], opp)[f]
-            for p in progs:
-                hs = holes(p)
-                if len(hs) > 1:
-                    continue
-                values = marks if hs == {"d"} else ("most", "least")
-                free = [i for i in range(len(tk)) if i not in used(p, tk)]
-                outs = answers(p, cs, own, hs, values, lambda c: tuple(c.t[i] for i in free) or c.t[-2])
-                sig = (tuple(sorted(opp.items())), tuple(outs))
-                if sig in seen:
-                    continue
-                seen[sig] = p
-                for flip, g in enumerate(records.Learner.grade(outs, golds, yesno)):
-                    size = len(str(p))
-                    if best is None or (g[1], -size) > (best[0], -best[1]):
-                        best, tie = (g[1], size, p, bool(flip), g[2], opp, hs, values, free), 1
-                    elif g[1] == best[0]:
-                        tie += 1
-        right, size, p, flip, default, opp, hs, values, free = best
-        ts = looks(test, rec, [f] + [g for g in {(op, q, k) for ep in test for op, q, _, _, k, _ in ep} if g[:2] == f[:2] and records.size(g) == records.size(f)], opp)
-        tcs = [x for v in ts.values() for x in v]
-        table = {}
-        if hs:                                                   # which word says what: from the stories learnt from
-            for o, gold in zip(answers(p, looks(eps, rec, [f], opp)[f], own, hs, values, lambda c: tuple(c.t[i] for i in free) or c.t[-2]), golds):
-                for word, v in records.pieces(o, gold) if o else ():
-                    table.setdefault(word, Counter())[v] += 1
-            table = {w: c.most_common(1)[0][0] for w, c in table.items()}
+        t0 = time.time()
+        right, query, flip, default, (listed, differ, tie) = find(m, rec, f, eps, depth)
+        like = [f] + [g for g in {(op, q, k) for ep in test for op, q, _, _, k, _ in ep} if g != f and g[:2] == f[:2] and records.size(g) == records.size(f)]
+        tcs = [x for v in looks(test, rec, like, {}).values() for x in v]
         good = 0
         for c, gold in tcs:
             try:
-                key = tuple(c.t[i] for i in free) or c.t[-2]
-                o = say(run(p, c, table.get(key)), own) if hs else say(run(p, c), own)
+                o = answer(c.s, query, c.t, c.nums)
             except (KeyError, IndexError, ValueError, TypeError):
                 o = None
             if o.__class__ is bool:
                 o = "yes" if o != flip else "no"
             good += (default if o is None else o) == gold
-        print(f"  ? {f[0]} {' '.join(f[2])}: {len(progs)} programs x {len(pairings)}, {len(seen)} that differ in what they say; best explains "
-              f"{right}/{len(golds)} ({tie} as good), test {good}/{len(tcs)} = {100 * good / max(1, len(tcs)):.1f}%  ({time.time() - t0:.0f} s)\n      {p}", flush=True)
+        print(f"  ? {f[0]} {' '.join(f[2])}: {listed} programs, {differ} that differ in what they say; best explains "
+              f"{right}/{len(m.forms[f])} ({tie} as good), test {good}/{len(tcs)} = {100 * good / max(1, len(tcs)):.1f}%  ({time.time() - t0:.0f} s)\n      {query[1]}", flush=True)
 
 
 def main():

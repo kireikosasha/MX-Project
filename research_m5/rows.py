@@ -293,6 +293,7 @@ def main():
     ap.add_argument("--more", default="", help="take more stories where what is learnt fails on fresh ones: e.g. 60,200")
     ap.add_argument("--hint", default="", help="a network that says which readings of a row to try first (made by prior.py)")
     ap.add_argument("--show", action="store_true")
+    ap.add_argument("--deep", action="store_true", help="for the kinds of questions left unexplained: look for a query composed from the operators of algebra.py")
     a = ap.parse_args()
     hint = None
     if a.hint:
@@ -325,7 +326,7 @@ def main():
             if other and other.best > reader.best:
                 other.guessed = reader.guessed[:1 if pairs else 0] + ["words that name the same: " + " ".join(f"{v}={w}" for v, w in sorted(alias.items()))] + other.guessed
                 reader = other
-        m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint)
+        m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint, deep=a.deep)
         got, n = m.run(m.episodes)
         own = m.tally
         print(f"task {k:2d}: {len(reader.code)} things of {len({c[0] for c in reader.code.values()})} kinds; learnt from {used} stories" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their "
