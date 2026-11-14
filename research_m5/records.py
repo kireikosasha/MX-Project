@@ -35,7 +35,7 @@ K = {"F": 3, "Q": 2, "E": 2, "L": 1, "T": 1, "N": 1}
 ME = "@"                                                  # the one who writes the log, when a row does not say who acts
 KINDS = {ME: ME}
 OP = "!"                                                  # the operation code of a row, when it stands for a thing (a direction)
-SPACE = ("dir", "dist", "route", "isdir", "aligned", "hops", "path", "steps", "lhead", "ltail")
+SPACE = ("dir", "dist", "route", "isdir", "aligned", "hops", "path", "steps", "lhead", "ltail", "isat", "edge")
 
 
 def whom(t, i):
@@ -365,7 +365,7 @@ SENTENCES = ("either", "note", "setnext", "setprev")                            
 USES = {"list": 1, "seq": 1, "eldest": 1, "newest": 1, "some": 1, "pos": 1, "num": 1, "cmpn": 1, "qat": 1, "which": 0, "rank": 0,
         "has": 2, "same": 2, "cmp": 2, "diff": 2, "before": 2, "after": 2, "when": 2, "span": 2, "dir": 2, "dist": 2, "route": 2,
         "hops": 2, "path": 2, "aligned": 2, "steps": 2, "assoc": 1, "both": 2, "maybe": 2, "lhead": 2, "ltail": 2,
-        "asof": 1, "wasat": 2, "wason": 2, "top": 1, "was": 2, "way": 2, "utmost": 1}
+        "asof": 1, "wasat": 2, "wason": 2, "top": 1, "was": 2, "way": 2, "utmost": 1, "edge": 1}
 
 
 # ---------------------------------------------------------------- the steps of a walk
@@ -664,9 +664,23 @@ def answer(s, p, t, nums, memo):
             return str(len(way))
         nodes = [t[p[2]]] + [x for x, _ in way]
         return ",".join(nodes[p[4]:len(nodes) - p[5]]) or None
-    pos = where(s, p[1], t[p[3]], opposite).get(t[p[2]])
+    if name == "edge":                                           # of the pairs this thing is part of: the utmost one in a direction;
+        mine = sorted({x for a, b, _, _ in s.L[p[1]] for x in (a, b) if "+" in x and t[p[2]] in x.split("+")})   # the answer is its other part
+        if not mine:
+            return None
+        pos, d = where(s, p[1], mine[0], opposite), p[3]
+        if d not in opposite or any(x not in pos for x in mine):
+            return None
+        at = {x: pos[x].get(d, 0) if d < opposite[d] else -pos[x].get(opposite[d], 0) for x in mine}
+        best = [x for x in mine if at[x] == max(at.values())]
+        rest = [y for y in best[0].split("+") if y != t[p[2]]] if len(best) == 1 else []
+        return rest[0] if len(rest) == 1 and kind(rest[0]) == p[4] else None
+    pos = where(s, p[1], whom(t, p[3]), opposite).get(whom(t, p[2]))
     if pos is None:
         return None
+    if name == "isat":                                           # does it lie in this direction (the direction is part of the guess)
+        d = p[4]
+        return None if d not in opposite else pos.get(d, 0) > 0 if d < opposite[d] else pos.get(opposite[d], 0) < 0
     if name == "aligned":
         return sum(1 for n in pos.values() if n) == 1
     if name == "isdir":
@@ -766,6 +780,10 @@ class Learner:
                     out += [(name, k, pick + (-2,), n) for pick in ((0, 1), (1, 0)) for n in (range(nn) if nn else [None])]
                     out += [(name, k, pick + (-10 - d,), n) for pick in ((0, 1), (1, 0)) for d in range(nn)      # or a number of the row is
                             for n in ([x for x in range(nn) if x != d] or [None])]
+        if self.words and "L" in sorts and nt in (4, 5):         # two things of the row together as one end of a link, the next two as
+            last = both(nt - 2, nt - 1)                          # the other (an event before another event); the direction is the thing
+            for k in range(min(K["L"], top["L"] + 1)):           # between them, or the operation itself
+                out += [("link", k, ends + ((2,) if nt == 5 else (-2,)), None) for ends in ((both(0, 1), last), (last, both(0, 1)))]
         return sorted(out, key=lambda m: -1 in m[2])             # the one who is not named comes last
 
     def offer(self, u, cands):
@@ -949,6 +967,16 @@ class Learner:
                 if opps and more and all(len(self.names.get(d, [])) == 2 for d in more):     # directions of several kinds in one map (above and
                     rest = [(a, b) for d in more for a, b in (self.names[d], self.names[d][::-1])]   # below, left and right): those of a kind
                     opps += [tuple(sorted(o + tuple(rest))) for o in opps]                     # are opposite to each other, the kinds do not mix
+                if self.words and "+" in ka and ka == kb:        # links between pairs of things (events)
+                    I, J = both(0, 1), both(nt - 2, nt - 1)
+                    fits = nt in (4, 5) and "+".join(sorted((tk[0], tk[1]))) == ka == "+".join(sorted((tk[nt - 2], tk[nt - 1])))
+                    if sh == "b" and fits and nt == 5 and tk[2] == kd:
+                        out += [("isdir", k, a, b, 2, opp) for opp in opps for a, b in ((I, J), (J, I))]
+                    if sh == "b" and fits and nt == 4:
+                        out += [("isat", k, a, b, d, opp) for opp in opps for d in marks for a, b in ((I, J),)]
+                    if sh == "t" and nt == 1 and tk[0] in ka.split("+") and own in ka.split("+") and own != tk[0]:
+                        out += [("edge", k, 0, d, own, opp) for opp in opps for d in marks]
+                    continue
                 if self.words and sh == "t":                     # the link itself, asked for by one of its ends and its direction
                     out += [(name, k, i, d, opp) for opp in opps for name in ("lhead", "ltail") for i in range(nt) for d in range(nt)
                             if i != d and tk[d] == kd and tk[i] in (ka, kb)]
