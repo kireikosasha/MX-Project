@@ -35,8 +35,8 @@ K = {"F": 3, "Q": 2, "E": 2, "L": 1, "T": 1, "N": 1}
 ME = "@"                                                  # the one who writes the log, when a row does not say who acts
 KINDS = {ME: ME}
 OP = "!"                                                  # the operation code of a row, when it stands for a thing (a direction)
-SPACE = ("dir", "dirs", "dist", "route", "isdir", "aligned", "hops", "path", "steps", "lhead", "ltail", "isat", "edge", "lover", "lunder", "lis", "lways")
-TABLED = {"assoc": 3, "way": 5, "utmost": 4}             # the queries with a table learnt from the answers: how long they are without it
+SPACE = ("dir", "dirs", "dist", "route", "isdir", "aligned", "hops", "path", "steps", "lhead", "ltail", "isat", "edge", "lover", "lunder", "lis", "lways", "pis", "pedge")
+TABLED = {"assoc": 3, "way": 5, "utmost": 4, "utmostof": 4}             # the queries with a table learnt from the answers: how long they are without it
 AT = ("list", "seq", "has", "some", "num", "eldest", "newest", "same", "cmp", "diff")   # what can be asked of the state as it was at a time
 
 
@@ -378,7 +378,7 @@ RANK = {name: [n for n in MOVES if MOVES[n][1] == MOVES[name][1]].index(name) fo
 USES = {"list": 1, "seq": 1, "eldest": 1, "newest": 1, "some": 1, "pos": 1, "num": 1, "cmpn": 1, "qat": 1, "which": 0, "rank": 0,
         "has": 2, "same": 2, "cmp": 2, "diff": 2, "before": 2, "after": 2, "when": 2, "span": 2, "dir": 2, "dist": 2, "route": 2,
         "hops": 2, "path": 2, "aligned": 2, "steps": 2, "assoc": 1, "both": 2, "maybe": 2, "lhead": 2, "ltail": 2,
-        "asof": 1, "wasat": 2, "wason": 2, "top": 1, "was": 2, "way": 2, "utmost": 1, "edge": 1, "lover": 2, "lunder": 2, "lways": 2, "dirs": 2}
+        "asof": 1, "wasat": 2, "wason": 2, "top": 1, "was": 2, "way": 2, "utmost": 1, "edge": 1, "lover": 2, "lunder": 2, "lways": 2, "dirs": 2, "pedge": 1}
 
 
 # ---------------------------------------------------------------- the steps of a walk
@@ -507,10 +507,12 @@ def route(s, k, a, b, opposite):
     return out[::-1]
 
 
-def over(s, k, opposite, d, memo, own=None):
+def over(s, k, opposite, d, memo, own=None, stamps=None, extra=None):
     """the links read as an order along a direction: thing -> those that lie from it in the direction d, as far as the
-    links say (through others as well), the thing itself among them"""
-    key = ("over", k, d, own, tuple(sorted(opposite.items())))
+    links say (through others as well), the thing itself among them. stamps (an amount slot, a direction): the pairs of
+    things that have an amount (events with their time) stand in the same order by it, the amounts growing in that
+    direction; extra (a name, an amount): one more place in the order, by its amount (a time asked about)"""
+    key = ("over", k, d, own, stamps, extra, tuple(sorted(opposite.items())))
     if key not in memo:
         up = {}
         for a, b, lab, n in s.L[k]:
@@ -518,6 +520,18 @@ def over(s, k, opposite, d, memo, own=None):
                 lo, hi = (b, a) if lab == d else (a, b)
                 up.setdefault(lo, set()).add(hi)
                 up.setdefault(hi, set())
+        if stamps and (d == stamps[1] or opposite.get(d) == stamps[1]):
+            by = {}
+            for x, v in list(s.Q[stamps[0]].items()) + ([extra] if extra else []):
+                if "+" in x or x[0] == "#":
+                    by.setdefault(v, []).append(x)
+            levels = sorted(by, reverse=d != stamps[1])
+            for v in levels:
+                for x in by[v]:
+                    up.setdefault(x, set())
+            for lo, hi in zip(levels, levels[1:]):
+                for x in by[lo]:
+                    up[x].update(by[hi])
         reach = memo[key] = {}
         for x in up:
             reach[x], todo = {x}, [x]
@@ -528,13 +542,14 @@ def over(s, k, opposite, d, memo, own=None):
     return memo[key]
 
 
-def utmost(s, src, own):
+def utmost(s, src, own, among=None):
     """the utmost thing of an order, for every way it may be asked for -> {the way: the thing}. The order is what leads
     to what (the one all the others lead to; the one that leads to all the others), what lies from what in a direction
-    (the one furthest in every direction), or who has how much (the most, the least)"""
+    (the one furthest in every direction), or who has how much (the most, the least). among: only these are compared
+    (the tallest of ann, bob and cy), not all the things of the order"""
     out = {}
     if src[0] == "Q":
-        vs = {x: v for x, v in s.Q[src[1]].items() if kind(x) == own}
+        vs = {x: v for x, v in s.Q[src[1]].items() if kind(x) == own and (among is None or x in among)}
         for way, best in (("most", max(vs.values(), default=0)), ("least", min(vs.values(), default=0))):
             xs = [x for x, v in vs.items() if v == best]
             if len(xs) == 1 and len(vs) > 1:
@@ -548,8 +563,9 @@ def utmost(s, src, own):
         opposite = dict(src[2])
         ways = {d: reach for d in opposite for reach in [over(s, src[1], opposite, d, {}, own)] if len(reach) > 1}
     for way, reach in ways.items():                              # the one that all the others come to
-        top = [x for x in reach if all(x in reach[y] for y in reach)]
-        if len(top) == 1:
+        nodes = reach if among is None else among
+        top = [x for x in nodes if all(y in reach and x in reach[y] for y in nodes)]
+        if len(top) == 1 and len(nodes) > 1:
             out[way] = top[0]
     return out
 
@@ -607,6 +623,28 @@ def answer(s, p, t, nums, memo):
             d = opposite.get(d)
         xs = {a for a, b, lab, n in s.L[p[1]] if lab == d and b == x} | {b for a, b, lab, n in s.L[p[1]] if a == x and opposite.get(lab) == d}
         return ",".join(sorted(xs)) if xs else None
+    if name in ("pis", "pedge"):                                 # events (two things together: who and where) in one order - before and
+        opposite = p[-1]                                         # after each other, and by the time given to some of them
+        d = p[4] if name == "pis" else p[3]
+        d = t[d] if d.__class__ is int else d
+        if d not in opposite:
+            return None
+        if name == "pis":                                        # is the one in this direction from the other, as far as is known
+            a, b = whom(t, p[2]), whom(t, p[3])
+            if a != b and a in over(s, p[1], opposite, d, memo, None, p[5]).get(b, ()):
+                return True
+            return False if a != b and a in over(s, p[1], opposite, opposite[d], memo, None, p[5]).get(b, ()) else None
+        x, bound, extra = t[p[2]], p[6], None                    # of the events of a thing (those before an event or a time, if one is
+        if bound.__class__ is tuple:                             # given): the utmost in the direction; the answer is its other part
+            extra = ("#", nums[bound[0]] + (0.5 if bound[1] else -0.5))
+        reach = over(s, p[1], opposite, d, memo, None, p[5], extra)
+        mine = [y for y in reach if "+" in y and x in y.split("+")]
+        if bound is not None:
+            b = "#" if extra else whom(t, bound)
+            mine = [y for y in mine if y != b and b in reach[y]]
+        top = [y for y in mine if all(y in reach[z] for z in mine)]
+        rest = [z for z in top[0].split("+") if z != x] if len(top) == 1 else []
+        return rest[0] if len(rest) == 1 and kind(rest[0]) == p[4] else None
     if name in ("lover", "lunder", "lis", "lways"):              # the links as an order along every direction (north of: anywhere to
         opposite = p[-1]                                         # the north, not one step to the north)
         if name == "lways":                                      # in which directions the one lies from the other
@@ -654,8 +692,9 @@ def answer(s, p, t, nums, memo):
             return None
         i = h.index(v) + (1 if name == "after" else -1)
         return h[i] if 0 <= i < len(h) else None
-    if name == "utmost":                                         # the utmost of an order; which way a word of the question asks for
-        got = utmost(s, p[1], p[3])                              # (the tallest, the shortest) is learnt from the answers
+    if name in ("utmost", "utmostof"):                           # the utmost of an order (of all its things, or of those named in the
+        among = None if name == "utmost" else [x for i, x in enumerate(t[:-2]) if i != p[2] and kind(x) == p[3]]     # question); which way
+        got = utmost(s, p[1], p[3], among)                       # a word of the question asks for (the tallest, the shortest) is learnt from the answers
         if len(p) == 4:
             return ("?", t[p[2]], tuple(sorted(got.items()))) if got else None
         return got.get(dict(p[4]).get(t[p[2]]))
@@ -791,6 +830,12 @@ def shape(gold):
     return "b" if gold in ("yes", "no") else "n" if gold.isdigit() else "t"
 
 
+def steps(p):
+    """how long the walks of a query are (the queries are tried the simple first)"""
+    p = p[3] if p[0] == "at" else p
+    return max((len(x) for x in p if x.__class__ is tuple and x and x[0].__class__ is tuple), default=0)
+
+
 def pairings(xs):
     """all the ways to put the things in pairs of opposites"""
     if not xs:
@@ -826,10 +871,13 @@ class Learner:
                     self.codes.setdefault(((op, quest, kinds), i), set()).add(v)
         self.codes = {k: v for k, v in self.codes.items() if len(v) <= 6}
         self.own = {}                                            # of what kind the things of the answers are
+        self.owns = {}                                           # (in sentences they may be of two kinds: at home, or at a place gone to)
         for f, golds in self.forms.items():
             if f[1]:
-                c = Counter(kind(x) for g in golds if shape(g) == "t" for x in g.split(","))
+                c = Counter(kind(x) for g in golds if shape(g) == "t" for x in g.split(",")
+                            if not self.words or re.search(r"\d", x))     # (in sentences: of the answers that are things; "nothing" is not one)
                 self.own[f] = c.most_common(1)[0][0] if c else None
+                self.owns[f] = [k for k, n in c.most_common(2) if n >= 2 or k == self.own[f]] if self.words and c else [self.own[f]]
         self.rec = {f: () for f in self.forms if not f[1]}       # nothing is understood at first
         self.ask = {}
         self.cache, self.options, self.runs, self.work = {}, {}, 0, 0
@@ -928,11 +976,17 @@ class Learner:
 
     def queries(self, form, types):
         """all that a query of this form may be, the simple first"""
+        out = []
+        for own in self.owns.get(form) or [None]:
+            out += self.asked(form, types, own)
+        return sorted(dict.fromkeys(out), key=steps)
+
+    def asked(self, form, types, own):
+        """all that a query of this form may be, if its answers are things of the kind own"""
         op, _, kinds = form
         tk = [x for x in kinds if x != "#"]
         nt, nn = len(tk), len(kinds) - len(tk)
         sh = Counter(shape(g) for g in self.forms[form]).most_common(1)[0][0]
-        own = self.own.get(form)
         starts = list(range(nt)) if nt else [-1]
         tk = tk + [ME]
         W = {i: walks(types, tk[i]) for i in starts}
@@ -975,6 +1029,10 @@ class Learner:
             if self.words and own is not None and (nt == 0 or nt == 1 and tk[0] != own):      # the utmost of an order (the tallest, the
                 out += [("utmost", (sort, k), 0, own) for (sort, k) in sorted(types)        # shortest; who has the most): the word that
                         if sort == "E" and (own, own) in types[(sort, k)] or sort == "Q" and own in types[(sort, k)]]   # says which
+            if self.words and own is not None and tk[:nt].count(own) >= 2:      # the utmost of those named in the question; the word that says
+                keys = [i for i in range(nt) if tk[i] != own][:1] or [nt]       # which way: a thing of another kind, or the question itself
+                out += [("utmostof", (sort, k), i, own) for i in keys for (sort, k) in sorted(types)
+                        if sort == "E" and (own, own) in types[(sort, k)] or sort == "Q" and own in types[(sort, k)]]
             if self.words and nt >= 2:                           # the same of a value reached through others (what is carried, by its carrier);
                 out += [("was", k, i, j, later, last) for k in fs for i in range(nt) for j in range(nt) for later in (False, True) for last in (True, False)
                         if i != j and tk[j] in after(types, ("F", k, "^"), {tk[i]}) and (last or (tk[i], tk[j]) not in types[("F", k)])]   # and counted from
@@ -1057,6 +1115,8 @@ class Learner:
                     opps += [tuple(sorted(o + tuple(rest))) for o in opps]                     # are opposite to each other, the kinds do not mix
                 if self.words and sh == "t" and ka == kb == own and (nt == 0 or nt == 1 and tk[0] != own):
                     out += [("utmost", ("L", k, opp), 0, own) for opp in opps]      # the utmost in a direction
+                if self.words and sh == "t" and ka == kb == own and tk[:nt].count(own) >= 2:
+                    out += [("utmostof", ("L", k, opp), i, own) for opp in opps for i in ([i for i in range(nt) if tk[i] != own][:1] or [nt])]
                 if self.words and "+" in ka and ka == kb:        # links between pairs of things (events)
                     I, J = both(0, 1), both(nt - 2, nt - 1)
                     fits = nt in (4, 5) and "+".join(sorted((tk[0], tk[1]))) == ka == "+".join(sorted((tk[nt - 2], tk[nt - 1])))
@@ -1066,6 +1126,25 @@ class Learner:
                         out += [("isat", k, a, b, d, opp) for opp in opps for d in marks for a, b in ((I, J),)]
                     if sh == "t" and nt == 1 and tk[0] in ka.split("+") and own in ka.split("+") and own != tk[0]:
                         out += [("edge", k, 0, d, own, opp) for opp in opps for d in marks]
+                    stamps = [None] + [(q, later) for q in qs if ka in types[("Q", q)] for later in marks]     # some events have a time by a number
+                    way = [i for i in range(nt) if tk[i] == kd][:1]                                             # the direction: a thing of the row,
+                    plain = [i for i in range(nt) if i not in way]                                              # or part of the guess
+
+                    def here(i, j):
+                        return "+".join(sorted((tk[i], tk[j]))) == ka
+                    for st in stamps:
+                        for d in way or marks:
+                            if sh == "b" and len(plain) == 4 and here(plain[0], plain[1]) and here(plain[2], plain[3]):
+                                out += [("pis", k, both(plain[0], plain[1]), both(plain[2], plain[3]), d, st, opp) for opp in opps]
+                            for i in plain if sh == "t" and own in ka.split("+") else ():
+                                rest = [j for j in plain if j != i]
+                                if tk[i] == own or tk[i] not in ka.split("+"):
+                                    continue
+                                if not rest:
+                                    out += [("pedge", k, i, d, own, st, None, opp) for opp in opps]
+                                    out += [("pedge", k, i, d, own, st, (n, incl), opp) for opp in opps for n in range(nn) for incl in (True, False) if st]
+                                elif len(rest) == 2 and here(*rest):
+                                    out += [("pedge", k, i, d, own, st, both(*rest), opp) for opp in opps]
                     continue
                 if self.words and sh == "t":                     # the link itself, asked for by one of its ends and its direction
                     out += [(name, k, i, d, opp) for opp in opps for name in ("lhead", "ltail", "lover", "lunder") for i in range(nt) for d in range(nt)
@@ -1094,10 +1173,6 @@ class Learner:
                          for x in p[1:] if x.__class__ is tuple and x]
                 return {st[1] for path in paths for st in path if st.__class__ is tuple and len(st) == 3 and st[0] == "F"}
             out += [("at", n, strict, p) for p in out if p[0] in AT and slots(p) & timed for n in range(nn) for strict in (True, False)]
-
-        def steps(p):
-            p = p[3] if p[0] == "at" else p
-            return max((len(x) for x in p if x.__class__ is tuple and x and x[0].__class__ is tuple), default=0)
         return sorted(dict.fromkeys(out), key=steps)
 
     # ------------------------------------------------------------ how good a guess is
@@ -1158,7 +1233,7 @@ class Learner:
                 c += 1
         if p[0] == "assoc":
             c += 2 + len(p[2])                                   # a table is more to say than a walk
-        if p[0] in ("way", "utmost"):
+        if p[0] in ("way", "utmost", "utmostof"):
             c += 2
         return c
 
@@ -1633,6 +1708,8 @@ class Learner:
                 return "[" + " ".join(f"{op}{sort}{k}" for sort, k, op in x) + "]"
             if x.__class__ is tuple and x and x[0] in ("q", "count", "sum", "times", "E", "Q", "L"):
                 return "(" + " ".join(tell(y) for y in x) + ")"
+            if x.__class__ is tuple and x and x[0].__class__ is not tuple:
+                return "(" + " ".join(str(y) for y in x) + ")"
             if x.__class__ is tuple:
                 return "{" + ",".join(a + "/" + b for a, b in x if a < b) + "}"
             return str(x)

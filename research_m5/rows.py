@@ -13,6 +13,7 @@ sentence before began with (he, she, they).
     python rows.py --data tasks_1-20_v1-2/en --tasks 1,2,6,7,8
 """
 import argparse
+from collections import Counter
 import glob
 import os
 import re
@@ -93,9 +94,10 @@ def joined(data, pairs):
 class Reader:
     hint = None                                                  # the network that says which readings to try first, if there is one
 
-    def __init__(self, train, limit=0):
-        """which words are things, and of what kinds"""
-        self.same = forms(train)
+    def __init__(self, train, limit=0, alias=None):
+        """which words are things, and of what kinds. alias: words read as other words (found to name the same)"""
+        self.plural = forms(train)
+        self.same = {**self.plural, **(alias or {})}
         self.raw, self.things, self.pointers = train, set(), set()
         self.ordered = False                                     # whether the order of the words of an answer says something
         train = self.plain(train)
@@ -180,6 +182,39 @@ class Reader:
                     self.ordered = False
             self.best, self.total = best, total
 
+    def aliases(self):
+        """words that may name the same as another word: a thing that is only ever stated (closes) and the thing the
+        answers have after it was said of what is asked about (closed) -> {word: the word it is read as}. The two are
+        words of one kind, or the first is of a kind that is never asked about at all (fills: full)"""
+        data = self.plain(self.raw)
+        told = {w for story in data for words, gold in story if gold is None for w in words}
+        asked = {w for story in data for words, gold in story if gold is not None for w in tuple(words) + tuple(gold)}
+        only = {w for w in self.things if w in told and w not in asked}
+        kinds = {self.root(w) for w in self.things if w in told}
+        named = {w for w in self.things if w in asked and self.root(w) in kinds}
+        silent = kinds - {self.root(w) for w in self.things if w in asked}          # the kinds never asked about
+        count, seen = {}, Counter()
+        for story in data if only else ():
+            said = []
+            for words, gold in story:
+                if gold is None:
+                    said.append(words)
+                    continue
+                mine = [w for w in words if w in self.things]
+                for prev in reversed(said) if gold != ["no"] else ():    # the last thing said of what is asked about: what the answer
+                    if set(mine) & set(prev):                            # (the question, if the answer is yes) names and it does not
+                        heard = [w for w in (mine if gold == ["yes"] else gold) if w in named and w not in prev]
+                        for v in only.intersection(prev):
+                            count.setdefault(v, Counter()).update(heard)
+                            seen[v] += 1
+                        break
+        out = {}
+        for v, c in count.items():
+            (a, n), = c.most_common(1) or [(None, 0)]
+            if n >= 2 and 2 * n > sum(c.values()) and 2 * n >= seen[v] and (self.root(v) == self.root(a) or self.root(v) in silent):
+                out[v] = a
+        return out if len(set(out.values())) == len(out) else {}
+
     def sentences(self):
         """how many kinds of sentences the stories have, as they are read now"""
         return len({(self.op(words, self.code), gold is None) for story in self.plain(self.raw) for words, gold in story})
@@ -209,7 +244,7 @@ class Reader:
 
     def plain(self, data):
         """every word in its singular form; a pointer gives way to those the sentence before began with"""
-        f, out = self.same, []
+        f, g, out = self.same, self.plural, []
         for story in data:
             new, last = [], ()
             for words, gold in story:
@@ -218,7 +253,7 @@ class Reader:
                     words = tuple(x for w in words for x in (last if w in self.pointers else (w,)))
                 if gold is None:
                     last = self.lead(words)
-                new.append((words, gold and [f.get(w, w) for w in gold]))
+                new.append((words, gold and [g.get(w, w) for w in gold]))
             out.append(new)
         return out
 
@@ -284,6 +319,12 @@ def main():
                 pairs = ()
         if reader is None:
             reader = Reader(raw[:a.stories], a.limit / 4)         # what a thing is, is settled on the first stories
+        if reader.best[1] < reader.total:                        # two words may name one thing (closes the door: the door is closed):
+            alias = reader.aliases()                             # tried where a word is only ever stated and another only ever asked,
+            other = Reader(raw[:a.stories], a.limit / 4, alias) if alias else None      # taken if the stories are explained better so
+            if other and other.best > reader.best:
+                other.guessed = reader.guessed[:1 if pairs else 0] + ["words that name the same: " + " ".join(f"{v}={w}" for v, w in sorted(alias.items()))] + other.guessed
+                reader = other
         m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint)
         got, n = m.run(m.episodes)
         print(f"task {k:2d}: {len(reader.code)} things of {len({c[0] for c in reader.code.values()})} kinds; learnt from {used} stories" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their "
