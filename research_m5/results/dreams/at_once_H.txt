@@ -1,4 +1,4 @@
-task  1: 11 things of 1 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 14 more), 88/88 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (3 s, 228 episodes played)
+task  1: 11 things of 1 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 14 more), 101/101 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (3 s, 74 episodes played)
   things: apple=a1 key=a10 kitchen=a11 bag=a2 ball=a3 book=a4 box=a5 chest=a6 coin=a7 garden=a8 hall=a9
     the * is in the * a a          set F0 of (0, 1)
     the * is moved to the * a a          set F0 of (0, 1)
@@ -9,7 +9,7 @@ task  1: 11 things of 1 kinds; learnt from 20 stories (taken at once: one of 10 
 test  1: 1488/1488 = 100.0%
 sure  1: of 4 of 4 kinds of questions, 1488/1488 right on them; of the others 0/0
 deep  1: 1488/1488 = 100.0% (nothing composed)
-task  2: 9 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 10 more), 68/68 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (2 s, 182 episodes played)
+task  2: 9 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 10 more), 77/77 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (2 s, 45 episodes played)
   things: alice=a1 bob=a2 carol=a3 dan=a4 eve=a5 apple=b1 ball=b2 book=b3 cup=b4
     * gives the * to * a b a        set F0 of (1, 2)
     * has the * a b          set F0 of (1, 0)
@@ -23,8 +23,8 @@ task  2: 9 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 r
 test  2: 1287/1287 = 100.0%
 sure  2: of 4 of 4 kinds of questions, 1287/1287 right on them; of the others 0/0
 deep  2: 1287/1287 = 100.0% (nothing composed)
-task  3: none of the readings proposed explains every question; left (7 s)
-task  4: 16 things of 3 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 10 more), 71/71 of their questions right, 4 of 4 kinds of statements and 2 of 2 kinds of questions read (2 s, 205 episodes played)
+task  3: none of the readings proposed explains every question; left (205 s)
+task  4: 16 things of 3 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 69/69 of their questions right, 4 of 4 kinds of statements and 2 of 2 kinds of questions read (3 s, 20 episodes played)
   things: bea=a1 oz=a2 pim=a3 ren=a4 tam=a5 yul=a6 bird=b1 cat=b2 creature=b3 dog=b4 fish=b5 mammal=b6 climb=c1 fly=c2 run=c3 swim=c4
     * is a * a b          tie E0 of (0, 1)
     every * can * b c          tie E0 of (0, 1)
@@ -35,9 +35,9 @@ task  4: 16 things of 3 kinds; learnt from 20 stories (taken at once: one of 10 
 test  4: 1223/1223 = 100.0%
 sure  4: of 2 of 2 kinds of questions, 1223/1223 right on them; of the others 0/0
 deep  4: 1223/1223 = 100.0% (nothing composed)
-task  5: none of the readings proposed explains every question; left (3 s)
-task  6: none of the readings proposed explains every question; left (142 s)
-task  7: 9 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question, with 3 kinds of questions composed) (asked for 5 more), 59/59 of their questions right, 5 of 5 kinds of statements and 6 of 6 kinds of questions read (7 s, 170 episodes played)
+task  5: none of the readings proposed explains every question; left (122 s)
+task  6: none of the readings proposed explains every question; left (141 s)
+task  7: 9 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question, with 3 kinds of questions composed) (asked for 5 more), 75/75 of their questions right, 5 of 5 kinds of statements and 6 of 6 kinds of questions read (7 s, 20 episodes played)
   things: ann=a1 bob=a2 cara=a3 dan=a4 eve=a5 apples=b1 balls=b2 coins=b3 pens=b4
     * gets # * a # b        qadd Q0 of (101,)
     * gives # * to * a # b a      qpass Q0 of (101, 112)
@@ -53,16 +53,26 @@ task  7: 9 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 r
 test  7: 1462/1470 = 99.5%
 sure  7: of 6 of 6 kinds of questions, 1462/1470 right on them; of the others 0/0
 deep  7: 1462/1470 = 99.5% (nothing composed)
-task  8: 20 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 30/30 of their questions right, 2 of 2 kinds of statements and 1 of 1 kinds of questions read (2 s, 160 episodes played)
+task  8: 20 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 38/38 of their questions right, 2 of 2 kinds of statements and 1 of 1 kinds of questions read (1 s, 20 episodes played)
   things: bridge=a1 mill=a10 park=a11 quarry=a12 school=a13 shop=a14 station=a15 tower=a16 castle=a2 farm=a3 field=a4 garden=a5 harbor=a6 hill=a7 lake=a8 market=a9 east=b1 north=b2 south=b3 west=b4
-    the * is * of the * a b a        link L0 of (0, 2, 1)
-    the * lies * of the * a b a        link L0 of (0, 2, 1)
-  ? which way is the * from the * a a          lways 0 0 1 {b1/b4,b2/b3}
+    the * is * of the * a b a        link L0 of (2, 0, 1)
+    the * lies * of the * a b a        link L0 of (2, 0, 1)
+  ? which way is the * from the * a a          lways 0 1 0 {b1/b4,b2/b3}
 test  8: 924/924 = 100.0%
 sure  8: of 1 of 1 kinds of questions, 924/924 right on them; of the others 0/0
 deep  8: 924/924 = 100.0% (nothing composed)
-task  9: none of the readings proposed explains every question; left (2 s)
-task 10: 12 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 66/66 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (2 s, 133 episodes played)
+task  9: 20 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 10 more), 111/111 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (2 s, 70 episodes played)
+  things: ann=a1 jon=a10 bob=a2 cy=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 ivy=a9 attic=b1 shelf=b10 bag=b2 ball=b3 box=b4 coin=b5 hall=b6 hat=b7 key=b8 room=b9
+    * is the parent of * a a          tie E0 of (1, 0)
+    the * is in the * b b          set F0 of (0, 1)
+  ? is * the grandparent of * a a          has 0 [<E0 <E0] 1
+  ? is the * finally in the * b b          has 0 [^F0] 1
+  ? where is the * finally b            list 0 [^F0] b
+  ? who is the grandparent of * a            list 0 [>E0 >E0] a
+test  9: 1420/1420 = 100.0%
+sure  9: of 4 of 4 kinds of questions, 1420/1420 right on them; of the others 0/0
+deep  9: 1420/1420 = 100.0% (nothing composed)
+task 10: 12 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 79/79 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (1 s, 20 episodes played)
   things: alice=a1 bob=a2 carol=a3 dan=a4 eve=a5 frank=a6 grace=a7 henry=a8 blue=b1 gold=b2 green=b3 red=b4
     * joins the * group a b          set F0 of (0, 1)
     * leaves the * group a b          unset F0 of (0,)
@@ -74,5 +84,5 @@ task 10: 12 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 
 test 10: 1523/1523 = 100.0%
 sure 10: of 4 of 4 kinds of questions, 1523/1523 right on them; of the others 0/0
 deep 10: 1523/1523 = 100.0% (nothing composed)
-task 11: none of the readings proposed explains every question; left (18 s)
-task 12: none of the readings proposed explains every question; left (7 s)
+task 11: none of the readings proposed explains every question; left (96 s)
+task 12: none of the readings proposed explains every question; left (31 s)

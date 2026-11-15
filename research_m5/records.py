@@ -1947,43 +1947,49 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, onl
     quick = []
     if m is None and fast and seed.__class__ is list and ask >= 5:      # is one of the readings proposed right as it is?
         m = Learner(data[:stories])
-        starts = [{f: m.near(sd, f) or () for f in m.rec} for sd in seed]
-        start = max(starts, key=lambda st: m.fit(st)[0])
+        starts = {tuple(sorted((f, m.near(sd, f) or ()) for f in m.rec)) for sd in seed}
+        starts = sorted((dict(st) for st in starts), key=lambda st: m.fit(st)[0], reverse=True)[:3]      # the three that explain most
         learnt, chosen, composed, rest = list(data[:stories]), [], [], data[stories:stories + pool]
-        while True:                                              # the sentences stay read as proposed; the queries are fitted to all
-            m.rec, m.ask = {f: m.near(start, f) or () for f in m.rec}, None      # the stories it has, and checked on five more it asks for:
-            m.ask = dict(m.fit(m.rec)[1])                        # those on which the readings that explain as much part, or, when
-            m.usual = {f: Counter(g).most_common(1)[0][0] for f, g in m.forms.items() if f[1]}     # none part, five as they come.
-            right, total = m.run(m.episodes)                     # Where the check fails, those five are learnt from too, and so on
-            if right < total and m.words and 2 * right >= total:        # the kinds of questions left may be queries composed
-                composed = m.deepen()                                    # from operators, with the sentences read so
+        for start in starts:                                     # the sentences stay read as proposed; the queries are fitted to all
+            m = Learner(learnt)                                  # the stories it has, and checked on five more it asks for: those on
+            while not quick:                                     # which the readings that explain as much part, or, when none part,
+                m.rec, m.ask = {f: m.near(start, f) or () for f in m.rec}, None      # five as they come. Where the check fails, those
+                m.ask = dict(m.fit(m.rec)[1])                    # five are learnt from too, and so on
+                m.usual = {f: Counter(g).most_common(1)[0][0] for f, g in m.forms.items() if f[1]}
                 right, total = m.run(m.episodes)
-            spent += m.work
-            if right < total:
+                if right < total and m.words and 2 * right >= total:    # the kinds of questions left may be queries composed
+                    composed = m.deepen()                                # from operators, with the sentences read so
+                    right, total = m.run(m.episodes)
+                spent += m.work
+                if any(got < n and n >= 3 for got, n in m.tally.values()):      # (a kind of question met once or twice may stay
+                    break                                                        # unexplained: there is nothing to learn it from)
+                sure = {f for f, (got, n) in m.tally.items() if got == n}
+                even = {}                                        # the readings that explain as much: a query read another way (where
+                fitted = m.fit(m.rec, even)[1]                   # it is not a composed one), another of the readings proposed
+                others = [(m.rec, {**m.ask, f: c}) for f, cs in even.items() if m.ask.get(f) == fitted.get(f) for c in cs]
+                for st in ({f: m.near(st, f) or () for f in m.rec} for st in starts):
+                    if st != m.rec and m.fit(st)[0][1] >= right - 2:
+                        others.append((st, m.fit(st)[1]))
+                mine, votes = m.answers(rest), [0] * len(rest)
+                for other, programs in others:
+                    for i, said in enumerate(m.answers(rest, other, programs)):
+                        votes[i] += said != mine[i]
+                new = sorted((i for i in range(len(rest)) if votes[i] and i not in chosen), key=lambda i: -votes[i])[:5]
+                parted = bool(new)
+                new = new or [i for i in range(len(rest)) if i not in chosen][:5]
+                if not new or len(chosen) + len(new) > ask:
+                    break
+                chosen += new
+                m.run([rest[i] for i in new])
+                fine = not m.gaps and all(got == n for f, (got, n) in m.tally.items() if f in sure)
+                learnt += [rest[i] for i in new]
+                if fine and not parted:
+                    quick = list(chosen)
+                    notes.append(f"taken at once: one of {len(seed)} readings proposed explains every question" + (f", with {len(composed)} kinds of questions composed" if composed else ""))
+                else:
+                    m = Learner(learnt)
+            if quick or len(chosen) + 5 > ask:
                 break
-            even = {}                                            # the readings that explain as much: a query read another way (where
-            fitted = m.fit(m.rec, even)[1]                       # it is not a composed one), another of the readings proposed
-            others = [(m.rec, {**m.ask, f: c}) for f, cs in even.items() if m.ask.get(f) == fitted.get(f) for c in cs]
-            for st in ({f: m.near(st, f) or () for f in m.rec} for st in starts):
-                if st != m.rec and m.fit(st)[0][1] >= right - 2:
-                    others.append((st, m.fit(st)[1]))
-            mine, votes = m.answers(rest), [0] * len(rest)
-            for other, programs in others:
-                for i, said in enumerate(m.answers(rest, other, programs)):
-                    votes[i] += said != mine[i]
-            new = sorted((i for i in range(len(rest)) if votes[i] and i not in chosen), key=lambda i: -votes[i])[:5]
-            parted = bool(new)
-            new = new or [i for i in range(len(rest)) if i not in chosen][:5]
-            if not new or len(chosen) + len(new) > ask:
-                break
-            chosen += new
-            right, total = m.run([rest[i] for i in new])
-            if right == total and not m.gaps and not parted:
-                quick = list(chosen)
-                notes.append(f"taken at once: one of {len(seed)} readings proposed explains every question" + (f", with {len(composed)} kinds of questions composed" if composed else ""))
-                break
-            learnt += [rest[i] for i in new]
-            m = Learner(learnt)
         m = m if quick else None
         if m is None and fast == "only":                         # (asked for nothing else: the search is not run)
             return None, stories, notes
