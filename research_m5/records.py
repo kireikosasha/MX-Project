@@ -35,9 +35,10 @@ K = {"F": 3, "Q": 2, "E": 2, "L": 1, "T": 1, "N": 1}
 ME = "@"                                                  # the one who writes the log, when a row does not say who acts
 KINDS = {ME: ME}
 OP = "!"                                                  # the operation code of a row, when it stands for a thing (a direction)
-SPACE = ("dir", "dirs", "dist", "route", "isdir", "aligned", "hops", "path", "steps", "lhead", "ltail", "isat", "edge", "lover", "lunder", "lis", "lways", "pis", "pedge")
+SPACE = ("dir", "dirs", "dist", "route", "isdir", "aligned", "hops", "path", "steps", "lhead", "ltail", "isat", "edge", "lover", "lunder", "lis", "lways", "pis", "pedge", "world")
 TABLED = {"assoc": 3, "way": 5, "utmost": 4, "utmostof": 4}             # the queries with a table learnt from the answers: how long they are without it
 AT = ("list", "seq", "has", "some", "num", "eldest", "newest", "same", "cmp", "diff")   # what can be asked of the state as it was at a time
+WORLD = ("list", "has", "num", "at", "asof", "wasat", "eldest")           # and of every way the events may have happened
 
 
 def whom(t, i):
@@ -103,6 +104,7 @@ class State:
         self.clock = 0                                    # the time the log itself keeps, if it does
         self.snap = {}                                    # the amounts as they were when the clock came to a time
         self.born = {}                                    # thing -> the row it was first spoken of
+        self.when = {}                                    # (in a world of worlds()) event -> its time
 
     def put(self, k, a, b, when=None):
         h = self.H[k].get(a, ())
@@ -568,6 +570,55 @@ def over(s, k, opposite, d, memo, own=None, stamps=None, extra=None):
     return memo[key]
 
 
+def worlds(s, k, q, model, later, opposite, mover, memo):
+    """every way the events may have happened. An event is two things together (who and where); what is said of the
+    events is which came after which and, of some, a time. -> the states of the world, one for every order of the
+    events that agrees with all that is said: in each the mover has the place of its events, in the order of time.
+    model "line": the times are the places of the events in one line (1, 2, 3...); "clock": the times are numbers on
+    a clock, and two events may share one. Too many ways (or too many events): nothing can be said"""
+    key = ("worlds", k, q, model, later, mover, tuple(sorted(opposite.items())))
+    if key in memo:
+        return memo[key]
+    stamp = {x: v for x, v in (s.Q[q].items() if q is not None else ()) if "+" in x}
+    order = set()
+    for a, b, lab, _ in s.L[k]:
+        if "+" in a and "+" in b and (lab == later or opposite.get(lab) == later):
+            order.add((b, a) if lab == later else (a, b))                # (earlier, later)
+    events = sorted(set(stamp) | {x for pair in order for x in pair}, key=lambda x: (x not in stamp, x))    # those with a time first
+    out, n, times = [], len(events), {}
+    memo[key] = out
+    domain = range(1, (n if model == "line" else max(list(stamp.values()) + [n])) + 1)
+    if not 1 <= n <= 12 or len(domain) > 12:
+        return out
+
+    def place(i):
+        if len(out) > 300:
+            return
+        if i == n:
+            w = State()
+            for w.now, (tm, e) in enumerate(sorted((times[e], e) for e in events)):
+                who = [x for x in e.split("+") if kind(x) == mover]
+                where = [x for x in e.split("+") if kind(x) != mover]
+                if len(who) == 1 and len(where) == 1:
+                    w.put(0, who[0], where[0], tm)
+            w.when = dict(times)
+            out.append(w)
+            return
+        e = events[i]
+        for tm in ([stamp[e]] if e in stamp else domain):
+            if tm not in domain or model == "line" and tm in times.values():
+                continue
+            if any(times[a] >= tm for a, b in order if b == e and a in times) or any(tm >= times[b] for a, b in order if a == e and b in times):
+                continue
+            times[e] = tm
+            place(i + 1)
+            del times[e]
+    place(0)
+    if len(out) > 300:
+        del out[:]
+    return out
+
+
 def utmost(s, src, own, among=None):
     """the utmost thing of an order, for every way it may be asked for -> {the way: the thing}. The order is what leads
     to what (the one all the others lead to; the one that leads to all the others), what lies from what in a direction
@@ -724,6 +775,16 @@ def answer(s, p, t, nums, memo):
         if len(p) == 4:
             return ("?", t[p[2]], tuple(sorted(got.items()))) if got else None
         return got.get(dict(p[4]).get(t[p[2]]))
+    if name == "world":                                          # the query asked of every way the events may have happened: what
+        said = set()                                             # all the ways agree on, or nothing
+        for i, w in enumerate(worlds(s, p[1], p[2], p[3], p[4], p[-1], p[5], memo)):
+            said.add(answer(w, p[6], t, nums, memo.setdefault(("in", p[1:6], i), {})))
+            if len(said) > 1:
+                return None
+        return said.pop() if said else None
+    if name == "atev":                                           # the query asked of the state as it was when an event happened
+        n = s.when.get(whom(t, p[1]))
+        return None if n is None else answer(s.before(n, p[2]), p[3], t, nums, memo.setdefault(("at", n, p[2]), {}))
     if name == "alg":                                            # a query composed from the operators of algebra.py
         import algebra
         return algebra.answer(s, p, t, nums)
@@ -1164,6 +1225,15 @@ class Learner:
 
                     def here(i, j):
                         return "+".join(sorted((tk[i], tk[j]))) == ka
+                    movers = ka.split("+") if len(set(ka.split("+"))) == 2 and not way else []
+                    for mover in movers:                         # the events in every order they may have had: the usual questions about
+                        seen = {("F", 0): {(mover, [x for x in movers if x != mover][0])}, ("F@", 0): {"#"}}     # where a thing is, asked
+                        plain_q = [p for p in self.asked(form, seen, own) if p[0] in WORLD and steps(p) <= 1]    # of every such world
+                        at_ev = [("atev", both(i, j), strict, p) for i in range(nt) for j in range(i + 1, nt) if here(i, j)
+                                 for strict in (True, False) for p in plain_q if p[0] in ("list", "has", "num")]
+                        timed = [(q, m) for q in qs if ka in types[("Q", q)] for m in ("line", "clock")]
+                        out += [("world", k, q, model, later, mover, p, opp) for opp in opps for later in marks
+                                for q, model in timed or [(None, "line")] for p in plain_q + at_ev]
                     for st in stamps:
                         for d in way or marks:
                             if sh == "b" and len(plain) == 4 and here(plain[0], plain[1]) and here(plain[2], plain[3]):
@@ -1251,8 +1321,10 @@ class Learner:
     def price(p, flip=False, things=0):
         """how much there is in a query: its steps, and what is done over them; a query that leaves things of its row
         unused is a worse reading of the row than one that uses them all"""
-        if p[0] == "at":
+        if p[0] in ("at", "atev"):
             return 1 + Learner.price(p[3], flip, things)
+        if p[0] == "world":
+            return 2 + Learner.price(p[6], flip, things)
         c = 1 + flip + max(0, things - USES.get(p[0], things) - sum(x.__class__ is int and x >= 100 for x in p[1:])) / 2
         for x in p[1:]:
             if x == -1:
