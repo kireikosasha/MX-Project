@@ -1,4 +1,4 @@
-task  1: 11 things of 1 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 14 more), 101/101 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (3 s, 74 episodes played)
+task  1: 11 things of 1 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 14 more), 101/101 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (2 s, 74 episodes played)
   things: apple=a1 key=a10 kitchen=a11 bag=a2 ball=a3 book=a4 box=a5 chest=a6 coin=a7 garden=a8 hall=a9
     the * is in the * a a          set F0 of (0, 1)
     the * is moved to the * a a          set F0 of (0, 1)
@@ -24,7 +24,7 @@ test  2: 1287/1287 = 100.0%
 sure  2: of 4 of 4 kinds of questions, 1287/1287 right on them; of the others 0/0
 deep  2: 1287/1287 = 100.0% (nothing composed)
 task  3: none of the readings proposed explains every question; left (205 s)
-task  4: 16 things of 3 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 69/69 of their questions right, 4 of 4 kinds of statements and 2 of 2 kinds of questions read (3 s, 20 episodes played)
+task  4: 16 things of 3 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 69/69 of their questions right, 4 of 4 kinds of statements and 2 of 2 kinds of questions read (2 s, 20 episodes played)
   things: bea=a1 oz=a2 pim=a3 ren=a4 tam=a5 yul=a6 bird=b1 cat=b2 creature=b3 dog=b4 fish=b5 mammal=b6 climb=c1 fly=c2 run=c3 swim=c4
     * is a * a b          tie E0 of (0, 1)
     every * can * b c          tie E0 of (0, 1)
@@ -35,8 +35,8 @@ task  4: 16 things of 3 kinds; learnt from 20 stories (taken at once: one of 10 
 test  4: 1223/1223 = 100.0%
 sure  4: of 2 of 2 kinds of questions, 1223/1223 right on them; of the others 0/0
 deep  4: 1223/1223 = 100.0% (nothing composed)
-task  5: none of the readings proposed explains every question; left (122 s)
-task  6: none of the readings proposed explains every question; left (141 s)
+task  5: none of the readings proposed explains every question; left (120 s)
+task  6: none of the readings proposed explains every question; left (140 s)
 task  7: 9 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question, with 3 kinds of questions composed) (asked for 5 more), 75/75 of their questions right, 5 of 5 kinds of statements and 6 of 6 kinds of questions read (7 s, 20 episodes played)
   things: ann=a1 bob=a2 cara=a3 dan=a4 eve=a5 apples=b1 balls=b2 coins=b3 pens=b4
     * gets # * a # b        qadd Q0 of (101,)
@@ -55,9 +55,9 @@ sure  7: of 6 of 6 kinds of questions, 1462/1470 right on them; of the others 0/
 deep  7: 1462/1470 = 99.5% (nothing composed)
 task  8: 20 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 38/38 of their questions right, 2 of 2 kinds of statements and 1 of 1 kinds of questions read (1 s, 20 episodes played)
   things: bridge=a1 mill=a10 park=a11 quarry=a12 school=a13 shop=a14 station=a15 tower=a16 castle=a2 farm=a3 field=a4 garden=a5 harbor=a6 hill=a7 lake=a8 market=a9 east=b1 north=b2 south=b3 west=b4
-    the * is * of the * a b a        link L0 of (2, 0, 1)
-    the * lies * of the * a b a        link L0 of (2, 0, 1)
-  ? which way is the * from the * a a          lways 0 1 0 {b1/b4,b2/b3}
+    the * is * of the * a b a        link L0 of (0, 2, 1)
+    the * lies * of the * a b a        link L0 of (0, 2, 1)
+  ? which way is the * from the * a a          lways 0 0 1 {b1/b4,b2/b3}
 test  8: 924/924 = 100.0%
 sure  8: of 1 of 1 kinds of questions, 924/924 right on them; of the others 0/0
 deep  8: 924/924 = 100.0% (nothing composed)
@@ -84,5 +84,5 @@ task 10: 12 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 
 test 10: 1523/1523 = 100.0%
 sure 10: of 4 of 4 kinds of questions, 1523/1523 right on them; of the others 0/0
 deep 10: 1523/1523 = 100.0% (nothing composed)
-task 11: none of the readings proposed explains every question; left (96 s)
-task 12: none of the readings proposed explains every question; left (31 s)
+task 11: none of the readings proposed explains every question; left (103 s)
+task 12: none of the readings proposed explains every question; left (34 s)

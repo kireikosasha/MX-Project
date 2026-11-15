@@ -1,5 +1,5 @@
 task  1: none of the readings proposed explains every question; left (3 s)
-task  2: 12 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 90/90 of their questions right, 4 of 4 kinds of statements and 4 of 4 kinds of questions read (13 s, 20 episodes played)
+task  2: 12 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 90/90 of their questions right, 4 of 4 kinds of statements and 4 of 4 kinds of questions read (12 s, 20 episodes played)
   things: ann=a1 ben=a2 cara=a3 dan=a4 eli=a5 fay=a6 apple=b1 ball=b2 book=b3 coin=b4 cup=b5 pen=b6
     * and * swap the * and the * a a b b      set F0 of (2, 1)
     * gets the * from * a b a        set F0 of (1, 0)
@@ -12,21 +12,21 @@ task  2: 12 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 
 test  2: 1400/1472 = 95.1%
 sure  2: of 4 of 4 kinds of questions, 1400/1472 right on them; of the others 0/0
 deep  2: 1400/1472 = 95.1% (nothing composed)
-task  3: 16 things of 3 kinds; learnt from 20 stories (taken at once: one of 5 readings proposed explains every question) (asked for 10 more), 67/67 of their questions right, 1 of 1 kinds of statements and 3 of 3 kinds of questions read (2 s, 45 episodes played)
+task  3: 16 things of 3 kinds; learnt from 20 stories (taken at once: one of 5 readings proposed explains every question) (asked for 11 more), 67/67 of their questions right, 1 of 1 kinds of statements and 3 of 3 kinds of questions read (2 s, 71 episodes played)
   things: ann=a1 bob=a2 cy=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 heavier=b1 lighter=b2 shorter=b3 taller=b4 heaviest=c1 lightest=c2 shortest=c3 tallest=c4
-    * is * than * a b a        link L0 of (2, 0, 1)
-  ? is * * than * a b a        lis 0 2 0 1 {b1/b2,b3/b4}
-  ? who is * than * b a          lunder 0 1 0 {b1/b2,b3/b4}
-  ? who is the * c            utmost (L 0 {b1/b2,b3/b4}) 0 a {c1 = b2, c2 = b1, c3 = b4, c4 = b3}
+    * is * than * a b a        link L0 of (0, 2, 1)
+  ? is * * than * a b a        lis 0 0 2 1 {b1/b2,b3/b4}
+  ? who is * than * b a          lover 0 1 0 {b1/b2,b3/b4}
+  ? who is the * c            utmost (L 0 {b1/b2,b3/b4}) 0 a {c1 = b1, c2 = b2, c3 = b3, c4 = b4}
 test  3: 882/882 = 100.0%
 sure  3: of 3 of 3 kinds of questions, 882/882 right on them; of the others 0/0
 deep  3: 882/882 = 100.0% (nothing composed)
-task  4: none of the readings proposed explains every question; left (195 s)
-task  5: none of the readings proposed explains every question; left (305 s)
-task  6: none of the readings proposed explains every question; left (32 s)
-task  7: none of the readings proposed explains every question; left (557 s)
+task  4: none of the readings proposed explains every question; left (192 s)
+task  5: none of the readings proposed explains every question; left (303 s)
+task  6: none of the readings proposed explains every question; left (31 s)
+task  7: none of the readings proposed explains every question; left (555 s)
 task  8: none of the readings proposed explains every question; left (3 s)
-task  9: 22 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question, with 3 kinds of questions composed) (asked for 15 more), 99/99 of their questions right, 4 of 4 kinds of statements and 6 of 6 kinds of questions read (28 s, 135 episodes played)
+task  9: 22 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question, with 2 kinds of questions composed) (asked for 15 more), 99/99 of their questions right, 4 of 4 kinds of statements and 6 of 6 kinds of questions read (28 s, 105 episodes played)
   things: ann=a1 bob=a2 cy=a3 dan=a4 eve=a5 fay=a6 gus=a7 bag=b1 jar=b10 key=b11 kitchen=b12 map=b13 pen=b14 tin=b15 ball=b2 cellar=b3 chest=b4 coin=b5 crate=b6 garden=b7 hall=b8 hat=b9
     * is the boss of * a a          set F0 of (1, 0)
     * reports to * a a          set F0 of (0, 1)
