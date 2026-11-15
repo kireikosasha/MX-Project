@@ -1,0 +1,192 @@
+== H1
+task  1: 11 things of 1 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 59/59 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (4 s, 174 episodes played)
+  things: apple=a1 key=a10 kitchen=a11 bag=a2 ball=a3 book=a4 box=a5 chest=a6 coin=a7 garden=a8 hall=a9
+    the * is in the * a a          set F0 of (0, 1)
+    the * is moved to the * a a          set F0 of (0, 1)
+  ? how many things are in the * a            num 0 (count [<<F0] None)
+  ? is the * in the * a a          has 0 [>>F0] 1
+  ? which place is the * in a            list 0 [^F0] a
+  ? which things are in the * a            list 0 [<<F0] a (else 0)
+test  1: 1488/1488 = 100.0%
+sure  1: of 4 of 4 kinds of questions, 1488/1488 right on them; of the others 0/0
+deep  1: 1488/1488 = 100.0% (nothing composed)
+== H2
+task  2: 9 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 52/52 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (3 s, 157 episodes played)
+  things: alice=a1 bob=a2 carol=a3 dan=a4 eve=a5 apple=b1 ball=b2 book=b3 cup=b4
+    * gives the * to * a b a        set F0 of (1, 2)
+    * has the * a b          set F0 of (1, 0)
+    * holds the * a b          set F0 of (1, 0)
+    * passes the * to * a b a        set F0 of (1, 2)
+    * swaps the * for the * a b b        swap F0 of (1, 2)
+  ? does * have the * a b          has 0 [<F0] 1
+  ? how many things does * have a            num 0 (count [<F0] None)
+  ? what does * have a            list 0 [<F0] b (else nothing)
+  ? who has the * b            list 0 [>F0] a
+test  2: 1287/1287 = 100.0%
+sure  2: of 4 of 4 kinds of questions, 1287/1287 right on them; of the others 0/0
+deep  2: 1287/1287 = 100.0% (nothing composed)
+== H3
+task  3: none of the readings proposed explains every question; left (7 s)
+== H4
+task  4: 16 things of 3 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 57/57 of their questions right, 4 of 4 kinds of statements and 2 of 2 kinds of questions read (3 s, 180 episodes played)
+  things: bea=a1 oz=a2 pim=a3 ren=a4 tam=a5 yul=a6 bird=b1 cat=b2 creature=b3 dog=b4 fish=b5 mammal=b6 climb=c1 fly=c2 run=c3 swim=c4
+    * is a * a b          tie E0 of (0, 1)
+    every * can * b c          tie E0 of (0, 1)
+    every * is a * b b          tie E0 of (0, 1)
+    no * can * b c          set F0 of (0, 1)
+  ? can * * a c          has 0 [>>E0] 1
+  ? is * a * a b          has 0 [>>E0] 1
+test  4: 1223/1223 = 100.0%
+sure  4: of 2 of 2 kinds of questions, 1223/1223 right on them; of the others 0/0
+deep  4: 1223/1223 = 100.0% (nothing composed)
+== H5
+task  5: none of the readings proposed explains every question; left (4 s)
+== H6
+task  6: none of the readings proposed explains every question; left (207 s)
+== H7
+task  7: none of the readings proposed explains every question; left (8 s)
+== H8
+task  8: 20 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 30/30 of their questions right, 2 of 2 kinds of statements and 1 of 1 kinds of questions read (2 s, 160 episodes played)
+  things: bridge=a1 mill=a10 park=a11 quarry=a12 school=a13 shop=a14 station=a15 tower=a16 castle=a2 farm=a3 field=a4 garden=a5 harbor=a6 hill=a7 lake=a8 market=a9 east=b1 north=b2 south=b3 west=b4
+    the * is * of the * a b a        link L0 of (0, 2, 1)
+    the * lies * of the * a b a        link L0 of (0, 2, 1)
+  ? which way is the * from the * a a          lways 0 0 1 {b1/b4,b2/b3}
+test  8: 924/924 = 100.0%
+sure  8: of 1 of 1 kinds of questions, 924/924 right on them; of the others 0/0
+deep  8: 924/924 = 100.0% (nothing composed)
+== H9
+task  9: 20 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 74/74 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (2 s, 80 episodes played)
+  things: ann=a1 jon=a10 bob=a2 cy=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 ivy=a9 attic=b1 shelf=b10 bag=b2 ball=b3 box=b4 coin=b5 hall=b6 hat=b7 key=b8 room=b9
+    * is the parent of * a a          set F0 of (0, 1)
+    the * is in the * b b          set F0 of (0, 1)
+  ? is * the grandparent of * a a          has 0 [>F0 ~F0] 1
+  ? is the * finally in the * b b          has 0 [^F0] 1
+  ? where is the * finally b            list 0 [^F0] b
+  ? who is the grandparent of * a            list 0 [<~F0 <F0] a
+test  9: 1328/1420 = 93.5%
+sure  9: of 4 of 4 kinds of questions, 1328/1420 right on them; of the others 0/0
+deep  9: 1328/1420 = 93.5% (nothing composed)
+== H10
+task 10: 12 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 66/66 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (2 s, 133 episodes played)
+  things: alice=a1 bob=a2 carol=a3 dan=a4 eve=a5 frank=a6 grace=a7 henry=a8 blue=b1 gold=b2 green=b3 red=b4
+    * joins the * group a b          set F0 of (0, 1)
+    * leaves the * group a b          unset F0 of (0,)
+    * moves to the * group a b          set F0 of (0, 1)
+  ? how many are in the * group b            num 0 (count [<F0] None)
+  ? is * in the * group a b          has 0 [>F0] 1
+  ? which group is * in a            list 0 [>F0] b (else 0)
+  ? who is in the * group b            list 0 [<F0] a (else 0)
+test 10: 1523/1523 = 100.0%
+sure 10: of 4 of 4 kinds of questions, 1523/1523 right on them; of the others 0/0
+deep 10: 1523/1523 = 100.0% (nothing composed)
+== H11
+task 11: none of the readings proposed explains every question; left (24 s)
+== H12
+task 12: none of the readings proposed explains every question; left (9 s)
+== I1
+task  1: none of the readings proposed explains every question; left (2 s)
+== I2
+task  2: none of the readings proposed explains every question; left (5 s)
+== I3
+task  3: 14 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 49/49 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (7 s, 180 episodes played)
+  things: ann=a1 jack=a10 kim=a11 leo=a12 ben=a2 cara=a3 dan=a4 eva=a5 finn=a6 gina=a7 hugo=a8 ivy=a9 shortest=b1 tallest=b2
+    * is shorter than * a a          tie E0 of (0, 1)
+    * is taller than * a a          tie E0 of (1, 0)
+  ? is * taller than * a a          has 0 [<<E0] 1
+  ? who is shorter than * a            list 0 [<<E0] a
+  ? who is taller than * a            list 0 [>>E0] a
+  ? who is the * b            utmost (E 0) 0 a {b1 = least, b2 = most}
+test  3: 1226/1226 = 100.0%
+sure  3: of 4 of 4 kinds of questions, 1226/1226 right on them; of the others 0/0
+deep  3: 1226/1226 = 100.0% (nothing composed)
+== I4
+task  4: none of the readings proposed explains every question; left (5 s)
+== I5
+task  5: none of the readings proposed explains every question; left (3 s)
+== I6
+task  6: 20 things of 3 kinds; learnt from 20 stories (taken at once: one of 5 readings proposed explains every question) (asked for 5 more), 58/58 of their questions right, 1 of 1 kinds of statements and 3 of 3 kinds of questions read (2 s, 60 episodes played)
+  things: ann=a1 jo=a10 kim=a11 leo=a12 bob=a2 cy=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 ivy=a9 older=b1 shorter=b2 taller=b3 younger=b4 oldest=c1 shortest=c2 tallest=c3 youngest=c4
+    * is * than * a b a        link L0 of (0, 2, 1)
+  ? is * * than * a b a        isdir 0 0 2 1 {b1/b2,b3/b4}
+  ? who is * than * b a          lover 0 1 0 {b1/b4,b2/b3}
+  ? who is the * c            utmost (L 0 {b1/b4,b2/b3}) 0 a {c1 = b1, c2 = b2, c3 = b3, c4 = b4}
+test  6: 1441/1479 = 97.4%
+sure  6: of 3 of 3 kinds of questions, 1441/1479 right on them; of the others 0/0
+deep  6: 1441/1479 = 97.4% (nothing composed)
+== I7
+task  7: 11 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 61/61 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (3 s, 144 episodes played)
+  things: anna=a1 jack=a2 lily=a3 mary=a4 sam=a5 tom=a6 garden=b1 hall=b2 kitchen=b3 office=b4 park=b5
+    * started in the * a b          set F0 of (0, 1)
+    * went to the * a b          unset F0 of (0,)
+    * went to the * after * went to the * a b a b      set F0 of (0, 1)
+    * went to the * before * went to the * a b a b      set F0 of (0, 1)
+  ? how many times did * move before * went to the * a a b        when 0 0 2 (else 0)
+  ? was * in the * just before * went to the * a b a b      has 0 [~F0] 1
+  ? where was * just before * went to the * a a b        list 0 [~F0] b
+test  7: 1527/1527 = 100.0%
+sure  7: of 3 of 3 kinds of questions, 1527/1527 right on them; of the others 0/0
+deep  7: 1527/1527 = 100.0% (nothing composed)
+== I8
+task  8: none of the readings proposed explains every question; left (93 s)
+== I9
+task  9: none of the readings proposed explains every question; left (122 s)
+== I10
+task 10: none of the readings proposed explains every question; left (3 s)
+== I11
+task 11: none of the readings proposed explains every question; left (197 s)
+== I12
+task 12: none of the readings proposed explains every question; left (10 s)
+== J1
+task  1: 14 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 43/43 of their questions right, 3 of 3 kinds of statements and 2 of 2 kinds of questions read (6 s, 166 episodes played)
+  things: ann=a1 ben=a2 cal=a3 dee=a4 eve=a5 fay=a6 gus=a7 hal=a8 farm=b1 hall=b2 lab=b3 park=b4 pool=b5 shop=b6
+    * went to the * after * went to the * a b a b      link L0 of (101, 123, -2)
+    * went to the * at time # a b #        qset Q0 of (101,)
+    * went to the * before * went to the * a b a b      link L0 of (101, 123, -2)
+  ? did * go to the * before * went to the * a b a b      pis 0 101 123 * went to the * before * went to the * (0 * went to the * after * went to the *) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? which did * go to first the * or the * a b b        top 0 0 b False
+test  1: 957/980 = 97.7%
+sure  1: of 2 of 2 kinds of questions, 957/980 right on them; of the others 0/0
+deep  1: 957/980 = 97.7% (nothing composed)
+== J2
+task  2: none of the readings proposed explains every question; left (31 s)
+== J3
+task  3: none of the readings proposed explains every question; left (158 s)
+== J4
+task  4: none of the readings proposed explains every question; left (4 s)
+== J5
+task  5: none of the readings proposed explains every question; left (361 s)
+== J6
+task  6: 11 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 64/64 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (6 s, 173 episodes played)
+  things: garden=a1 hall=a2 kitchen=a3 office=a4 park=a5 fred=b1 john=b2 kim=b3 lou=b4 mary=b5 sandra=b6
+    * went to the * after * went to the * b a b a      link L0 of (101, 123, -2)
+    * went to the * at time # b a #        qset Q0 of (101,)
+    * went to the * before * went to the * b a b a      link L0 of (101, 123, -2)
+  ? was * in the * at time # b a #        world 0 0 line * went to the * after * went to the * b (wasat 0 0 1 0) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * at time # b #          world 0 0 line * went to the * after * went to the * b (asof 0 0 0) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * before * went to the * b b a        world 0 0 line * went to the * after * went to the * b (atev 112 True ('list', 0, (('F', 0, '>'),), 'a')) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? who was in the * at time # a #          world 0 0 line * went to the * after * went to the * a (asof 0 0 0) {* went to the * after * went to the */* went to the * before * went to the *}
+test  6: 1390/1413 = 98.4%
+sure  6: of 4 of 4 kinds of questions, 1390/1413 right on them; of the others 0/0
+deep  6: 1390/1413 = 98.4% (nothing composed)
+== J7
+task  7: none of the readings proposed explains every question; left (94 s)
+== J8
+task  8: 12 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 65/65 of their questions right, 3 of 3 kinds of statements and 3 of 3 kinds of questions read (30 s, 177 episodes played)
+  things: ann=a1 bob=a2 cat=a3 dan=a4 eve=a5 fay=a6 barn=b1 garden=b2 hall=b3 lab=b4 park=b5 shop=b6
+    * went to the * after * went to the * a b a b      link L0 of (101, 123, -2)
+    * went to the * at time # a b #        qset Q0 of (101,)
+    * went to the * before * went to the * a b a b      link L0 of (101, 123, -2)
+  ? did * go to the * before * went to the * a b a b      pis 0 101 123 * went to the * before * went to the * (0 * went to the * after * went to the *) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * before * went to the * a a b        pedge 0 0 * went to the * after * went to the * b (0 * went to the * after * went to the *) 112 {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * when * went to the * a a b        pedge 0 0 * went to the * after * went to the * b None 112 {* went to the * after * went to the */* went to the * before * went to the *} (else b6)
+test  8: 1441/1473 = 97.8%
+sure  8: of 3 of 3 kinds of questions, 1441/1473 right on them; of the others 0/0
+deep  8: 1441/1473 = 97.8% (nothing composed)
+== J9
+task  9: none of the readings proposed explains every question; left (17 s)
+== J10
+task 10: none of the readings proposed explains every question; left (46 s)
+== J11
+task 11: none of the readings proposed explains every question; left (32 s)
+== J12
+task 12: none of the readings proposed explains every question; left (196 s)
