@@ -1,0 +1,141 @@
+task  1: 16 things of 2 kinds; learnt from 20 stories (asked for 20 more), 94/94 of their questions right, 1 of 1 kinds of statements and 8 of 8 kinds of questions read (126 s, 32670 episodes played)
+  things: ann=a1 joy=a10 bob=a2 cara=a3 dan=a4 eve=a5 finn=a6 gus=a7 hana=a8 ivo=a9 faster=b1 older=b2 shorter=b3 slower=b4 taller=b5 younger=b6
+    * is * than * a b a        link L0 of (0, 2, 1)
+  ? is * * than * a b a        lis 0 0 2 1 {b1/b4,b2/b6,b3/b5}
+  ? who is * than * b a          lover 0 1 0 {b1/b4,b2/b6,b3/b5}
+  ? who is the fastest of * and * and * a a a        utmostof (L 0 {b1/b4,b2/b3,b5/b6}) 3 a {who is the fastest of * and * and * = b1}
+  ? who is the oldest of * and * and * a a a        utmostof (L 0 {b1/b3,b2/b6,b4/b5}) 3 a {who is the oldest of * and * and * = b2}
+  ? who is the shortest of * and * and * a a a        utmostof (L 0 {b1/b2,b3/b5,b4/b6}) 3 a {who is the shortest of * and * and * = b3}
+  ? who is the slowest of * and * and * a a a        utmostof (L 0 {b1/b4,b2/b3,b5/b6}) 3 a {who is the slowest of * and * and * = b4}
+  ? who is the tallest of * and * and * a a a        utmostof (L 0 {b1/b2,b3/b5,b4/b6}) 3 a {who is the tallest of * and * and * = b5}
+  ? who is the youngest of * and * and * a a a        utmostof (L 0 {b1/b3,b2/b6,b4/b5}) 3 a {who is the youngest of * and * and * = b6}
+test  1: 1515/1515 = 100.0%
+sure  1: of 8 of 8 kinds of questions, 1515/1515 right on them; of the others 0/0
+deep  1: 1515/1515 = 100.0% (nothing composed)
+task  2: 21 things of 3 kinds; learnt from 20 stories (asked for 20 more), 117/121 of their questions right, 1 of 1 kinds of statements and 4 of 4 kinds of questions read (1266 s, 67277 episodes played)
+  things: ann=a1 jon=a10 ben=a2 cara=a3 dan=a4 eli=a5 fay=a6 gus=a7 hal=a8 ivy=a9 faster=b1 older=b2 shorter=b3 slower=b4 taller=b5 younger=b6 fastest=c1 oldest=c2 slowest=c3 tallest=c4 youngest=c5
+    * is * than * a b a        link L0 of (0, 2, 1); qadd Q0 of (1,)
+  ? how many people are * than * b a          num 0 (q 0)
+  ? is * * than * a b a        lis 0 0 2 1 {b1/b4,b2/b6,b3/b5}
+  ? who is the * c            utmost (L 0 {b1/b4,b2/b6,b3/b5}) 0 a {c1 = b1, c2 = b2, c3 = b4, c4 = b5, c5 = b6}
+  ? who is the shortest              utmost (L 0 {b1/b2,b3/b5,b4/b6}) 0 a {who is the shortest = b3}
+test  2: 1254/1354 = 92.6%
+sure  2: of 3 of 4 kinds of questions, 1237/1237 right on them; of the others 17/117
+deep  2: 1354/1354 = 100.0% (how many people are * than *: 5 -> 9 of 9; 4 s)
+task  3: 14 things of 2 kinds; learnt from 20 stories (asked for 10 more), 62/62 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (40 s, 36965 episodes played)
+  things: ann=a1 jack=a10 kim=a11 leo=a12 ben=a2 cara=a3 dan=a4 eva=a5 finn=a6 gina=a7 hugo=a8 ivy=a9 shortest=b1 tallest=b2
+    * is shorter than * a a          tie E0 of (0, 1)
+    * is taller than * a a          tie E0 of (1, 0)
+  ? is * taller than * a a          has 0 [<<E0] 1
+  ? who is shorter than * a            list 0 [<<E0] a
+  ? who is taller than * a            list 0 [>>E0] a
+  ? who is the * b            utmost (E 0) 0 a {b1 = least, b2 = most}
+test  3: 1226/1226 = 100.0%
+sure  3: of 4 of 4 kinds of questions, 1226/1226 right on them; of the others 0/0
+deep  3: 1226/1226 = 100.0% (nothing composed)
+task  4: 10 things of 2 kinds; learnt from 20 stories (asked for 20 more), 127/127 of their questions right, 2 of 2 kinds of statements and 7 of 7 kinds of questions read (243 s, 90496 episodes played)
+  taken by what they explain - words of the sentence itself: shorter taller
+  things: ann=a1 bob=a2 cy=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 shortest=b1 tallest=b2
+    * is shorter than * a a          tie E0 of (1, 0)
+    * is taller than * a a          tie E0 of (0, 1)
+  ? how many people are shorter than * a            num 0 (count [>>E0] None)
+  ? how many people are taller than * a            num 0 (count [<<E0] None)
+  ? is * shorter than * a a          has 0 [<<E0] 1
+  ? is * taller than * a a          has 0 [>>E0] 1
+  ? who is shorter than * a            list 0 [>>E0] a
+  ? who is taller than * a            list 0 [<<E0] a
+  ? who is the * b            utmost (E 0) 0 a {b1 = most, b2 = least}
+test  4: 1543/1543 = 100.0%
+sure  4: of 7 of 7 kinds of questions, 1543/1543 right on them; of the others 0/0
+deep  4: 1543/1543 = 100.0% (nothing composed)
+task  5: 23 things of 3 kinds; learnt from 20 stories (asked for 20 more), 76/105 of their questions right, 1 of 1 kinds of statements and 3 of 3 kinds of questions read (1598 s, 118636 episodes played)
+  things: ann=a1 bob=a2 carl=a3 dina=a4 eli=a5 fay=a6 gus=a7 hana=a8 faster=b1 heavier=b2 lighter=b3 older=b4 shorter=b5 slower=b6 taller=b7 younger=b8 heaviest=c1 lightest=c2 oldest=c3 shortest=c4 slowest=c5 tallest=c6 youngest=c7
+    * is * than * a b a        set F0 of (1, 2); qpass Q0 of (0, 2)
+  ? is * * than * a b a        has 0 [<~F0] 1 (turned over)
+  ? who is the * c            assoc 0 {} {c1 = a4, c2 = a6, c3 = a2, c4 = a5, c5 = a2, c6 = a4, c7 = a7}
+  ? who is the fastest              utmost (Q 0) 0 a {who is the fastest = least}
+test  5: 779/1507 = 51.7%
+sure  5: of 0 of 3 kinds of questions, 0/0 right on them; of the others 779/1507
+deep  5: 779/1507 = 51.7% (nothing composed)
+task  6: 20 things of 3 kinds; learnt from 20 stories (asked for 13 more), 89/89 of their questions right, 1 of 1 kinds of statements and 3 of 3 kinds of questions read (12 s, 21681 episodes played)
+  things: ann=a1 jo=a10 kim=a11 leo=a12 bob=a2 cy=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 ivy=a9 older=b1 shorter=b2 taller=b3 younger=b4 oldest=c1 shortest=c2 tallest=c3 youngest=c4
+    * is * than * a b a        link L0 of (0, 2, 1)
+  ? is * * than * a b a        lis 0 0 2 1 {b1/b4,b2/b3}
+  ? who is * than * b a          lover 0 1 0 {b1/b4,b2/b3}
+  ? who is the * c            utmost (L 0 {b1/b4,b2/b3}) 0 a {c1 = b1, c2 = b2, c3 = b3, c4 = b4}
+test  6: 1479/1479 = 100.0%
+sure  6: of 3 of 3 kinds of questions, 1479/1479 right on them; of the others 0/0
+deep  6: 1479/1479 = 100.0% (nothing composed)
+task  7: 11 things of 2 kinds; learnt from 20 stories (asked for 20 more), 125/125 of their questions right, 1 of 4 kinds of statements and 3 of 3 kinds of questions read (2001 s, 475801 episodes played)
+  things: anna=a1 jack=a2 lily=a3 mary=a4 sam=a5 tom=a6 garden=b1 hall=b2 kitchen=b3 office=b4 park=b5
+    * started in the * a b          set F0 of (0, 1)
+    * went to the * a b          -
+    * went to the * after * went to the * a b a b      -
+    * went to the * before * went to the * a b a b      -
+  ? how many times did * move before * went to the * a a b        when 0 0 2 (else 0)
+  ? was * in the * just before * went to the * a b a b      has 0 [>F0] 1
+  ? where was * just before * went to the * a a b        list 0 [>F0] b
+test  7: 1527/1527 = 100.0%
+sure  7: of 3 of 3 kinds of questions, 1527/1527 right on them; of the others 0/0
+deep  7: 1527/1527 = 100.0% (nothing composed)
+task  8: 10 things of 2 kinds; learnt from 20 stories (asked for 5 more), 46/46 of their questions right, 2 of 3 kinds of statements and 3 of 3 kinds of questions read (551 s, 360137 episodes played)
+  things: ann=a1 bob=a2 carl=a3 dana=a4 eve=a5 home=b1 lake=b2 park=b3 school=b4 shop=b5
+    * went to * a b          -
+    * went to * after * went to * a b a b      link L0 of (101, 123, -2)
+    * went to * before * went to * a b a b      link L0 of (101, 123, -2)
+  ? did * go to * before * went to * a b a b      isat 0 101 123 * went to * before * went to * {* went to * after * went to */* went to * before * went to *}
+  ? where was * when * went to * a a b        pedge 0 0 * went to * after * went to * b None 112 {* went to * after * went to */* went to * before * went to *}
+  ? who went to * first b            edge 0 0 * went to * before * went to * a {* went to * after * went to */* went to * before * went to *}
+test  8: 1248/1248 = 100.0%
+sure  8: of 3 of 3 kinds of questions, 1248/1248 right on them; of the others 0/0
+deep  8: 1248/1248 = 100.0% (nothing composed)
+task  9: 11 things of 3 kinds; learnt from 20 stories (asked for 20 more), 106/139 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (6903 s, 1112980 episodes played)
+  taken by what they explain - words of the sentence itself: after before
+  things: ann=a1 bob=a2 cal=a3 dee=a4 eve=a5 garden=b1 hall=b2 kitchen=b3 office=b4 park=b5 nobody=c1
+    * started in the * a b          set F0 of (1, 0)
+    * went to the * after * went to the * a b a b      pair F0 of (2, 3)
+    * went to the * before * went to the * a b a b      set F0 of (1, 0)
+  ? did * go to the * before * went to the * a b a b      cmp 1 3 (times 0) >=
+  ? where was * after * went to the * a a b        newest 0 [<~F0] b
+  ? where was * before * went to the * a a b        eldest 0 [<~F0] b
+  ? who was in the * after * went to the * b a b        list 0 [^F0] a (else c1)
+test  9: 1001/1484 = 67.5%
+sure  9: of 0 of 4 kinds of questions, 0/0 right on them; of the others 1001/1484
+deep  9: 1001/1484 = 67.5% (nothing composed)
+task 10: 10 things of 4 kinds; learnt from 20 stories (asked for 20 more), 104/108 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (214 s, 106656 episodes played)
+  things: ann=a1 ben=a2 cara=a3 dan=a4 lake=b1 park=b2 school=b3 shop=b4 nobody=c1 nowhere=d1
+    * went to the * at # a b #        setat F0 of (0, 1); set F1 of (0, 1)
+    at # * went to the * # a b        setat F0 of (0, 1); set F1 of (0, 1)
+  ? did * go to the * before # a b #        at #0 (before): has 0 [~F0] 1
+  ? where was * at # a #          asof 0 0 0 (else d1)
+  ? who was at the * at # b #          at #0 (by then): list 0 [<F0] a (else c1)
+  ? who went to the * first b            eldest 0 [<F1] a (else a3)
+test 10: 1139/1215 = 93.7%
+sure 10: of 3 of 4 kinds of questions, 1008/1008 right on them; of the others 131/207
+deep 10: 1139/1215 = 93.7% (nothing composed)
+task 11: 11 things of 2 kinds; learnt from 20 stories (asked for 20 more) (learnt anew after asking), 95/129 of their questions right, 4 of 4 kinds of statements and 5 of 5 kinds of questions read (3863 s, 1116285 episodes played)
+  things: garden=a1 kitchen=a2 park=a3 school=a4 shop=a5 ann=b1 eve=b2 max=b3 sam=b4 tom=b5 zoe=b6
+    * went to the * after * went to the * b a b a      tick T0 of ()
+    * went to the * at time # b a #        setat F0 of (0, 1)
+    * went to the * before * went to the * b a b a      pair F0 of (0, 1)
+    * went to the * right after * went to the * b a b a      tick T0 of ()
+  ? at what time did * go to the * b a          when 0 0 1
+  ? did * go to the * before * went to the * b a b a      has 0 [<~F0] 1
+  ? where was * at time # b #          asof 0 0 0
+  ? where was * before * went to the * b b a        both 0 [~F0] 1 [~F0] a (else a3)
+  ? who was in the * at time # a #          at #0 (by then): list 0 [<F0] b
+test 11: 961/1490 = 64.5%
+sure 11: of 0 of 5 kinds of questions, 0/0 right on them; of the others 961/1490
+deep 11: 992/1490 = 66.6% (where was * before * went to the *: 8 -> 9 of 12; 1 s)
+task 12: 9 things of 3 kinds; learnt from 20 stories (asked for 20 more), 84/135 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (2978 s, 1301111 episodes played)
+  things: ann=a1 ben=a2 cal=a3 dee=a4 cafe=b1 park=b2 school=b3 shop=b4 home=c1
+    * went to the * after * went to the * a b a b      moveall F0 of (0, 2)
+    * went to the * at time # a b #        setat F0 of (1, 0)
+    * went to the * before * went to the * a b a b      pair F0 of (0, 1)
+    at time # * went to the * # a b        setat F0 of (1, 0)
+  ? where was * at time # a #          at #0 (before): newest 0 [<F0] b (else c1)
+  ? where was * before * went to the * a a b        newest 0 [<~F0] b (else c1)
+  ? who went to the * first b            newest 0 [~F0 <<F0] a (else a2)
+test 12: 773/1494 = 51.7%
+sure 12: of 0 of 3 kinds of questions, 0/0 right on them; of the others 773/1494
+deep 12: 773/1494 = 51.7% (nothing composed)
