@@ -1,0 +1,142 @@
+task  1: 14 things of 2 kinds; learnt from 20 stories (began from 2 kinds of sentences remembered, kept 0) (asked for 20 more) (learnt anew after asking), 90/91 of their questions right, 3 of 3 kinds of statements and 2 of 2 kinds of questions read (4460 s, 961784 episodes played)
+  things: ann=a1 ben=a2 cal=a3 dee=a4 eve=a5 fay=a6 gus=a7 hal=a8 farm=b1 hall=b2 lab=b3 park=b4 pool=b5 shop=b6
+    * went to the * after * went to the * a b a b      link L0 of (101, 123, -2)
+    * went to the * at time # a b #        qset Q0 of (101,)
+    * went to the * before * went to the * a b a b      link L0 of (101, 123, -2)
+  ? did * go to the * before * went to the * a b a b      pis 0 101 123 * went to the * before * went to the * (0 * went to the * after * went to the *) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? which did * go to first the * or the * a b b        top 0 0 b False
+test  1: 957/980 = 97.7%
+sure  1: of 1 of 2 kinds of questions, 842/842 right on them; of the others 115/138
+deep  1: 957/980 = 97.7% (nothing composed)
+task  2: 13 things of 5 kinds; learnt from 20 stories (began from 1 kinds of sentences remembered, kept 0) (asked for 20 more), 93/117 of their questions right, 5 of 7 kinds of statements and 4 of 4 kinds of questions read (2107 s, 1080681 episodes played)
+  taken by what they explain - things: first last
+  things: alice=a1 bob=a2 carol=a3 dan=a4 eve=a5 first=b1 last=b2 garden=c1 kitchen=c2 office=c3 park=c4 hall=d1 nobody=e1
+    * moved * a b          -
+    * moved after * a a          qpass Q0 of (1, 0)
+    * moved at time # a #          qset Q0 of (0,)
+    * moved before * a a          qpass Q0 of (1, 0)
+    * went to the * a c          pair F0 of (0, 1)
+    at time # * went to the * # a c        setat F0 of (0, 1)
+    everyone started in the * d            -
+  ? where was * at time # a #          list 0 [~F0] c (else d1)
+  ? where was * just before * moved a a          list 0 [~F0] c (else d1)
+  ? who moved at time # #            utmost (Q 0) 0 a {who moved at time # = least}
+  ? who was in the * at time # c #          at #0 (by then): list 0 [<F0] a (else e1)
+test  2: 985/1333 = 73.9%
+sure  2: of 0 of 4 kinds of questions, 0/0 right on them; of the others 985/1333
+deep  2: 985/1333 = 73.9% (nothing composed)
+task  3: 12 things of 3 kinds; learnt from 20 stories (began from 2 kinds of sentences remembered, kept 0) (asked for 19 more), 104/114 of their questions right, 3 of 4 kinds of statements and 4 of 4 kinds of questions read (6593 s, 943093 episodes played)
+  things: anna=a1 john=a2 lily=a3 mary=a4 sam=a5 tom=a6 cellar=b1 garden=b2 hall=b3 kitchen=b4 office=b5 nobody=c1
+    * started in the * a b          -
+    * went to the * after * went to the * a b a b      link L0 of (101, 123, -2)
+    * went to the * at time # a b #        qset Q0 of (101,)
+    * went to the * before * went to the * a b a b      link L0 of (101, 123, -2)
+  ? did * go to the * before * went to the * a b a b      world 0 0 line * went to the * after * went to the * a (atev 123 True ('has', 0, (('F', 0, '~'),), 1)) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? was * in the * at time # a b #        world 0 0 line * went to the * after * went to the * a (wasat 0 0 1 0) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * at time # a #          world 0 0 line * went to the * after * went to the * a (asof 0 0 0) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? who was in the * at time # b #          world 0 0 line * went to the * after * went to the * a (at 0 False ('list', 0, (('F', 0, '<'),), 'a')) {* went to the * after * went to the */* went to the * before * went to the *} (else c1)
+test  3: 1250/1430 = 87.4%
+sure  3: of 1 of 4 kinds of questions, 267/267 right on them; of the others 983/1163
+deep  3: 1250/1430 = 87.4% (nothing composed)
+task  4: 12 things of 4 kinds; learnt from 20 stories (began from 2 kinds of sentences remembered, kept 2) (asked for 20 more), 103/111 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (1968 s, 1048410 episodes played)
+  things: alice=a1 bob=a2 carol=a3 dan=a4 eve=a5 garden=b1 hall=b2 kitchen=b3 office=b4 park=b5 nobody=c1 nowhere=d1
+    * went to the * after * went to the * a b a b      link L0 of (101, 123, -2)
+    * went to the * before * went to the * a b a b      link L0 of (101, 123, -2)
+    at time # * went to the * # a b        qset Q0 of (101,)
+  ? was * in the * at time # a b #        world 0 0 line * went to the * after * went to the * a (wasat 0 0 1 0) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * at time # a #          world 0 0 line * went to the * after * went to the * a (asof 0 0 0) {* went to the * after * went to the */* went to the * before * went to the *} (else d1)
+  ? who was in the * at time # b #          world 0 0 line * went to the * after * went to the * a (at 0 False ('list', 0, (('F', 0, '<'),), 'a')) {* went to the * after * went to the */* went to the * before * went to the *} (else c1)
+  ? who went to the * first b            pedge 0 0 * went to the * before * went to the * a (0 * went to the * after * went to the *) None {* went to the * after * went to the */* went to the * before * went to the *}
+test  4: 1372/1513 = 90.7%
+sure  4: of 3 of 4 kinds of questions, 1143/1143 right on them; of the others 229/370
+deep  4: 1372/1513 = 90.7% (nothing composed)
+task  5: 10 things of 2 kinds; learnt from 20 stories (began from 2 kinds of sentences remembered, kept 2) (asked for 17 more), 94/94 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (2017 s, 499519 episodes played)
+  things: ann=a1 bob=a2 cy=a3 dan=a4 eve=a5 garden=b1 hall=b2 kitchen=b3 office=b4 park=b5
+    * went to the * after * went to the * a b a b      link L0 of (101, 123, -2)
+    * went to the * before * went to the * a b a b      link L0 of (101, 123, -2)
+    at time # * went to the * # a b        qset Q0 of (101,)
+  ? did * go to the * after * went to the * a b a b      world 0 0 line * went to the * after * went to the * a (atev 101 True ('has', 2, (('F', 0, '~'),), 3)) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * at time # a #          world 0 0 line * went to the * after * went to the * a (asof 0 0 0) {* went to the * after * went to the */* went to the * before * went to the *} (else 0)
+  ? where was * before * went to the * a a b        world 0 0 line * went to the * after * went to the * a (atev 112 True ('list', 0, (('F', 0, '>'),), 'b')) {* went to the * after * went to the */* went to the * before * went to the *} (else 0)
+  ? who was in the * at time # b #          world 0 0 line * went to the * after * went to the * a (at 0 False ('list', 0, (('F', 0, '<'),), 'a')) {* went to the * after * went to the */* went to the * before * went to the *} (else 0)
+test  5: 1102/1102 = 100.0%
+sure  5: of 4 of 4 kinds of questions, 1102/1102 right on them; of the others 0/0
+deep  5: 1102/1102 = 100.0% (nothing composed)
+task  6: 11 things of 2 kinds; learnt from 20 stories (began from 2 kinds of sentences remembered, kept 2) (asked for 5 more), 64/64 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (1701 s, 301192 episodes played)
+  things: garden=a1 hall=a2 kitchen=a3 office=a4 park=a5 fred=b1 john=b2 kim=b3 lou=b4 mary=b5 sandra=b6
+    * went to the * after * went to the * b a b a      link L0 of (101, 123, -2)
+    * went to the * at time # b a #        qset Q0 of (101,)
+    * went to the * before * went to the * b a b a      link L0 of (101, 123, -2)
+  ? was * in the * at time # b a #        world 0 0 line * went to the * after * went to the * b (wasat 0 0 1 0) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * at time # b #          world 0 0 line * went to the * after * went to the * b (asof 0 0 0) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * before * went to the * b b a        world 0 0 line * went to the * after * went to the * b (atev 112 True ('list', 0, (('F', 0, '>'),), 'a')) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? who was in the * at time # a #          world 0 0 line * went to the * after * went to the * a (asof 0 0 0) {* went to the * after * went to the */* went to the * before * went to the *}
+test  6: 1390/1413 = 98.4%
+sure  6: of 4 of 4 kinds of questions, 1390/1413 right on them; of the others 0/0
+deep  6: 1390/1413 = 98.4% (nothing composed)
+task  7: not finished in two and a half hours
+task  8: 12 things of 2 kinds; learnt from 20 stories (began from 2 kinds of sentences remembered, kept 2) (asked for 10 more), 87/87 of their questions right, 3 of 3 kinds of statements and 3 of 3 kinds of questions read (2851 s, 265052 episodes played)
+  things: ann=a1 bob=a2 cat=a3 dan=a4 eve=a5 fay=a6 barn=b1 garden=b2 hall=b3 lab=b4 park=b5 shop=b6
+    * went to the * after * went to the * a b a b      link L0 of (101, 123, -2)
+    * went to the * at time # a b #        qset Q0 of (101,)
+    * went to the * before * went to the * a b a b      link L0 of (101, 123, -2)
+  ? did * go to the * before * went to the * a b a b      pis 0 101 123 * went to the * before * went to the * (0 * went to the * after * went to the *) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * before * went to the * a a b        pedge 0 0 * went to the * after * went to the * b (0 * went to the * after * went to the *) 112 {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * when * went to the * a a b        pedge 0 0 * went to the * after * went to the * b (0 * went to the * after * went to the *) 112 {* went to the * after * went to the */* went to the * before * went to the *}
+test  8: 1473/1473 = 100.0%
+sure  8: of 3 of 3 kinds of questions, 1473/1473 right on them; of the others 0/0
+deep  8: 1473/1473 = 100.0% (nothing composed)
+task  9: 14 things of 4 kinds; learnt from 20 stories (asked for 17 more), 103/105 of their questions right, 2 of 2 kinds of statements and 5 of 5 kinds of questions read (779 s, 110076 episodes played)
+  taken by what they explain - words of the sentence itself: first last
+  things: ana=a1 ben=a2 cy=a3 dee=a4 eli=a5 fay=a6 farm=b1 hall=b2 lake=b3 park=b4 school=b5 shop=b6 nobody=c1 nowhere=d1
+    at # * came to the * # a b        setat F0 of (0, 1); qset Q0 of (101,)
+    at # * went to the * # a b        setat F0 of (0, 1)
+  ? was * in the * at # a b #        wasat 0 0 1 0
+  ? where did * go first a            top 0 0 b False
+  ? where did * go last a            list 0 [>F0] b
+  ? where was * at # a #          asof 0 0 0 (else d1)
+  ? who was in the * at # b #          at #0 (by then): list 0 [<F0] a (else c1)
+test  9: 1540/1549 = 99.4%
+sure  9: of 4 of 5 kinds of questions, 1244/1244 right on them; of the others 296/305
+deep  9: 1540/1549 = 99.4% (nothing composed)
+task 10: 12 things of 2 kinds; learnt from 20 stories (began from 2 kinds of sentences remembered, kept 0) (asked for 20 more), 89/123 of their questions right, 3 of 3 kinds of statements and 6 of 6 kinds of questions read (6146 s, 1090550 episodes played)
+  things: ann=a1 bob=a2 cy=a3 dee=a4 eli=a5 fay=a6 gus=a7 farm=b1 lake=b2 park=b3 school=b4 shop=b5
+    * went to the * after * went to the * a b a b      link L0 of (101, 123, -2)
+    * went to the * at time # a b #        qset Q0 of (101,)
+    * went to the * before * went to the * a b a b      link L0 of (101, 123, -2)
+  ? did * go to the * before * went to the * a b a b      world 0 0 line * went to the * after * went to the * a (atev 123 True ('has', 0, (('F', 0, '~'),), 1)) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? what time did * go to the * a b          world 0 0 line * went to the * after * went to the * b (atev 101 False ('num', 1, ('count', (('F', 0, '~'), ('F', 0, '<')), None))) {* went to the * after * went to the */* went to the * before * went to the *} (else 4)
+  ? where was * at time # a #          world 0 0 line * went to the * after * went to the * a (asof 0 0 0) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * before * went to the * a a b        world 0 0 line * went to the * after * went to the * a (atev 112 True ('list', 0, (('F', 0, '>'),), 'b')) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? which places did * visit before * went to the * a a b        world 0 0 line * went to the * after * went to the * a (atev 112 True ('list', 0, (('F', 0, '~'),), 'b')) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? who went to the * first b            edge 0 0 * went to the * before * went to the * a {* went to the * after * went to the */* went to the * before * went to the *}
+test 10: 1020/1347 = 75.7%
+sure 10: of 4 of 6 kinds of questions, 840/840 right on them; of the others 180/507
+deep 10: 1020/1347 = 75.7% (nothing composed)
+task 11: 12 things of 2 kinds; learnt from 20 stories (began from 2 kinds of sentences remembered, kept 0) (asked for 20 more) (learnt anew after asking), 71/80 of their questions right, 3 of 3 kinds of statements and 6 of 6 kinds of questions read (4698 s, 981634 episodes played)
+  things: ann=a1 ben=a2 joe=a3 kim=a4 mia=a5 sam=a6 tom=a7 garden=b1 hall=b2 kitchen=b3 office=b4 park=b5
+    * went to the * after * went to the * a b a b      tie E0 of (0, 2); link L0 of (101, 123, -2); set F0 of (1, 0); claim F1 of (3, 1); tie E1 of (0, 3)
+    * went to the * at time # a b #        tie E0 of (0, 1); qset Q0 of (101,); setat F0 of (1, 0); tie2 E1 of (0, 1)
+    * went to the * before * went to the * a b a b      tie E0 of (0, 2); link L0 of (101, 123, -2); set F0 of (1, 0); claim F1 of (3, 1); tie E1 of (0, 3)
+  ? did * go to the * after * went to the * a b a b      some 1 [<F1]
+  ? did * go to the * before * went to the * a b a b      world 0 0 clock * went to the * after * went to the * a (atev 123 False ('has', 0, (('F', 0, '~'),), 1)) {* went to the * after * went to the */* went to the * before * went to the *} (else no)
+  ? was * in the * at time # a b #        world 0 0 line * went to the * after * went to the * a (wasat 0 0 1 0) {* went to the * after * went to the */* went to the * before * went to the *} (else yes)
+  ? when did * go to the * a b          num 0 (count [=E1] None)
+  ? where was * at time # a #          world 0 0 line * went to the * after * went to the * a (asof 0 0 0) {* went to the * after * went to the */* went to the * before * went to the *}
+  ? who was in the * at time # b #          asof 0 0 0
+test 11: 674/916 = 73.6%
+sure 11: of 2 of 6 kinds of questions, 321/407 right on them; of the others 353/509
+deep 11: 674/916 = 73.6% (nothing composed)
+task 12: 10 things of 2 kinds; learnt from 20 stories (began from 2 kinds of sentences remembered, kept 0) (asked for 20 more), 102/102 of their questions right, 2 of 2 kinds of statements and 6 of 6 kinds of questions read (502 s, 192935 episodes played)
+  things: ann=a1 bob=a2 cat=a3 dan=a4 eve=a5 garden=b1 hall=b2 kitchen=b3 office=b4 shop=b5
+    * went to the * after * went to the * a b a b      link L0 of (101, 123, -2)
+    * went to the * before * went to the * a b a b      link L0 of (101, 123, -2)
+  ? did * go to the * before * go to the * a b a b      pis 0 101 123 * went to the * before * went to the * None {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * after * went to the * a a b        pedge 0 0 * went to the * before * went to the * b None 112 {* went to the * after * went to the */* went to the * before * went to the *}
+  ? where was * before * went to the * a a b        pedge 0 0 * went to the * after * went to the * b None 112 {* went to the * after * went to the */* went to the * before * went to the *}
+  ? which place did * go to first a            edge 0 0 * went to the * before * went to the * b {* went to the * after * went to the */* went to the * before * went to the *}
+  ? which place did * go to last a            pedge 0 0 * went to the * after * went to the * b None None {* went to the * after * went to the */* went to the * before * went to the *}
+  ? who was in the * before * went to the * b a b        world 0 None line * went to the * after * went to the * a (atev 112 True ('list', 0, (('F', 0, '<'),), 'a')) {* went to the * after * went to the */* went to the * before * went to the *}
+test 12: 1261/1263 = 99.8%
+sure 12: of 6 of 6 kinds of questions, 1261/1263 right on them; of the others 0/0
+deep 12: 1261/1263 = 99.8% (nothing composed)
