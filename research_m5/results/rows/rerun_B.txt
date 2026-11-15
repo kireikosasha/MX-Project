@@ -1,0 +1,201 @@
+task  1: 12 things of 2 kinds; learnt from 20 stories (asked for 20 more) (learnt anew after asking), 150/156 of their questions right, 11 of 11 kinds of statements and 5 of 5 kinds of questions read (3624 s, 990746 episodes played)
+  things: apple=a1 bag=a2 ball=a3 box=a4 coin=a5 crate=a6 key=a7 tin=a8 desk=b1 floor=b2 shelf=b3 table=b4
+    ann moved the * to the * a b          set F0 of (0, 1)
+    ann put the * in the * a a          claim F0 of (0, 1); qadd Q0 of (1,); set F0 of (0, 1)
+    ann took the * out of the * and put it on the * a a b        set F0 of (0, 2); qsame Q0 of (1, 0)
+    ben moved the * to the * a b          set F0 of (0, 1)
+    ben put the * in the * a a          claim F0 of (0, 1); qadd Q0 of (1,); set F0 of (0, 1)
+    ben took the * out of the * and put it on the * a a b        set F0 of (0, 2); qsame Q0 of (1, 0)
+    kim moved the * to the * a b          set F0 of (0, 1)
+    kim put the * in the * a a          claim F0 of (0, 1); qadd Q0 of (1,); set F0 of (0, 1)
+    kim took the * out of the * and put it on the * a a b        set F0 of (0, 2); qsame Q0 of (1, 0)
+    the * is in the * a a          claim F0 of (0, 1); qadd Q0 of (1,); set F0 of (0, 1)
+    the * is on the * a b          set F0 of (0, 1)
+  ? how many things are in the * a            num 0 (q 0)
+  ? is the * in the * a a          has 0 [>F0] 1
+  ? what is in the * a            list 0 [<F0] a (else nothing)
+  ? where is the * a            list 0 [^F0] b
+  ? where is the * now a            list 0 [^F0] b
+test  1: 1460/1514 = 96.4%
+sure  1: of 3 of 5 kinds of questions, 808/809 right on them; of the others 652/705
+deep  1: 1460/1514 = 96.4% (what is in the *: 35 -> 36 of 39; 2 s)
+task  2: 10 things of 3 kinds; learnt from 20 stories (asked for 16 more), 103/103 of their questions right, 5 of 5 kinds of statements and 5 of 5 kinds of questions read (496 s, 374724 episodes played)
+  taken by what they explain - words of the sentence itself: drops has holds
+  things: ann=a1 bob=a2 cal=a3 dee=a4 ball=b1 book=b2 cup=b3 hat=b4 key=b5 nobody=c1
+    * drops the * a b          unset F0 of (1,)
+    * gives the * to * a b a        set F0 of (1, 2)
+    * has the * a b          set F0 of (1, 0)
+    * swaps with * a a          swapall F0 of (0, 1)
+    the * is with * b a          set F0 of (0, 1)
+  ? does * have the * a b          has 0 [<F0] 1
+  ? how many things does * have a            num 0 (count [<F0] None)
+  ? what does * have a            list 0 [<F0] b (else nothing)
+  ? who has the * b            list 0 [>F0] a (else c1)
+  ? who holds the * b            list 0 [>F0] a (else c1)
+test  2: 1470/1470 = 100.0%
+sure  2: of 5 of 5 kinds of questions, 1470/1470 right on them; of the others 0/0
+deep  2: 1470/1470 = 100.0% (nothing composed)
+task  3: 14 things of 3 kinds; learnt from 20 stories (asked for 10 more), 65/65 of their questions right, 1 of 1 kinds of statements and 3 of 3 kinds of questions read (6 s, 12285 episodes played)
+  things: ann=a1 jon=a10 bob=a2 cal=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 ivy=a9 shorter=b1 taller=b2 shortest=c1 tallest=c2
+    * is * than * a b a        link L0 of (0, 2, 1)
+  ? is * * than * a b a        lis 0 0 2 1 {b1/b2}
+  ? who is * than * b a          lover 0 1 0 {b1/b2}
+  ? who is the * c            utmost (L 0 {b1/b2}) 0 a {c1 = b1, c2 = b2}
+test  3: 1212/1212 = 100.0%
+sure  3: of 3 of 3 kinds of questions, 1212/1212 right on them; of the others 0/0
+deep  3: 1212/1212 = 100.0% (nothing composed)
+task  4: 20 things of 3 kinds; learnt from 20 stories (asked for 15 more), 75/75 of their questions right, 8 of 8 kinds of statements and 3 of 3 kinds of questions read (410 s, 375818 episodes played)
+  things: ana=a1 lily=a2 max=a3 mia=a4 sam=a5 tom=a6 animal=b1 bird=b2 cat=b3 cow=b4 dog=b5 duck=b6 fish=b7 mammal=b8 owl=b9 fast=c1 loud=c2 quiet=c3 shy=c4 warm=c5
+    * is a * a b          tie E0 of (0, 1)
+    * is an * a b          tie E0 of (0, 1)
+    every * is * b c          qadd Q0 of (1,)
+    every * is a * b b          tie E0 of (0, 1)
+    every * is an * b b          qadd Q0 of (1,)
+    no * is * b c          qsub Q0 of (1,)
+    no * is a * b b          qadd Q0 of (1,)
+    no * is an * b b          tie E0 of (0, 1)
+  ? is * * a c          pos 1 (q 0)
+  ? is * a * a b          has 0 [>>E0] 1
+  ? is * an * a b          pos 1 (q 0)
+test  4: 1062/1072 = 99.1%
+sure  4: of 3 of 3 kinds of questions, 1062/1072 right on them; of the others 0/0
+deep  4: 1062/1072 = 99.1% (nothing composed)
+task  5: 17 things of 6 kinds; learnt from 20 stories (asked for 20 more), 134/149 of their questions right, 8 of 8 kinds of statements and 5 of 5 kinds of questions read (497 s, 1111009 episodes played)
+  things: ann=a1 bob=a2 cy=a3 dee=a4 blue=b1 green=b2 red=b3 white=b4 closed=c1 closes=c2 open=c3 garden=d1 hall=d2 kitchen=d3 nobody=e1 off=f1 on=f2
+    * * the door a c          qadd Q0 of (1,)
+    * goes to the * a d          set F0 of (0, 1)
+    * is in the * a d          set F0 of (0, 1)
+    * paints the box * a b          either F0 of (-1, 0, 1)
+    * switches the lamp * a f          set F2 of (0, 1)
+    the box is * b            set F0 of (-1, 0)
+    the door is * c            qadd Q0 of (0,)
+    the lamp is * f            set F2 of (-1, 0)
+  ? is the door * c            pos 0 (q 0)
+  ? is the lamp * f            some 0 [<F2]
+  ? what colour is the box              list -1 [>F0] b
+  ? where is * a            list 0 [>F0] d
+  ? who is in the * d            list 0 [<F0] a (else e1)
+test  5: 1437/1515 = 94.9%
+sure  5: of 2 of 5 kinds of questions, 687/687 right on them; of the others 750/828
+deep  5: 1437/1515 = 94.9% (nothing composed)
+task  6: 10 things of 2 kinds; learnt from 20 stories (asked for 20 more) (learnt anew after asking), 132/142 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (4131 s, 1040637 episodes played)
+  taken by what they explain - words of the sentence itself: after before
+  things: ann=a1 bob=a2 cal=a3 dee=a4 eli=a5 farm=b1 lake=b2 park=b3 school=b4 shop=b5
+    * went to the * on # a b #        set F0 of (0, 1); setat F1 of (0, 1)
+    * went to the * the day after # a b #        set F0 of (0, 1); setnext F1 of (0, 1)
+    on # * went to the * # a b        claim F0 of (0, 1); setat F1 of (0, 1)
+  ? was * at the * on # a b #        wasat 1 0 1 0
+  ? where did * go after # a #          asof 0 0 0
+  ? where did * go before # a #          at #0 (before): list 0 [>F1] b
+  ? where was * on # a #          asof 1 0 0
+test  6: 1353/1437 = 94.2%
+task  7: 11 things of 2 kinds; learnt from 20 stories (asked for 15 more), 107/107 of their questions right, 5 of 5 kinds of statements and 3 of 3 kinds of questions read (411 s, 376398 episodes played)
+  things: ann=a1 ben=a2 cara=a3 dan=a4 eli=a5 fay=a6 apples=b1 coins=b2 pens=b3 shells=b4 stones=b5
+    * finds # * a # b        qadd Q0 of (101,)
+    * gets # * from * a # b a      qpass Q0 of (112, 101)
+    * gives # * to * a # b a      qpass Q0 of (101, 112)
+    * has # * a # b        qadd Q0 of (101,)
+    * loses # * a # b        qsub Q0 of (101,)
+  ? does * have more than # * a # b        cmpn 101 (q 0) > 0
+  ? how many * does * have b a          num 101 (q 0)
+  ? who has the most * b            top 0 0 a True
+test  7: 1465/1465 = 100.0%
+sure  7: of 3 of 3 kinds of questions, 1465/1465 right on them; of the others 0/0
+deep  7: 1465/1465 = 100.0% (nothing composed)
+task  8: 12 things of 2 kinds; learnt from 20 stories (asked for 5 more), 62/62 of their questions right, 2 of 2 kinds of statements and 3 of 3 kinds of questions read (28 s, 16340 episodes played)
+  things: bridge=a1 farm=a2 garden=a3 lake=a4 market=a5 park=a6 school=a7 tower=a8 east=b1 north=b2 south=b3 west=b4
+    the * is * of the * a b a        link L0 of (0, 2, 1)
+    the * lie * of the * a b a        link L0 of (0, 2, 1)
+  ? does the * lie * of the * a b a        lis 0 0 2 1 {b1/b4,b2/b3}
+  ? is the * * of the * a b a        lis 0 0 2 1 {b1/b4,b2/b3}
+  ? what is * of the * b a          lover 0 1 0 {b1/b4,b2/b3}
+test  8: 1517/1517 = 100.0%
+sure  8: of 3 of 3 kinds of questions, 1517/1517 right on them; of the others 0/0
+deep  8: 1517/1517 = 100.0% (nothing composed)
+task  9: 12 things of 1 kinds; learnt from 20 stories (asked for 20 more), 123/129 of their questions right, 4 of 6 kinds of statements and 5 of 5 kinds of questions read (4482 s, 668348 episodes played)
+  things: ann=a1 jo=a10 kim=a11 leo=a12 ben=a2 cara=a3 dan=a4 eli=a5 fay=a6 gus=a7 hana=a8 ivan=a9
+    * has no boss a            -
+    * has no parent a            -
+    * is the boss of * a a          tie E0 of (1, 0)
+    * is the child of * a a          tie E0 of (0, 1)
+    * is the parent of * a a          tie E0 of (1, 0)
+    * reports to * a a          tie E0 of (0, 1)
+  ? is * the boss of the boss of * a a          has 0 [<E0 <E0] 1
+  ? is * the grandparent of * a a          has 0 [<E0 <E0] 1
+  ? who is at the top above * a            newest 0 [>>E0] a
+  ? who is the boss of the boss of * a            list 0 [>E0 >E0] a
+  ? who is the grandparent of * a            list 0 [>E0 >E0] a
+test  9: 1261/1401 = 90.0%
+task 10: 12 things of 2 kinds; learnt from 20 stories (asked for 15 more), 53/53 of their questions right, 4 of 4 kinds of statements and 5 of 5 kinds of questions read (297 s, 287058 episodes played)
+  things: ann=a1 bob=a2 cara=a3 dan=a4 eve=a5 finn=a6 gus=a7 hana=a8 bears=b1 foxes=b2 hawks=b3 owls=b4
+    * joins the * a b          set F0 of (0, 1)
+    * leaves the * a b          unset F0 of (0,)
+    * quits the * a b          unset F0 of (0,)
+    * signs up for the * a b          set F0 of (0, 1)
+  ? are * and * in the same group a a          same 0 1 [>F0]
+  ? how many are in the * b            num 0 (count [<F0] None)
+  ? is * in the same group as * a a          same 0 1 [>F0]
+  ? which group is * in a            list 0 [>F0] b
+  ? who is in the * b            list 0 [<F0] a
+test 10: 890/890 = 100.0%
+sure 10: of 5 of 5 kinds of questions, 890/890 right on them; of the others 0/0
+deep 10: 890/890 = 100.0% (nothing composed)
+task 11: 11 things of 2 kinds; learnt from 20 stories (asked for 20 more), 55/58 of their questions right, 18 of 48 kinds of statements and 1 of 1 kinds of questions read (827 s, 870922 episodes played)
+  things: hugo=a1 lena=a2 mira=a3 omar=a4 ruth=a5 tomas=a6 loud=b1 quiet=b2 sleepy=b3 small=b4 tall=b5
+    * is a bird a            tie E0 of (0, -1)
+    * is a creature a            tie E0 of (0, -1)
+    * is a fish a            tie E0 of (0, -1)
+    * is a frog a            tie E0 of (0, -1)
+    * is a lizard a            cut E0 of (0,)
+    * is a toad a            qadd Q0 of (0,)
+    every bird is * b            cut E0 of (0,)
+    every bird is a creature              -
+    every bird is a fish              -
+    every bird is a frog              -
+    every bird is a lizard              -
+    every bird is a toad              -
+    every creature is * b            cut E0 of (0,)
+    every creature is a bird              -
+    every creature is a fish              -
+    every creature is a frog              -
+    every creature is a lizard              -
+    every creature is a toad              -
+    every fish is * b            qadd Q0 of (0,)
+    every fish is a bird              -
+    every fish is a creature              -
+    every fish is a frog              -
+    every fish is a lizard              -
+    every fish is a toad              -
+    every frog is * b            cut E0 of (0,)
+    every frog is a bird              -
+    every frog is a creature              -
+    every frog is a fish              -
+    every frog is a lizard              -
+    every frog is a toad              -
+    every lizard is * b            qadd Q0 of (0,)
+    every lizard is a bird              -
+    every lizard is a creature              -
+    every lizard is a fish              -
+    every lizard is a frog              -
+    every lizard is a toad              -
+    every toad is * b            qadd Q0 of (0,)
+    every toad is a bird              -
+    every toad is a creature              -
+    every toad is a fish              -
+    every toad is a frog              -
+    every toad is a lizard              -
+    no bird is * b            tie E0 of (0, -1)
+    no creature is * b            tie E0 of (0, -1)
+    no fish is * b            tie E0 of (0, -1)
+    no frog is * b            tie E0 of (0, -1)
+    no lizard is * b            cut E0 of (0,)
+    no toad is * b            tie E0 of (0, -1)
+  ? is * * a b          has 0 [>E0 <E0] 1 (turned over)
+test 11: 618/718 = 86.1%
+task 12: 12 things of 3 kinds; learnt from 20 stories (asked for 8 more), 48/48 of their questions right, 1 of 1 kinds of statements and 2 of 2 kinds of questions read (11 s, 11739 episodes played)
+  things: bottle=a1 candle=a2 jar=a3 lamp=a4 mug=a5 stool=a6 tower=a7 vase=a8 shorter=b1 taller=b2 shortest=c1 tallest=c2
+    the * is * than the * a b a        link L0 of (0, 2, 1)
+  ? is the * * than the * a b a        lis 0 0 2 1 {b1/b2}
+  ? which is the * c            utmost (L 0 {b1/b2}) 0 a {c1 = b1, c2 = b2}
+test 12: 916/916 = 100.0%
+sure 12: of 2 of 2 kinds of questions, 916/916 right on them; of the others 0/0

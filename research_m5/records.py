@@ -93,6 +93,7 @@ class State:
         self.F = [{} for _ in range(K["F"])]
         self.H = [{} for _ in range(K["F"])]              # thing -> ((when, value), ...) in the order of time
         self.Q = [{} for _ in range(K["Q"])]
+        self.C = [[] for _ in range(K["Q"])]              # conditions between amounts: (a, b, n) - a has n more than b
         self.E = [set() for _ in range(K["E"])]           # (a, b): a leads to b; ((a, b), c): a and b together lead to c
         self.L = [[] for _ in range(K["L"])]              # (a, b, direction, n): a lies n steps along the direction from b
         self.W = [{} for _ in range(K["F"])]              # thing -> those who wait to be its value, in the order they came
@@ -324,6 +325,31 @@ def m_qpass(s, k, a, n):
     s.Q[k][a[1]] = s.Q[k].get(a[1], 0) + d
 
 
+def m_qnext(s, k, a, n):
+    s.C[k].append((a[0], a[1], n[0] if n else 1))
+
+
+def m_qprev(s, k, a, n):
+    s.C[k].append((a[0], a[1], -(n[0] if n else 1)))
+
+
+def known(s, k, memo):
+    """the amounts as they follow from what is said: those given, and those tied to them by the conditions (the dinner is
+    a day after the picnic: either follows from the other, whichever is told, and whenever)"""
+    key = ("known", k)
+    if key not in memo:
+        q, grew = dict(s.Q[k]), bool(s.C[k])
+        while grew:
+            grew = False
+            for a, b, n in s.C[k]:
+                if b in q and a not in q:
+                    q[a], grew = q[b] + n, True
+                elif a in q and b not in q:
+                    q[b], grew = q[a] - n, True
+        memo[key] = q
+    return memo[key]
+
+
 def m_qsame(s, k, a, n):
     for q in s.Q:
         q[a[0]] = q.get(a[1], 0)
@@ -369,10 +395,10 @@ MOVES = {"set": (m_set, "F", 2, 0), "unset": (m_unset, "F", 1, 0), "rise": (m_ri
          "eunion": (m_eunion, "E", 3, 0), "einter": (m_einter, "E", 3, 0),
          "qset": (m_qset, "Q", 1, 1), "qadd": (m_qadd, "Q", 1, 2), "qsub": (m_qsub, "Q", 1, 2), "qpass": (m_qpass, "Q", 2, 2),
          "qsame": (m_qsame, "Q", 2, 0), "qmin": (m_qmin, "Q", 3, 0), "qmax": (m_qmax, "Q", 3, 0), "qsum": (m_qsum, "Q", 3, 0),
-         "qnot": (m_qnot, "Q", 2, 0), "link": (m_link, "L", 3, 2), "tick": (m_tick, "T", 0, 2), "clock": (m_clock, "T", 0, 1)}
+         "qnot": (m_qnot, "Q", 2, 0), "qnext": (m_qnext, "Q", 2, 2), "qprev": (m_qprev, "Q", 2, 2), "link": (m_link, "L", 3, 2), "tick": (m_tick, "T", 0, 2), "clock": (m_clock, "T", 0, 1)}
 SAME_BOTH_WAYS = ("swap", "swapall", "pair", "tieboth", "tie2", "untie2")
 SAME_LAST_TWO = ("eunion", "einter", "qmin", "qmax", "qsum", "either")
-SENTENCES = ("either", "note", "setnext", "setprev")                                  # moves tried only when the rows are sentences
+SENTENCES = ("either", "note", "setnext", "setprev", "qnext", "qprev")                                  # moves tried only when the rows are sentences
 RANK = {name: [n for n in MOVES if MOVES[n][1] == MOVES[name][1]].index(name) for name in MOVES}      # the place of a move among those of its sort
 # how many things of its row a query uses (those not here use all of them)
 USES = {"list": 1, "seq": 1, "eldest": 1, "newest": 1, "some": 1, "pos": 1, "num": 1, "cmpn": 1, "qat": 1, "which": 0, "rank": 0,
@@ -460,7 +486,7 @@ def amount(s, memo, e, x):
     """a number of a thing: how much it has, how many times it was given a value, how many the walk comes to, the sum of
     what they have"""
     if e[0] == "q":
-        return s.Q[e[1]].get(x, 0)
+        return (known(s, e[1], memo) if s.C[e[1]] else s.Q[e[1]]).get(x, 0)
     if e[0] == "times":
         return sum(1 for _, v in s.H[e[1]].get(x, ()) if v is not None)
     S = walk(s, memo, x, e[1])
@@ -962,7 +988,7 @@ class Learner:
                     types.setdefault((sort, k), set()).update([(ks[0], ks[1]), (ks[1], ks[0])])
                 elif name == "tieboth":
                     types.setdefault((sort, k), set()).update([(ks[0], ks[2]), (ks[1], ks[2])])
-                elif name in ("qset", "qadd", "qsub", "qpass", "qmin", "qmax", "qsum", "qnot"):
+                elif name in ("qset", "qadd", "qsub", "qpass", "qmin", "qmax", "qsum", "qnot", "qnext", "qprev"):
                     types.setdefault((sort, k), set()).update(ks)
                 elif name == "qsame":
                     for q in range(K["Q"]):
@@ -1550,7 +1576,7 @@ class Learner:
                             rec, moved = found, True
                 for k in range(K["Q"]) if self.words and not moved else ():
                     # which way an amount counts is a convention: the same reading with gains and losses changed over
-                    turned = {f: tuple(({"qadd": "qsub", "qsub": "qadd"}.get(name, name), q, pick[::-1] if name == "qpass" else pick, n)
+                    turned = {f: tuple(({"qadd": "qsub", "qsub": "qadd", "qnext": "qprev", "qprev": "qnext"}.get(name, name), q, pick[::-1] if name == "qpass" else pick, n)
                                        if MOVES[name][1] == "Q" and q == k else (name, q, pick, n) for name, q, pick, n in moves)
                               for f, moves in rec.items()}
                     if turned != rec and self.work < until:
