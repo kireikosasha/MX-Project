@@ -1,0 +1,70 @@
+task  1: 16 things of 2 kinds; learnt from 20 stories (taken at once: one of 5 readings proposed explains every question) (asked for 20 more), 94/94 of their questions right, 1 of 1 kinds of statements and 8 of 8 kinds of questions read (5 s, 150 episodes played)
+  things: ann=a1 joy=a10 bob=a2 cara=a3 dan=a4 eve=a5 finn=a6 gus=a7 hana=a8 ivo=a9 faster=b1 older=b2 shorter=b3 slower=b4 taller=b5 younger=b6
+    * is * than * a b a        link L0 of (0, 2, 1)
+  ? is * * than * a b a        lis 0 0 2 1 {b1/b4,b2/b6,b3/b5}
+  ? who is * than * b a          lover 0 1 0 {b1/b4,b2/b6,b3/b5}
+  ? who is the fastest of * and * and * a a a        utmostof (L 0 {b1/b4,b2/b3,b5/b6}) 3 a {who is the fastest of * and * and * = b1}
+  ? who is the oldest of * and * and * a a a        utmostof (L 0 {b1/b3,b2/b6,b4/b5}) 3 a {who is the oldest of * and * and * = b2}
+  ? who is the shortest of * and * and * a a a        utmostof (L 0 {b1/b2,b3/b5,b4/b6}) 3 a {who is the shortest of * and * and * = b3}
+  ? who is the slowest of * and * and * a a a        utmostof (L 0 {b1/b4,b2/b3,b5/b6}) 3 a {who is the slowest of * and * and * = b4}
+  ? who is the tallest of * and * and * a a a        utmostof (L 0 {b1/b2,b3/b5,b4/b6}) 3 a {who is the tallest of * and * and * = b5}
+  ? who is the youngest of * and * and * a a a        utmostof (L 0 {b1/b3,b2/b6,b4/b5}) 3 a {who is the youngest of * and * and * = b6}
+test  1: 1515/1515 = 100.0%
+sure  1: of 8 of 8 kinds of questions, 1515/1515 right on them; of the others 0/0
+deep  1: 1515/1515 = 100.0% (nothing composed)
+task  2: none of the readings proposed explains every question; left (7 s)
+task  3: 14 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 49/49 of their questions right, 2 of 2 kinds of statements and 4 of 4 kinds of questions read (10 s, 180 episodes played)
+  things: ann=a1 jack=a10 kim=a11 leo=a12 ben=a2 cara=a3 dan=a4 eva=a5 finn=a6 gina=a7 hugo=a8 ivy=a9 shortest=b1 tallest=b2
+    * is shorter than * a a          tie E0 of (0, 1)
+    * is taller than * a a          tie E0 of (1, 0)
+  ? is * taller than * a a          has 0 [<<E0] 1
+  ? who is shorter than * a            list 0 [<<E0] a
+  ? who is taller than * a            list 0 [>>E0] a
+  ? who is the * b            utmost (E 0) 0 a {b1 = least, b2 = most}
+test  3: 1226/1226 = 100.0%
+sure  3: of 4 of 4 kinds of questions, 1226/1226 right on them; of the others 0/0
+deep  3: 1226/1226 = 100.0% (nothing composed)
+task  4: none of the readings proposed explains every question; left (9 s)
+task  5: 23 things of 3 kinds; learnt from 20 stories (taken at once: one of 5 readings proposed explains every question) (asked for 5 more), 51/51 of their questions right, 1 of 1 kinds of statements and 2 of 2 kinds of questions read (5 s, 60 episodes played)
+  things: ann=a1 bob=a2 carl=a3 dina=a4 eli=a5 fay=a6 gus=a7 hana=a8 faster=b1 heavier=b2 lighter=b3 older=b4 shorter=b5 slower=b6 taller=b7 younger=b8 heaviest=c1 lightest=c2 oldest=c3 shortest=c4 slowest=c5 tallest=c6 youngest=c7
+    * is * than * a b a        link L0 of (0, 2, 1)
+  ? is * * than * a b a        lis 0 0 2 1 {b1/b6,b2/b3,b4/b8,b5/b7}
+  ? who is the * c            utmost (L 0 {b1/b6,b2/b3,b4/b8,b5/b7}) 0 a {c1 = b2, c2 = b3, c3 = b4, c4 = b5, c5 = b6, c6 = b7, c7 = b8}
+test  5: 1433/1507 = 95.1%
+sure  5: of 2 of 3 kinds of questions, 1433/1433 right on them; of the others 0/74
+deep  5: 1433/1507 = 95.1% (nothing composed)
+task  6: 20 things of 3 kinds; learnt from 20 stories (taken at once: one of 5 readings proposed explains every question) (asked for 5 more), 58/58 of their questions right, 1 of 1 kinds of statements and 3 of 3 kinds of questions read (3 s, 60 episodes played)
+  things: ann=a1 jo=a10 kim=a11 leo=a12 bob=a2 cy=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 ivy=a9 older=b1 shorter=b2 taller=b3 younger=b4 oldest=c1 shortest=c2 tallest=c3 youngest=c4
+    * is * than * a b a        link L0 of (0, 2, 1)
+  ? is * * than * a b a        isdir 0 0 2 1 {b1/b2,b3/b4}
+  ? who is * than * b a          lover 0 1 0 {b1/b4,b2/b3}
+  ? who is the * c            utmost (L 0 {b1/b4,b2/b3}) 0 a {c1 = b1, c2 = b2, c3 = b3, c4 = b4}
+test  6: 1441/1479 = 97.4%
+sure  6: of 3 of 3 kinds of questions, 1441/1479 right on them; of the others 0/0
+deep  6: 1441/1479 = 97.4% (nothing composed)
+task  7: 11 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 61/61 of their questions right, 4 of 4 kinds of statements and 3 of 3 kinds of questions read (4 s, 144 episodes played)
+  things: anna=a1 jack=a2 lily=a3 mary=a4 sam=a5 tom=a6 garden=b1 hall=b2 kitchen=b3 office=b4 park=b5
+    * started in the * a b          set F0 of (0, 1)
+    * went to the * a b          unset F0 of (0,)
+    * went to the * after * went to the * a b a b      set F0 of (0, 1)
+    * went to the * before * went to the * a b a b      set F0 of (0, 1)
+  ? how many times did * move before * went to the * a a b        when 0 0 2 (else 0)
+  ? was * in the * just before * went to the * a b a b      has 0 [~F0] 1
+  ? where was * just before * went to the * a a b        list 0 [~F0] b
+test  7: 1527/1527 = 100.0%
+sure  7: of 3 of 3 kinds of questions, 1527/1527 right on them; of the others 0/0
+deep  7: 1527/1527 = 100.0% (nothing composed)
+task  8: none of the readings proposed explains every question; left (121 s)
+task  9: 13 things of 4 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 69/69 of their questions right, 2 of 2 kinds of statements and 3 of 3 kinds of questions read (5 s, 160 episodes played)
+  things: after=a1 before=a2 ann=b1 bob=b2 cal=b3 dee=b4 eve=b5 garden=c1 hall=c2 kitchen=c3 office=c4 park=c5 nobody=d1
+    * started in the * b c          set F0 of (0, 1)
+    * went to the * * * went to the * b c a b c    link L0 of (101, 134, 2)
+  ? did * go to the * * * went to the * b c a b c    isdir 0 101 134 2 {a1/a2}
+  ? where was * * * went to the * b a b c      world 0 None line a1 b (atev 123 (1, 'a1') ('list', 0, (('F', 0, '>'),), 'c')) {a1/a2}
+  ? who was in the * * * went to the * c a b c      world 0 None line a1 b (atev 123 (1, 'a1') ('list', 0, (('F', 0, '<'),), 'b')) {a1/a2} (else d1)
+test  9: 1481/1484 = 99.8%
+sure  9: of 3 of 3 kinds of questions, 1481/1484 right on them; of the others 0/0
+deep  9: 1481/1484 = 99.8% (nothing composed)
+task 10: none of the readings proposed explains every question; left (10 s)
+task 11: none of the readings proposed explains every question; left (272 s)
+task 12: none of the readings proposed explains every question; left (15 s)

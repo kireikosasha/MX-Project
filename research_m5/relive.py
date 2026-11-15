@@ -89,6 +89,9 @@ def lived(specs, stories=60, log=print):
                 for op, quest, _, nums, kinds, _ in ep:
                     for i, v in enumerate(nums):
                         numbers.setdefault(((op, quest, kinds), i), []).append(v)
+            out = [t for t in out if t["name"] != name or t["full"] and not (full and 100 * right >= 99 * total)]     # (a task told of twice:
+            if any(t["name"] == name for t in out):                                                                    # the telling learnt in
+                continue                                                                                               # full is kept, or the last)
             out.append({"name": name, "names": m.names, "rec": m.rec, "ask": m.ask, "episodes": m.episodes, "numbers": numbers,
                         "full": full and 100 * right >= 99 * total, "right": right, "total": total})
             log(f"{name}: {len(m.rec)} kinds of sentences, {len(m.ask)} kinds of questions, {right}/{total}" + ("" if out[-1]["full"] else ", not in full"))

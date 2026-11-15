@@ -417,6 +417,7 @@ def main():
     ap.add_argument("--batch", type=int, default=24)
     ap.add_argument("--lr", type=float, default=5e-4)
     ap.add_argument("--workers", type=int, default=2, help="how many processes make up the dreams while the network learns")
+    ap.add_argument("--few", type=int, default=0, help="try on only so many of the tasks left out (a short check that everything runs)")
     ap.add_argument("--save", type=float, default=10, help="what is learnt is written every so many minutes; a run started again goes on from it")
     ap.add_argument("--every", type=int, default=100)
     ap.add_argument("--look", type=int, default=10000, help="how many dreams are looked at first, for the readings the network may name")
@@ -452,7 +453,7 @@ def main():
         net = teach(mine, readings, a, device, lambda s: print(s, flush=True))
     print(f"{sum(p.numel() for p in net.parameters())} weights", flush=True)
     if apart:
-        trial(net, readings, apart, known, device, a.stories, lambda s: print(s, flush=True))
+        trial(net, readings, apart[:a.few or None], known, device, a.stories, lambda s: print(s, flush=True))
 
 
 if __name__ == "__main__":
