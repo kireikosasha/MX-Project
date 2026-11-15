@@ -1926,13 +1926,19 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, onl
         m = Learner(data[:stories])
         starts = [{f: m.near(sd, f) or () for f in m.rec} for sd in seed]
         start = max(starts, key=lambda st: m.fit(st)[0])
-        if m.fit(start)[0][1] == sum(len(g) for f, g in m.forms.items() if f[1]):
-            m.rec, m.ask = start, m.fit(start)[1]
-            m.usual = {f: Counter(g).most_common(1)[0][0] for f, g in m.forms.items() if f[1]}
+        m.rec, m.ask = start, dict(m.fit(start)[1])
+        m.usual = {f: Counter(g).most_common(1)[0][0] for f, g in m.forms.items() if f[1]}
+        right, total = m.run(m.episodes)
+        if right < total and m.words and 10 * right >= 8 * total:      # nearly all: the kinds of questions left may be queries
+            composed = m.deepen()                                       # composed from operators, with the sentences read so
+            right, total = m.run(m.episodes)
+        else:
+            composed = []
+        if right == total:
             right, total = m.run(data[stories:stories + 5])
             if right == total and not m.gaps:
                 quick = list(range(len(data[stories:stories + 5])))
-                notes.append(f"taken at once: one of {len(seed)} readings proposed explains every question")
+                notes.append(f"taken at once: one of {len(seed)} readings proposed explains every question" + (f", with {len(composed)} kinds of questions composed" if composed else ""))
         spent += m.work
         m = m if quick else None
         if m is None and fast == "only":                         # (asked for nothing else: the search is not run)
