@@ -293,7 +293,8 @@ def main():
     ap.add_argument("--more", default="", help="take more stories where what is learnt fails on fresh ones: e.g. 60,200")
     ap.add_argument("--hint", default="", help="a network that says which readings of a row to try first (made by prior.py)")
     ap.add_argument("--show", action="store_true")
-    ap.add_argument("--deep", action="store_true", help="for the kinds of questions left unexplained: look for a query composed from the operators of algebra.py")
+    ap.add_argument("--plain", dest="deep", action="store_false", help="do not look for queries composed from the operators of algebra.py for the kinds of questions left unexplained")
+    ap.add_argument("--deep", action="store_true", default=True, help="(on unless --plain is given) the line 'deep' gives the test result with the composed queries; 'test' is the result without them")
     a = ap.parse_args()
     hint = None
     if a.hint:
