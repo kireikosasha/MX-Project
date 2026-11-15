@@ -1895,11 +1895,14 @@ class Learner:
         return "\n".join(out)
 
 
-def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, only=False, seed=None):
+def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, only=False, seed=None, fast=False):
     """learn from the first episodes. Then, if it may ask: find the other readings that explain these episodes as well,
     look (without the answers) for the episodes of the pool on which the readings part, ask for the answers of a few of
     those, learn again. Then, if there are more episodes to take: check what is learnt on the next ones; where the
-    check fails, learn from them too -> the learner, how many episodes it learnt from, what the checks said"""
+    check fails, learn from them too -> the learner, how many episodes it learnt from, what the checks said.
+    seed: readings to begin from (one, or several whole readings of the task - remembered, proposed by a network);
+    fast: if one of them explains every question of the first episodes and of five more it asks for, it is taken as
+    it is and nothing is searched for ("only": and if none does, the task is left as it is: no learner)"""
     data = read(path, max((stories,) + tuple(more) + ((stories + pool,) if ask else ()))) if path.__class__ is str else path
     steps = (stories,) + tuple(n for n in more if n > stories)
     used, notes, spent, m, best = stories, [], 0, None, None
@@ -1918,16 +1921,36 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, onl
     if m is None and only and best:                              # the whole search is not allowed: what the hint gave is kept
         m = best[1]
         notes.append("the hint was not enough, the whole search is not run")
+    quick = []
+    if m is None and fast and seed.__class__ is list and ask >= 5:      # is one of the readings proposed right as it is?
+        m = Learner(data[:stories])
+        starts = [{f: m.near(sd, f) or () for f in m.rec} for sd in seed]
+        start = max(starts, key=lambda st: m.fit(st)[0])
+        if m.fit(start)[0][1] == sum(len(g) for f, g in m.forms.items() if f[1]):
+            m.rec, m.ask = start, m.fit(start)[1]
+            m.usual = {f: Counter(g).most_common(1)[0][0] for f, g in m.forms.items() if f[1]}
+            right, total = m.run(data[stories:stories + 5])
+            if right == total and not m.gaps:
+                quick = list(range(len(data[stories:stories + 5])))
+                notes.append(f"taken at once: one of {len(seed)} readings proposed explains every question")
+        spent += m.work
+        m = m if quick else None
+        if m is None and fast == "only":                         # (asked for nothing else: the search is not run)
+            return None, stories, notes
     if m is None:                                                # no hint, or the episodes are not explained by it: the whole search
         m = Learner(data[:stories])                              # (seed: readings remembered from other tasks, to begin from)
-        m.learn(limit, seed={f: v for f, v in seed.items() if f in m.rec} if seed else None, every=bool(ask))
+        if seed.__class__ is list:
+            m.learn(limit, seed=[{f: v for f, v in sd.items() if f in m.rec} for sd in seed], every=bool(ask))
+            notes.append(f"began from the best of {len(seed)} readings proposed")
+        else:
+            m.learn(limit, seed={f: v for f, v in seed.items() if f in m.rec} if seed else None, every=bool(ask))
+            if seed:
+                notes.append(f"began from {sum(f in m.rec for f in seed)} kinds of sentences remembered, kept {sum(m.rec.get(f) == v for f, v in seed.items())}")
         spent += m.work
-        if seed:
-            notes.append(f"began from {sum(f in m.rec for f in seed)} kinds of sentences remembered, kept {sum(m.rec.get(f) == v for f, v in seed.items())}")
         if hint:
             notes.append("the hint was not enough")
-    train, asked, rest = list(data[:stories]), [], data[stories:stories + pool]
-    while len(asked) < ask:
+    train, asked, rest = list(data[:stories]), list(quick), data[stories:stories + pool]
+    while len(asked) < ask and not quick:
         mine = m.answers(rest)
         votes = [10 * sum(m.near(m.ask if row[1] else m.rec, row[:2] + (row[4],)) is None for row in ep) for ep in rest]   # rows of a kind never met
         for rec, other in m.rivals():

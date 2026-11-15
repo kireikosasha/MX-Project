@@ -295,6 +295,9 @@ def main():
     ap.add_argument("--hint", default="", help="a network that says which readings of a row to try first (made by prior.py)")
     ap.add_argument("--show", action="store_true")
     ap.add_argument("--memory", default="", help="readings of kinds of sentences remembered from tasks learnt before (made by memory.py): the search begins from them")
+    ap.add_argument("--guess", default="", help="a network that proposes whole readings of a task from its stories (made by guess.py): tried first, with what is remembered")
+    ap.add_argument("--fast", action="store_true", help="with --guess: a reading proposed that explains every question of the stories and of five more is taken with no search")
+    ap.add_argument("--at-once", action="store_true", help="with --guess: only that; a task of which no reading proposed explains every question is left without a search")
     ap.add_argument("--plain", dest="deep", action="store_false", help="do not look for queries composed from the operators of algebra.py for the kinds of questions left unexplained")
     ap.add_argument("--deep", action="store_true", default=True, help="(on unless --plain is given) the line 'deep' gives the test result with the composed queries; 'test' is the result without them")
     a = ap.parse_args()
@@ -310,7 +313,22 @@ def main():
         more = [int(x) for x in a.more.split(",") if x]
         raw = stories(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], max([a.stories + 200 * bool(a.ask)] + more))
         reader, pairs = None, names(raw[:a.stories])
-        if pairs:                                                # some things may be named by two words (the pink rectangle): tried only
+        m = None
+        if a.guess and (a.fast or a.at_once):                    # first of all: the stories as they are, and what the network (and the
+            import guess                                         # memory) proposes for them; if a reading proposed explains everything,
+            import memory                                        # nothing is searched for - not even which words are things
+            plain = Reader(raw[:a.stories], 0)
+            eps = plain.rows(raw)
+            seed = memory.recall(json.load(open(a.memory)), {(op, quest, kinds) for ep in eps[:a.stories] for op, quest, _, _, kinds, _ in ep if not quest}) if a.memory else None
+            m, used, notes = records.study(eps, a.stories, more, a.limit, a.ask, seed=([seed] if seed else []) + guess.proposed(a.guess, eps[:a.stories]), fast="only")
+            if m is not None:
+                reader, pairs = plain, ()
+            elif a.at_once:
+                print(f"task {k:2d}: none of the readings proposed explains every question; left ({time.time() - t0:.0f} s)", flush=True)
+                continue
+        if m is not None:
+            pass
+        elif pairs:                                                # some things may be named by two words (the pink rectangle): tried only
             plain = Reader(raw[:a.stories], 0)                   # if a real part of the stories is not explained as they are, and first
             if 10 * plain.worth(a.limit / 4)[1] < 9 * sum(gold is not None for story in raw[:a.stories] for words, gold in story):   # (a tenth and more)
                 other = Reader(joined(raw[:a.stories], pairs), a.limit / 4)
@@ -323,18 +341,23 @@ def main():
                 pairs = ()
         if reader is None:
             reader = Reader(raw[:a.stories], a.limit / 4)         # what a thing is, is settled on the first stories
-        if reader.best[1] < reader.total:                        # two words may name one thing (closes the door: the door is closed):
+        if m is None and reader.best[1] < reader.total:          # two words may name one thing (closes the door: the door is closed):
             alias = reader.aliases()                             # tried where a word is only ever stated and another only ever asked,
             other = Reader(raw[:a.stories], a.limit / 4, alias) if alias else None      # taken if the stories are explained better so
             if other and other.best > reader.best:
                 other.guessed = reader.guessed[:1 if pairs else 0] + ["words that name the same: " + " ".join(f"{v}={w}" for v, w in sorted(alias.items()))] + other.guessed
                 reader = other
         seed = None
-        if a.memory:                                             # what is remembered of the kinds of sentences of this task
+        if m is None and a.memory:                               # what is remembered of the kinds of sentences of this task
             import memory
             eps = reader.rows(raw)
             seed = memory.recall(json.load(open(a.memory)), {(op, quest, kinds) for ep in eps[:a.stories] for op, quest, _, _, kinds, _ in ep if not quest})
-        m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint, seed=seed)
+        if m is None and a.guess:                                # and what a network proposes at once from the stories themselves
+            import guess
+            eps = reader.rows(raw)
+            seed = ([seed] if seed else []) + guess.proposed(a.guess, eps[:a.stories])
+        if m is None:
+            m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint, seed=seed or None, fast=a.fast)
         got, n = m.run(m.episodes)
         own = m.tally
         print(f"task {k:2d}: {len(reader.code)} things of {len({c[0] for c in reader.code.values()})} kinds; learnt from {used} stories" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their "
