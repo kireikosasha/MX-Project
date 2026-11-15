@@ -1092,8 +1092,8 @@ class Learner:
 
     def queries(self, form, types):
         """all that a query of this form may be, the simple first"""
-        out = []
-        for own in self.owns.get(form) or [None]:
+        out, owns = [], self.owns.get(form) or [None]
+        for own in owns + ([None] if self.words and len(owns) > 1 else []):      # (answers of two kinds: of either, or of any at once)
             out += self.asked(form, types, own)
         return sorted(dict.fromkeys(out), key=steps)
 
