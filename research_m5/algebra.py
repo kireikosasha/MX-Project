@@ -298,6 +298,8 @@ def find(m, rec, f, eps, depth):
     dkinds = {ks[2] for (sort, k), v in types.items() if sort == "L" for ks in v}
     marks = sorted(w for dk in dkinds for w in m.names.get(dk, []))
     pairings = [dict(o) for o in records.pairings(marks)] if marks and len(marks) % 2 == 0 and len(marks) <= 6 else [{}]
+    if marks and len(marks) > 6:
+        pairings = [dict(o) for o in m.mates(tuple(marks))] or [{}]
     golds = m.forms[f]
     tk = [k for k in f[2] if k != "#"]
     nn = len(f[2]) - len(tk)

@@ -912,6 +912,7 @@ class Learner:
         self.cache, self.options, self.runs, self.work = {}, {}, 0, 0
         self.inside, self.played, self.lists = None, {}, {}
         self.focus = None                                        # the one kind of question looked at, when the others are left out
+        self.mated = {}                                          # the pairings of opposite words found in the stories
 
     # ------------------------------------------------------------ what a row may be
     def moves(self, nt, nn, top, sorts):
@@ -1138,6 +1139,8 @@ class Learner:
             for ka, kb, kd in sorted(types[(sort, k)]):
                 marks = sorted(types.get(("L!", k), ())) if kd == OP else sorted(types.get(("L#", k), ())) if kd == "#" else self.names.get(kd, [])
                 opps = [tuple(sorted(o.items())) for o in pairings(marks)] if len(marks) % 2 == 0 and 2 <= len(marks) <= 6 else []
+                if self.words and not opps and len(marks) > 6:   # too many to try every way of pairing them: the pairs the stories show
+                    opps = self.mates(tuple(marks))
                 more = sorted({d for _, _, d in types[(sort, k)] if d not in (OP, "#", kd)}) if self.words and kd not in (OP, "#") else []
                 if opps and more and all(len(self.names.get(d, [])) == 2 for d in more):     # directions of several kinds in one map (above and
                     rest = [(a, b) for d in more for a, b in (self.names[d], self.names[d][::-1])]   # below, left and right): those of a kind
@@ -1683,6 +1686,32 @@ class Learner:
         self.usual = {f: Counter(g).most_common(1)[0][0] for f, g in self.forms.items() if f[1]}
         return best[0][1], total
 
+    def mates(self, marks):
+        """which words of a kind are opposite to each other, as the stories themselves show: the same two things are
+        said the one way with one word and the other way round with the other (ann is lighter than dan; dan is heavier
+        than ann) -> the pairing, if every word finds its mate"""
+        if marks not in self.mated:
+            said = Counter()
+            for ep in self.episodes:
+                seen = set()
+                for op, quest, things, numbers, kinds, gold in ep:
+                    ds = [x for x in things if x in marks]
+                    rest = [x for x in things if x not in marks]
+                    if not quest and len(ds) == 1 and len(rest) == 2:
+                        seen.add((rest[0], ds[0], rest[1]))
+                for x, d, y in seen:
+                    for a, e, b in seen:
+                        if e != d and (a, b) == (y, x):
+                            said[tuple(sorted((d, e)))] += 1     # the other way round: opposite
+                        elif e != d and (a, b) == (x, y):
+                            said[tuple(sorted((d, e)))] -= 1     # the same way: not opposite
+            pairs = {}
+            for (d, e), n in said.most_common():
+                if n > 0 and d not in pairs and e not in pairs:
+                    pairs[d], pairs[e] = e, d
+            self.mated[marks] = [tuple(sorted(pairs.items()))] if len(pairs) == len(marks) else []
+        return self.mated[marks]
+
     def deepen(self, depth=4):
         """the kinds of questions that are not explained in full: with the sentences read as they are, a query composed
         from the operators of algebra.py is looked for (all the programs up to a depth), and taken if it explains
@@ -1780,7 +1809,7 @@ class Learner:
         return "\n".join(out)
 
 
-def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, only=False):
+def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, only=False, seed=None):
     """learn from the first episodes. Then, if it may ask: find the other readings that explain these episodes as well,
     look (without the answers) for the episodes of the pool on which the readings part, ask for the answers of a few of
     those, learn again. Then, if there are more episodes to take: check what is learnt on the next ones; where the
@@ -1804,9 +1833,11 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, onl
         m = best[1]
         notes.append("the hint was not enough, the whole search is not run")
     if m is None:                                                # no hint, or the episodes are not explained by it: the whole search
-        m = Learner(data[:stories])
-        m.learn(limit, every=bool(ask))
+        m = Learner(data[:stories])                              # (seed: readings remembered from other tasks, to begin from)
+        m.learn(limit, seed={f: v for f, v in seed.items() if f in m.rec} if seed else None, every=bool(ask))
         spent += m.work
+        if seed:
+            notes.append(f"began from {sum(f in m.rec for f in seed)} kinds of sentences remembered, kept {sum(m.rec.get(f) == v for f, v in seed.items())}")
         if hint:
             notes.append("the hint was not enough")
     train, asked, rest = list(data[:stories]), [], data[stories:stories + pool]

@@ -15,6 +15,7 @@ sentence before began with (he, she, they).
 import argparse
 from collections import Counter
 import glob
+import json
 import os
 import re
 import time
@@ -293,6 +294,7 @@ def main():
     ap.add_argument("--more", default="", help="take more stories where what is learnt fails on fresh ones: e.g. 60,200")
     ap.add_argument("--hint", default="", help="a network that says which readings of a row to try first (made by prior.py)")
     ap.add_argument("--show", action="store_true")
+    ap.add_argument("--memory", default="", help="readings of kinds of sentences remembered from tasks learnt before (made by memory.py): the search begins from them")
     ap.add_argument("--plain", dest="deep", action="store_false", help="do not look for queries composed from the operators of algebra.py for the kinds of questions left unexplained")
     ap.add_argument("--deep", action="store_true", default=True, help="(on unless --plain is given) the line 'deep' gives the test result with the composed queries; 'test' is the result without them")
     a = ap.parse_args()
@@ -327,7 +329,12 @@ def main():
             if other and other.best > reader.best:
                 other.guessed = reader.guessed[:1 if pairs else 0] + ["words that name the same: " + " ".join(f"{v}={w}" for v, w in sorted(alias.items()))] + other.guessed
                 reader = other
-        m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint)
+        seed = None
+        if a.memory:                                             # what is remembered of the kinds of sentences of this task
+            import memory
+            eps = reader.rows(raw)
+            seed = memory.recall(json.load(open(a.memory)), {(op, quest, kinds) for ep in eps[:a.stories] for op, quest, _, _, kinds, _ in ep if not quest})
+        m, used, notes = records.study(reader.rows(raw), a.stories, more, a.limit, a.ask, hint=hint, seed=seed)
         got, n = m.run(m.episodes)
         own = m.tally
         print(f"task {k:2d}: {len(reader.code)} things of {len({c[0] for c in reader.code.values()})} kinds; learnt from {used} stories" + "".join(f" ({x})" for x in notes) + f", {got}/{n} of their "
