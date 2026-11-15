@@ -17,6 +17,7 @@ import os
 import pickle
 import random
 import re
+import time
 
 import memory
 import records
@@ -199,16 +200,20 @@ def dreams(tasks, rng, stories=20, varied=0.5, own=0.5):
     """an endless stream of tasks: a task learnt, or (varied: how often) a task that never was - one or two of its kinds
     of sentences read another way - in its own stories (own: how often) or in new ones, now and then with a kind of
     sentence or of question left out -> (the episodes, the readings of its kinds of sentences, the task it comes from)"""
-    seen = usual(tasks)
+    seen, slow = usual(tasks), set()
     while True:
         task, rec = rng.choice(tasks), None
         if rng.random() < varied:
-            for _ in range(5):                                   # (a task that can be varied is looked for, a few times)
-                rec = vary(task, rng, seen)
+            for _ in range(5):                                   # (a task that can be varied is looked for, a few times;
+                if task["name"] not in slow:                     # one whose stories take long to play is not varied again)
+                    t0 = time.time()
+                    rec = vary(task, rng, seen)
+                    if time.time() - t0 > 0.5:
+                        slow.add(task["name"])
                 if rec:
                     break
                 task = rng.choice(tasks)
-            if rec and rng.random() < 0.3:
+            if rec and rng.random() < 0.3 and task["name"] not in slow:
                 rec = vary(task, rng, seen, rec) or rec
         said, asked = [f for f in task["rec"] if task["rec"][f]], list(task["ask"])
         but = ([rng.choice(asked)] if len(asked) > 1 and rng.random() < 0.3 else []) + ([rng.choice(said)] if len(said) > 2 and rng.random() < 0.2 else [])

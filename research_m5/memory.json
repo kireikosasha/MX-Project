@@ -1370,6 +1370,20 @@ null
 ]
 ],
 "results/rows/rerun_A.txt:3"
+],
+[
+[
+[
+"tie",
+0,
+[
+1,
+0
+],
+null
+]
+],
+"results/rows/bridge_I.txt:4"
 ]
 ],
 "* is taller than * | 0 0": [
@@ -1386,6 +1400,20 @@ null
 ]
 ],
 "results/rows/rerun_A.txt:3"
+],
+[
+[
+[
+"tie",
+0,
+[
+0,
+1
+],
+null
+]
+],
+"results/rows/bridge_I.txt:4"
 ]
 ],
 "* is the * of * | 0 1 0": [
@@ -2421,6 +2449,22 @@ null
 "results/rows/rerun_B.txt:10"
 ]
 ],
+"* started in the * | 0 1": [
+[
+[
+[
+"set",
+0,
+[
+0,
+1
+],
+null
+]
+],
+"results/rows/bridge_I.txt:7"
+]
+],
 "* swapped the * with * for the * | 0 1 0 1": [
 [
 [
@@ -2862,6 +2906,57 @@ null
 "results/rows/rerun_en.txt:1"
 ]
 ],
+"* went to * * * went to * | 0 1 2 0 1": [
+[
+[
+[
+"link",
+0,
+[
+101,
+134,
+2
+],
+null
+]
+],
+"results/dreams/at_once_J.txt:7"
+]
+],
+"* went to * after * went to * | 0 1 0 1": [
+[
+[
+[
+"link",
+0,
+[
+101,
+123,
+-2
+],
+null
+]
+],
+"results/rows/bridge_I.txt:8"
+]
+],
+"* went to * before * went to * | 0 1 0 1": [
+[
+[
+[
+"link",
+0,
+[
+101,
+123,
+-2
+],
+null
+]
+],
+"results/rows/bridge_I.txt:8"
+]
+],
 "* went to the * # | 0 1 #": [
 [
 [
@@ -2910,6 +3005,20 @@ null
 ]
 ],
 "results/rows/rerun_E.txt:6"
+],
+[
+[
+[
+"set",
+0,
+[
+0,
+1
+],
+null
+]
+],
+"results/dreams/at_once_I.txt:7"
 ]
 ],
 "* went to the * at # | 0 1 #": [
@@ -2927,6 +3036,21 @@ null
 "results/rows/rerun_E.txt:6"
 ]
 ],
+"* went to the * at time # | 0 1 #": [
+[
+[
+[
+"qset",
+0,
+[
+101
+],
+0
+]
+],
+"results/rows/bridge_J.txt:8"
+]
+],
 "* went to the * before * went to the * | 0 1 0 1": [
 [
 [
@@ -2942,6 +3066,20 @@ null
 ]
 ],
 "results/rows/rerun_E.txt:6"
+],
+[
+[
+[
+"set",
+0,
+[
+0,
+1
+],
+null
+]
+],
+"results/dreams/at_once_I.txt:7"
 ]
 ],
 "* went to the * on # | 0 1 #": [
@@ -3022,6 +3160,19 @@ null
 ]
 ],
 "results/rows/rerun_D.txt:1"
+],
+[
+[
+[
+"unset",
+0,
+[
+0
+],
+null
+]
+],
+"results/dreams/at_once_I.txt:7"
 ]
 ],
 "* works for * | 0 0": [
@@ -3331,6 +3482,37 @@ null
 "results/rows/rerun_F.txt:11"
 ]
 ],
+"at start * was at * | 0 1": [
+[
+[
+[
+"set",
+0,
+[
+0,
+1
+],
+null
+]
+],
+"results/dreams/at_once_J.txt:7"
+]
+],
+"at time # * went to the * | # 0 1": [
+[
+[
+[
+"qset",
+0,
+[
+101
+],
+0
+]
+],
+"results/rows/bridge_J.txt:5"
+]
+],
 "every * can * | 0 1": [
 [
 [
@@ -3626,6 +3808,22 @@ null
 ]
 ],
 "results/rows/rerun_A.txt:1"
+]
+],
+"no * can * | 0 1": [
+[
+[
+[
+"set",
+0,
+[
+0,
+1
+],
+null
+]
+],
+"results/dreams/at_once_H.txt:4"
 ]
 ],
 "no * is * | 0 1": [
