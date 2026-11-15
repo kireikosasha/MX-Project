@@ -135,11 +135,12 @@ class Reader:
         self.name()
         self.guessed = []
         self.best = self.total = None
+        rest = [ws for ws in kinds.values() if not ws & self.things and len(ws) > 1]
+        rest.sort(key=lambda ws: len({self.op(words, self.things | ws) for story in train for words, gold in story}))
+        seeded = [ws for ws in kinds.values() if ws <= self.things and not ws & said]
+        self.rest, self.seeded = rest, seeded                    # the kinds of words there is a guess to make about
         if limit:                                                # the other kinds of words: by what explains more
-            rest = [ws for ws in kinds.values() if not ws & self.things and len(ws) > 1]
-            rest.sort(key=lambda ws: len({self.op(words, self.things | ws) for story in train for words, gold in story}))
             total = sum(gold is not None for story in train for words, gold in story)
-            seeded = [ws for ws in kinds.values() if ws <= self.things and not ws & said]
             best = self.worth(limit)
             for ws in rest[:4]:
                 if best[1] == total:                             # nothing is left to explain
@@ -284,6 +285,36 @@ class Reader:
         return out
 
 
+def guesses(train):
+    """the stories as they are, and then with one guess about their words made: a kind of words that take turns
+    somewhere taken for things, or for pointers at those the sentence before began with; words that take turns in a
+    question and are never an answer taken for words of the sentence itself; the order of the words of an answer
+    taken to say something -> the readers, one for every guess"""
+    plain = Reader(train, 0)
+    yield plain
+    for ws in plain.rest[:4]:
+        r = Reader(train, 0)
+        r.things |= ws
+        r.name()
+        r.guessed = ["things: " + " ".join(sorted(ws))]
+        yield r
+        r = Reader(train, 0)
+        r.pointers |= ws
+        r.guessed = ["pointers: " + " ".join(sorted(ws))]
+        yield r
+    for ws in sorted(plain.seeded, key=sorted):
+        r = Reader(train, 0)
+        r.things -= ws
+        r.name()
+        r.guessed = ["words of the sentence itself: " + " ".join(sorted(ws))]
+        yield r
+    if any(gold and len(gold) > 1 and list(gold) != sorted(gold) for story in train for words, gold in story):
+        r = Reader(train, 0)
+        r.ordered = True
+        r.guessed = ["the order of the words of an answer matters"]
+        yield r
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", required=True, help="a folder with bAbI files (qaN_*_train.txt, qaN_*_test.txt)")
@@ -317,10 +348,12 @@ def main():
         if a.guess and (a.fast or a.at_once):                    # first of all: the stories as they are, and what the network (and the
             import guess                                         # memory) proposes for them; if a reading proposed explains everything,
             import memory                                        # nothing is searched for - not even which words are things
-            plain = Reader(raw[:a.stories], 0)
-            eps = plain.rows(raw)
-            seed = memory.recall(json.load(open(a.memory)), {(op, quest, kinds) for ep in eps[:a.stories] for op, quest, _, _, kinds, _ in ep if not quest}) if a.memory else None
-            m, used, notes = records.study(eps, a.stories, more, a.limit, a.ask, seed=([seed] if seed else []) + guess.proposed(a.guess, eps[:a.stories]), fast="only")
+            for plain in guesses(raw[:a.stories]):               # (and with every guess about the words, one at a time: a guess
+                eps = plain.rows(raw)                            # costs seconds now, not a search)
+                seed = memory.recall(json.load(open(a.memory)), {(op, quest, kinds) for ep in eps[:a.stories] for op, quest, _, _, kinds, _ in ep if not quest}) if a.memory else None
+                m, used, notes = records.study(eps, a.stories, more, a.limit, a.ask, seed=([seed] if seed else []) + guess.proposed(a.guess, eps[:a.stories]), fast="only")
+                if m is not None:
+                    break
             if m is not None:
                 reader, pairs = plain, ()
             elif a.at_once:
