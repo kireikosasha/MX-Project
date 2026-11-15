@@ -587,8 +587,9 @@ def worlds(s, k, q, model, later, opposite, mover, memo):
     for a, b, lab, _ in s.L[k]:
         if "+" in a and "+" in b and (lab == later or opposite.get(lab) == later):
             order.add((b, a) if lab == later else (a, b))                # (earlier, later)
-    said = (frozenset(order), frozenset(stamp.items()), model, mover)   # the same things said give the same worlds, whatever else
-    if said in SEEN:                                                     # the rows of the story are read as
+    start = sorted((a, b) for a, b in s.F[0].items() if kind(a) == mover and b.__class__ is str)      # where the movers were before any event
+    said = (frozenset(order), frozenset(stamp.items()), model, mover, tuple(start))     # the same things said give the same worlds,
+    if said in SEEN:                                                                    # whatever else the rows of the story are read as
         memo[key] = SEEN[said]
         return SEEN[said]
     if len(SEEN) > 20000:
@@ -598,7 +599,7 @@ def worlds(s, k, q, model, later, opposite, mover, memo):
     out, n, times = [], len(events), {}
     memo[key] = SEEN[said] = out
     domain = range(1, (n if model == "line" else max(list(stamp.values()) + [n])) + 1)
-    if not 1 <= n <= 12 or len(domain) > 12:
+    if not (1 <= n <= 12 or start and not n) or len(domain) > 12:
         return out
 
     def place(i):
@@ -606,6 +607,9 @@ def worlds(s, k, q, model, later, opposite, mover, memo):
             return
         if i == n:
             w = State()
+            w.now = -1
+            for a, b in start:                                   # (said as a plain place: it stands in every world, before its events)
+                w.put(0, a, b, 0)
             for w.now, (tm, e) in enumerate(sorted((times[e], e) for e in events)):
                 who = [x for x in e.split("+") if kind(x) == mover]
                 where = [x for x in e.split("+") if kind(x) != mover]
@@ -798,7 +802,8 @@ def answer(s, p, t, nums, memo):
         return TOLD[key]
     if name == "atev":                                           # the query asked of the state as it was when an event happened
         n = s.when.get(whom(t, p[1]))
-        return None if n is None else answer(s.before(n, p[2]), p[3], t, nums, memo.setdefault(("at", n, p[2]), {}))
+        strict = p[2] if p[2].__class__ is bool else whom(t, p[2][0]) != p[2][1]     # (said by a thing of the row: before the event, or after)
+        return None if n is None else answer(s.before(n, strict), p[3], t, nums, memo.setdefault(("at", n, strict), {}))
     if name == "alg":                                            # a query composed from the operators of algebra.py
         import algebra
         return algebra.answer(s, p, t, nums)
@@ -1248,6 +1253,13 @@ class Learner:
                         timed = [(q, m) for q in qs if ka in types[("Q", q)] for m in ("line", "clock")]
                         out += [("world", k, q, model, later, mover, p, opp) for opp in opps for later in marks
                                 for q, model in timed or [(None, "line")] for p in plain_q + at_ev]
+                    for mover in ka.split("+") if len(set(ka.split("+"))) == 2 and way else ():      # the same when the row itself says
+                        seen = {("F", 0): {(mover, [x for x in ka.split("+") if x != mover][0])}, ("F@", 0): {"#"}}      # before or after: the
+                        plain_q = [p for p in self.asked(form, seen, own) if p[0] in ("list", "has", "num") and steps(p) <= 1]   # state just
+                        timed = [(q, m) for q in qs if ka in types[("Q", q)] for m in ("line", "clock")]              # before the event, or with it
+                        out += [("world", k, q, model, later, mover, ("atev", both(i, j), (way[0], word), p), opp) for opp in opps for later in marks
+                                for q, model in timed or [(None, "line")] for i in plain for j in plain if i < j and here(i, j)
+                                for word in marks for p in plain_q]      # (word: the one that says "with the event", the other says "before it")
                     for st in stamps:
                         for d in way or marks:
                             if sh == "b" and len(plain) == 4 and here(plain[0], plain[1]) and here(plain[2], plain[3]):
@@ -1926,20 +1938,28 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, onl
         m = Learner(data[:stories])
         starts = [{f: m.near(sd, f) or () for f in m.rec} for sd in seed]
         start = max(starts, key=lambda st: m.fit(st)[0])
-        m.rec, m.ask = start, dict(m.fit(start)[1])
-        m.usual = {f: Counter(g).most_common(1)[0][0] for f, g in m.forms.items() if f[1]}
-        right, total = m.run(m.episodes)
-        if right < total and m.words and 10 * right >= 8 * total:      # nearly all: the kinds of questions left may be queries
-            composed = m.deepen()                                       # composed from operators, with the sentences read so
+        seen, composed = stories, []
+        while True:                                              # the sentences stay read as proposed; the queries are fitted to all
+            m.rec, m.ask = {f: m.near(start, f) or () for f in m.rec}, None      # the stories it has, and checked on five more it asks for -
+            m.ask = dict(m.fit(m.rec)[1])                        # where the check fails, those five are learnt from too, and so on
+            m.usual = {f: Counter(g).most_common(1)[0][0] for f, g in m.forms.items() if f[1]}
             right, total = m.run(m.episodes)
-        else:
-            composed = []
-        if right == total:
-            right, total = m.run(data[stories:stories + 5])
+            if right < total and m.words and 10 * right >= 8 * total:   # nearly all: the kinds of questions left may be queries
+                composed = m.deepen()                                    # composed from operators, with the sentences read so
+                right, total = m.run(m.episodes)
+            spent += m.work
+            check = data[seen:seen + 5]
+            if right < total or not check:
+                break
+            seen += len(check)
+            right, total = m.run(check)
             if right == total and not m.gaps:
-                quick = list(range(len(data[stories:stories + 5])))
+                quick = list(range(seen - stories))
                 notes.append(f"taken at once: one of {len(seed)} readings proposed explains every question" + (f", with {len(composed)} kinds of questions composed" if composed else ""))
-        spent += m.work
+                break
+            if seen - stories + 5 > ask:
+                break
+            m = Learner(data[:seen])
         m = m if quick else None
         if m is None and fast == "only":                         # (asked for nothing else: the search is not run)
             return None, stories, notes
@@ -1955,7 +1975,7 @@ def study(path, stories=20, more=(), limit=WORK, ask=0, pool=200, hint=None, onl
         spent += m.work
         if hint:
             notes.append("the hint was not enough")
-    train, asked, rest = list(data[:stories]), list(quick), data[stories:stories + pool]
+    train, asked, rest = list(data[:stories + len(quick)]), list(quick), data[stories:stories + pool]
     while len(asked) < ask and not quick:
         mine = m.answers(rest)
         votes = [10 * sum(m.near(m.ask if row[1] else m.rec, row[:2] + (row[4],)) is None for row in ep) for ep in rest]   # rows of a kind never met
