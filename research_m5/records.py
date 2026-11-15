@@ -406,7 +406,7 @@ RANK = {name: [n for n in MOVES if MOVES[n][1] == MOVES[name][1]].index(name) fo
 USES = {"list": 1, "seq": 1, "eldest": 1, "newest": 1, "some": 1, "pos": 1, "num": 1, "cmpn": 1, "qat": 1, "which": 0, "rank": 0,
         "has": 2, "same": 2, "cmp": 2, "diff": 2, "before": 2, "after": 2, "when": 2, "span": 2, "dir": 2, "dist": 2, "route": 2,
         "hops": 2, "path": 2, "aligned": 2, "steps": 2, "assoc": 1, "both": 2, "maybe": 2, "lhead": 2, "ltail": 2,
-        "asof": 1, "wasat": 2, "wason": 2, "top": 1, "was": 2, "way": 2, "utmost": 1, "edge": 1, "lover": 2, "lunder": 2, "lways": 2, "dirs": 2, "pedge": 1, "first": 1, "last": 1}
+        "asof": 1, "wasat": 2, "wason": 2, "top": 1, "was": 2, "way": 2, "utmost": 1, "edge": 1, "lover": 2, "lunder": 2, "lways": 2, "dirs": 2, "pedge": 1, "soonest": 1, "latest": 1}
 
 
 # ---------------------------------------------------------------- the steps of a walk
@@ -800,9 +800,9 @@ def answer(s, p, t, nums, memo):
                     break
             TOLD[key] = said.pop() if len(said) == 1 else None
         return TOLD[key]
-    if name in ("first", "last"):                                # of those that ever had the value: the one that got it first (last)
+    if name in ("soonest", "latest"):                            # of those that ever had the value: the one that got it first (last)
         xs = sorted((stamp, x) for x, h in s.H[p[2]].items() for stamp, v in h if v == t[p[1]] and (p[3] is None or kind(x) == p[3]))
-        return xs[0 if name == "first" else -1][1] if xs else None
+        return xs[0 if name == "soonest" else -1][1] if xs else None
     if name == "timeof":                                         # (in a world) the time of an event
         n = s.when.get(whom(t, p[1]))
         return None if n is None else str(n)
@@ -1259,7 +1259,7 @@ class Learner:
                         timed = [(q, m) for q in qs if ka in types[("Q", q)] for m in ("line", "clock")]
                         out += [("world", k, q, model, later, mover, p, opp) for opp in opps for later in marks
                                 for q, model in timed or [(None, "line")] for p in plain_q + at_ev]
-                        more = [(nm, i, 0, own) for nm in ("first", "last") for i in range(nt) if tk[i] in movers and tk[i] != mover] \
+                        more = [(nm, i, 0, own) for nm in ("soonest", "latest") for i in range(nt) if tk[i] in movers and tk[i] != mover] \
                             if sh == "t" and own == mover else []                       # who came to a place first; when an event happened
                         more += [("timeof", both(i, j)) for i in range(nt) for j in range(i + 1, nt) if here(i, j)] if sh == "n" else []
                         out += [("world", k, q, model, later, mover, p, opp) for opp in opps for later in marks
