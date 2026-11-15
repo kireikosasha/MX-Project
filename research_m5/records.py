@@ -570,6 +570,9 @@ def over(s, k, opposite, d, memo, own=None, stamps=None, extra=None):
     return memo[key]
 
 
+SEEN, TOLD = {}, {}                                       # the worlds worked out; what was answered in them
+
+
 def worlds(s, k, q, model, later, opposite, mover, memo):
     """every way the events may have happened. An event is two things together (who and where); what is said of the
     events is which came after which and, of some, a time. -> the states of the world, one for every order of the
@@ -584,9 +587,16 @@ def worlds(s, k, q, model, later, opposite, mover, memo):
     for a, b, lab, _ in s.L[k]:
         if "+" in a and "+" in b and (lab == later or opposite.get(lab) == later):
             order.add((b, a) if lab == later else (a, b))                # (earlier, later)
+    said = (frozenset(order), frozenset(stamp.items()), model, mover)   # the same things said give the same worlds, whatever else
+    if said in SEEN:                                                     # the rows of the story are read as
+        memo[key] = SEEN[said]
+        return SEEN[said]
+    if len(SEEN) > 20000:
+        SEEN.clear()
+        TOLD.clear()
     events = sorted(set(stamp) | {x for pair in order for x in pair}, key=lambda x: (x not in stamp, x))    # those with a time first
     out, n, times = [], len(events), {}
-    memo[key] = out
+    memo[key] = SEEN[said] = out
     domain = range(1, (n if model == "line" else max(list(stamp.values()) + [n])) + 1)
     if not 1 <= n <= 12 or len(domain) > 12:
         return out
@@ -776,12 +786,16 @@ def answer(s, p, t, nums, memo):
             return ("?", t[p[2]], tuple(sorted(got.items()))) if got else None
         return got.get(dict(p[4]).get(t[p[2]]))
     if name == "world":                                          # the query asked of every way the events may have happened: what
-        said = set()                                             # all the ways agree on, or nothing
-        for i, w in enumerate(worlds(s, p[1], p[2], p[3], p[4], p[-1], p[5], memo)):
-            said.add(answer(w, p[6], t, nums, memo.setdefault(("in", p[1:6], i), {})))
-            if len(said) > 1:
-                return None
-        return said.pop() if said else None
+        ws = worlds(s, p[1], p[2], p[3], p[4], p[-1], p[5], memo)       # all the ways agree on, or nothing
+        key = (id(ws), p[6], t, nums)
+        if key not in TOLD:
+            said = set()
+            for i, w in enumerate(ws):
+                said.add(answer(w, p[6], t, nums, memo.setdefault(("in", p[1:6], i), {})))
+                if len(said) > 1:
+                    break
+            TOLD[key] = said.pop() if len(said) == 1 else None
+        return TOLD[key]
     if name == "atev":                                           # the query asked of the state as it was when an event happened
         n = s.when.get(whom(t, p[1]))
         return None if n is None else answer(s.before(n, p[2]), p[3], t, nums, memo.setdefault(("at", n, p[2]), {}))
