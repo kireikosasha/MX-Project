@@ -1,0 +1,95 @@
+[
+ {
+  "id": "B2",
+  "statements": {
+   "* drops the *": ["* lets go of the *", "* lets the * fall", "* puts the * down", "* releases the *", "* sets the * down", "* stops holding the *"],
+   "* gives the * to *": ["* hands the * over to *", "* transfers the * to *", "* makes the * go to *", "* turns the * over to *", "* delivers the * to *", "* moves the * into the hands of *"],
+   "* has the *": ["* owns the *", "* possesses the *", "* is holding the *", "* keeps the *", "* has got the *", "* is in possession of the *"],
+   "* swaps with *": ["* exchanges with *", "* trades with *", "* switches with *", "* trades things with *", "* exchanges things with *", "* and * trade things"],
+   "the * is with *": ["the * is in the hands of *", "the * is held by *", "the * sits with *", "the * is kept by *", "the * is in the possession of *", "the * is owned by *"]
+  },
+  "questions": {
+   "does * have the *": ["does * own the *", "does * possess the *", "is * holding the *", "does * keep the *", "has * got the *", "is * in possession of the *"],
+   "how many things does * have": ["how many items does * own", "how many things does * possess", "how many objects does * keep", "how many things are owned by *", "how many things are in the possession of *", "how many things has * got"],
+   "what does * have": ["what does * own", "what does * possess", "what is in the possession of *", "what things does * keep", "what items are owned by *", "what is * holding"],
+   "who has the *": ["who owns the *", "who possesses the *", "who is holding the *", "who keeps the *", "who has got the *", "who is in possession of the *"],
+   "who holds the *": ["who is keeping the *", "who has hold of the *", "whose hands hold the *", "who is the one holding the *", "who is grasping the *", "which person keeps the *"]
+  }
+ },
+ {
+  "id": "C6",
+  "statements": {
+   "* went to the * on #": ["* visited the * on #", "* reached the * on #", "* headed to the * on #", "on # * made a trip to the *", "* traveled to the * on #", "* got to the * on #"],
+   "* went to the * the day after #": ["* visited the * on the day after #", "* reached the * the day after #", "* headed to the * on the day following #", "on the day after # * got to the *", "* traveled to the * the day after #", "* made a trip to the * on the day after #"],
+   "* went to the * the day before #": ["* visited the * the day before #", "* reached the * the day before #", "* headed to the * the day prior to #", "on the day before # * got to the *", "* traveled to the * the day before #", "* made a trip to the * the day prior to #"]
+  },
+  "questions": {
+   "was * at the * on #": ["did * visit the * on #", "did * reach the * on #", "was * in the * on #", "did * get to the * on #", "was * present at the * on #", "did * head to the * on #"],
+   "where was * after the *": ["where did * go after the *", "where did * head following the *", "where did * end up after the *", "where was * located after the *", "where did * travel after the *", "which place did * go to after the *"],
+   "where was * before the *": ["where did * go before the *", "where did * head prior to the *", "where did * end up before the *", "where was * located before the *", "where did * travel before the *", "which place did * go to before the *"],
+   "where was * on #": ["where did * go on #", "which place was * visiting on #", "where did * head on #", "where was * located on #", "where did * travel on #", "where did * end up on #"]
+  }
+ },
+ {
+  "id": "D12",
+  "statements": {
+   "* do the *": ["* handle the *", "* take care of the *", "* complete the *", "* carry out the *", "* tackle the *", "* work on the *"],
+   "* swaps chores with *": ["* trades chores with *", "* exchanges chores with *", "* switches chores with *", "* and * trade chores", "* and * switch chores", "* and * change chores with each other"],
+   "the * goes to *": ["the * is handed to *", "the * passes to *", "the * is given to *", "the * falls to *", "the * is assigned to *", "the * is left for *"]
+  },
+  "questions": {
+   "do * do the *": ["do * handle the *", "do * take care of the *", "do * complete the *", "do * carry out the *", "do * tackle the *", "do * work on the *"],
+   "what do * do": ["what do * handle", "what do * take care of", "what do * complete", "what do * carry out", "what do * tackle", "what do * work on"],
+   "who do the *": ["who handles the *", "who takes care of the *", "who completes the *", "who carries out the *", "who tackles the *", "who works on the *"]
+  }
+ },
+ {
+  "id": "F9",
+  "statements": {
+   "* is the boss of *": ["* is in charge of *", "* has power over *", "* is the supervisor of *", "* is the leader of *", "* is the manager of *", "* has authority over *"],
+   "* reports to *": ["* answers to *", "* is subordinate to *", "* works under *", "* takes orders from *", "* is a subordinate of *", "* is led by *"]
+  },
+  "questions": {
+   "is * the boss of the boss of *": ["is * the manager of the manager of *", "does * oversee the boss of *", "is * in charge of the boss of *", "is * the superior of the boss of *", "is * a manager over the boss of *", "is * the supervisor of the boss of *"],
+   "who is the boss of the boss of *": ["who is the manager of the manager of *", "who oversees the boss of *", "who is in charge of the boss of *", "who is the superior of the boss of *", "who supervises the boss of *", "who leads the boss of *"]
+  }
+ },
+ {
+  "id": "H2",
+  "statements": {
+   "* gives the * to *": ["* hands the * over to *", "* transfers the * to *", "* makes the * go to *", "* turns the * over to *", "* delivers the * to *", "* moves the * into the hands of *"],
+   "* has the *": ["* owns the *", "* possesses the *", "* is holding the *", "* keeps the *", "* has got the *", "* is in possession of the *"],
+   "* holds the *": ["* is holding the *", "* keeps hold of the *", "* has hold of the *", "* is clutching the *", "* is grasping the *", "* is keeping the *"],
+   "* passes the * to *": ["* hands the * to *", "* gives the * on to *", "* sends the * on to *", "* moves the * on to *", "* transfers the * on to *", "* passes along the * to *"],
+   "* swaps the * for the *": ["* trades the * for the *", "* exchanges the * for the *", "* switches the * for the *", "* gives up the * in exchange for the *", "* replaces the * with the *", "* lets go of the * and takes the *"]
+  },
+  "questions": {
+   "does * have the *": ["does * own the *", "does * possess the *", "is * holding the *", "does * keep the *", "has * got the *", "is * in possession of the *"],
+   "how many things does * have": ["how many items does * own", "how many things does * possess", "how many objects does * keep", "how many things are owned by *", "how many things are in the possession of *", "how many things has * got"],
+   "what does * have": ["what does * own", "what does * possess", "what is in the possession of *", "what things does * keep", "what items are owned by *", "what is * holding"],
+   "who has the *": ["who owns the *", "who possesses the *", "who is holding the *", "who keeps the *", "who has got the *", "who is in possession of the *"]
+  }
+ },
+ {
+  "id": "J1",
+  "statements": {
+   "* went to the * after * went to the *": ["* reached the * later than * reached the *", "* headed to the * once * had gone to the *", "* got to the * later than * got to the *", "* traveled to the * after * traveled to the *", "* went to the * following the visit of * to the *", "* visited the * after * visited the *"],
+   "* went to the * at time #": ["* visited the * at time #", "* reached the * at time #", "* headed to the * at time #", "* got to the * at time #", "at time # * traveled to the *", "* arrived at the * at time #"],
+   "* went to the * before * went to the *": ["* visited the * before * visited the *", "* headed to the * ahead of * going to the *", "* got to the * sooner than * got to the *", "* traveled to the * prior to * traveled to the *", "* reached the * before * reached the *", "* went to the * earlier than * went to the *"]
+  },
+  "questions": {
+   "did * go to the * before * went to the *": ["did * visit the * before * visited the *", "did * reach the * before * reached the *", "did * head to the * prior to * going to the *", "did * get to the * earlier than * got to the *", "did * travel to the * before * traveled to the *", "did * visit the * ahead of * visiting the *"],
+   "which did * go to first the * or the *": ["which did * visit first the * or the *", "which did * reach first the * or the *", "which place did * visit first the * or the *", "which did * get to first the * or the *", "which did * travel to first the * or the *", "first which did * go to the * or the *"]
+  }
+ },
+ {
+  "id": "en12",
+  "statements": {
+   "* and * * back to the *": ["* and * * their way back to the *", "* and * * on the way back to the *", "* and * * returning to the *", "* and * * heading back to the *", "* and * * and then return to the *", "* and * * and turn back to the *"],
+   "* and * * to the *": ["* and * * their way to the *", "* and * * on the way to the *", "* and * * off to the *", "* and * * heading to the *", "* and * * over to the *", "* and * * and then head to the *"]
+  },
+  "questions": {
+   "where is *": ["where can * be found", "where would * be", "what place is * at", "where is * located", "in which place is *", "which place is * in"]
+  }
+ }
+]

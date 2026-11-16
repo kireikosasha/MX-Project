@@ -1,0 +1,178 @@
+[
+ {
+  "id": "K1",
+  "statements": {
+   "* gives the * to *": ["* hands the * over to *", "* passes the * on to *", "* transfers the * to *"],
+   "* goes to the *": ["* heads to the *", "* moves to the *", "* makes its way to the *"],
+   "* is in the *": ["* is inside the *", "* is located in the *", "* sits in the *"],
+   "* puts the * in the *": ["* places the * inside the *", "* sets the * down in the *", "* lays the * in the *"],
+   "* takes the *": ["* grabs the *", "* picks up the *", "* gets hold of the *"],
+   "the * is in the *": ["the * is inside the *", "the * is located in the *", "the * sits in the *"]
+  },
+  "questions": {
+   "is the * in the *": ["is the * inside the *", "is the * located in the *", "is the * sitting in the *"],
+   "what is in the *": ["what sits inside the *", "which things are in the *", "what can be found in the *"],
+   "where is the *": ["in which place is the *", "which place is the * in", "where can the * be found"]
+  }
+ },
+ {
+  "id": "K5",
+  "statements": {
+   "ann * the *": ["ann performs * on the *", "ann does * to the *", "ann applies * to the *"],
+   "ann empties the *": ["ann drains the *", "ann clears out the *", "ann pours everything out of the *"],
+   "ann fills the *": ["ann tops up the *", "ann makes the * full", "ann brings the * to full"],
+   "ann turns the * *": ["ann rotates the * *", "ann twists the * *", "ann spins the * *"],
+   "bob * the *": ["bob performs * on the *", "bob does * to the *", "bob applies * to the *"],
+   "bob empties the *": ["bob drains the *", "bob clears out the *", "bob pours everything out of the *"],
+   "bob fills the *": ["bob tops up the *", "bob makes the * full", "bob brings the * to full"],
+   "bob turns the * *": ["bob rotates the * *", "bob twists the * *", "bob spins the * *"],
+   "cal * the *": ["cal performs * on the *", "cal does * to the *", "cal applies * to the *"],
+   "cal empties the *": ["cal drains the *", "cal clears out the *", "cal pours everything out of the *"],
+   "cal fills the *": ["cal tops up the *", "cal makes the * full", "cal brings the * to full"],
+   "cal turns the * *": ["cal rotates the * *", "cal twists the * *", "cal spins the * *"],
+   "dee * the *": ["dee performs * on the *", "dee does * to the *", "dee applies * to the *"],
+   "dee empties the *": ["dee drains the *", "dee clears out the *", "dee pours everything out of the *"],
+   "dee fills the *": ["dee tops up the *", "dee makes the * full", "dee brings the * to full"],
+   "dee turns the * *": ["dee rotates the * *", "dee twists the * *", "dee spins the * *"],
+   "eli * the *": ["eli performs * on the *", "eli does * to the *", "eli applies * to the *"],
+   "eli empties the *": ["eli drains the *", "eli clears out the *", "eli pours everything out of the *"],
+   "eli fills the *": ["eli tops up the *", "eli makes the * full", "eli brings the * to full"],
+   "eli turns the * *": ["eli rotates the * *", "eli twists the * *", "eli spins the * *"],
+   "the * is *": ["the * is currently *", "the * has the status *", "the * is set to *"],
+   "the * is wired to the *": ["the * is connected to the *", "the * is linked to the *", "the * is joined to the *"]
+  },
+  "questions": {
+   "how many things are *": ["what number of things are *", "how many items are *", "what is the count of things that are *"],
+   "is the * *": ["is the * set to *", "is the * currently *", "has the * got the status *"],
+   "which things are *": ["which items are *", "what things are *", "which of the things are *"]
+  }
+ },
+ {
+  "id": "K9",
+  "statements": {
+   "* is the boss of *": ["* is the manager of *", "* is in charge of *", "* is the head of *"],
+   "* reports to *": ["* answers to *", "* works under *", "* has * as the boss"],
+   "the * is in the *": ["the * is inside the *", "the * is located in the *", "the * sits in the *"],
+   "the * is inside the *": ["the * is in the *", "the * is contained in the *", "the * sits within the *"]
+  },
+  "questions": {
+   "how many boss has *": ["how many bosses does * have", "what number of bosses does * have", "how many managers does * have"],
+   "is * the boss of the boss of *": ["is * the manager of the manager of *", "is * the leader of the leader of *", "is * the head of the head of *"],
+   "is the * in the *": ["is the * inside the *", "is the * located in the *", "is the * sitting in the *"],
+   "what is in the *": ["what sits inside the *", "which things are in the *", "what can be found in the *"],
+   "where is the *": ["in which place is the *", "which place is the * in", "where can the * be found"],
+   "who is the boss of the boss of *": ["who is the manager of the manager of *", "who is the leader of the leader of *", "who is the head of the head of *"]
+  }
+ },
+ {
+  "id": "L1",
+  "statements": {
+   "* goes to the *": ["* heads to the *", "* moves to the *", "* makes its way to the *"],
+   "* puts the * in the *": ["* places the * inside the *", "* sets the * down in the *", "* lays the * in the *"],
+   "* takes the *": ["* grabs the *", "* picks up the *", "* gets hold of the *"],
+   "the * is in the *": ["the * is inside the *", "the * is located in the *", "the * sits in the *"]
+  },
+  "questions": {
+   "is the * in the *": ["is the * inside the *", "is the * located in the *", "is the * sitting in the *"],
+   "what is in the *": ["what sits inside the *", "which things are in the *", "what can be found in the *"],
+   "where is *": ["in which place is *", "which place is * in", "where can * be found"],
+   "where is the *": ["in which place is the *", "which place is the * in", "where can the * be found"]
+  }
+ },
+ {
+  "id": "L5",
+  "statements": {
+   "ann * the *": ["ann performs * on the *", "ann does * to the *", "ann applies * to the *"],
+   "ann turns * the *": ["ann twists * the *", "ann spins * the *", "ann rotates * the *"],
+   "ann waits": ["ann pauses", "ann is waiting", "ann holds still"],
+   "ben * the *": ["ben performs * on the *", "ben does * to the *", "ben applies * to the *"],
+   "ben turns * the *": ["ben twists * the *", "ben spins * the *", "ben rotates * the *"],
+   "ben waits": ["ben pauses", "ben is waiting", "ben holds still"],
+   "cal * the *": ["cal performs * on the *", "cal does * to the *", "cal applies * to the *"],
+   "cal turns * the *": ["cal twists * the *", "cal spins * the *", "cal rotates * the *"],
+   "cal waits": ["cal pauses", "cal is waiting", "cal holds still"],
+   "dan * the *": ["dan performs * on the *", "dan does * to the *", "dan applies * to the *"],
+   "dan turns * the *": ["dan twists * the *", "dan spins * the *", "dan rotates * the *"],
+   "dan waits": ["dan pauses", "dan is waiting", "dan holds still"],
+   "eva * the *": ["eva performs * on the *", "eva does * to the *", "eva applies * to the *"],
+   "eva turns * the *": ["eva twists * the *", "eva spins * the *", "eva rotates * the *"],
+   "eva waits": ["eva pauses", "eva is waiting", "eva holds still"],
+   "fay * the *": ["fay performs * on the *", "fay does * to the *", "fay applies * to the *"],
+   "fay turns * the *": ["fay twists * the *", "fay spins * the *", "fay rotates * the *"],
+   "fay waits": ["fay pauses", "fay is waiting", "fay holds still"],
+   "the * is *": ["the * is currently *", "the * has the status *", "the * is set to *"]
+  },
+  "questions": {
+   "is the * *": ["is the * set to *", "is the * currently *", "has the * got the status *"],
+   "which things are *": ["which items are *", "what things are *", "which of the things are *"]
+  }
+ },
+ {
+  "id": "L9",
+  "statements": {
+   "* is a child of *": ["* is a kid of *", "* is an offspring of *", "* is a son or daughter of *"],
+   "* is the boss of *": ["* is the manager of *", "* is in charge of *", "* is the head of *"],
+   "* is the parent of *": ["* is the mom or dad of *", "* is the mother or father of *", "* is a parent to *"],
+   "* works for *": ["* is employed by *", "* is on the staff of *", "* is a worker under *"]
+  },
+  "questions": {
+   "who is the boss of the boss of *": ["who is the manager of the manager of *", "who is the leader of the leader of *", "who is the head of the head of *"],
+   "who is the parent of the parent of *": ["who is the grandparent of *", "who is the mother or father of the mother or father of *", "which person is the parent of the parent of *"]
+  }
+ },
+ {
+  "id": "M21",
+  "statements": {
+   "* is in the *": ["* is inside the *", "* is located in the *", "* sits in the *"],
+   "* put the * in the *": ["* placed the * inside the *", "* set the * down in the *", "* laid the * in the *"],
+   "* took the *": ["* grabbed the *", "* picked up the *", "* got hold of the *"],
+   "* went to the *": ["* headed to the *", "* moved to the *", "* made its way to the *"],
+   "the * is in the *": ["the * is inside the *", "the * is located in the *", "the * sits in the *"]
+  },
+  "questions": {
+   "how many things are in the *": ["what number of things are in the *", "how many items are inside the *", "what is the count of things in the *"],
+   "is the * in the *": ["is the * inside the *", "is the * located in the *", "is the * sitting in the *"],
+   "what is in the *": ["what sits inside the *", "which things are in the *", "what can be found in the *"],
+   "where is *": ["in which place is *", "which place is * in", "where can * be found"],
+   "where is the *": ["in which place is the *", "which place is the * in", "where can the * be found"]
+  }
+ },
+ {
+  "id": "M25",
+  "statements": {
+   "ann * the * box": ["ann does * to the * box", "ann applies * to the * box", "ann performs * on the * box"],
+   "ann flips the * lamp": ["ann toggles the * lamp", "ann flicks the * lamp", "ann turns over the * lamp"],
+   "ann turns the * lamp *": ["ann rotates the * lamp *", "ann twists the * lamp *", "ann spins the * lamp *"],
+   "ben * the * box": ["ben does * to the * box", "ben applies * to the * box", "ben performs * on the * box"],
+   "ben flips the * lamp": ["ben toggles the * lamp", "ben flicks the * lamp", "ben turns over the * lamp"],
+   "ben turns the * lamp *": ["ben rotates the * lamp *", "ben twists the * lamp *", "ben spins the * lamp *"],
+   "cal * the * box": ["cal does * to the * box", "cal applies * to the * box", "cal performs * on the * box"],
+   "cal flips the * lamp": ["cal toggles the * lamp", "cal flicks the * lamp", "cal turns over the * lamp"],
+   "cal turns the * lamp *": ["cal rotates the * lamp *", "cal twists the * lamp *", "cal spins the * lamp *"],
+   "dee * the * box": ["dee does * to the * box", "dee applies * to the * box", "dee performs * on the * box"],
+   "dee flips the * lamp": ["dee toggles the * lamp", "dee flicks the * lamp", "dee turns over the * lamp"],
+   "dee turns the * lamp *": ["dee rotates the * lamp *", "dee twists the * lamp *", "dee spins the * lamp *"],
+   "the * box is *": ["the * box is currently *", "the * box is set to *", "the * box has the status *"],
+   "the * lamp is *": ["the * lamp is currently *", "the * lamp is set to *", "the * lamp has the status *"]
+  },
+  "questions": {
+   "is the * box *": ["is the * box currently *", "is the * box set to *", "has the * box got the status *"],
+   "is the * lamp *": ["is the * lamp currently *", "is the * lamp set to *", "has the * lamp got the status *"],
+   "what is the state of the * box": ["what condition is the * box in", "what is the status of the * box", "which condition is the * box in"],
+   "what is the state of the * lamp": ["what condition is the * lamp in", "what is the status of the * lamp", "which condition is the * lamp in"]
+  }
+ },
+ {
+  "id": "M29",
+  "statements": {
+   "* has no parent": ["* does not have a parent", "* lacks any parent", "* is without a parent"],
+   "* is the child of *": ["* is the kid of *", "* is the offspring of *", "* is the son or daughter of *"],
+   "* is the parent of *": ["* is the mom or dad of *", "* is the mother or father of *", "* is a parent to *"]
+  },
+  "questions": {
+   "is * an ancestor of *": ["is * a forebear of *", "is * an ancestor to *", "is * one of the ancestors of *"],
+   "who is the grandparent of *": ["who is the grandmother or grandfather of *", "which person is the grandparent of *", "who is a grandparent of *"],
+   "who is the great grandparent of *": ["who is the great grandmother or grandfather of *", "which person is the great grandparent of *", "who is a great grandparent of *"]
+  }
+ }
+]

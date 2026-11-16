@@ -1,0 +1,109 @@
+[
+ {
+  "id": "B4",
+  "statements": {
+   "* is a *": ["* counts as a *", "* belongs in the class of *", "* is one kind of *", "* is classed as a *", "* is a type of *", "* falls under the heading of *"],
+   "* is an *": ["* counts as an *", "* belongs in the class of *", "* is one kind of *", "* is classed as an *", "* is a sort of *", "* falls under the heading of *"],
+   "every * is *": ["each * is *", "all * are *", "without exception * is *", "there is no * that is not *", "every one of the * is *", "not one * is anything but *"],
+   "every * is a *": ["each * is a *", "without exception * is a *", "there is no * that is not a *", "every one of the * is a *", "not one * is anything but a *", "every * is one kind of *"],
+   "every * is an *": ["each * is an *", "without exception * is an *", "there is no * that is not an *", "every one of the * is an *", "not one * is anything but an *", "every * is a sort of *"],
+   "no * is *": ["not a single * is *", "none of the * is *", "every * is anything but *", "there is not one * that is *", "not one * is *", "every * fails to be *"],
+   "no * is a *": ["not a single * is a *", "none of the * is a *", "every * is anything but a *", "there is not one * that is a *", "not one * is a *", "every * fails to be a *"],
+   "no * is an *": ["not a single * is an *", "none of the * is an *", "every * is anything but an *", "there is not one * that is an *", "not one * is an *", "every * fails to be an *"]
+  },
+  "questions": {
+   "is * *": ["would you say * is *", "does * count as *", "is it true that * is *", "is * in the class of *", "does * belong to *", "is it right to say * is *"],
+   "is * a *": ["would you say * is a *", "does * count as a *", "is it true that * is a *", "is * one kind of *", "does * belong to the class of *", "is it right to say * is a *"],
+   "is * an *": ["would you say * is an *", "does * count as an *", "is it true that * is an *", "is * one kind of *", "does * belong to the class of *", "is it right to say * is an *"]
+  }
+ },
+ {
+  "id": "C9",
+  "statements": {
+   "* has the * *": ["* owns the * *", "* holds the * *", "* has got the * *", "* is in possession of the * *", "* keeps the * *", "* has possession of the * *"],
+   "* is the * of *": ["* serves as the * of *", "* works as the * of *", "* acts as the * of *", "* is known as the * of *", "* functions as the * of *", "* plays the role of the * of *"],
+   "* reports to *": ["* answers to *", "* takes orders from *", "* works under *", "* is managed by *", "* is subordinate to *", "* is supervised by *"]
+  },
+  "questions": {
+   "is * the * of the * of *": ["does * serve as the * of the * of *", "would you say * is the * of the * of *", "is * acting as the * of the * of *", "is * known as the * of the * of *", "does * work as the * of the * of *", "is it true that * is the * of the * of *"],
+   "who is the * of the * of *": ["who serves as the * of the * of *", "which person is the * of the * of *", "who acts as the * of the * of *", "who is known as the * of the * of *", "who works as the * of the * of *", "which one is the * of the * of *"],
+   "who is the top of the * chain of *": ["who sits at the top of the * chain of *", "who is at the head of the * chain of *", "who stands highest in the * chain of *", "who is the highest in the * chain of *", "who is first in the * chain of *", "which person is on top of the * chain of *"]
+  }
+ },
+ {
+  "id": "E1",
+  "statements": {
+   "* * the *": ["* went and * the *", "* proceeded to * the *", "* ended up * the *", "* set about * the *", "* got around to * the *", "* went on to * the *"],
+   "* put the * in the *": ["* placed the * in the *", "* set the * in the *", "* laid the * in the *", "* got the * into the *", "* put the * inside the *", "* stuck the * in the *"],
+   "* went to the *": ["* headed to the *", "* travelled to the *", "* journeyed to the *", "* made their way to the *", "* headed off to the *", "* moved over to the *"]
+  },
+  "questions": {
+   "is the * in the *": ["is the * inside the *", "is the * found in the *", "is the * contained in the *", "is the * sitting in the *", "is the * within the *", "is the * located in the *"],
+   "what is in the *": ["what can be found in the *", "what is inside the *", "what is contained in the *", "what sits in the *", "which things are in the *", "what is held in the *"],
+   "where is the *": ["where can the * be found", "where is the * located", "where can i find the *", "in which place is the *", "what location is the * in", "where would i find the *"],
+   "who has the *": ["who is holding the *", "who owns the *", "who is carrying the *", "which person has the *", "who holds the *", "who is in possession of the *"]
+  }
+ },
+ {
+  "id": "F10",
+  "statements": {
+   "* joins the * group": ["* enters the * group", "* becomes a member of the * group", "* signs up for the * group", "* becomes part of the * group", "* goes into the * group", "* comes into the * group"],
+   "* leaves the * group": ["* exits the * group", "* quits the * group", "* departs from the * group", "* drops out of the * group", "* withdraws from the * group", "* walks out of the * group"],
+   "* moves to the * group": ["* transfers to the * group", "* switches to the * group", "* shifts to the * group", "* changes over to the * group", "* goes over to the * group", "* is moved to the * group"]
+  },
+  "questions": {
+   "how many are in the * group": ["how many members are in the * group", "what is the size of the * group", "how many are part of the * group", "what is the headcount of the * group", "how many people sit in the * group", "how many are counted in the * group"],
+   "is * in the * group": ["is * a member of the * group", "does * belong to the * group", "is * part of the * group", "is * counted in the * group", "is * included in the * group", "is * inside the * group"],
+   "which group is * in": ["which group does * belong to", "which group is * part of", "what group is * a member of", "which group is * counted in", "which group is * included in", "in what group is * found"],
+   "who is in the * group": ["who are the members of the * group", "who belongs to the * group", "who makes up the * group", "who is part of the * group", "who is counted in the * group", "who is a member of the * group"]
+  }
+ },
+ {
+  "id": "H4",
+  "statements": {
+   "* is a *": ["* counts as a *", "* belongs in the class of *", "* is one kind of *", "* is classed as a *", "* is a type of *", "* falls under the heading of *"],
+   "every * can *": ["each * is able to *", "all * are able to *", "without exception * is able to *", "every * has the ability to *", "each * is capable of *", "there is no * that cannot *"],
+   "every * is a *": ["each * is a *", "without exception * is a *", "there is no * that is not a *", "every one of the * is a *", "not one * is anything but a *", "every * is one kind of *"]
+  },
+  "questions": {
+   "can * *": ["is * able to *", "is it possible for * to *", "does * have the ability to *", "is * capable of *", "is there a way for * to *", "is it within the power of * to *"],
+   "is * a *": ["would you say * is a *", "does * count as a *", "is it true that * is a *", "is * one kind of *", "does * belong to the class of *", "is it right to say * is a *"]
+  }
+ },
+ {
+  "id": "J8",
+  "statements": {
+   "* went to the * after * went to the *": ["* visited the * after * had gone to the *", "* headed for the * following the journey of * to the *", "* made a trip to the * after * had gone to the *", "* paid a visit to the * after * had gone to the *", "* journeyed to the * following the trip of * to the *", "* reached the * following the visit of * to the *"],
+   "* went to the * at time #": ["* visited the * at time #", "* headed to the * at time #", "* travelled to the * at time #", "* made their way to the * at time #", "* journeyed to the * at time #", "* went over to the * at time #"],
+   "* went to the * before * went to the *": ["* visited the * before * travelled to the *", "* headed to the * before * had gone to the *", "* made a trip to the * prior to * going to the *", "* journeyed to the * ahead of * going to the *", "* paid a visit to the * before * went to the *", "* got to the * ahead of * heading to the *"]
+  },
+  "questions": {
+   "did * go to the * before * went to the *": ["did * visit the * before * went to the *", "did * head to the * before * went to the *", "did * make a trip to the * before * went to the *", "did * travel to the * before * went to the *", "did * journey to the * ahead of * going to the *", "did * get to the * before * went to the *"],
+   "where was * before * went to the *": ["where was * prior to * going to the *", "what place was * at before * went to the *", "where was * located before * went to the *", "what place was * in before * went to the *", "in which place was * before * went to the *", "where was * ahead of * heading to the *"],
+   "where was * when * went to the *": ["where was * while * went to the *", "where was * at the time * went to the *", "which place was * in as * went to the *", "where was * during the time * went to the *", "where was * at the moment * went to the *", "where was * as * went to the *"]
+  }
+ },
+ {
+  "id": "en13",
+  "statements": {
+   "* and * * back to the *": ["* and * together * back to the *", "* and * * their way back to the *", "* with * * back to the *", "* and * both * back to the *", "* and * jointly * back to the *", "* and * as a pair * back to the *"],
+   "* and * * to the *": ["* and * together * to the *", "* and * * their way to the *", "* with * * to the *", "* and * both * to the *", "* and * jointly * to the *", "* and * as a pair * to the *"],
+   "* and * journeyed to the *": ["* and * made their way to the *", "* and * set off for the *", "* and * headed to the *", "* and * went over to the *", "* and * proceeded to the *", "* and * moved on to the *"],
+   "* and * moved to the *": ["* and * relocated to the *", "* and * shifted to the *", "* and * headed over to the *", "* and * went on to the *", "* and * made the move to the *", "* and * changed locations to the *"],
+   "* and * travelled to the *": ["* and * journeyed to the *", "* and * made their way to the *", "* and * set out for the *", "* and * headed to the *", "* and * took a trip to the *", "* and * made a journey to the *"],
+   "* and * went back to the *": ["* and * returned to the *", "* and * headed back to the *", "* and * made their way back to the *", "* and * came back to the *", "* and * traveled back to the *", "* and * journeyed back to the *"],
+   "* and * went to the *": ["* and * headed to the *", "* and * travelled to the *", "* and * made their way to the *", "* and * set off for the *", "* and * journeyed to the *", "* and * moved over to the *"],
+   "after that they * and * back to the *": ["after that they * and * returned to the *", "after that they * and * headed back to the *", "after that they * and * made their way back to the *", "after that they * and * came back to the *", "after that they * and * traveled back to the *", "after that they * and * journeyed back to the *"],
+   "after that they * and * to the *": ["after that they * and * went to the *", "after that they * and * headed to the *", "after that they * and * made their way to the *", "after that they * and * set off for the *", "after that they * and * travelled to the *", "after that they * and * journeyed to the *"],
+   "afterwards they * and * back to the *": ["afterwards they * and * returned to the *", "afterwards they * and * headed back to the *", "afterwards they * and * made their way back to the *", "afterwards they * and * came back to the *", "afterwards they * and * traveled back to the *", "afterwards they * and * journeyed back to the *"],
+   "afterwards they * and * to the *": ["afterwards they * and * went to the *", "afterwards they * and * headed to the *", "afterwards they * and * made their way to the *", "afterwards they * and * set off for the *", "afterwards they * and * travelled to the *", "afterwards they * and * journeyed to the *"],
+   "following that they * and * back to the *": ["following that they * and * returned to the *", "following that they * and * headed back to the *", "following that they * and * made their way back to the *", "following that they * and * came back to the *", "following that they * and * traveled back to the *", "following that they * and * journeyed back to the *"],
+   "following that they * and * to the *": ["following that they * and * went to the *", "following that they * and * headed to the *", "following that they * and * made their way to the *", "following that they * and * set off for the *", "following that they * and * travelled to the *", "following that they * and * journeyed to the *"],
+   "then they * and * back to the *": ["then they * and * returned to the *", "then they * and * headed back to the *", "then they * and * made their way back to the *", "then they * and * came back to the *", "then they * and * traveled back to the *", "then they * and * journeyed back to the *"],
+   "then they * and * to the *": ["then they * and * went to the *", "then they * and * headed to the *", "then they * and * made their way to the *", "then they * and * set off for the *", "then they * and * travelled to the *", "then they * and * journeyed to the *"]
+  },
+  "questions": {
+   "where is *": ["where can * be found", "in which place is *", "what place is * in", "where would you find *", "where is * located", "which place is * at"]
+  }
+ }
+]

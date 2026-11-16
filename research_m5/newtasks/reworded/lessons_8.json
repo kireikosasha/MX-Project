@@ -1,0 +1,110 @@
+[
+ {
+  "id": "A11",
+  "statements": {
+   "* is *": ["* counts as *", "* is classed as *", "* can be described as *", "* falls under *", "* is categorized as *", "* is labeled as *"],
+   "* is a *": ["* is a sort of *", "* counts as a *", "* is classed as a *", "* can be described as a *", "* is labeled a *", "* is a kind of *"],
+   "every * is *": ["each * counts as *", "every * falls under *", "all * can be described as *", "any * is classed as *", "each * is labeled as *", "every * is viewed as *"],
+   "every * is a *": ["each * is a kind of *", "all * count as a *", "every * is classed as a *", "any * can be described as a *", "each * is labeled a *", "every * is a sort of *"],
+   "every * thing is *": ["each * thing counts as *", "every * thing falls under *", "any * thing can be described as *", "each * thing is labeled as *", "every * thing is viewed as *", "every * thing is classed as *"],
+   "every * thing is a *": ["each * thing counts as a *", "every * thing falls under a *", "any * thing can be described as a *", "each * thing is labeled a *", "every * thing is classed as a *", "every * thing is a sort of *"]
+  },
+  "questions": {
+   "is * *": ["would * be classed as *", "can * be described as *", "does * count as *", "is * labeled as *", "could * fall under *", "is * viewed as *"],
+   "is * a *": ["does * count as a *", "would * be classed as a *", "can * be described as a *", "is * labeled a *", "could * be a kind of *", "is * viewed as a *"],
+   "which thing are *": ["which kind of thing is *", "what sort of thing is *", "what type of thing is *", "which type of thing is *", "what category is * in", "what kind of thing is *"]
+  }
+ },
+ {
+  "id": "C3",
+  "statements": {
+   "* is shorter than *": ["* is less tall than *", "* is smaller in height than *", "* measures less in height than *", "* is lower in height than *", "* stands less tall than *", "* falls below * in height"],
+   "* is taller than *": ["* stands taller than *", "* is higher in height than *", "* measures more in height than *", "* is bigger in height than *", "* is greater in height than *", "* rises above * in height"]
+  },
+  "questions": {
+   "is * taller than *": ["does * stand taller than *", "is * higher in height than *", "is * greater in height than *", "does * rise above * in height", "is * bigger in height than *", "is * taller compared to *"],
+   "who is the *": ["which one is the *", "who would be the *", "which person is the *", "who ends up as the *", "who turns out to be the *", "who would count as the *"]
+  }
+ },
+ {
+  "id": "D7",
+  "statements": {
+   "* * # * from *": ["* * # * coming from *", "* * # * taken from *", "* * # * that came from *", "* * # * sent over from *", "* * # * which was from *", "* * # * drawn from *"],
+   "* gives # * to *": ["* hands # * over to *", "* passes # * to *", "* transfers # * to *", "* sends # * to *", "* hands out # * to *", "* passes over # * to *"],
+   "* has # *": ["* is the owner of # *", "* is holding # *", "* has possession of # *", "* has got # *", "* is keeping # *", "* is in possession of # *"],
+   "* loses # *": ["* gives up # *", "* parts with # *", "* has # * taken away", "* lets go of # *", "* is no longer holding # *", "* ends up without # *"]
+  },
+  "questions": {
+   "does * have more * than *": ["does * own more * than *", "is * holding more * than *", "does * possess more * than *", "does * hold more * than *", "is it true that * has more * than *", "has * got more * than *"],
+   "how many * does * have": ["what number of * does * have", "how many * does * own", "how many * does * hold", "how many * is * holding", "how many * has * got", "what is the count of * that * has"],
+   "who has the most *": ["who holds the most *", "who owns the most *", "who possesses the most *", "which person has the most *", "who has the greatest amount of *", "who has the largest number of *"]
+  }
+ },
+ {
+  "id": "F4",
+  "statements": {
+   "* is a *": ["* is a sort of *", "* counts as a *", "* is classed as a *", "* can be described as a *", "* is labeled a *", "* is a kind of *"],
+   "* is an *": ["* counts as an *", "* is classed as an *", "* can be described as an *", "* is labeled an *", "* is a sort of *", "* is considered an *"],
+   "every * is *": ["each * counts as *", "all * are classed as *", "every * falls under *", "any * can be described as *", "each * is labeled as *", "every * is viewed as *"],
+   "every * is a *": ["every * is classed as a *", "each * is a kind of *", "any * can be described as a *", "every * counts as a *", "each * is labeled a *", "every * is a sort of *"],
+   "every * is an *": ["each * counts as an *", "every * is classed as an *", "any * can be described as an *", "each * is labeled an *", "every * is a sort of *", "every * is considered an *"]
+  },
+  "questions": {
+   "is * *": ["would * be classed as *", "can * be described as *", "does * count as *", "is * labeled as *", "could * fall under *", "is * viewed as *"],
+   "is * a *": ["does * count as a *", "would * be classed as a *", "can * be described as a *", "is * labeled a *", "could * be a kind of *", "is * viewed as a *"],
+   "is * an *": ["does * count as an *", "would * be classed as an *", "can * be described as an *", "is * labeled an *", "could * be a sort of *", "is * viewed as an *"],
+   "which kinds is *": ["which kinds does * belong to", "what kinds is * a member of", "which types does * fall under", "what categories is * part of", "which groups is * in", "which sorts does * count as"]
+  }
+ },
+ {
+  "id": "G11",
+  "statements": {
+   "* dropped the *": ["* let the * fall", "* let go of the *", "* put the * down", "* released the *", "* set the * down", "* let the * drop"],
+   "* is in the *": ["* is inside the *", "* is found in the *", "* can be found in the *", "* is located in the *", "* sits in the *", "* is within the *"],
+   "* took the *": ["* grabbed the *", "* picked up the *", "* got hold of the *", "* acquired the *", "* collected the *", "* seized the *"],
+   "* went to the *": ["* moved to the *", "* headed to the *", "* proceeded to the *", "* travelled to the *", "* made their way to the *", "* headed over to the *"],
+   "the * is in the *": ["the * is inside the *", "the * can be found in the *", "the * is located in the *", "the * sits in the *", "the * is found in the *", "the * is within the *"],
+   "whoever has a * is *": ["anyone who has a * is *", "anybody holding a * is *", "any person with a * is *", "everyone with a * is *", "any individual with a * is *", "anyone possessing a * is *"]
+  },
+  "questions": {
+   "can * enter the *": ["is * allowed to go into the *", "may * go inside the *", "is * able to get into the *", "can * go into the *", "is * permitted to enter the *", "could * get inside the *"],
+   "in which place is *": ["which place is * in", "what place is * in", "in which location is *", "which location is * in", "what spot is * in", "which spot is * located in"],
+   "in which place is the *": ["which place is the * in", "what place is the * in", "in which location is the *", "which location is the * in", "what spot is the * in", "which spot is the * located in"],
+   "is * *": ["would * be classed as *", "can * be described as *", "does * count as *", "is * labeled as *", "could * fall under *", "is * viewed as *"],
+   "where is *": ["where can * be found", "where would * be located", "what is the location of *", "where is * located", "where might * be", "where would you find *"],
+   "where is the *": ["where can the * be found", "where would the * be located", "what is the location of the *", "where is the * located", "where might the * be", "where would you find the *"],
+   "which person has the *": ["who holds the *", "which person owns the *", "which individual has the *", "who possesses the *", "which person holds the *", "who is holding the *"],
+   "who has the *": ["who holds the *", "who owns the *", "who possesses the *", "who has got the *", "who is in possession of the *", "who is holding the *"]
+  }
+ },
+ {
+  "id": "I7",
+  "statements": {
+   "* started in the *": ["* began in the *", "* was initially in the *", "* first was in the *", "* at first was in the *", "* was originally in the *", "* at the start was in the *"]
+  },
+  "questions": {
+   "how many times did * move before * went to the *": ["how many times did * relocate before * headed to the *", "how often did * change places before * moved to the *", "how many moves did * make before * went to the *", "how many times had * moved before * got to the *", "what number of times did * move before * reached the *", "how many times did * shift before * made their way to the *"],
+   "was * in the * just before * went to the *": ["had * been in the * immediately before * went to the *", "was * located in the * a moment before * moved to the *", "was * inside the * right before * headed to the *", "was * present in the * shortly before * went to the *", "had * been inside the * just before * reached the *", "was * found in the * right prior to * traveling to the *"],
+   "where was * just before * went to the *": ["where had * been just before * headed to the *", "in what place was * shortly before * went to the *", "which place was * located in just before * moved to the *", "where could * have been immediately before * went to the *", "what place was * in right before * went to the *", "where was * a moment before * traveled to the *"]
+  }
+ },
+ {
+  "id": "en8",
+  "statements": {
+   "* discarded the *": ["* threw out the *", "* got rid of the *", "* disposed of the *", "* ditched the *", "* let go of the *", "* removed the *"],
+   "* discarded the * there": ["* threw out the * there", "* got rid of the * there", "* disposed of the * there", "* ditched the * there", "* let go of the * there", "* removed the * there"],
+   "* dropped the *": ["* let the * fall", "* let go of the *", "* put the * down", "* released the *", "* set the * down", "* let the * drop"],
+   "* dropped the * there": ["* let the * fall there", "* put the * down there", "* let go of the * there", "* released the * there", "* set the * down there", "* let the * drop there"],
+   "* got the * there": ["* acquired the * there", "* obtained the * there", "* collected the * there", "* took hold of the * there", "* received the * there", "* got hold of the * there"],
+   "* grabbed the * there": ["* snatched the * there", "* seized the * there", "* grasped the * there", "* clutched the * there", "* caught hold of the * there", "* snatched up the * there"],
+   "* left the *": ["* abandoned the *", "* walked away from the *", "* deserted the *", "* let go of the *", "* gave up the *", "* stopped holding the *"],
+   "* left the * there": ["* abandoned the * there", "* walked away from the * there", "* deserted the * there", "* let go of the * there", "* gave up the * there", "* stopped holding the * there"],
+   "* picked up the * there": ["* collected the * there", "* scooped up the * there", "* took up the * there", "* gathered up the * there", "* lifted the * there", "* snatched up the * there"],
+   "* put down the *": ["* set down the *", "* laid down the *", "* placed the * down", "* deposited the *", "* put the * aside", "* rested the * down"],
+   "* took the * there": ["* acquired the * there", "* seized the * there", "* collected the * there", "* obtained the * there", "* secured the * there", "* took hold of the * there"]
+  },
+  "questions": {
+   "what is * carrying": ["what is * holding", "what does * have in hand", "what does * hold", "what is * currently holding", "what is * toting", "what is in the hands of *"]
+  }
+ }
+]

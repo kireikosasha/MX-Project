@@ -1,0 +1,123 @@
+[
+ {
+  "id": "B1",
+  "statements": {
+   "ann moved the * to the *": ["ann relocated the * over to the *", "ann shifted the * across to the *", "ann transferred the * to the *", "ann slid the * over to the *", "ann was the one to move the * to the *", "ann made the * go over to the *"],
+   "ann put the * in the *": ["ann placed the * inside the *", "ann set the * down in the *", "ann dropped the * into the *", "ann got the * into the *", "ann deposited the * in the *", "ann was the one who put the * into the *"],
+   "ann took the * out of the * and put it on the *": ["ann removed the * from the * and set it on the *", "ann pulled the * out of the * and placed it on the *", "ann lifted the * from the * and put it onto the *", "ann got the * out of the * and laid it on the *", "ann picked the * up out of the * and set it on the *", "ann moved the * from the * onto the *"],
+   "ben moved the * to the *": ["ben relocated the * over to the *", "ben shifted the * across to the *", "ben transferred the * to the *", "ben slid the * over to the *", "ben was the one to move the * to the *", "ben made the * go over to the *"],
+   "ben put the * in the *": ["ben placed the * inside the *", "ben set the * down in the *", "ben dropped the * into the *", "ben got the * into the *", "ben deposited the * in the *", "ben was the one who put the * into the *"],
+   "ben took the * out of the * and put it on the *": ["ben removed the * from the * and set it on the *", "ben pulled the * out of the * and placed it on the *", "ben lifted the * from the * and put it onto the *", "ben got the * out of the * and laid it on the *", "ben picked the * up out of the * and set it on the *", "ben moved the * from the * onto the *"],
+   "kim moved the * to the *": ["kim relocated the * over to the *", "kim shifted the * across to the *", "kim transferred the * to the *", "kim slid the * over to the *", "kim was the one to move the * to the *", "kim made the * go over to the *"],
+   "kim put the * in the *": ["kim placed the * inside the *", "kim set the * down in the *", "kim dropped the * into the *", "kim got the * into the *", "kim deposited the * in the *", "kim was the one who put the * into the *"],
+   "kim took the * out of the * and put it on the *": ["kim removed the * from the * and set it on the *", "kim pulled the * out of the * and placed it on the *", "kim lifted the * from the * and put it onto the *", "kim got the * out of the * and laid it on the *", "kim picked the * up out of the * and set it on the *", "kim moved the * from the * onto the *"],
+   "the * is in the *": ["the * is inside the *", "the * sits in the *", "the * lies inside the *", "the * can be found in the *", "the * is located within the *", "the * rests in the *"],
+   "the * is on the *": ["the * sits on the *", "the * lies on the *", "the * rests on the *", "the * is placed on the *", "the * can be found on the *", "the * is set on the *"]
+  },
+  "questions": {
+   "how many things are in the *": ["how many items are inside the *", "what number of things sit in the *", "how many objects lie in the *", "how many things can be found in the *", "how many things rest inside the *", "what is the count of things in the *"],
+   "is the * in the *": ["is the * inside the *", "is the * sitting in the *", "does the * lie in the *", "is the * located in the *", "is the * within the *", "is the * placed in the *"],
+   "what is in the *": ["what sits inside the *", "what lies in the *", "what can be found in the *", "what rests in the *", "what is inside the *", "what is contained in the *"],
+   "where is the *": ["where can the * be found", "where does the * sit", "in which place is the *", "where is the * located", "where is the * situated", "where can i find the *"],
+   "where is the * now": ["at this moment where is the *", "where is the * at present", "at the present moment where is the *", "where does the * sit at the moment", "currently where is the *", "where can the * be found at present"]
+  }
+ },
+ {
+  "id": "C5",
+  "statements": {
+   "the * is *": ["the * turns out to be *", "the * can be described as *", "the * is shown to be *", "the * is said to be *", "the * is described as *", "the * happens to be *"],
+   "the * is in the *": ["the * sits in the *", "the * lies inside the *", "the * can be found in the *", "the * is located within the *", "the * rests in the *", "the * is inside the *"]
+  },
+  "questions": {
+   "is the * *": ["is the * known to be *", "does the * turn out to be *", "is the * shown to be *", "can the * be described as *", "is the * said to be *", "is the * described as *"],
+   "is the * in the *": ["is the * inside the *", "does the * sit in the *", "is the * located in the *", "can the * be found in the *", "is the * within the *", "is the * resting in the *"],
+   "is the lamp *": ["is the lamp described as *", "does the lamp turn out to be *", "is the lamp shown to be *", "can the lamp be described as *", "is the lamp said to be *", "is the lamp known to be *"],
+   "what color is the *": ["which color is the *", "what is the color of the *", "what color does the * have", "what color would you say the * is", "what colour is the *", "which colour does the * have"],
+   "where is the *": ["where can the * be found", "where does the * sit", "in which place is the *", "where is the * located", "where is the * situated", "where can i find the *"]
+  }
+ },
+ {
+  "id": "D11",
+  "statements": {
+   "* gives the * to *": ["* hands over the * to *", "* passes the * to *", "* transfers the * to *", "* delivers the * to *", "* hands the * to *", "* passes along the * to *"],
+   "* has the *": ["* owns the *", "* possesses the *", "* holds the *", "* is the owner of the *", "* has got the *", "* is in possession of the *"],
+   "* is a *": ["* is a type of *", "* is a sort of *", "* can be called a *", "* is classed as a *", "* counts as a *", "* is one kind of *"],
+   "every * is a *": ["each * is a *", "all * are *", "any * is a *", "every * counts as a *", "all * are a kind of *", "each * is some kind of *"]
+  },
+  "questions": {
+   "can * open the *": ["is * able to open the *", "is * capable of opening the *", "is it possible for * to open the *", "could * open the *", "does * have the power to open the *", "is * in a position to open the *"],
+   "is * a *": ["is * a type of *", "is * a sort of *", "is * classed as a *", "does * count as a *", "can * be called a *", "is * one kind of *"],
+   "is * an *": ["is * considered an *", "does * count as an *", "is * classed as an *", "can * be called an *", "is * an example of *", "is * a member of *"],
+   "what is *": ["what sort of thing is *", "what kind of thing is *", "what type is *", "what kind is *", "what is the nature of *", "what does * happen to be"],
+   "who has the *": ["who owns the *", "who possesses the *", "who holds the *", "which person has the *", "who is the owner of the *", "who has got the *"]
+  }
+ },
+ {
+  "id": "F6",
+  "statements": {
+   "* time # * walked to the *": ["* time # * strolled over to the *", "* time # * made their way to the *", "* time # * went on foot to the *", "* time # * ambled over to the *", "* time # * walked over to the *", "* time # * went walking to the *"],
+   "* time # * was in the *": ["* time # * was inside the *", "* time # * was located in the *", "* time # * was within the *", "* time # * was situated in the *", "* time # * was present in the *", "* time # * was positioned in the *"],
+   "* time # * went to the *": ["* time # * traveled to the *", "* time # * journeyed to the *", "* time # * headed over to the *", "* time # * moved over to the *", "* time # * proceeded to the *", "* time # * went over to the *"]
+  },
+  "questions": {
+   "did * go to the * * time #": ["did * travel to the * * time #", "did * head over to the * * time #", "did * move over to the * * time #", "did * journey to the * * time #", "did * proceed to the * * time #", "did * head to the * * time #"],
+   "how many moves did * make * time #": ["what number of moves did * make * time #", "how many steps did * take * time #", "how many moves did * perform * time #", "how many moves did * carry out * time #", "how many moves were made by * * time #", "how many moves did * complete * time #"],
+   "where was * * time #": ["in which place was * * time #", "what place was * in * time #", "where was * located * time #", "which place was * in * time #", "where was * situated * time #", "in what place was * * time #"],
+   "who was in the * * time #": ["who was inside the * * time #", "which person was in the * * time #", "who was present in the * * time #", "who was located in the * * time #", "who was within the * * time #", "who was positioned in the * * time #"]
+  }
+ },
+ {
+  "id": "H1",
+  "statements": {
+   "the * is in the *": ["the * is inside the *", "the * sits in the *", "the * is located in the *", "the * rests within the *", "the * can be found in the *", "the * is positioned in the *"],
+   "the * is moved to the *": ["the * is carried over to the *", "the * is shifted to the *", "the * is relocated to the *", "the * is transferred to the *", "the * gets moved to the *", "the * is slid over to the *"]
+  },
+  "questions": {
+   "how many things are in the *": ["how many items are in the *", "what number of things sit in the *", "how many objects lie in the *", "how many things can be found in the *", "how many things rest inside the *", "what is the count of things in the *"],
+   "is the * in the *": ["is the * positioned in the *", "does the * lie inside the *", "is the * found in the *", "is the * contained in the *", "is the * placed within the *", "is the * sitting inside the *"],
+   "which place is the * in": ["which place is the * located in", "which place is the * found in", "in what place is the *", "which location is the * in", "which place is the * sitting in", "which place does the * sit in"],
+   "which things are in the *": ["what items are inside the *", "which objects are in the *", "what things sit in the *", "which things can be found in the *", "which things are contained in the *", "what things are inside the *"]
+  }
+ },
+ {
+  "id": "I10",
+  "statements": {
+   "* went to the * at #": ["* traveled to the * at #", "* journeyed to the * at #", "* headed over to the * at #", "* moved over to the * at #", "* proceeded to the * at #", "* went over to the * at #"],
+   "at # * went to the *": ["at # * headed to the *", "at # * made a trip to the *", "at # * traveled over to the *", "at # * moved on to the *", "at # * ventured to the *", "at # * went across to the *"]
+  },
+  "questions": {
+   "did * go to the * before #": ["did * head to the * before #", "did * travel to the * before #", "did * journey to the * prior to #", "did * move over to the * before #", "did * head over to the * before #", "did * proceed to the * before #"],
+   "where was * at #": ["in which place was * at #", "what place was * at #", "where was * located at #", "where was * situated at #", "which place was * in at #", "where was * positioned at #"],
+   "who was at the * at #": ["which person was at the * at #", "who was present at the * at #", "who was located at the * at #", "who was positioned at the * at #", "which individual was at the * at #", "who was there at the * at #"],
+   "who went to the * first": ["who was the first to go to the *", "which person went to the * first", "who headed to the * first", "who traveled to the * first", "who was earliest to go to the *", "who was the first one to travel to the *"]
+  }
+ },
+ {
+  "id": "en11",
+  "statements": {
+   "* journeyed to the *": ["* traveled to the *", "* made a journey to the *", "* went on a trip to the *", "* set out for the *", "* took a trip to the *", "* made the trip over to the *"],
+   "* moved to the *": ["* relocated to the *", "* shifted over to the *", "* transferred to the *", "* made a move to the *", "* moved over to the *", "* moved across to the *"],
+   "* travelled to the *": ["* journeyed to the *", "* made the journey to the *", "* went on a journey to the *", "* set off to the *", "* took a trip over to the *", "* made a trip to the *"],
+   "* went back to the *": ["* returned to the *", "* came back to the *", "* headed back to the *", "* made a return to the *", "* went back over to the *", "* got back to the *"],
+   "* went to the *": ["* headed to the *", "* proceeded to the *", "* headed over to the *", "* made their way to the *", "* traveled over to the *", "* ventured to the *"],
+   "after that he * back to the *": ["later he * back to the *", "next he * back to the *", "after this he * back to the *", "subsequently he * back to the *", "he then * back to the *", "at a later point he * back to the *"],
+   "after that he * to the *": ["later he * to the *", "next he * to the *", "after this he * to the *", "subsequently he * to the *", "he then * to the *", "at a later point he * to the *"],
+   "after that she * back to the *": ["later she * back to the *", "next she * back to the *", "after this she * back to the *", "subsequently she * back to the *", "she then * back to the *", "at a later point she * back to the *"],
+   "after that she * to the *": ["later she * to the *", "next she * to the *", "after this she * to the *", "subsequently she * to the *", "she then * to the *", "at a later point she * to the *"],
+   "afterwards he * back to the *": ["later on he * back to the *", "afterward he * back to the *", "later he * back to the *", "next he * back to the *", "following this he * back to the *", "subsequently he * back to the *"],
+   "afterwards he * to the *": ["later on he * to the *", "afterward he * to the *", "later he * to the *", "next he * to the *", "following this he * to the *", "subsequently he * to the *"],
+   "afterwards she * back to the *": ["later on she * back to the *", "afterward she * back to the *", "later she * back to the *", "next she * back to the *", "following this she * back to the *", "subsequently she * back to the *"],
+   "afterwards she * to the *": ["later on she * to the *", "afterward she * to the *", "later she * to the *", "next she * to the *", "following this she * to the *", "subsequently she * to the *"],
+   "following that he * to the *": ["following this he * to the *", "after this he * to the *", "subsequently he * to the *", "later on he * to the *", "next he * to the *", "at a later point he * to the *"],
+   "following that she * back to the *": ["following this she * back to the *", "later she * back to the *", "next she * back to the *", "after this she * back to the *", "subsequently she * back to the *", "at a later point she * back to the *"],
+   "following that she * to the *": ["following this she * to the *", "later she * to the *", "next she * to the *", "after this she * to the *", "subsequently she * to the *", "at a later point she * to the *"],
+   "then he * back to the *": ["next he * back to the *", "he later * back to the *", "subsequently he * back to the *", "later on he * back to the *", "after this he * back to the *", "following this he * back to the *"],
+   "then he * to the *": ["next he * to the *", "he later * to the *", "subsequently he * to the *", "later on he * to the *", "after this he * to the *", "following this he * to the *"],
+   "then she * back to the *": ["next she * back to the *", "she later * back to the *", "subsequently she * back to the *", "later on she * back to the *", "after this she * back to the *", "following this she * back to the *"],
+   "then she * to the *": ["next she * to the *", "she later * to the *", "subsequently she * to the *", "later on she * to the *", "after this she * to the *", "following this she * to the *"]
+  },
+  "questions": {
+   "where is *": ["in which place is *", "which place is * in", "what place is * in", "where can * be found", "which location is * in", "in what location is *"]
+  }
+ }
+]

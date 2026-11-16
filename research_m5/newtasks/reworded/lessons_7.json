@@ -1,0 +1,113 @@
+[
+ {
+  "id": "A10",
+  "statements": {
+   "* enters the * team": ["* becomes a member of the * team", "* signs up for the * team", "* starts playing on the * team", "* is now part of the * team", "* gets added to the * team", "* arrives on the * team"],
+   "* joins the * team": ["* becomes a member of the * team", "* signs up for the * team", "* is added to the * team", "* becomes part of the * team", "* enrolls in the * team", "* starts on the * team"],
+   "* leaves the * team": ["* departs from the * team", "* exits the * team", "* is no longer on the * team", "* gets off the * team", "* walks away from the * team", "* withdraws from the * team"],
+   "* moves from the * team to the * team": ["* switches from the * team to the * team", "* transfers from the * team to the * team", "* shifts from the * team to the * team", "* goes from the * team over to the * team", "* changes from the * team to the * team", "* leaves the * team for the * team"],
+   "* quits the * team": ["* gives up their place on the * team", "* stops being on the * team", "* drops out of the * team", "* is no longer a member of the * team", "* resigns from the * team", "* walks out on the * team"]
+  },
+  "questions": {
+   "are * and * in the same team": ["do * and * play on the same team", "are * and * on the same team", "do * and * belong to one team", "are * and * teammates", "do * and * share a team", "are * and * on one squad"],
+   "in which team is *": ["which team is * in", "what team is * on", "which team does * play for", "which team is * a member of", "what is the team of *", "name the team that * is on"],
+   "is * in the same team as *": ["is * on the same team as *", "is * teammates with *", "does * share a team with *", "is * on the same squad as *", "do * and * play on one team", "is * on a team with *"],
+   "which team is * in": ["what team is * on", "which team is * part of", "which team does * belong to", "name the team that * is on", "what team is * a member of", "which team is * playing for"]
+  }
+ },
+ {
+  "id": "C2",
+  "statements": {
+   "* dropped the *": ["* let go of the *", "* released the *", "* got rid of the *", "* set down the *", "* ditched the *", "* let the * fall"],
+   "* gave the * to *": ["* handed the * over to *", "* passed the * on to *", "* transferred the * to *", "* sent the * over to *", "* gifted the * to *", "* made the * go to *"],
+   "* swapped the * with * for the *": ["* traded the * with * for the *", "* exchanged the * with * for the *", "* switched the * with * for the *", "* made a swap of the * with * for the *", "* did an exchange of the * with * for the *", "* made a trade of the * with * for the *"],
+   "* took the *": ["* grabbed the *", "* picked up the *", "* got the *", "* seized the *", "* claimed the *", "* picked the * up"]
+  },
+  "questions": {
+   "does * have the *": ["does * own the *", "does * hold the *", "has * got the *", "is * holding the *", "is * in possession of the *", "does * possess the *"],
+   "what does * have": ["what does * hold", "what has * got", "what is * holding", "which item does * own", "what object does * possess", "what is in the possession of *"],
+   "who has the *": ["who holds the *", "who owns the *", "who is holding the *", "who possesses the *", "who is in possession of the *", "who has got the *"]
+  }
+ },
+ {
+  "id": "D5",
+  "statements": {
+   "* * the *": ["* did * to the *", "* performed * on the *", "* then * the *", "* carried out * on the *", "* used * on the *", "* made * with the *"],
+   "* is in the *": ["* is inside the *", "* can be found in the *", "* sits in the *", "* is located in the *", "* is within the *", "* lies in the *"],
+   "* turned * the *": ["* flipped * the *", "* spun * the *", "* switched * the *", "* twisted * the *", "* rotated * the *", "* adjusted * the *"],
+   "* walked to the *": ["* went to the *", "* headed over to the *", "* strolled to the *", "* made their way to the *", "* proceeded to the *", "* moved over to the *"],
+   "the * is *": ["the * seems *", "the * appears *", "the * looks *", "the * remains *", "the * happens to be *", "the * stays *"],
+   "the * is in the *": ["the * is inside the *", "the * can be found in the *", "the * sits in the *", "the * is located in the *", "the * is within the *", "the * lies in the *"]
+  },
+  "questions": {
+   "is the * *": ["would the * be *", "is it true that the * is *", "can you tell if the * is *", "does the * seem *", "is the * apparently *", "could the * be *"],
+   "where is *": ["where can * be found", "in which place is *", "which place is * in", "what place is * in", "where is * located", "what location is * at"],
+   "where is the *": ["where can the * be found", "which place is the * in", "what location is the * in", "where is the * located", "in what place is the *", "where has the * ended up"],
+   "who has the *": ["who holds the *", "who is carrying the *", "who owns the *", "who is in possession of the *", "who is the holder of the *", "who is holding the *"]
+  }
+ },
+ {
+  "id": "F2",
+  "statements": {
+   "* gives the * to *": ["* hands the * over to *", "* passes the * to *", "* transfers the * to *", "* sends the * to *", "* gifts the * to *", "* delivers the * to *"],
+   "* has the *": ["* holds the *", "* owns the *", "* is holding the *", "* possesses the *", "* has got the *", "* carries the *"],
+   "* swaps with *": ["* trades with *", "* exchanges with *", "* switches with *", "* makes a swap with *", "* does an exchange with *", "* swaps things with *"],
+   "* takes the * from *": ["* removes the * from *", "* gets the * from *", "* grabs the * from *", "* collects the * from *", "* seizes the * from *", "* obtains the * from *"]
+  },
+  "questions": {
+   "does * have the *": ["does * own the *", "does * hold the *", "has * got the *", "is * holding the *", "is * in possession of the *", "does * possess the *"],
+   "what does * have": ["what does * hold", "what has * got", "what is * holding", "which item does * own", "what object does * possess", "what is in the possession of *"],
+   "who has the *": ["who holds the *", "who owns the *", "who is holding the *", "who possesses the *", "who is in possession of the *", "who has got the *"]
+  }
+ },
+ {
+  "id": "G10",
+  "statements": {
+   "* joins the * club": ["* becomes a member of the * club", "* signs up for the * club", "* enrolls in the * club", "* becomes part of the * club", "* gets into the * club", "* is added to the * club"],
+   "* leaves the * club": ["* quits the * club", "* exits the * club", "* departs from the * club", "* withdraws from the * club", "* is no longer in the * club", "* drops out of the * club"],
+   "* moves from the * club to the * club": ["* transfers from the * club to the * club", "* switches from the * club to the * club", "* shifts from the * club to the * club", "* goes from the * club over to the * club", "* changes from the * club to the * club", "* leaves the * club for the * club"]
+  },
+  "questions": {
+   "how many are in the * club": ["what is the number of people in the * club", "how many people belong to the * club", "what is the count of members of the * club", "how many members does the * club have", "how many people make up the * club", "what number of people are in the * club"],
+   "which club is * in": ["which club does * belong to", "what club is * a member of", "which club is * part of", "name the club that * is in", "in which club is *", "what club is * in"],
+   "who is in the * club": ["who belongs to the * club", "who are the members of the * club", "which people are in the * club", "who is a member of the * club", "who makes up the * club", "who can be found in the * club"]
+  }
+ },
+ {
+  "id": "I3",
+  "statements": {
+   "* is shorter than *": ["* is less tall than *", "* is smaller in height than *", "* is not as tall as *", "* measures less in height than *", "* stands lower than *", "* is of lesser height than *"],
+   "* is taller than *": ["* is higher in height than *", "* stands taller than *", "* is of greater height than *", "* is bigger in height than *", "* measures more in height than *", "* is taller compared to *"]
+  },
+  "questions": {
+   "is * taller than *": ["does * stand taller than *", "is * higher in height than *", "is * of greater height than *", "is * bigger in height than *", "is * taller compared to *", "does * measure more in height than *"],
+   "who is shorter than *": ["who is less tall than *", "who is smaller in height than *", "who stands lower than *", "who is of lesser height than *", "who measures less in height than *", "who is not as tall as *"],
+   "who is taller than *": ["who is higher in height than *", "who stands taller than *", "who is of greater height than *", "who is bigger in height than *", "who measures more in height than *", "who is taller compared to *"],
+   "who is the shortest": ["who is the least tall", "who is the smallest in height", "who is lowest in height", "who has the least height", "who is of the least height", "who stands the lowest"],
+   "who is the tallest": ["who is the highest in height", "who stands the tallest", "who has the greatest height", "who is the biggest in height", "who measures the most in height", "who is of the greatest height"]
+  }
+ },
+ {
+  "id": "en7",
+  "statements": {
+   "* discarded the *": ["* threw away the *", "* got rid of the *", "* tossed out the *", "* disposed of the *", "* let go of the *", "* trashed the *"],
+   "* discarded the * there": ["* threw away the * there", "* got rid of the * there", "* tossed out the * there", "* disposed of the * there", "* let go of the * there", "* trashed the * there"],
+   "* dropped the *": ["* let go of the *", "* set down the *", "* released the *", "* let the * fall", "* put the * down", "* let the * drop"],
+   "* dropped the * there": ["* set down the * there", "* let go of the * there", "* released the * there", "* let the * fall there", "* put the * down there", "* let the * drop there"],
+   "* gave the * to *": ["* handed the * over to *", "* passed the * on to *", "* transferred the * to *", "* sent the * over to *", "* gifted the * to *", "* made the * go to *"],
+   "* got the * there": ["* collected the * there", "* acquired the * there", "* picked the * up there", "* obtained the * there", "* took hold of the * there", "* secured the * there"],
+   "* grabbed the * there": ["* seized the * there", "* got hold of the * there", "* took hold of the * there", "* picked up the * there", "* took the * up there", "* gripped the * there"],
+   "* handed the * to *": ["* passed the * over to *", "* transferred the * to *", "* delivered the * to *", "* gave the * over to *", "* sent the * over to *", "* put the * into the hands of *"],
+   "* left the *": ["* abandoned the *", "* left behind the *", "* walked away from the *", "* deserted the *", "* parted with the *", "* ditched the *"],
+   "* left the * there": ["* abandoned the * there", "* left behind the * there", "* walked away from the * there", "* deserted the * there", "* parted with the * there", "* ditched the * there"],
+   "* passed the * to *": ["* handed the * over to *", "* transferred the * to *", "* sent the * on to *", "* delivered the * to *", "* gave the * over to *", "* gifted the * to *"],
+   "* picked up the * there": ["* grabbed the * there", "* collected the * there", "* lifted the * there", "* got hold of the * there", "* took the * there", "* acquired the * there"],
+   "* put down the *": ["* set down the *", "* placed the * down", "* laid down the *", "* deposited the *", "* set the * down", "* lowered the *"],
+   "* put down the * there": ["* set down the * there", "* placed the * down there", "* laid down the * there", "* deposited the * there", "* set the * down there", "* lowered the * there"],
+   "* took the * there": ["* grabbed the * there", "* picked up the * there", "* got the * there", "* collected the * there", "* claimed the * there", "* seized the * there"]
+  },
+  "questions": {
+   "how many objects is * carrying": ["how many items is * holding", "how many things is * carrying", "how many objects does * have in hand", "what is the number of objects * is holding", "how many items does * carry", "how many objects is * holding onto"]
+  }
+ }
+]

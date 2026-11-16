@@ -1,0 +1,121 @@
+[
+ {
+  "id": "K4",
+  "statements": {
+   "* is *": ["* counts as *", "* turns out to be *", "* is classed as *"],
+   "* is a *": ["* counts as a *", "* turns out to be a *", "* is classed as a *"],
+   "* is an *": ["* counts as an *", "* turns out to be an *", "* is classed as an *"],
+   "every * is *": ["each * is *", "all * are *", "no * fails to be *"],
+   "every * is a *": ["each * is a *", "every * counts as a *", "no * fails to be a *"],
+   "every * is an *": ["each * is an *", "every * counts as an *", "no * fails to be an *"]
+  },
+  "questions": {
+   "is * *": ["would you say * is *", "is it true that * is *", "does * turn out to be *"],
+   "is * a *": ["would you say * is a *", "is it true that * is a *", "does * count as a *"],
+   "is * an *": ["would you say * is an *", "is it true that * is an *", "does * count as an *"],
+   "which names are *": ["which names count as *", "what names are classed as *", "which names turn out to be *"]
+  }
+ },
+ {
+  "id": "K8",
+  "statements": {
+   "the * is directly * of the *": ["the * sits directly * of the *", "the * lies immediately * of the *", "the * is found directly * of the *"]
+  },
+  "questions": {
+   "what is directly * of the *": ["what lies directly * of the *", "what sits immediately * of the *", "what is found directly * of the *"],
+   "which direction is the * from the *": ["in which direction is the * from the *", "which way is the * when viewed from the *", "which side is the * on relative to the *"],
+   "which place is directly * of the *": ["which place lies directly * of the *", "which spot sits immediately * of the *", "which location is found directly * of the *"]
+  }
+ },
+ {
+  "id": "K12",
+  "statements": {
+   "* drops the *": ["* lets go of the *", "* releases the *", "* puts down the *"],
+   "* gives the * to *": ["* hands the * over to *", "* passes the * on to *", "* transfers the * to *"],
+   "* has the *": ["* holds the *", "* is holding the *", "* possesses the *"],
+   "* swaps with *": ["* trades with *", "* exchanges with *", "* switches with *"]
+  },
+  "questions": {
+   "does * have the *": ["is * holding the *", "does * hold the *", "is it true that * possesses the *"],
+   "what does * have": ["what does * hold", "what is * holding", "what does * possess"],
+   "who has the *": ["who holds the *", "who is holding the *", "who possesses the *"]
+  }
+ },
+ {
+  "id": "L4",
+  "statements": {
+   "* is *": ["* counts as *", "* turns out to be *", "* is classed as *"],
+   "* is a *": ["* counts as a *", "* turns out to be a *", "* is classed as a *"],
+   "every * is *": ["each * is *", "all * are *", "no * fails to be *"],
+   "every * is a *": ["each * is a *", "every * counts as a *", "no * fails to be a *"]
+  },
+  "questions": {
+   "how many things are *": ["how many items are *", "how many objects are *", "what number of things are *"],
+   "is * *": ["would you say * is *", "is it true that * is *", "does * turn out to be *"],
+   "is * a *": ["would you say * is a *", "is it true that * is a *", "does * count as a *"],
+   "which things are *": ["which items are *", "what things are *", "which objects turn out to be *"]
+  }
+ },
+ {
+  "id": "L8",
+  "statements": {
+   "the * is * of the *": ["the * sits * of the *", "the * lies * of the *", "the * can be found * of the *"],
+   "the * is to the * of the *": ["the * is on the * side of the *", "the * sits to the * of the *", "the * can be seen on the * side of the *"]
+  },
+  "questions": {
+   "is the * * of the *": ["is the * located * of the *", "does the * sit * of the *", "would you say the * lies * of the *"],
+   "which direction is the * from the *": ["in which direction is the * from the *", "which way is the * when viewed from the *", "which side is the * on relative to the *"]
+  }
+ },
+ {
+  "id": "L12",
+  "statements": {
+   "the * of * comes before the * of *": ["the * of * precedes the * of *", "the * of * happens ahead of the * of *", "the * of * takes place sooner than the * of *"],
+   "the * of * is after the * of *": ["the * of * follows the * of *", "the * of * occurs later than the * of *", "the * of * takes place after the * of *"],
+   "the * of * is before the * of *": ["the * of * is earlier than the * of *", "the * of * occurs before the * of *", "the * of * is sooner than the * of *"]
+  },
+  "questions": {
+   "is the * of * before the * of *": ["does the * of * precede the * of *", "is the * of * earlier than the * of *", "does the * of * come ahead of the * of *"],
+   "which of the * of * and the * of * is earlier": ["out of the * of * and the * of * which comes first", "which one of the * of * and the * of * occurs sooner", "which of the * of * and the * of * happens first"]
+  }
+ },
+ {
+  "id": "M24",
+  "statements": {
+   "* is *": ["* counts as *", "* turns out to be *", "* is classed as *"],
+   "* is a *": ["* counts as a *", "* turns out to be a *", "* is classed as a *"],
+   "* is not *": ["* does not count as *", "* fails to be *", "* is anything other than *"],
+   "every * is *": ["each * is *", "all * are *", "no * fails to be *"],
+   "every * is a *": ["each * is a *", "every * counts as a *", "no * fails to be a *"],
+   "every * is not *": ["no * is *", "not a single * is *", "none of the * are *"]
+  },
+  "questions": {
+   "is * *": ["would you say * is *", "is it true that * is *", "does * turn out to be *"],
+   "is * a *": ["would you say * is a *", "is it true that * is a *", "does * count as a *"],
+   "what is *": ["what does * turn out to be", "what sort of thing is *", "what would * be classed as"]
+  }
+ },
+ {
+  "id": "M28",
+  "statements": {
+   "the * is * of the *": ["the * sits * of the *", "the * is located * of the *", "the * can be found * of the *"],
+   "the * lies * of the *": ["the * stands * of the *", "the * is positioned * of the *", "the * can be seen * of the *"]
+  },
+  "questions": {
+   "is the * * of the *": ["is the * positioned * of the *", "does the * lie * of the *", "would you say the * sits * of the *"],
+   "which direction is the * from the *": ["in which direction is the * from the *", "which way is the * when viewed from the *", "which side is the * on relative to the *"]
+  }
+ },
+ {
+  "id": "M212",
+  "statements": {
+   "* drops the *": ["* lets go of the *", "* releases the *", "* puts down the *"],
+   "* gets the *": ["* receives the *", "* obtains the *", "* acquires the *"],
+   "* gives the * to *": ["* hands the * over to *", "* passes the * on to *", "* transfers the * to *"]
+  },
+  "questions": {
+   "does * have the *": ["is * holding the *", "does * hold the *", "is it true that * possesses the *"],
+   "who has the *": ["who holds the *", "who is holding the *", "who possesses the *"]
+  }
+ }
+]

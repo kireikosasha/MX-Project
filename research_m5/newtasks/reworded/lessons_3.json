@@ -1,0 +1,610 @@
+[
+ {
+  "id": "A3",
+  "statements": {
+   "* is shorter than *": [
+    "* is less tall than *",
+    "* measures less in height than *",
+    "* is shorter in height than *",
+    "* is of smaller height than *",
+    "* stands less tall than *",
+    "* reaches a smaller height than *"
+   ],
+   "* is taller than *": [
+    "* stands taller than *",
+    "* measures more in height than *",
+    "* is greater in height than *",
+    "* rises above * in height",
+    "* is of greater height than *",
+    "* reaches a greater height than *"
+   ]
+  },
+  "questions": {
+   "is * taller than *": [
+    "is * greater in height than *",
+    "does * stand taller than *",
+    "is * of greater height than *",
+    "does * measure more in height than *",
+    "does * rise above * in height",
+    "does * exceed * in height"
+   ],
+   "who is the tallest of * and * and *": [
+    "which of * and * and * is the tallest",
+    "out of * and * and * who is the tallest",
+    "who stands the tallest among * and * and *",
+    "of * and * and * which one is tallest",
+    "who is the highest in height of * and * and *",
+    "who is the greatest in height among * and * and *"
+   ]
+  }
+ },
+ {
+  "id": "B9",
+  "statements": {
+   "* is the boss of *": [
+    "* is the manager of *",
+    "* is the one in charge of *",
+    "* is the supervisor of *",
+    "* is the superior of *",
+    "* is the head of *",
+    "* is the leader of *"
+   ],
+   "* is the child of *": [
+    "* is the son or daughter of *",
+    "* is a kid of *",
+    "* is the offspring of *",
+    "* is born to *",
+    "* is one of the children of *",
+    "* belongs to * as a child"
+   ],
+   "* is the parent of *": [
+    "* is the mother or father of *",
+    "* is a parent of *",
+    "* is the dad or mom of *",
+    "* has * as a child",
+    "* is the father or mother of *",
+    "* is a parent to *"
+   ],
+   "* reports to *": [
+    "* answers to *",
+    "* works under *",
+    "* takes orders from *",
+    "* works for *",
+    "* is the employee of *",
+    "* is under the authority of *"
+   ]
+  },
+  "questions": {
+   "is * the boss of the boss of *": [
+    "is * the boss over the boss of *",
+    "is * in charge of the boss of *",
+    "is * the supervisor of the boss of *",
+    "is * the superior of the boss of *",
+    "is * the head of the boss of *",
+    "is * the manager of the boss of *"
+   ],
+   "is * the grandparent of *": [
+    "is * the grandmother or grandfather of *",
+    "is * the grandma or grandpa of *",
+    "does * have * as a grandchild",
+    "is * the parent of the parent of *",
+    "is * one of the grandparents of *",
+    "is * the mother or father of the parent of *"
+   ],
+   "who is at the top above *": [
+    "who sits highest above *",
+    "who is the top one above *",
+    "who ranks highest over *",
+    "who is highest up above *",
+    "who stands at the top above *",
+    "who holds the top spot above *"
+   ],
+   "who is the boss of the boss of *": [
+    "who is the boss over the boss of *",
+    "who is in charge of the boss of *",
+    "who is the supervisor of the boss of *",
+    "who is the superior of the boss of *",
+    "who sits as the head over the boss of *",
+    "who is the manager of the boss of *"
+   ],
+   "who is the grandparent of *": [
+    "who is the grandmother or grandfather of *",
+    "who is the grandma or grandpa of *",
+    "who has * as a grandchild",
+    "who is the parent of the parent of *",
+    "who is one of the grandparents of *",
+    "who is the mother or father of the parent of *"
+   ]
+  }
+ },
+ {
+  "id": "C12",
+  "statements": {
+   "* gave the * to *": [
+    "* handed the * over to *",
+    "* passed the * to *",
+    "* made a gift of the * to *",
+    "* presented the * to *",
+    "* transferred the * to *",
+    "* delivered the * to *"
+   ],
+   "* has the *": [
+    "* holds the *",
+    "* owns the *",
+    "* possesses the *",
+    "* is in possession of the *",
+    "* has got the *",
+    "* keeps the *"
+   ],
+   "* put the * in the *": [
+    "* placed the * inside the *",
+    "* set the * into the *",
+    "* inserted the * into the *",
+    "* put the * into the *",
+    "* added the * to the *",
+    "* placed the * in the *"
+   ],
+   "the * is on the *": [
+    "the * sits on the *",
+    "the * rests on the *",
+    "the * is on top of the *",
+    "the * lies on the *",
+    "the * is atop the *",
+    "the * is placed on the *"
+   ]
+  },
+  "questions": {
+   "is the * in the *": [
+    "is the * inside the *",
+    "is the * placed in the *",
+    "is the * contained in the *",
+    "is the * within the *",
+    "is the * inside of the *",
+    "is the * located in the *"
+   ],
+   "is the * on the *": [
+    "is the * sitting on the *",
+    "is the * resting on the *",
+    "is the * atop the *",
+    "is the * lying on the *",
+    "is the * on top of the *",
+    "is the * placed on the *"
+   ],
+   "who has the *": [
+    "who holds the *",
+    "who owns the *",
+    "who possesses the *",
+    "who is in possession of the *",
+    "who has got the *",
+    "who keeps the *"
+   ]
+  }
+ },
+ {
+  "id": "E6",
+  "statements": {
+   "* went to the * after * went to the *": [
+    "* headed to the * after * headed to the *",
+    "* traveled to the * following * traveled to the *",
+    "* made it to the * after * made it to the *",
+    "* proceeded to the * after * proceeded to the *",
+    "* went over to the * following * went over to the *",
+    "* set off for the * after * set off for the *"
+   ],
+   "* went to the * at #": [
+    "* headed to the * at #",
+    "* traveled to the * at #",
+    "* made it to the * at #",
+    "* moved to the * at #",
+    "* went over to the * at #",
+    "* proceeded to the * at #"
+   ],
+   "* went to the * before * went to the *": [
+    "* headed to the * before * headed to the *",
+    "* traveled to the * earlier than * traveled to the *",
+    "* made it to the * before * made it to the *",
+    "* proceeded to the * before * proceeded to the *",
+    "* went over to the * before * went over to the *",
+    "* set off for the * before * set off for the *"
+   ]
+  },
+  "questions": {
+   "did * go to the * before * went to the *": [
+    "did * head to the * before * headed to the *",
+    "did * travel to the * earlier than * went to the *",
+    "did * make it to the * before * made it to the *",
+    "did * proceed to the * before * went to the *",
+    "did * go over to the * before * went over to the *",
+    "did * set off for the * before * went to the *"
+   ],
+   "where did * go first": [
+    "where did * head first",
+    "where did * travel first",
+    "which place did * go to first",
+    "where did * head to first",
+    "which place did * travel to first",
+    "where did * proceed first"
+   ],
+   "where was * when * went to the *": [
+    "where was * at the time * went to the *",
+    "where was * while * headed to the *",
+    "what place was * in when * went to the *",
+    "where was * located when * traveled to the *",
+    "where was * at the moment * went to the *",
+    "where was * during the time * went to the *"
+   ],
+   "who went to the * first": [
+    "who headed to the * first",
+    "who traveled to the * first",
+    "which person went to the * first",
+    "who was the first to go to the *",
+    "who got to the * first",
+    "who made it to the * first"
+   ]
+  }
+ },
+ {
+  "id": "G2",
+  "statements": {
+   "* and * swap the * for the *": [
+    "* and * trade the * for the *",
+    "* and * exchange the * for the *",
+    "* and * switch the * with the *",
+    "* and * barter the * for the *",
+    "* and * exchange the * with the *",
+    "* and * make a swap of the * for the *"
+   ],
+   "* gives the * to *": [
+    "* hands the * to *",
+    "* passes the * to *",
+    "* makes a gift of the * to *",
+    "* presents the * to *",
+    "* transfers the * to *",
+    "* delivers the * to *"
+   ],
+   "* has a *": [
+    "* owns a *",
+    "* holds a *",
+    "* has got a *",
+    "* possesses a *",
+    "* keeps a *",
+    "* is holding a *"
+   ],
+   "* takes the * from *": [
+    "* grabs the * from *",
+    "* removes the * from *",
+    "* picks up the * from *",
+    "* gets the * from *",
+    "* collects the * from *",
+    "* obtains the * from *"
+   ]
+  },
+  "questions": {
+   "does * have the *": [
+    "does * own the *",
+    "does * possess the *",
+    "is * holding the *",
+    "has * got the *",
+    "does * hold the *",
+    "is * in possession of the *"
+   ],
+   "how many things does * have": [
+    "how many items does * own",
+    "how many objects does * hold",
+    "how many things does * possess",
+    "what number of things does * have",
+    "how many things is * holding",
+    "how many things has * got"
+   ],
+   "what does * have": [
+    "what does * own",
+    "what does * possess",
+    "what is * holding",
+    "what has * got",
+    "what items does * hold",
+    "what does * hold"
+   ],
+   "who has the *": [
+    "who holds the *",
+    "who owns the *",
+    "who possesses the *",
+    "who is in possession of the *",
+    "who has got the *",
+    "who keeps the *"
+   ]
+  }
+ },
+ {
+  "id": "H9",
+  "statements": {
+   "* is the parent of *": [
+    "* is the mother or father of *",
+    "* is a parent of *",
+    "* is the dad or mom of *",
+    "* has * as a child",
+    "* is the father or mother of *",
+    "* is a parent to *"
+   ],
+   "the * is in the *": [
+    "the * is inside the *",
+    "the * sits in the *",
+    "the * can be found in the *",
+    "the * is within the *",
+    "the * lies in the *",
+    "the * is located in the *"
+   ]
+  },
+  "questions": {
+   "is * the grandparent of *": [
+    "is * the grandmother or grandfather of *",
+    "is * the grandma or grandpa of *",
+    "does * have * as a grandchild",
+    "is * the parent of the parent of *",
+    "is * one of the grandparents of *",
+    "is * the mother or father of the parent of *"
+   ],
+   "is the * finally in the *": [
+    "is the * ultimately in the *",
+    "in the end is the * in the *",
+    "is the * in the * at last",
+    "at the end is the * inside the *",
+    "is the * eventually in the *",
+    "has the * ended up in the *"
+   ],
+   "where is the * finally": [
+    "where is the * in the end",
+    "in the end where is the *",
+    "where has the * ended up",
+    "where is the * at last",
+    "where is the * ultimately",
+    "ultimately where is the *"
+   ],
+   "who is the grandparent of *": [
+    "who is the grandmother or grandfather of *",
+    "who is the grandma or grandpa of *",
+    "who has * as a grandchild",
+    "who is the parent of the parent of *",
+    "who is one of the grandparents of *",
+    "who is the mother or father of the parent of *"
+   ]
+  }
+ },
+ {
+  "id": "en2",
+  "statements": {
+   "* discarded the *": [
+    "* threw away the *",
+    "* got rid of the *",
+    "* tossed out the *",
+    "* disposed of the *",
+    "* dumped the *",
+    "* threw out the *"
+   ],
+   "* discarded the * there": [
+    "* threw away the * there",
+    "* got rid of the * there",
+    "* tossed out the * there",
+    "* disposed of the * there",
+    "* dumped the * there",
+    "* threw out the * there"
+   ],
+   "* dropped the *": [
+    "* let go of the *",
+    "* released the *",
+    "* let the * fall",
+    "* let the * drop",
+    "* lost hold of the *",
+    "* let slip the *"
+   ],
+   "* dropped the * there": [
+    "* let go of the * there",
+    "* released the * there",
+    "* let the * fall there",
+    "* let the * drop there",
+    "* lost hold of the * there",
+    "* let slip the * there"
+   ],
+   "* got the * there": [
+    "* obtained the * there",
+    "* acquired the * there",
+    "* collected the * there",
+    "* secured the * there",
+    "* took possession of the * there",
+    "* picked up the * there"
+   ],
+   "* grabbed the * there": [
+    "* seized the * there",
+    "* snatched the * there",
+    "* took hold of the * there",
+    "* grasped the * there",
+    "* got hold of the * there",
+    "* picked up the * there"
+   ],
+   "* journeyed to the *": [
+    "* traveled to the *",
+    "* made a trip to the *",
+    "* went on a journey to the *",
+    "* made the journey to the *",
+    "* headed out to the *",
+    "* set out for the *"
+   ],
+   "* left the *": [
+    "* exited the *",
+    "* went out of the *",
+    "* walked out of the *",
+    "* departed the *",
+    "* got out of the *",
+    "* headed out of the *"
+   ],
+   "* left the * there": [
+    "* abandoned the * there",
+    "* left behind the * there",
+    "* deserted the * there",
+    "* ditched the * there",
+    "* walked away from the * there",
+    "* let the * stay there"
+   ],
+   "* moved to the *": [
+    "* relocated to the *",
+    "* shifted to the *",
+    "* proceeded to the *",
+    "* went over to the *",
+    "* moved over to the *",
+    "* headed over to the *"
+   ],
+   "* picked up the * there": [
+    "* lifted the * there",
+    "* collected the * there",
+    "* grabbed the * there",
+    "* retrieved the * there",
+    "* scooped up the * there",
+    "* took hold of the * there"
+   ],
+   "* put down the *": [
+    "* set down the *",
+    "* placed the * down",
+    "* laid down the *",
+    "* deposited the *",
+    "* set the * down",
+    "* lowered the *"
+   ],
+   "* put down the * there": [
+    "* set down the * there",
+    "* placed the * down there",
+    "* laid down the * there",
+    "* deposited the * there",
+    "* set the * down there",
+    "* lowered the * there"
+   ],
+   "* took the * there": [
+    "* collected the * there",
+    "* acquired the * there",
+    "* secured the * there",
+    "* obtained the * there",
+    "* picked up the * there",
+    "* seized the * there"
+   ],
+   "* travelled to the *": [
+    "* went on a trip to the *",
+    "* journeyed to the *",
+    "* made a trip to the *",
+    "* made the trip to the *",
+    "* headed out to the *",
+    "* took a trip to the *"
+   ],
+   "* went back to the *": [
+    "* returned to the *",
+    "* came back to the *",
+    "* headed back to the *",
+    "* got back to the *",
+    "* made a return to the *",
+    "* journeyed back to the *"
+   ],
+   "* went to the *": [
+    "* headed to the *",
+    "* traveled to the *",
+    "* went over to the *",
+    "* proceeded to the *",
+    "* went off to the *",
+    "* made it to the *"
+   ]
+  },
+  "questions": {
+   "where is the *": [
+    "where can the * be found",
+    "where is the * located",
+    "in which place is the *",
+    "which place holds the *",
+    "where can we find the *",
+    "where would you find the *"
+   ]
+  }
+ },
+ {
+  "id": "en18",
+  "statements": {
+   "the * fit inside the *": [
+    "the * can go inside the *",
+    "the * fit in the *",
+    "the * fit within the *",
+    "the * will fit into the *",
+    "the * can go into the *",
+    "the * can fit in the *"
+   ],
+   "the * is bigger than the *": [
+    "the * is larger than the *",
+    "the * is greater in size than the *",
+    "the * is of larger size than the *",
+    "the * outsizes the *",
+    "the * is larger in size than the *",
+    "the * exceeds the * in size"
+   ],
+   "the * is bigger than the * of *": [
+    "the * is larger than the * of *",
+    "the * is greater in size than the * of *",
+    "the * is of larger size than the * of *",
+    "the * exceeds the * of * in size",
+    "the * is larger in size than the * of *",
+    "the * outsizes the * of *"
+   ],
+   "the * of * fit inside the *": [
+    "the * of * can go inside the *",
+    "the * of * fit in the *",
+    "the * of * fit within the *",
+    "the * of * will fit into the *",
+    "the * of * can go into the *",
+    "the * of * can fit in the *"
+   ]
+  },
+  "questions": {
+   "does the * fit in the *": [
+    "can the * go inside the *",
+    "will the * fit into the *",
+    "does the * fit within the *",
+    "can the * fit in the *",
+    "does the * go into the *",
+    "would the * fit inside the *"
+   ],
+   "does the * fit in the * of *": [
+    "can the * go inside the * of *",
+    "will the * fit into the * of *",
+    "does the * fit within the * of *",
+    "can the * fit in the * of *",
+    "does the * go into the * of *",
+    "would the * fit inside the * of *"
+   ],
+   "does the * of * fit in the *": [
+    "can the * of * go inside the *",
+    "will the * of * fit into the *",
+    "does the * of * fit within the *",
+    "can the * of * fit in the *",
+    "does the * of * go into the *",
+    "would the * of * fit inside the *"
+   ],
+   "is the * bigger than the *": [
+    "is the * larger than the *",
+    "is the * greater in size than the *",
+    "is the * of larger size than the *",
+    "does the * exceed the * in size",
+    "is the * larger in size than the *",
+    "does the * outsize the *"
+   ],
+   "is the * bigger than the * of *": [
+    "is the * larger than the * of *",
+    "is the * greater in size than the * of *",
+    "is the * of larger size than the * of *",
+    "does the * exceed the * of * in size",
+    "is the * larger in size than the * of *",
+    "does the * outsize the * of *"
+   ],
+   "is the * of * bigger than the *": [
+    "is the * of * larger than the *",
+    "is the * of * greater in size than the *",
+    "does the * of * have a larger size than the *",
+    "does the * of * exceed the * in size",
+    "is the * of * larger in size than the *",
+    "does the * of * outsize the *"
+   ]
+  }
+ }
+]

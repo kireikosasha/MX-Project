@@ -1,0 +1,123 @@
+[
+ {
+  "id": "A2",
+  "statements": {
+   "* gave the * to *": ["* handed the * over to *", "* passed the * on to *", "* transferred the * to *", "* sent the * across to *", "* turned the * over to *", "* put the * into the hands of *"],
+   "* got the *": ["* received the *", "* obtained the *", "* acquired the *", "* ended up with the *", "* came to own the *", "* secured the *"],
+   "* got the * from *": ["* received the * from *", "* obtained the * from *", "* acquired the * from *", "* was given the * by *", "* was handed the * by *", "* secured the * from *"],
+   "* lost the *": ["* no longer has the *", "* let the * slip away", "* misplaced the *", "* was left without the *", "* mislaid the *", "* is now without the *"],
+   "* traded the * to * for the *": ["* exchanged the * with * for the *", "* gave the * to * in exchange for the *", "* bartered the * to * for the *", "* made a trade of the * to * for the *", "* swapped the * with * in return for the *", "* traded the * over to * in return for the *"]
+  },
+  "questions": {
+   "does * have the *": ["does * hold the *", "is * in possession of the *", "does * own the *", "has * got the *", "does * possess the *", "is * the owner of the *"],
+   "how many things does * have": ["how many items does * own", "how many things is * holding", "how many things has * got", "what number of things does * possess", "how many things does * hold", "how many things are in the possession of *"],
+   "what does * have": ["what does * hold", "what is * holding", "what has * got", "what does * own", "what is in the possession of *", "what does * possess"],
+   "who has the *": ["who holds the *", "who owns the *", "who is in possession of the *", "who got the *", "who possesses the *", "who is holding the *"]
+  }
+ },
+ {
+  "id": "B7",
+  "statements": {
+   "* finds # *": ["* comes across # *", "* turns up # *", "* stumbles upon # *", "* comes upon # *", "* happens upon # *", "* ends up finding # *"],
+   "* gets # * from *": ["* receives # * from *", "* obtains # * from *", "* acquires # * from *", "* is given # * by *", "* collects # * from *", "* is handed # * by *"],
+   "* gives # * to *": ["* hands over # * to *", "* passes on # * to *", "* transfers # * to *", "* sends # * to *", "* makes # * go to *", "* turns over # * to *"],
+   "* has # *": ["* is in possession of # *", "* is the owner of # *", "* has possession of # *", "* has got # *", "* keeps hold of # *", "* is holding # *"],
+   "* loses # *": ["* has misplaced # *", "* has mislaid # *", "* lets # * slip away", "* ends up without # *", "* is left without # *", "* no longer has # *"]
+  },
+  "questions": {
+   "does * have more than # *": ["does * own more than # *", "does * hold more than # *", "has * got more than # *", "does * possess more than # *", "is * holding more than # *", "does * have a larger amount than # *"],
+   "how many * does * have": ["how many * does * own", "how many * is * holding", "what number of * does * possess", "how many * has * got", "how many * is * carrying", "how many * does * hold"],
+   "who has the most *": ["who owns the most *", "who holds the most *", "which one has the largest number of *", "who possesses the largest number of *", "who has the highest count of *", "who has the greatest amount of *"]
+  }
+ },
+ {
+  "id": "C11",
+  "statements": {
+   "* is *": ["* counts as *", "* is described as *", "* is considered *", "* is known as *", "* is labelled *", "* is classed as *"],
+   "* is a *": ["* counts as a *", "* is considered a *", "* is labelled a *", "* is described as a *", "* is known as a *", "* is a sort of *"],
+   "every * is *": ["each * is *", "any * is *", "each and every * is *", "every * counts as *", "without exception every * is *", "every * has the quality of being *"],
+   "every * thing is *": ["each * thing is *", "any * thing is *", "each and every * thing is *", "every * thing counts as *", "without exception every * thing is *", "every * thing has the quality of being *"],
+   "no * is *": ["not a single * is *", "there is no * that is *", "not one * is *", "a * is never *", "there is not any * that is *", "not any * is *"],
+   "no * thing is *": ["not a single * thing is *", "there is no * thing that is *", "not one * thing is *", "a * thing is never *", "there is not any * thing that is *", "not any * thing is *"]
+  },
+  "questions": {
+   "is * *": ["does * count as *", "is * considered *", "is * described as *", "is * known as *", "is * labelled *", "is * classed as *"],
+   "who is *": ["who counts as *", "which one is *", "which person is *", "who is described as *", "who is known as *", "who is considered *"]
+  }
+ },
+ {
+  "id": "E4",
+  "statements": {
+   "* is a *": ["* counts as a *", "* is considered a *", "* is labelled a *", "* is described as a *", "* is known as a *", "* is a sort of *"],
+   "every * is *": ["each * is *", "any * is *", "each and every * is *", "every * counts as *", "without exception every * is *", "every * has the quality of being *"],
+   "every * is a *": ["each * is a *", "any * is a *", "each and every * is a *", "every * counts as a *", "without exception every * is a *", "every * is described as a *"]
+  },
+  "questions": {
+   "is * *": ["does * count as *", "is * considered *", "is * described as *", "is * known as *", "is * labelled *", "is * classed as *"],
+   "is * a *": ["does * count as a *", "is * considered a *", "is * described as a *", "is * known as a *", "is * labelled a *", "is * classed as a *"],
+   "which things are *": ["which items are *", "what things are *", "which ones are *", "which things count as *", "which objects are *", "which things are classed as *"]
+  }
+ },
+ {
+  "id": "G1",
+  "statements": {
+   "ann puts the * in the *": ["ann places the * in the *", "ann sets the * inside the *", "ann slips the * into the *", "ann tucks the * into the *", "ann lays the * in the *", "ann drops the * inside the *"],
+   "ann takes the * out of the *": ["ann removes the * from the *", "ann pulls the * out of the *", "ann lifts the * out of the *", "ann gets the * out of the *", "ann brings the * out of the *", "ann draws the * out of the *"],
+   "ann takes the * to the *": ["ann carries the * to the *", "ann brings the * to the *", "ann moves the * over to the *", "ann transports the * to the *", "ann hauls the * to the *", "ann walks the * over to the *"],
+   "ben puts the * in the *": ["ben places the * in the *", "ben sets the * inside the *", "ben slips the * into the *", "ben tucks the * into the *", "ben lays the * in the *", "ben drops the * inside the *"],
+   "ben takes the * out of the *": ["ben removes the * from the *", "ben pulls the * out of the *", "ben lifts the * out of the *", "ben gets the * out of the *", "ben brings the * out of the *", "ben draws the * out of the *"],
+   "ben takes the * to the *": ["ben carries the * to the *", "ben brings the * to the *", "ben moves the * over to the *", "ben transports the * to the *", "ben hauls the * to the *", "ben walks the * over to the *"],
+   "cal puts the * in the *": ["cal places the * in the *", "cal sets the * inside the *", "cal slips the * into the *", "cal tucks the * into the *", "cal lays the * in the *", "cal drops the * inside the *"],
+   "cal takes the * out of the *": ["cal removes the * from the *", "cal pulls the * out of the *", "cal lifts the * out of the *", "cal gets the * out of the *", "cal brings the * out of the *", "cal draws the * out of the *"],
+   "cal takes the * to the *": ["cal carries the * to the *", "cal brings the * to the *", "cal moves the * over to the *", "cal transports the * to the *", "cal hauls the * to the *", "cal walks the * over to the *"],
+   "the * is in the *": ["the * sits inside the *", "the * is inside the *", "the * is located in the *", "the * rests in the *", "the * lies inside the *", "the * is found in the *"]
+  },
+  "questions": {
+   "how many things are in the *": ["how many items are inside the *", "how many things sit in the *", "what number of things are in the *", "how many things are inside the *", "how many objects are in the *", "how many things are held in the *"],
+   "is the * in the *": ["is the * inside the *", "is the * found in the *", "does the * sit in the *", "is the * located in the *", "is the * kept in the *", "is the * inside of the *"],
+   "what is in the *": ["what sits in the *", "what is inside the *", "what items are in the *", "what is found in the *", "what does the * hold", "what is kept in the *"],
+   "where is the *": ["where can the * be found", "which place is the * in", "where has the * been put", "where is the * located", "where can we find the *", "where is the * kept"]
+  }
+ },
+ {
+  "id": "H7",
+  "statements": {
+   "* gets # *": ["* ends up with # *", "* picks up # *", "* is given # *", "* comes to own # *", "* comes to have # *", "* is handed # *"],
+   "* gives # * to *": ["* hands over # * to *", "* passes on # * to *", "* transfers # * to *", "* sends # * to *", "* makes # * go to *", "* turns over # * to *"],
+   "* has # *": ["* is in possession of # *", "* is the owner of # *", "* has possession of # *", "* has got # *", "* keeps hold of # *", "* is holding # *"],
+   "* loses # *": ["* has misplaced # *", "* has mislaid # *", "* lets # * slip away", "* ends up without # *", "* is left without # *", "* no longer has # *"],
+   "* takes # * from *": ["* removes # * from *", "* grabs # * from *", "* collects # * from *", "* pulls # * from *", "* lifts # * from *", "* picks # * from *"]
+  },
+  "questions": {
+   "does * have any *": ["is * holding any *", "does * own any *", "has * got any *", "does * possess any *", "does * hold any *", "does * keep any *"],
+   "does * have more * than *": ["does * own more * than *", "does * hold more * than *", "has * got more * than *", "does * possess more * than *", "is * holding more * than *", "does * have a larger number of * than *"],
+   "how many * are there in all": ["what is the total number of * there are", "in all how many * are there", "how many * exist in total", "altogether how many * are there", "how many * are there altogether", "how many * are there overall"],
+   "how many * does * have": ["how many * does * own", "how many * is * holding", "what number of * does * possess", "how many * has * got", "how many * is * carrying", "how many * does * hold"],
+   "what things does * have": ["what items does * own", "what things is * holding", "what things has * got", "what things does * possess", "what things does * hold", "what objects does * have"],
+   "who has the most *": ["who owns the most *", "who holds the most *", "which one has the largest number of *", "who possesses the largest number of *", "who has the highest count of *", "who has the greatest amount of *"]
+  }
+ },
+ {
+  "id": "en1",
+  "statements": {
+   "* journeyed to the *": ["* headed to the *", "* made the trip to the *", "* made their way to the *", "* set off for the *", "* went over to the *", "* proceeded to the *"],
+   "* moved to the *": ["* shifted to the *", "* moved over to the *", "* relocated to the *", "* walked over to the *", "* made a move to the *", "* went across to the *"],
+   "* travelled to the *": ["* made a trip to the *", "* took a trip to the *", "* headed off to the *", "* set out for the *", "* went on a trip to the *", "* made a journey to the *"],
+   "* went back to the *": ["* returned to the *", "* headed back to the *", "* came back to the *", "* made their way back to the *", "* got back to the *", "* went again to the *"],
+   "* went to the *": ["* headed to the *", "* made their way to the *", "* proceeded to the *", "* went over to the *", "* set off for the *", "* journeyed to the *"]
+  },
+  "questions": {
+   "where is *": ["where can * be found", "which place is * in", "where has * gone", "where is * located", "where can we find *", "which place is * at"]
+  }
+ },
+ {
+  "id": "en15",
+  "statements": {
+   "* are afraid of *": ["* do fear *", "* are scared of *", "* are frightened of *", "* feel fear of *", "* are fearful of *", "* are in fear of *"],
+   "* is a *": ["* counts as a *", "* is considered a *", "* is labelled a *", "* is described as a *", "* is known as a *", "* is a sort of *"]
+  },
+  "questions": {
+   "what is * afraid of": ["what is * scared of", "what does * fear", "what is * frightened of", "what is * fearful of", "what is * in fear of", "what does * feel fear of"]
+  }
+ }
+]

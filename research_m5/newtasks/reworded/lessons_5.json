@@ -1,0 +1,112 @@
+[
+ {
+  "id": "A7",
+  "statements": {
+   "* buys # *": ["* makes a purchase of # *", "* goes out and buys # *", "* is buying # *", "* pays for # *", "* comes to acquire # *", "* picks out and buys # *"],
+   "* finds # *": ["* comes across # *", "* makes a discovery of # *", "* tracks down # *", "* catches sight of # *", "* turns up # *", "* happens upon # *"],
+   "* gets # * from *": ["* receives # * from *", "* obtains # * from *", "* collects # * from *", "* is given # * from *", "* picks up # * from *", "* gains # * from *"],
+   "* gives # * to *": ["* hands over # * to *", "* passes # * on to *", "* transfers # * to *", "* presents # * to *", "* delivers # * to *", "* supplies # * to *"],
+   "* has # *": ["* is the one who owns # *", "* does possess # *", "* is holding # *", "* is the owner of # *", "* has got # *", "* is in possession of # *"],
+   "* loses # *": ["* has misplaced # *", "* ends up without # *", "* is left without # *", "* no longer has # *", "* suffers the loss of # *", "* is no longer holding # *"]
+  },
+  "questions": {
+   "does * have # * now": ["does * own # * right now", "is it true that * holds # * at present", "does * possess # * at this time", "is * in possession of # * currently", "at the moment does * have # *", "is * holding # * at this moment"],
+   "how many * does * have now": ["what number of * does * own at present", "how many * is * holding currently", "what is the count of * that * possesses right now", "how many * has * got now", "how many * does * hold at this time", "what is the total of * that * owns now"],
+   "who has the most * now": ["which person holds the greatest number of * now", "who owns the largest amount of * at present", "who has the greatest quantity of * right now", "who is holding the most * currently", "who possesses the highest number of * at this time", "who has more * than anyone else now"]
+  }
+ },
+ {
+  "id": "B11",
+  "statements": {
+   "* is a bird": ["* counts as a bird", "* is a type of bird", "* is classed as a bird", "* is considered a bird", "* turns out to be a bird", "* is an example of a bird"],
+   "* is a creature": ["* counts as a creature", "* is a kind of creature", "* is classed as a creature", "* is viewed as a creature", "* can be called a creature", "* is an example of a creature"],
+   "* is a fish": ["* counts as a fish", "* is a kind of fish", "* is classed as a fish", "* is viewed as a fish", "* can be called a fish", "* is an example of a fish"],
+   "* is a frog": ["* counts as a frog", "* is a kind of frog", "* is classed as a frog", "* is viewed as a frog", "* can be called a frog", "* is an example of a frog"],
+   "* is a lizard": ["* counts as a lizard", "* is a kind of lizard", "* is classed as a lizard", "* is viewed as a lizard", "* can be called a lizard", "* is an example of a lizard"],
+   "* is a toad": ["* counts as a toad", "* is a kind of toad", "* is classed as a toad", "* is viewed as a toad", "* can be called a toad", "* is an example of a toad"],
+   "no bird is *": ["none of the birds is *", "there is no bird that is *", "not a single bird is *", "every bird is not *", "birds are never *", "no bird at all is *"],
+   "no creature is *": ["none of the creatures is *", "there is no creature that is *", "not a single creature is *", "every creature is not *", "creatures are never *", "no creature at all is *"],
+   "no fish is *": ["none of the fish is *", "there is no fish that is *", "not a single fish is *", "every fish is not *", "fish are never *", "no fish at all is *"],
+   "no frog is *": ["none of the frogs is *", "there is no frog that is *", "not a single frog is *", "every frog is not *", "frogs are never *", "no frog at all is *"],
+   "no lizard is *": ["none of the lizards is *", "there is no lizard that is *", "not a single lizard is *", "every lizard is not *", "lizards are never *", "no lizard at all is *"],
+   "no toad is *": ["none of the toads is *", "there is no toad that is *", "not a single toad is *", "every toad is not *", "toads are never *", "no toad at all is *"]
+  },
+  "questions": {
+   "is * *": ["is * a *", "is it true that * is a *", "does * count as a *", "is * considered a *", "would * be called a *", "is * a kind of *"]
+  }
+ },
+ {
+  "id": "D2",
+  "statements": {
+   "* gives the * to *": ["* hands the * over to *", "* passes the * on to *", "* transfers the * to *", "* presents the * to *", "* delivers the * to *", "* supplies the * to *"],
+   "* has a *": ["* owns a *", "* possesses a *", "* holds a *", "* is the owner of a *", "* has got a *", "* is in possession of a *"],
+   "* swaps with *": ["* trades with *", "* exchanges with *", "* switches with *", "* makes a swap with *", "* does an exchange with *", "* swaps items with *"]
+  },
+  "questions": {
+   "does * have the *": ["does * own the *", "does * hold the *", "is * holding the *", "has * got the *", "is it true that * has the *", "is * in possession of the *"],
+   "what does * have": ["what does * own", "what is * holding", "which thing does * possess", "what is in * possession", "what has * got", "what does * hold"],
+   "who has the *": ["who owns the *", "who holds the *", "which person has the *", "who is in possession of the *", "who possesses the *", "who has got the *"]
+  }
+ },
+ {
+  "id": "E10",
+  "statements": {
+   "* joins the * group": ["* enters the * group", "* becomes a member of the * group", "* becomes part of the * group", "* goes into the * group", "* is now in the * group", "* signs up for the * group"],
+   "* leaves the * group": ["* exits the * group", "* departs from the * group", "* quits the * group", "* walks out of the * group", "* pulls out of the * group", "* stops being in the * group"],
+   "* moves from the * group to the * group": ["* switches from the * group into the * group", "* transfers out of the * group and into the * group", "* goes from the * group over to the * group", "* changes from the * group to the * group", "* shifts out of the * group and joins the * group", "* relocates from the * group to the * group"]
+  },
+  "questions": {
+   "how many people are in the * group": ["how many people belong to the * group", "how many members does the * group have", "how many people make up the * group", "what number of people sit in the * group", "how many people are part of the * group", "what is the headcount of the * group"],
+   "which group is * in": ["what group is * part of", "which group does * belong to", "in which group is * found", "which group does * sit in", "what group is * a member of", "which group has * as a member"],
+   "who is in the * group": ["who belongs to the * group", "who are the members of the * group", "who is part of the * group", "who makes up the * group", "who is a member of the * group", "which people are in the * group"]
+  }
+ },
+ {
+  "id": "G7",
+  "statements": {
+   "* gets # *": ["* comes to receive # *", "* goes and obtains # *", "* gathers up # *", "* is given # *", "* picks up # *", "* comes to acquire # *"],
+   "* gives # * to *": ["* sends # * over to *", "* passes along # * to *", "* hands over # * to *", "* offers # * to *", "* turns over # * to *", "* gifts # * to *"],
+   "* has # *": ["* is the one who owns # *", "* holds onto # *", "* is carrying # *", "* does possess # *", "* is keeping # *", "* is the owner of # *"],
+   "* loses # *": ["* has misplaced # *", "* ends up without # *", "* is left without # *", "* no longer has # *", "* suffers the loss of # *", "* is no longer holding # *"],
+   "* takes # * from *": ["* grabs # * from *", "* removes # * from *", "* pulls # * away from *", "* picks up # * from *", "* lifts # * from *", "* seizes # * from *"]
+  },
+  "questions": {
+   "does * have more * than *": ["does * own more * than *", "is it true that * holds more * than *", "does * possess greater numbers of * than *", "is * holding more * than *", "does * hold a larger amount of * than *", "does * have a bigger number of * than *"],
+   "how many * does * have": ["how many * does * own", "what is the number of * that * holds", "how many * is * holding", "what count of * does * possess", "how many * has * got", "how many * does * possess"],
+   "who has the most *": ["which person has the largest amount of *", "who holds the greatest number of *", "who possesses the most *", "who is holding the most *", "which one has the highest number of *", "who owns the most *"]
+  }
+ },
+ {
+  "id": "H11",
+  "statements": {
+   "* gives the * to *": ["* transfers the * to *", "* presents the * to *", "* delivers the * to *", "* supplies the * to *", "* offers the * to *", "* sends the * over to *"],
+   "* is a *": ["* is a kind of *", "* is classed as a *", "* is considered a *", "* can be called a *", "* turns out to be a *", "* is an example of a *"],
+   "* takes the *": ["* grabs the *", "* picks up the *", "* collects the *", "* lifts the *", "* removes the *", "* takes hold of the *"],
+   "every * can open the box": ["each * is able to open the box", "all * can open the box", "every * is capable of opening the box", "all * are able to open the box", "each * can open the box", "every * has the ability to open the box"],
+   "every * is a *": ["each * is a *", "every * is a kind of *", "each * is classed as a *", "every * is considered a *", "each * turns out to be a *", "every * is an example of a *"]
+  },
+  "questions": {
+   "can * open the box": ["is * able to open the box", "is * capable of opening the box", "is it possible for * to open the box", "does * have the ability to open the box", "is * in a position to open the box", "does * have the power to open the box"],
+   "how many items does * have": ["how many things does * own", "how many items does * possess", "what number of items does * hold", "how many objects does * have", "how many items has * got", "what is the count of items * holds"],
+   "is * a *": ["is * classed as a *", "is it true that * is a *", "does * count as a *", "is * considered a *", "would * be called a *", "is * a kind of *"],
+   "what is *": ["what kind of thing is *", "what sort of thing is *", "what exactly is *", "what does * turn out to be", "what would * be", "what sort of item is *"],
+   "who can open the box": ["which one can open the box", "who is able to open the box", "who is capable of opening the box", "who has the ability to open the box", "who is in a position to open the box", "who might be able to open the box"],
+   "who has the *": ["who owns the *", "who holds the *", "which person has the *", "who is in possession of the *", "who possesses the *", "who has got the *"]
+  }
+ },
+ {
+  "id": "en5",
+  "statements": {
+   "* gave the * to *": ["* gave the * over to *", "* presented the * to *", "* offered the * to *", "* transferred the * to *", "* delivered the * to *", "* placed the * in the hands of *"],
+   "* handed the * to *": ["* gave the * to *", "* transferred the * to *", "* offered the * to *", "* delivered the * to *", "* presented the * to *", "* placed the * in the hands of *"],
+   "* passed the * to *": ["* handed the * over to *", "* gave the * on to *", "* sent the * over to *", "* handed the * off to *", "* forwarded the * to *", "* passed the * along to *"]
+  },
+  "questions": {
+   "what did * give to *": ["what did * hand over to *", "what did * offer to *", "what thing did * give to *", "what did * present to *", "which item did * give to *", "what did * transfer to *"],
+   "who did * give the * to": ["to whom did * hand over the *", "who did * pass the * on to", "to which person did * give the *", "who did * offer the * to", "who did * transfer the * to", "to whom did * give the *"],
+   "who gave the *": ["who passed the *", "which person handed over the *", "who transferred the *", "who offered the *", "who sent the *", "who presented the *"],
+   "who gave the * to *": ["who passed the * on to *", "who handed the * over to *", "who transferred the * to *", "who offered the * to *", "which person gave the * to *", "who presented the * to *"],
+   "who received the *": ["who got the *", "which person ended up with the *", "who was handed the *", "who took possession of the *", "who was given the *", "who accepted the *"]
+  }
+ }
+]

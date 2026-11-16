@@ -1,0 +1,131 @@
+[
+  {
+    "id": "K2",
+    "statements": {
+      "* and * swap the * and the *": ["* and * trade the * and the *", "* and * exchange the * and the *", "* and * switch the * and the *"],
+      "* gets the * from *": ["* receives the * from *", "* is handed the * by *", "* ends up with the * from *"],
+      "* gives the * to *": ["* hands the * over to *", "* transfers the * to *", "* passes the * on to *"],
+      "* has the *": ["* owns the *", "* possesses the *", "* is holding the *"]
+    },
+    "questions": {
+      "does * have the *": ["does * own the *", "does * possess the *", "is * holding the *"],
+      "how many things does * have": ["how many things are owned by *", "how many items does * hold", "what is the number of things * possesses"],
+      "what does * have": ["what is * holding", "what does * own", "what belongs to *"],
+      "who has the *": ["who owns the *", "which person possesses the *", "who is holding the *"]
+    }
+  },
+  {
+    "id": "K6",
+    "statements": {
+      "* went to the * right after * went to the *": ["* went to the * immediately after * went to the *", "* headed to the * just after * had gone to the *", "* reached the * right behind * who went to the *"],
+      "* went to the * right before * went to the *": ["* headed to the * just before * went over to the *", "* went to the * immediately ahead of * going to the *", "* visited the * right ahead of * visiting the *"],
+      "at # * went to the *": ["at # * headed over to the *", "at # * visited the *", "at # * made a visit to the *"]
+    },
+    "questions": {
+      "was * in the * at #": ["was * present in the * at #", "was * located in the * at #", "at # was * located in the *"],
+      "where was * at #": ["where was * located at time #", "in which place was * at time #", "at time # where was *"],
+      "where was * just before * went to the *": ["where was * located just ahead of * going to the *", "at what place was * just before * visited the *", "what place was * in right before * went to the *"],
+      "who went to the * first": ["who visited the * first", "who headed to the * first", "who was the first to go to the *"]
+    }
+  },
+  {
+    "id": "K10",
+    "statements": {
+      "* joins the * group": ["* enters the * group", "* becomes a member of the * group", "* gets into the * group"],
+      "* leaves the * group": ["* exits the * group", "* departs the * group", "* is no longer in the * group"],
+      "* moves from the * group to the * group": ["* shifts from the * group into the * group", "* goes from the * group over to the * group", "* transfers from the * group to the * group"]
+    },
+    "questions": {
+      "how many are in the * group": ["what is the number of people in the * group", "how many people belong to the * group", "what is the count of members in the * group"],
+      "is * in the * group": ["is * a member of the * group", "does * belong to the * group", "is * part of the * group"],
+      "which group is * in": ["which group does * belong to", "what group is * part of", "in which group is * found"],
+      "who is in the * group": ["who belongs to the * group", "which people are in the * group", "who are the members of the * group"]
+    }
+  },
+  {
+    "id": "L2",
+    "statements": {
+      "* gives the * to *": ["* hands the * over to *", "* transfers the * to *", "* passes the * on to *"],
+      "* has the *": ["* owns the *", "* possesses the *", "* is holding the *"],
+      "* swaps with *": ["* trades with *", "* exchanges things with *", "* switches with *"]
+    },
+    "questions": {
+      "does * have the *": ["does * own the *", "does * possess the *", "is * holding the *"],
+      "what does * have": ["what is * holding", "what does * own", "what belongs to *"],
+      "who has the *": ["who owns the *", "which person possesses the *", "who is holding the *"]
+    }
+  },
+  {
+    "id": "L6",
+    "statements": {
+      "* went to the *": ["* headed to the *", "* visited the *", "* made a trip to the *"],
+      "* went to the * * * went to the *": ["* headed to the * * * visited the *", "* traveled to the * * * made a visit to the *", "* moved over to the * * * reached the *"],
+      "at time # * went to the *": ["at time # * headed over to the *", "at time # * visited the *", "at time # * made a visit to the *"]
+    },
+    "questions": {
+      "did * go to the * * * went to the *": ["did * travel to the * * * visit the *", "did * head over to the * * * reach the *", "did * make a trip to the * * * arrive at the *"],
+      "where was * at time #": ["where was * located at time #", "in which place was * at time #", "at time # where was *"],
+      "who was in the * at time #": ["who was at the * at time #", "which people were in the * at time #", "at time # who was in the *"],
+      "who went to the * *": ["who headed to the * *", "who visited the * *", "who made a trip to the * *"]
+    }
+  },
+  {
+    "id": "L10",
+    "statements": {
+      "* joins the * group": ["* enters the * group", "* becomes a member of the * group", "* gets into the * group"],
+      "* leaves the * group": ["* exits the * group", "* departs the * group", "* is no longer in the * group"],
+      "* moves from the * group to the * group": ["* shifts from the * group into the * group", "* goes from the * group over to the * group", "* transfers from the * group to the * group"]
+    },
+    "questions": {
+      "how many are in the * group": ["what is the number of people in the * group", "how many people belong to the * group", "what is the count of members in the * group"],
+      "is * in the * group": ["is * a member of the * group", "does * belong to the * group", "is * part of the * group"],
+      "which group is * in": ["which group does * belong to", "what group is * part of", "in which group is * found"],
+      "who is in the * group": ["who belongs to the * group", "which people are in the * group", "who are the members of the * group"]
+    }
+  },
+  {
+    "id": "M22",
+    "statements": {
+      "* gives the * to *": ["* hands the * over to *", "* transfers the * to *", "* passes the * on to *"],
+      "* passes the * to *": ["* hands the * over to *", "* slides the * across to *", "* sends the * on to *"],
+      "* picks up the *": ["* grabs the *", "* collects the *", "* lifts the *"],
+      "* puts the * down": ["* sets the * down", "* lays the * down", "* places the * down"],
+      "* swaps the * for the * with *": ["* trades the * for the * with *", "* exchanges the * for the * with *", "* switches the * for the * with *"],
+      "* takes the * from *": ["* grabs the * from *", "* lifts the * from *", "* pulls the * from *"]
+    },
+    "questions": {
+      "does * have the *": ["does * own the *", "does * possess the *", "is * holding the *"],
+      "how many things does * have": ["how many things are owned by *", "how many items does * hold", "what is the number of things * possesses"],
+      "what does * have": ["what is * holding", "what does * own", "what belongs to *"],
+      "who has the *": ["who owns the *", "which person possesses the *", "who is holding the *"]
+    }
+  },
+  {
+    "id": "M26",
+    "statements": {
+      "* went to the *": ["* headed to the *", "* visited the *", "* made a trip to the *"],
+      "* went to the * after * went to the *": ["* headed to the * once * had gone to the *", "* visited the * later than * went to the *", "* reached the * after * had been to the *"],
+      "* went to the * before * went to the *": ["* headed to the * ahead of * going to the *", "* visited the * earlier than * went to the *", "* reached the * sooner than * got to the *"]
+    },
+    "questions": {
+      "did * go to the * before * went to the *": ["did * travel to the * ahead of * going to the *", "did * visit the * earlier than * went to the *", "did * head to the * sooner than * got to the *"],
+      "where is * now": ["where is * at present", "in what place is * right now", "which place is * in at the moment"],
+      "where was * when * went to the *": ["where was * at the time * went to the *", "which place was * during the time * went to the *", "what place was * located in when * went to the *"],
+      "who was in the * before * went to the *": ["who was at the * ahead of * going to the *", "which people were in the * earlier than * went to the *", "who was present in the * sooner than * got to the *"]
+    }
+  },
+  {
+    "id": "M210",
+    "statements": {
+      "* joined the * group": ["* entered the * group", "* became a member of the * group", "* got into the * group"],
+      "* left the * group": ["* exited the * group", "* departed the * group", "* was no longer part of the * group"],
+      "* moved from the * group to the * group": ["* transferred from the * group to the * group", "* went from the * group over to the * group", "* switched from the * group to the * group"]
+    },
+    "questions": {
+      "how many people are in the * group": ["how many people belong to the * group", "what is the count of people in the * group", "how many members are in the * group"],
+      "is * in the * group": ["is * a member of the * group", "does * belong to the * group", "is * part of the * group"],
+      "which group is * in": ["which group does * belong to", "what group is * part of", "in which group is * found"],
+      "who is in the * group": ["who belongs to the * group", "which people are in the * group", "who are the members of the * group"]
+    }
+  }
+]
