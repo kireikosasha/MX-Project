@@ -321,6 +321,12 @@ def learn(task, steps=300, seeds=3, lr=0.1, price=0.1, log=None, start=None, unt
             opt.step()
             if log and step % 50 == 0:
                 log(f"    beginning {seed}, step {step}: loss {loss.item():.3f}")
+        if start is not None:                                    # (a kind of statement not met in these stories keeps the choice the
+            met = set(data.said.unique().tolist())               # reader of words made for it: nothing here could teach it otherwise)
+            with torch.no_grad():
+                for f in range(net.value.shape[0]):
+                    if f not in met:
+                        net.value[f], net.link[f], net.also[f] = start[0][f], start[1][f], start[2][f]
         readings = net.hard(task)
         right = sum(r.right for r in readings.values())
         if best is None or right > best[1]:
@@ -339,10 +345,23 @@ def polished(task, readings):
             s = recall.Search(task, q, r.sort, r.ask, recall.parts(task, r.sort)[0], task.own(q), 2000)
             s.roles = dict(r.roles)
             s.score = recall.grade(recall.run(task, q, r.sort, r.ask, s.roles, task.own(q)))
-            s.level([(f,) for f in s.mine])
+            met = {row[0] for story in task.stories for row in story if not row[1]}
+            s.level([(f,) for f in s.mine if f in met])          # (only the kinds of statements these stories can tell of)
             r = s.reading() if s.score[0] > r.right else r
         out[q] = r
     return out
+
+
+def widened(reader, task, later):
+    """the kinds of statements of the stories to come are made known to a task of a few stories (by their words; no
+    answer is looked at): a kind of statement never met in the few stories can then be read from its words"""
+    for ep in reader.rows(later):
+        for op, quest, things, numbers, kinds, gold in ep:
+            f = task.form(op, quest, things, kinds)
+            if not quest and f not in task.forms:
+                n = task.forms[f] = len(task.forms)
+                task.build[n] = (f[2], f[0], f[3])
+    return task
 
 
 def opened(folder, k, guess, stories):
@@ -442,10 +461,12 @@ def main():
         raw = rows.stories(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], a.stories)
         best, tried = None, []
         if reader_of_words is not None:                          # the choices read from the words alone, made hard and checked: at once;
+            later = rows.stories(glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0])
             for reader in rows.guesses(raw[:20]):                # then the same choices as a beginning for the gradient (a third of the steps)
                 task = recall.Task(reader.rows(raw), False)
                 if max(sum(k != "#" for k in f[2]) for f in list(task.forms) + list(task.asked)) > SLOTS:
                     continue
+                task = widened(reader, task, later)
                 layer = Layer(Stories(task))
                 with torch.no_grad():
                     layer.given = reader_of_words.choices(task, layer)
@@ -496,7 +517,7 @@ def main():
         m = recall.Learner.__new__(recall.Learner)               # (the learner of recall.py with nothing learnt: it only checks)
         m.task, m.readings = task, readings
         m.count = {q: len(task.golds(q)) for q in task.asked.values()}
-        m.usual = {q: recall.Counter(task.golds(q)).most_common(1)[0][0] for q in task.asked.values()}
+        m.usual = {q: (recall.Counter(task.golds(q)).most_common(1) or [("", 0)])[0][0] for q in task.asked.values()}
         m.own = {q: task.own(q) for q in task.asked.values()}
         full = sum(r.right == r.total and r.total >= 3 for r in m.readings.values())
         print(f"task {k:2d}: by the gradient from {a.stories} stories, {right}/{total} of their questions right when made hard, {full} of {len(m.readings)} kinds of "
