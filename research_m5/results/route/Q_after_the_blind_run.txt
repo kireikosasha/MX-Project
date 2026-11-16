@@ -1,0 +1,11 @@
+Set Q after the blind run (it is a working set now): the mean share of right answers over its 12 tasks, %,
+from 1 story and from 3 stories (--text 200 --plain); every run is a namer taught anew from another seed.
+
+                                                               1      3
+the search alone (no network)                               24.5   42.7   runs: 24.5/42.7   tasks at 95+ from 3 stories: 0
+namer shown no words (only where the things stand)          32.1   47.2   runs: 31.1/46.6, 32.2/47.8, 33.0/47.4   tasks at 95+ from 3 stories: 0, 0, 0
+namer taught on 14 tasks of the 112, drawn at random        36.9   47.4   runs: 37.8/46.7, 36.4/44.7, 36.6/50.8   tasks at 95+ from 3 stories: 0, 0, 0
+namer taught on 28 tasks of the 112, drawn at random        34.5   48.0   runs: 35.8/49.1, 37.0/48.0, 30.8/46.8   tasks at 95+ from 3 stories: 1, 0, 1
+namer taught on 56 tasks of the 112, drawn at random        41.4   52.4   runs: 39.2/50.2, 41.7/53.4, 43.3/53.4   tasks at 95+ from 3 stories: 1, 1, 0
+namer taught on all 112 tasks (the first run: the blind one)  40.6   54.5   runs: 41.2/54.8, 42.2/53.7, 40.5/53.8, 38.4/55.5   tasks at 95+ from 3 stories: 1, 1, 1, 1
+the same with vectors of words from plain text (GloVe, 50)  38.4   51.3   runs: 34.5/50.3, 41.1/52.7, 38.5/50.7, 39.2/51.4   tasks at 95+ from 3 stories: 1, 1, 1, 1

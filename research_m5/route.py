@@ -19,6 +19,7 @@ import ast
 import glob
 import json
 import os
+import random
 import re
 import time
 from collections import Counter
@@ -70,21 +71,42 @@ def worded(lesson_, rng=None):
     return [text(pick(False, t), l, False) for t, l, _ in said], [text(pick(True, t), l, True) for t, l, _ in asked]
 
 
+def vectors(path):
+    """vectors of words made from plain text (a file of word2vec text, gzipped): {word: vector}. With them a word never
+    met in the lessons is not empty to the network: it lies near the words it is used like"""
+    import gzip
+    out = {}
+    with gzip.open(path, "rt", encoding="utf-8") as f:
+        f.readline()
+        for line in f:
+            w, rest = line.split(" ", 1)
+            out[w] = torch.tensor([float(x) for x in rest.split()])
+    return out
+
+
 class Namer(torch.nn.Module):
-    def __init__(self, vocab, parts, asks, width=64):
+    def __init__(self, vocab, parts, asks, width=64, known=None):
         super().__init__()
+        self.known = known                                       # the vectors of words from plain text, if given
+        if known is not None:
+            self.lift = torch.nn.Linear(len(next(iter(known.values()))), width)
         self.vocab = {w: i + 1 for i, w in enumerate(sorted(vocab))}
         self.parts = {s: ["None"] + sorted(parts[s]) for s in SORTS}             # of a memory: the parts met in the lessons
         self.asks = sorted(asks)
         self.embed = torch.nn.Embedding(len(self.vocab) + 1, width)
         self.gru = torch.nn.GRU(width, width, batch_first=True, bidirectional=True)
         self.heads = torch.nn.ModuleDict({**{s: torch.nn.Linear(6 * width, len(self.parts[s])) for s in SORTS}, "ask": torch.nn.Linear(6 * width, len(self.asks))})
-        self.drop = 0.0
+        self.drop, self.wordless = 0.0, False
 
     def read(self, texts):
+        if self.wordless:                                        # (the control: every word is the same empty word, the places of things stay)
+            texts = [[w if w.startswith("<") else "" for w in t] for t in texts]
         ids = [[self.vocab.get(w, 0) if not (self.training and torch.rand(()) < self.drop and not w.startswith("<")) else 0 for w in t] for t in texts]
         most = max(len(x) for x in ids)
         x = self.embed(torch.tensor([x + [0] * (most - len(x)) for x in ids]))
+        if self.known is not None:
+            none = torch.zeros(self.lift.in_features)
+            x = x + self.lift(torch.stack([torch.stack([self.known.get(w, none) for w in t] + [none] * (most - len(t))) for t in texts]))
         out, _ = self.gru(torch.nn.utils.rnn.pack_padded_sequence(x, [len(i) for i in ids], batch_first=True, enforce_sorted=False))
         out, _ = torch.nn.utils.rnn.pad_packed_sequence(out, batch_first=True)
         mask = torch.tensor([[1.0] * len(i) + [0.0] * (most - len(i)) for i in ids])[:, :, None]
@@ -100,14 +122,15 @@ class Namer(torch.nn.Module):
         return {s: self.heads[s](hs) for s in SORTS}, self.heads["ask"](hq)
 
 
-def teach(lessons, steps=400, seed=0, log=print):
+def teach(lessons, steps=400, seed=0, log=print, known=None, wordless=False):
     rng = torch.Generator().manual_seed(seed)
     torch.manual_seed(seed)
     vocab = {w for said, asked, other in lessons for t, l, _ in said + asked for w in text(t, l, False)} \
         | {w for _, _, other in lessons for ways in other.values() for way in ways for w in way.split() if w not in "*#"} | {"?", "."}
     parts = {s: {by[s] for said, _, _ in lessons for _, _, by in said if s in by} for s in SORTS}
-    net = Namer(vocab, parts, {a for _, asked, _ in lessons for _, _, a in asked})
-    net.drop = 0.1
+    net = Namer(vocab, parts, {a for _, asked, _ in lessons for _, _, a in asked}, known=known)
+    net.drop = 0.5 if known is not None else 0.1                 # (with the vectors: half the time a word is its vector alone)
+    net.wordless = wordless
     opt = torch.optim.Adam(net.parameters(), lr=2e-3)
     for step in range(steps):
         net.train()
@@ -231,6 +254,10 @@ def main():
     ap.add_argument("--stories", type=int, default=20)
     ap.add_argument("--text", type=int, default=0, help="so many more stories are read with their answers hidden")
     ap.add_argument("--steps", type=int, default=400)
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--take", type=int, default=0, help="teach on so many of the tasks only, drawn at random")
+    ap.add_argument("--wordless", action="store_true", help="the control: the network is shown no words, only where the things stand in a sentence")
+    ap.add_argument("--vectors", default="", help="vectors of words made from plain text (word2vec text, gzipped)")
     ap.add_argument("--alone", action="store_true", help="no search: what the check does not confirm stays as named")
     ap.add_argument("--plain", action="store_true", help="the stories as they are: no guess about their words")
     ap.add_argument("--reword", default="", help="other wordings of the sentences of the tasks tried (JSON files): the tasks are said in them")
@@ -241,20 +268,25 @@ def main():
         hold = set(a.hold.split(","))
         found = [json.loads(line) for f in a.found.split(",") for line in open(f)]
         mine = [x for x in found if os.path.basename(x["data"].rstrip("/")) not in hold]
+        if a.take:                                               # (so many of the tasks, drawn at random: how much the number of lessons gives)
+            mine = random.Random(a.seed).sample(mine, a.take)
         reworded = {x["id"]: x for f in a.reworded.split(",") if f for x in json.load(open(f))}
         lessons = [lesson(x, reworded.get(os.path.basename(x["data"].rstrip("/")) + str(x["task"]))) for x in mine]
         print(f"{len(mine)} tasks to teach on ({sum(len(s) for s, _, _ in lessons)} kinds of statements, {sum(len(q) for _, q, _ in lessons)} kinds of questions; "
               f"{sum(len(w) for _, _, other in lessons for w in other.values())} other wordings of them)", flush=True)
-        net = teach(lessons, a.steps)
+        known = vectors(a.vectors) if a.vectors else None
+        net = teach(lessons, a.steps, seed=a.seed, known=known, wordless=a.wordless)
         right = sum(all(net.asks[i] == q for i, (_, _, q) in zip(net(*worded(one))[1].argmax(-1).tolist(), one[1])) for one in lessons if one[0] and one[1])
         print(f"of its own lessons, every kind of question named rightly: {right} of {len(lessons)}", flush=True)
-        torch.save({"vocab": sorted(net.vocab), "parts": {s: sorted(set(net.parts[s]) - {"None"}) for s in SORTS}, "asks": net.asks, "weights": net.state_dict()}, a.out)
+        torch.save({"vocab": sorted(net.vocab), "parts": {s: sorted(set(net.parts[s]) - {"None"}) for s in SORTS}, "asks": net.asks, "weights": net.state_dict(),
+                    "vectors": bool(a.vectors), "wordless": a.wordless}, a.out)
         return
     net = None                                                   # (with no network: the search alone, in the same harness)
     if a.net:
         saved = torch.load(a.net)
-        net = Namer(saved["vocab"], saved["parts"], saved["asks"])
+        net = Namer(saved["vocab"], saved["parts"], saved["asks"], known=vectors(a.vectors) if saved.get("vectors") else None)
         net.load_state_dict(saved["weights"])
+        net.wordless = saved.get("wordless", False)
         net.eval()
     said_anew = {x["id"]: x for f in a.reword.split(",") if f for x in json.load(open(f))}
     files = glob.glob(os.path.join(a.data, "qa*_train.txt"))
