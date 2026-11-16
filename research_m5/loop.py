@@ -24,6 +24,8 @@ Two models:
             random in teaching). Its state is a free vector for every node.
 
     python loop.py --minutes 12
+    python loop.py --nodes 24 --fields 2 --kinds 3 --whats 1 --every --minutes 60     # a smaller task; the looped transformer
+                                                              # is told where the pointer stands after every turn
 """
 import argparse
 import time
@@ -47,8 +49,9 @@ def meaning(code):
 
 def deal(batch, far, gen, table, exactly=None):
     """tasks -> the pointers [b, field, node], the kinds and the values [b, node], the start, the opcode as the model
-    sees it, the answer (a node, or N + a number), what is asked, how many steps away the answer lies. far: at most so
-    many steps away (exactly: just so many, for the opcodes that follow; an opcode of one step is one step away)"""
+    sees it, the answer (a node, or N + a number), what is asked, how many steps away the answer lies, the way and the
+    values gone through. far: at most so many steps away (exactly: just so many, for the opcodes that follow; an
+    opcode of one step is one step away)"""
     f = torch.randint(N, (batch, R, N), generator=gen)
     kind = torch.randint(K, (batch, N), generator=gen)
     value = torch.randint(V, (batch, N), generator=gen)
@@ -72,7 +75,16 @@ def deal(batch, far, gen, table, exactly=None):
     gone = value.gather(1, path[:, 1:]) * (torch.arange(N - 1)[None] < d[:, None])       # the values of the nodes gone through
     number = torch.stack([d, d, gone.sum(1), gone.max(1).values], 1)[ar, what]
     answer = torch.where(what == 0, path[ar, d], N + number)
-    return tuple(x.to(DEV) for x in (f, kind, value, path[:, 0], table[code], answer, what, d))
+    return tuple(x.to(DEV) for x in (f, kind, value, path[:, 0], table[code], answer, what, d, path, value.gather(1, path[:, 1:])))
+
+
+def after(turns, what, d, path, values):
+    """what the answer is after so many turns of the loop (the pointer has gone so many steps, or has come already)"""
+    t = d.clamp(max=turns)
+    ar = torch.arange(len(d), device=d.device)
+    gone = values * (torch.arange(values.shape[1], device=d.device)[None] < t[:, None])
+    number = torch.stack([t, t, gone.sum(1), gone.max(1).values], 1)[ar, what]
+    return torch.where(what == 0, path[ar, t], N + number)
 
 
 class Machine(nn.Module):
@@ -137,7 +149,7 @@ class Looped(nn.Module):
         self.norm = nn.LayerNorm(width)
         self.say = nn.Linear(width, N + numbers)
 
-    def forward(self, f, kind, value, start, op, loops, back=8, norms=None):
+    def forward(self, f, kind, value, start, op, loops, back=8, norms=None, every=None):
         own = self.node.weight[None].expand(len(start), -1, -1)
         x = self.token(torch.cat([own, self.kind(kind), self.value(value)] + [self.node(f[:, r]) for r in range(R)], -1))
         e = torch.cat([self.ask(torch.cat([self.node(start), self.op(op)], -1))[:, None], x], 1)
@@ -147,13 +159,15 @@ class Looped(nn.Module):
                 s = self.norm(self.block(self.adapter(torch.cat([s, e], -1))))
             if norms is not None:
                 norms.append(float((s - e).norm(dim=-1).mean()))
+            if every is not None:                                # (what it would say after every turn)
+                every.append(self.say(s[:, 0]))
         return self.say(s[:, 0])
 
 
 def right(model, gen, table, d, loops, n=600):
     """how often the answer so many steps away is given rightly with so many turns of the loop, %, by what is asked.
     model None: by one who always says the commonest answer to what is asked"""
-    f, kind, value, start, op, answer, what, far = deal(n, d, gen, table, exactly=d)
+    f, kind, value, start, op, answer, what, far = deal(n, d, gen, table, exactly=d)[:8]
     if model is None:
         return [100 * float(answer[(what == w) & (far == d)].bincount().max()) / max(1, int(((what == w) & (far == d)).sum())) for w in range(len(WHAT))]
     with torch.no_grad():
@@ -163,6 +177,7 @@ def right(model, gen, table, d, loops, n=600):
 
 
 def main():
+    global N, R, K, WHAT, OPS
     ap = argparse.ArgumentParser()
     ap.add_argument("--minutes", type=float, default=12, help="how long the looped transformer is taught")
     ap.add_argument("--far", type=int, default=4, help="in teaching the answer lies at most so many steps away")
@@ -170,17 +185,25 @@ def main():
     ap.add_argument("--layers", type=int, default=2)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--threads", type=int, default=4)
+    ap.add_argument("--nodes", type=int, default=N)
+    ap.add_argument("--fields", type=int, default=R)
+    ap.add_argument("--kinds", type=int, default=K)
+    ap.add_argument("--whats", type=int, default=len(WHAT), help="how many of the four things are asked (1: the node only)")
+    ap.add_argument("--every", action="store_true", help="the looped transformer is told the right answer after every turn of the loop, not only at the end")
     a = ap.parse_args()
     torch.set_num_threads(a.threads)
+    N, R, K, WHAT = a.nodes, a.fields, a.kinds, WHAT[:a.whats]
+    OPS = R + R * K * len(WHAT)
     gen = torch.Generator().manual_seed(a.seed)
     table = torch.randperm(OPS, generator=gen)                   # how the opcodes are dealt: not told to the models
-    tries = (1, 2, 4, 8, 16, 32, 40)
+    tries = tuple(sorted({d for d in (1, 2, 4, 8, 16, 32, 40) if d < N - 7} | {N - 8}))
+    print(f"{N} nodes, {R} fields, {K} kinds; asked: {', '.join(WHAT)}; {OPS} opcodes", flush=True)
     numbers = (V - 1) * max(tries) + 1
 
     machine = Machine(a.seed).to(DEV)
     opt, t0, size = torch.optim.Adam(machine.parameters(), lr=0.05), time.time(), (V - 1) * a.far + 2
     for step in range(1500):
-        f, kind, value, start, op, answer, _, _ = deal(64, a.far, gen, table)
+        f, kind, value, start, op, answer = deal(64, a.far, gen, table)[:6]
         p, _ = machine(f, kind, value, start, op, a.far + int(torch.randint(0, 5, (), generator=gen)), size)     # (more turns than needed, by chance)
         loss = -torch.log(p[torch.arange(64, device=DEV), answer].clamp_min(1e-6)).mean()
         opt.zero_grad()
@@ -202,9 +225,12 @@ def main():
         for group in opt.param_groups:                           # (the steps grow at first, then shrink)
             group["lr"] = 1e-3 * min(1.0, step / 300) * (1 - 0.8 * spent)
         far = min(a.far, 1 + int(2 * a.far * spent))             # from the near to the far: the first half of the time
-        f, kind, value, start, op, answer, _, _ = deal(64, far, gen, table)
-        out = looped(f, kind, value, start, op, far + 1 + int(torch.randint(0, 5, (), generator=gen)))      # (more turns than needed, by chance)
+        f, kind, value, start, op, answer, what, d, path, values = deal(64, far, gen, table)
+        turns, every = far + 1 + int(torch.randint(0, 5, (), generator=gen)), [] if a.every else None       # (more turns than needed, by chance)
+        out = looped(f, kind, value, start, op, turns, every=every)
         loss = torch.nn.functional.cross_entropy(out, answer)
+        if a.every:                                              # (told after every turn where the pointer stands and what the register holds)
+            loss = sum(torch.nn.functional.cross_entropy(o, after(t + 1, what, d, path, values)) for t, o in enumerate(every)) / turns
         opt.zero_grad()
         loss.backward()
         torch.nn.utils.clip_grad_norm_(looped.parameters(), 1.0)
@@ -231,7 +257,7 @@ def main():
         for w, what in enumerate(WHAT):
             print("%-52s%-10s" % (label if w == 0 else "", what) + "".join(f"{g[w]:7.1f}" for g in got), flush=True)
     norms = []
-    f, kind, value, start, op, answer, _, _ = deal(200, 4, gen, table)
+    f, kind, value, start, op = deal(200, 4, gen, table)[:5]
     with torch.no_grad():
         looped(f, kind, value, start, op, 64, norms=norms)
         _, mass = machine(f, kind, value, start, op, 256, (V - 1) * 4 + 2)
