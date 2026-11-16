@@ -20,6 +20,7 @@ found by trying and checking on the stories, a kind of question at a time: secon
 """
 import argparse
 import glob
+import json
 import itertools
 import os
 import re
@@ -890,6 +891,8 @@ def main():
     ap.add_argument("--stories", type=int, default=20)
     ap.add_argument("--ask", type=int, default=20, help="how many more stories it may ask the answers of")
     ap.add_argument("--show", action="store_true")
+    ap.add_argument("--dump", default="", help="write what was learnt of every task to this file (a line of JSON a task): the guess about the "
+                    "words, and for every kind of question its way of looking, what it asks and the part of every kind of statement")
     ap.add_argument("--text", type=int, default=0, help="so many more stories of the task are read with their answers hidden: from them the reader "
                     "of templates learns which words are things (no answer more is used)")
     a = ap.parse_args()
@@ -931,6 +934,12 @@ def main():
         r, t, sr, st = m.test(tests)
         print(f"test {k:2d}: {r}/{t} = {100 * r / max(1, t):.1f}%; sure of {full} of {len(m.readings)} kinds of questions, {sr}/{st} right on them"
               + ("; settled" if settled and full == len(m.readings) else ""), flush=True)
+        if a.dump:
+            said, asked_ = {n: f for f, n in m.task.forms.items()}, {n: f for f, n in m.task.asked.items()}
+            kinds = [{"question": asked_[q][0], "label": asked_[q][3], "sort": x.sort, "ask": x.ask, "turned": x.turned, "default": x.default, "right": x.right,
+                      "total": x.total, "parts": [[said[f][0], said[f][3], role] for f, role in x.roles.items() if f in said]} for q, x in m.readings.items() if x]
+            with open(a.dump, "a") as out:
+                out.write(json.dumps({"data": a.data, "task": k, "guessed": list(reader.guessed), "split": split, "test": 100 * r / max(1, t), "kinds": kinds}) + "\n")
         if a.show:
             back = {n: f for f, n in m.task.asked.items()}
             for q, (x, y) in sorted(m.tally.items()):
