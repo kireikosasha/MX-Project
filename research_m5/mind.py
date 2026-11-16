@@ -20,6 +20,7 @@ answer is then given the same way: by pointing at a name.
     python mind.py --lived lived.pkl --hold H,I,J,K --net mind.pt                        # only tried
 """
 import argparse
+import copy
 import math
 import os
 import pickle
@@ -37,26 +38,36 @@ from guess import ANS, EACH, KINDS, N0, NUMS, OTHER, PAD, PLAIN, Q0, S0, STORY, 
 EOA = VOCAB                                                     # the answer is said in full
 SIZE = VOCAB + 1
 RECORD = 5                                                      # a record: the kind of sentence and up to four things of it
-RECENT = 3                                                      # how many of the latest records that name a thing may be recalled
-RECALLED = 32                                                   # how many mentions in all may be recalled at one place
+RECENT = 5                                                      # how many of the latest records that name a thing may be recalled
+RECALLED = 40                                                   # how many mentions in all may be recalled at one place
+STALE = 3                                                       # how late a mention is, told apart up to this (0: the latest)
+COUNTS = 8                                                      # a number of records recalled is told apart up to this
 
 
-def tokens(episodes, rng=None, most=1280):
+def dealt(episodes):
+    """the names of a task dealt once, to be the same whatever stories of it are taken: its kinds of sentences in the
+    order they come in all its stories, and the codes its things have been given so far"""
+    return order(episodes) + ({}, {})
+
+
+def tokens(episodes, rng=None, most=1280, deal=None):
     """stories -> the tokens; for every place what is to be said next there (-1: nothing is asked of it); the
     questions of the last story, each as the places its answer is said at; and where every place stands: its story,
     its row, whether it is a thing of a statement, the place its row begins at, and the record of its row (the kind
     of sentence and its things, for a statement). None if the task has more kinds of sentences than the network has
     names for. rng: the names are dealt anew (in teaching). The words of an answer are said in the order of their
-    tokens: a list has no order of its own. Of every place it is also said what it may recall: the places of the
-    latest mentions of things in the statements of its story before its row, and how late each mention is"""
-    said, asked = order(episodes)
+    tokens: a list has no order of its own. deal: the names as they were dealt for this task before (dealt()), kept
+    the same from call to call. Of every place it is also said what it may recall: the places of the
+    latest mentions of things in the statements of its story before its row, how late each mention is, and how late
+    the mention of every thing of its record is by now (a record all of whose things are the latest still holds)"""
+    said, asked, code, kinds = deal or (order(episodes) + ({}, {}))
     if len(said) > guess.STATED or len(asked) > guess.ASKED:
         return None
     sid, qid = list(range(guess.STATED)), list(range(guess.ASKED))
     kid, eid = list(range(KINDS)), {}
     if rng:
         rng.shuffle(sid), rng.shuffle(qid), rng.shuffle(kid)
-    code, kinds, parts = {}, {}, []
+    parts = []
 
     def thing(x):
         if x not in code:
@@ -95,11 +106,19 @@ def tokens(episodes, rng=None, most=1280):
     where, at = [], 0
     for n, (out, _, _, rows) in enumerate(parts):
         kept, mine, row_now = {}, (), -1                         # of every thing: the places of its latest mentions in statements
+        rows_at = {at + i: row for i, (row, stated, _, _) in enumerate(rows) if stated}       # of a mention: its row; of a row: where its
+        slots_of = {}                                            # things stand (-1: no such slot)
+        for i, (row, stated, slot, _) in enumerate(rows):
+            if stated:
+                slots_of.setdefault(row, [-1] * (RECORD - 1))[slot] = at + i
         for i, (row, stated, slot, record) in enumerate(rows):
             if row != row_now:                                   # a new row: it may recall what the rows before it said
                 row_now = row
                 late = sorted(((p, r) for ps in kept.values() for r, p in enumerate(ps)), reverse=True)[:RECALLED]
-                mine = tuple(p for p, _ in late) + (0,) * (RECALLED - len(late)) + tuple(r for _, r in late) + (-1,) * (RECALLED - len(late))
+                how = {p: r for ps in kept.values() for r, p in enumerate(ps)}      # of a mention: how late it is by now
+                still = tuple(min(STALE, how.get(q, STALE)) if q >= 0 else STALE + 1 for p, _ in late for q in slots_of[rows_at[p]])     # of the things of its record
+                still += (STALE + 1,) * ((RECORD - 1) * (RECALLED - len(late)))
+                mine = tuple(p for p, _ in late) + (0,) * (RECALLED - len(late)) + tuple(r for _, r in late) + (-1,) * (RECALLED - len(late)) + still
                 fresh = []
             where.append((n, row, stated, slot) + record + mine)
             if stated:
@@ -113,37 +132,46 @@ def tokens(episodes, rng=None, most=1280):
 
 class Recall(nn.Module):
     """what was said, recalled by name. A place asks for a name (a vector to be matched with the fixed mark every
-    word has), and may say of which kind of sentence and in which slot; it is given the records of the latest
-    statements of its story that name it - the kind of sentence and the things of each, as their marks. The match
-    of names is exact by build (the marks are not learnt), the latest mention comes first; the rest is learnt"""
+    word has), and may say of which kind of sentence, in which slot, and whether the things of the record must not
+    have been spoken of since; it is given the records of the latest statements of its story that name it - the kind
+    of sentence and the things of each, as their marks - and how many records answered. The match of names is exact
+    by build (the marks are not learnt), the latest mention comes first; the rest is learnt"""
 
     def __init__(self, width, marks, heads=2):
         super().__init__()
         self.heads = heads
         self.name, self.kind = nn.Linear(width, heads * marks), nn.Linear(width, heads * marks)
         self.slot = nn.Linear(width, heads * (RECORD - 1))
+        self.still = nn.Linear(width, heads * (RECORD - 1) * (STALE + 2))
         self.sharp = nn.Parameter(torch.full((heads,), 16.0))
         self.late = nn.Parameter(torch.linspace(2.0, -2.0, RECENT).repeat(heads, 1))        # the later a mention, the likelier at first
         self.none = nn.Parameter(torch.zeros(heads))                                       # (nothing may be recalled at all)
-        self.value = nn.Linear(heads * (RECORD * marks + RECORD - 1), width)
+        self.value = nn.Linear(heads * (RECORD * marks + (RECORD - 1) * (STALE + 3) + COUNTS), width)
+        self.register_buffer("steps", torch.arange(0.0, COUNTS))                           # (a count is told as how near it is to 0, 1, 2 ...)
 
     def looks(self, h, said):
-        """how much every place looks at each of the mentions it may recall (the rest: at nothing), for every head"""
-        named, kinds, slots, rank = said[:4]
+        """how much every place looks at each of the mentions it may recall (the rest: at nothing), for every head;
+        and how many mentions answer what it asks (as much as nothing does, or more)"""
+        named, kinds, slots, rank, _, _, fresh = said
         b, n, _ = h.shape
         ask = nn.functional.normalize(self.name(h).view(b, n, self.heads, -1), dim=3)
         of = self.kind(h).view(b, n, self.heads, -1)
         slot = self.slot(h).view(b, n, self.heads, -1)
-        out = []
+        still = self.still(h).view(b, n, self.heads, -1)
+        out, many = [], []
         for k in range(self.heads):
             score = self.sharp[k] * torch.einsum("bnc,bnmc->bnm", ask[:, :, k], named) + torch.einsum("bnc,bnmc->bnm", of[:, :, k], kinds) \
-                + torch.einsum("bns,bnms->bnm", slot[:, :, k], slots) + self.late[k][rank.clamp(0, RECENT - 1)]
-            score = torch.cat([score.masked_fill(rank < 0, -1e9), self.none[k].expand(b, n, 1)], 2)
-            out.append(torch.softmax(score, 2)[:, :, :-1])
-        return out
+                + torch.einsum("bns,bnms->bnm", slot[:, :, k], slots) + torch.einsum("bnf,bnmf->bnm", still[:, :, k], fresh) \
+                + self.late[k][rank.clamp(0, RECENT - 1)]
+            score = score.masked_fill(rank < 0, -1e9)
+            many.append(torch.sigmoid(score - self.none[k]).sum(2))
+            out.append(torch.softmax(torch.cat([score, self.none[k].expand(b, n, 1)], 2), 2)[:, :, :-1])
+        return out, many
 
     def forward(self, h, said):
-        return self.value(torch.cat([torch.einsum("bnm,bnmr->bnr", look, said[4]) for look in self.looks(h, said)], 2))
+        looks, many = self.looks(h, said)
+        seen = [torch.cat([torch.einsum("bnm,bnmr->bnr", look, said[4]), torch.exp(-(count[:, :, None] - self.steps) ** 2)], 2) for look, count in zip(looks, many)]
+        return self.value(torch.cat(seen, 2))
 
 
 class Mind(nn.Module):
@@ -167,13 +195,14 @@ class Mind(nn.Module):
         kind of its sentence, its slot, how late it is, the record of its row (the marks of its kind and things),
         and the words of that record"""
         b, n = x.shape
-        at, rank = where[:, :, 4 + RECORD:4 + RECORD + RECALLED], where[:, :, 4 + RECORD + RECALLED:]
+        at, rank = where[:, :, 4 + RECORD:4 + RECORD + RECALLED], where[:, :, 4 + RECORD + RECALLED:4 + RECORD + 2 * RECALLED]
+        fresh = nn.functional.one_hot(where[:, :, 4 + RECORD + 2 * RECALLED:].view(b, n, RECALLED, RECORD - 1), STALE + 2).float().flatten(3)
         flat = at.reshape(b, -1)
         thing = x.gather(1, flat).view(b, n, RECALLED)
         slot = where[:, :, 3].gather(1, flat).view(b, n, RECALLED)
         rows = where[:, :, 4:4 + RECORD].gather(1, flat[:, :, None].expand(b, n * RECALLED, RECORD)).view(b, n, RECALLED, RECORD)
         slots = nn.functional.one_hot(slot, RECORD - 1).float()
-        return self.mark[thing], self.mark[rows[..., 0]], slots, rank, torch.cat([self.mark[rows].flatten(3), slots], 3), rows
+        return self.mark[thing], self.mark[rows[..., 0]], slots, rank, torch.cat([self.mark[rows].flatten(3), slots, fresh], 3), rows, fresh
 
     def forward(self, x, where=None):
         """-> for every place, how likely every word is to be said next (as logarithms)"""
@@ -193,7 +222,7 @@ class Mind(nn.Module):
         h = self.norm(h)
         out = torch.log_softmax(self.out(h) @ self.tok.weight.T + self.bias, 2)     # a word is said by the vector it has on the way in,
         if self.names:                                                               # or it is a word of a record recalled, taken as it is
-            look = self.last.looks(h, said)[0]
+            look = self.last.looks(h, said)[0][0]
             part = (look[:, :, :, None] * torch.softmax(self.which(h), 2)[:, :, None, :]).reshape(b, n, -1)
             copied = torch.zeros(b, n, SIZE, device=x.device, dtype=part.dtype).scatter_add_(2, said[5].reshape(b, n, -1), part)
             out = torch.log(copied + (1 - look.sum(2, keepdim=True)).clamp(min=0) * out.exp() + 1e-9)
@@ -217,8 +246,9 @@ def batch(items, device):
     width = max(len(t) for t, _, _ in items)
     x = torch.zeros(len(items), width, dtype=torch.long)
     y = torch.full((len(items), width), -1, dtype=torch.long)
-    w = torch.zeros(len(items), width, 4 + RECORD + 2 * RECALLED, dtype=torch.long)
-    w[:, :, 4 + RECORD + RECALLED:] = -1
+    w = torch.zeros(len(items), width, 4 + RECORD + (RECORD + 1) * RECALLED, dtype=torch.long)
+    w[:, :, 4 + RECORD + RECALLED:4 + RECORD + 2 * RECALLED] = -1
+    w[:, :, 4 + RECORD + 2 * RECALLED:] = STALE + 1
     for i, (t, aim, where) in enumerate(items):
         x[i, :len(t)], y[i, :len(t)], w[i, :len(t)] = torch.tensor(t), torch.tensor(aim), torch.tensor(where)
     return x.to(device), y.to(device), w.to(device)
@@ -278,13 +308,13 @@ def teach(tasks, a, device, log=print):
     return net
 
 
-def answers(net, shown, later, device, most=40):
+def answers(net, shown, later, device, most=40, deal=None):
     """the network answering by itself: the stories shown with their answers, then a later story - and so for every
     later story (at most so many). An answer counts if every word of it is said right -> answers right, all"""
     right = total = 0
     net.eval()
     for ep in later[:most]:
-        got = tokens(shown + [ep], None, net.most)
+        got = tokens(shown + [ep], None, net.most, deal)
         if not got or not got[2]:
             continue
         with torch.no_grad():
@@ -295,21 +325,55 @@ def answers(net, shown, later, device, most=40):
     return right, total
 
 
-def trial(net, tasks, device, stories=20, log=print):
+def tuned(net, shown, deal, device, steps, lr=3e-4, seed=0):
+    """the network after learning a task from its own stories: so many small steps on them (a dozen of the stories
+    at a time, in another order each time; the names stay as dealt, so what a kind of sentence means can settle in
+    the weights) -> a copy of the network that has learnt the task"""
+    mine = copy.deepcopy(net)
+    mine.train()
+    opt = torch.optim.AdamW(mine.parameters(), lr=lr, weight_decay=0.0)
+    rng = random.Random(seed)
+    for _ in range(steps):
+        items = []
+        for _ in range(4):
+            got = tokens(rng.sample(shown, min(len(shown), 12)), None, mine.most, deal)
+            if got:
+                items.append((got[0], got[1], got[3]))
+        if not items:
+            break
+        x, y, w = batch(items, device)
+        out = mine(x, w).float()
+        loss = nn.functional.cross_entropy(out[y >= 0], y[y >= 0])
+        opt.zero_grad()
+        loss.backward()
+        nn.utils.clip_grad_norm_(mine.parameters(), 1.0)
+        opt.step()
+    return mine
+
+
+def trial(net, tasks, device, stories=20, tune=(), log=print):
     """the network on tasks it was not taught on: the first stories of a task with their answers before it, the
-    questions of the later stories to answer; and the same with fewer stories before it, or none"""
-    rows, stories = [], stories - 1                              # (with the story asked about: as many as it was taught on)
+    questions of the later stories to answer; the same with fewer stories before it, or none; and (tune: after how
+    many steps) after learning the task from its first twenty stories by small steps of its own"""
+    rows, before = [], stories - 1                               # (with the story asked about: as many as it was taught on)
     for t in tasks:
-        eps, later = t["episodes"][:stories], t["episodes"][stories + 1:]
-        got = [answers(net, eps[:n], later, device) for n in (stories, 5, 0)]
+        deal = dealt(t["episodes"])
+        eps, later = t["episodes"][:20], t["episodes"][20:]
+        got = [answers(net, eps[:n], later, device, deal=deal) for n in (before, 5, 0)]
+        t0 = time.time()
+        for steps in tune:
+            got.append(answers(tuned(net, eps, deal, device, steps), eps[:before], later, device, deal=deal))
         rows.append((t["name"], t["full"], got))
-        log(f"{t['name']:5} {'learnt' if t['full'] else 'not learnt':10} answers right with {stories} stories before: {got[0][0]}/{got[0][1]}; with 5: {got[1][0]}/{got[1][1]}; with none: {got[2][0]}/{got[2][1]}")
+        log(f"{t['name']:5} {'learnt' if t['full'] else 'not learnt':10} answers right with {before} stories before: {got[0][0]}/{got[0][1]}; with 5: {got[1][0]}/{got[1][1]}; with none: {got[2][0]}/{got[2][1]}"
+            + "".join(f"; after {steps} steps on its 20 stories: {g[0]}/{g[1]}" for steps, g in zip(tune, got[3:])) + (f" ({time.time() - t0:.0f} s)" if tune else ""))
     for label, pick in (("tasks the learner had learnt in full", [r for r in rows if r[1]]), ("tasks it had not", [r for r in rows if not r[1]]), ("all the tasks left out", rows)):
         if pick:
-            share = [100 * sum(r[2][i][0] for r in pick) / max(1, sum(r[2][i][1] for r in pick)) for i in range(3)]
-            each = [100 * r[2][0][0] / max(1, r[2][0][1]) for r in pick]
-            log(f"{label}: {len(pick)}. The network answering by itself - with {stories} stories before {share[0]:.1f}%, with 5 {share[1]:.1f}%, with none {share[2]:.1f}%; "
-                f"tasks at 95% and more {sum(e >= 95 for e in each)}, at 80% and more {sum(e >= 80 for e in each)}")
+            share = [100 * sum(r[2][i][0] for r in pick) / max(1, sum(r[2][i][1] for r in pick)) for i in range(3 + len(tune))]
+            each = [[100 * r[2][i][0] / max(1, r[2][i][1]) for r in pick] for i in range(3 + len(tune))]
+            log(f"{label}: {len(pick)}. The network answering by itself - with {before} stories before {share[0]:.1f}%, with 5 {share[1]:.1f}%, with none {share[2]:.1f}%; "
+                f"tasks at 95% and more {sum(e >= 95 for e in each[0])}, at 80% and more {sum(e >= 80 for e in each[0])}"
+                + "".join(f"; after {steps} steps on the 20 stories of a task {share[3 + i]:.1f}%, tasks at 95% and more {sum(e >= 95 for e in each[3 + i])}, at 80% and more {sum(e >= 80 for e in each[3 + i])}"
+                          for i, steps in enumerate(tune)))
     return rows
 
 
@@ -334,6 +398,7 @@ def main():
     ap.add_argument("--lr", type=float, default=5e-4)
     ap.add_argument("--workers", type=int, default=1)
     ap.add_argument("--few", type=int, default=0, help="try on only so many of the tasks left out (a short check that everything runs)")
+    ap.add_argument("--tune", default="", help="in the trial the network also learns every task from its 20 stories by so many small steps: 50,200")
     ap.add_argument("--save", type=float, default=10)
     ap.add_argument("--every", type=int, default=100)
     ap.add_argument("--seed", type=int, default=0)
@@ -352,10 +417,11 @@ def main():
     else:
         net = teach(mine, a, device, lambda s: print(s, flush=True))
     print(f"{sum(p.numel() for p in net.parameters())} weights", flush=True)
+    tune = tuple(int(x) for x in a.tune.split(",") if x)
     if only and not a.net:                                       # (a check on the tasks taught: their own later stories)
-        trial(net, [t for t in tasks if t["name"] in only], device, a.stories, lambda s: print(s, flush=True))
+        trial(net, [t for t in tasks if t["name"] in only], device, a.stories, tune, lambda s: print(s, flush=True))
     elif apart:
-        trial(net, apart[:a.few or None], device, a.stories, lambda s: print(s, flush=True))
+        trial(net, apart[:a.few or None], device, a.stories, tune, lambda s: print(s, flush=True))
 
 
 if __name__ == "__main__":
