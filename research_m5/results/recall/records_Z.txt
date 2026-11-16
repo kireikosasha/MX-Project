@@ -1,0 +1,62 @@
+task  1: learnt from 20 stories (asked for 20 more), 56/76 of their questions right, 0 of 3 kinds of questions explained in full (1.6 s)
+  ? xok: 50/54 amount: has (0,) (turned over) | asg = add (0,) None
+  ? xat: 6/15 amount: most () (else s8) | nox = take (1,) None; asg = take (1,) None
+  ? xls: -
+test  1: 626/891 = 70.3%; sure of 0 of 3 kinds of questions, 0/0 right on them
+      on the test 538/648 ? xok
+      on the test 88/191 ? xat
+task  2: learnt from 20 stories (asked for 20 more), 46/116 of their questions right, 1 of 5 kinds of questions explained in full (176.1 s)
+  ? cnt: 17/32 value: count (0,) | wdr = lift 0; cst = set 0 1; swp = set 0 1
+  ? bst: 13/34 value: holders (0,) | cst = to 1 c1
+  ? bst: 6/30 value: value (0,) (else c1,c2) | wdr = lift 0; cst = set 0 1; swp = set 0 1
+  ? bst: 3/13 value: value (0,) (else c1,c3) | wdr = lift 0; cst = set 0 1; swp = set 0 1
+  ? hld: 7/7 value: value (0,) (else c2) | cst = set 0 1; swp = as 0 1
+test  2: 578/1398 = 41.3%; sure of 1 of 5 kinds of questions, 56/84 right on them
+      on the test 221/373 ? cnt
+      on the test 242/438 ? bst
+      on the test 37/340 ? bst
+      on the test 22/163 ? bst
+      on the test 56/84 ? hld
+task  3: learnt from 20 stories (asked for 20 more), 94/115 of their questions right, 1 of 4 kinds of questions explained in full (7.8 s)
+  ? cnt: 70/87 amount: amount (0,) (else 2) | vop = add (1,) None; dro = add (1,) None
+  ? zul: 8/11 amount: most () (else a4) | vop = add (1,) None; dro = add (1,) None
+  ? zul: 8/9 value: holders (0,) (else a2) | vop = two ('set', 1, 0) ('set', 0, 1); dro = two ('set', 1, 0) ('set', 0, 1)
+  ? xin: 8/8 amount: has (1,) | vop = add (1,) None; dro = add (1,) None
+test  3: 971/1455 = 66.7%; sure of 1 of 4 kinds of questions, 118/130 right on them
+      on the test 776/1042 ? cnt
+      on the test 49/198 ? zul
+      on the test 28/67 ? zul
+      on the test 118/130 ? xin
+task  4: learnt from 20 stories (asked for 20 more), 107/124 of their questions right, 1 of 3 kinds of questions explained in full (5.0 s)
+  ? lik: 77/91 link: leads (0, 1) (else no) | ruk = link 0 1; zef = link 1 0
+  ? cnt: 15/15 link: countafter (0,) | ruk = link 1 0; zef = unlink 0 1
+  ? tov: 15/18 value: end (0,) | ruk = as 0 1; zef = set 1 0; kov = set 0 1
+test  4: 1227/1500 = 81.8%; sure of 1 of 3 kinds of questions, 185/185 right on them
+      on the test 888/1091 ? lik
+      on the test 154/224 ? tov
+task  5: learnt from 20 stories (asked for 20 more), 80/118 of their questions right, 2 of 3 kinds of questions explained in full (0.8 s)
+  ? nq: -
+  ? uq: 66/66 value: is (0, 1) | gk = set 0 1; rq = set 0 1
+  ? wq: 14/14 value: inside (0,) | gk = set 0 1; rq = set 0 1
+test  5: 1376/1468 = 93.7%; sure of 2 of 3 kinds of questions, 900/943 right on them
+      on the test 731/737 ? uq
+      on the test 169/206 ? wq
+task  6: learnt from 20 stories (asked for 10 more), 60/60 of their questions right, 3 of 3 kinds of questions explained in full (0.1 s)
+  ? hld: 33/33 value: known (0,) | hov = two ('set', 1, 0) ('clear', 0)
+  ? cnt: 15/15 amount: amount (0,) | hov = add (1,) None
+  ? lst: 12/12 value: value (0,) | hov = set 0 1
+test  6: 1438/1476 = 97.4%; sure of 3 of 3 kinds of questions, 1438/1476 right on them
+      on the test 244/282 ? lst
+task  7: learnt from 20 stories (asked for 20 more), 127/135 of their questions right, 1 of 3 kinds of questions explained in full (2.0 s)
+  ? hob: 82/85 value: known (0,) | kag = set 0 1
+  ? xup: 31/31 value: value (0,) | kag = set 0 1
+  ? sco: 14/19 amount: most () (else s5) | oru = take (0,) None; ceq = take (0,) None
+test  7: 1374/1532 = 89.7%; sure of 1 of 3 kinds of questions, 342/345 right on them
+      on the test 891/921 ? hob
+      on the test 342/345 ? xup
+      on the test 141/266 ? sco
+task  8: learnt from 20 stories (asked for 20 more), 105/108 of their questions right, 1 of 2 kinds of questions explained in full (5.0 s)
+  ? nc: 20/20 link: countafter (0,) | cgr = link 0 1; lp = unlink 0 1
+  ? qy: 85/88 link: leads (0, 1) (turned over) (else no) | rq = link 0 1; cgr = link 1 0; lp = link 1 0; dq = link 0 1
+test  8: 1315/1365 = 96.3%; sure of 1 of 2 kinds of questions, 255/255 right on them
+      on the test 1060/1110 ? qy

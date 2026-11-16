@@ -1,0 +1,93 @@
+task  1: learnt from 20 stories (asked for 10 more), 51/51 of their questions right, 4 of 4 kinds of questions explained in full (0.2 s)
+  ? is the * in the *: 20/20 value: isin (0, 1) | the * is in the * = set 0 1; sam put the * in the * = set 0 1; mia took the * out of the * = lift 0; tom moved the * to the * = set 0 1; tom took the * out of the * = set 0 1; mia moved the * to the * = set 0 1; sam moved the * to the * = set 0 1; ana moved the * to the * 
+  ? where is the *: 22/22 value: end (0,) | the * is in the * = set 0 1; sam put the * in the * = set 0 1; mia took the * out of the * = lift 0; tom moved the * to the * = set 0 1; tom took the * out of the * = set 0 1; mia moved the * to the * = set 0 1; sam moved the * to the * = set 0 1; ana moved the * to the * = s
+  ? what is in the *: 3/3 value: holders (0,) | the * is in the * = set 0 1; sam put the * in the * = set 0 1; mia took the * out of the * = lift 0; tom moved the * to the * = set 0 1; tom took the * out of the * = set 0 1; mia moved the * to the * = set 0 1; sam moved the * to the * = set 0 1; ana moved the * to the * =
+  ? how many things are in the *: 6/6 value: count (0,) | the * is in the * = set 0 1; sam put the * in the * = set 0 1; mia took the * out of the * = lift 0; tom moved the * to the * = set 0 1; tom took the * out of the * = set 0 1; mia moved the * to the * = set 0 1; sam moved the * to the * = set 0 1; ana moved the * to the * = s
+test  1: 1415/1446 = 97.9%; sure of 4 of 4 kinds of questions, 1415/1446 right on them
+      on the test 531/540 ? is the * in the *
+      on the test 623/625 ? where is the *
+      on the test 98/106 ? what is in the *
+      on the test 163/175 ? how many things are in the *
+task  2: learnt from 20 stories (asked for 20 more), 93/93 of their questions right, 4 of 4 kinds of questions explained in full (31.9 s)
+  ? how many things does * have: 14/14 value: count (0,) | * got the * = set 1 0; * lost the * = clear 1; * gave the * to * = set 1 2; * traded the * to * for the * = two ('set', 1, 2) ('set', 3, 0); * got the * from * = set 1 0
+  ? what does * have: 21/21 value: holders (0,) (else nothing) | * got the * = set 1 0; * lost the * = clear 1; * gave the * to * = set 1 2; * traded the * to * for the * = two ('set', 1, 2) ('set', 3, 0); * got the * from * = set 1 0
+  ? does * have the *: 43/43 value: is (1, 0) | * got the * = set 1 0; * lost the * = clear 1; * gave the * to * = set 1 2; * traded the * to * for the * = two ('set', 1, 2) ('set', 3, 0); * got the * from * = set 1 0
+  ? who has the *: 15/15 value: value (0,) (else c1) | * got the * = set 1 0; * lost the * = clear 1; * gave the * to * = set 1 2; * traded the * to * for the * = two ('set', 1, 2) ('set', 3, 0); * got the * from * = set 1 0
+test  2: 1299/1299 = 100.0%; sure of 4 of 4 kinds of questions, 1299/1299 right on them
+task  3: learnt from 20 stories (asked for 10 more), 59/59 of their questions right, 2 of 2 kinds of questions explained in full (0.4 s)
+  ? who is the tallest of * and * and *: 31/31 link: firstof () | * is taller than * = link 0 1; * is shorter than * = link 1 0
+  ? is * taller than *: 28/28 link: leads (0, 1) | * is taller than * = link 0 1; * is shorter than * = link 1 0
+test  3: 1197/1197 = 100.0%; sure of 2 of 2 kinds of questions, 1197/1197 right on them
+task  4: learnt from 20 stories (asked for 10 more), 73/73 of their questions right, 2 of 3 kinds of questions explained in full (2.3 s)
+  ? is * a *: 31/31 link: leads (0, 1) (else no) | every * is * = link 0 1; every * is a * = link 0 1; * is a * = link 0 1
+  ? which properties does * have: 2/2 link: after (0,) | every * is * = link 0 1; every * is a * = link 0 1; * is a * = link 0 1
+  ? is * *: 40/40 link: leads (0, 1) (else no) | every * is * = link 0 1; every * is a * = link 0 1; * is a * = link 0 1
+test  4: 1687/1767 = 95.5%; sure of 2 of 3 kinds of questions, 1633/1633 right on them
+      on the test 54/134 ? which properties does * have
+task  5: learnt from 20 stories (asked for 20 more), 94/107 of their questions right, 1 of 3 kinds of questions explained in full (13.0 s)
+  ? is the * *: 43/53 value: any (1,) | * * the * = set 2 1; * turns * the * = set 2 1
+  ? who last changed the *: 30/30 value: value (0,) (else a4) | * * the * = set 2 0; * turns * the * = set 2 0; the * copies the * = as 1 0
+  ? which devices are *: 21/24 value: holders (0,) (else c1) | * * the * = set 2 1; * turns * the * = set 2 1
+test  5: 1110/1360 = 81.6%; sure of 1 of 3 kinds of questions, 465/498 right on them
+      on the test 490/621 ? is the * *
+      on the test 465/498 ? who last changed the *
+      on the test 155/241 ? which devices are *
+task  6: learnt from 20 stories (asked for 20 more), 70/74 of their questions right, 1 of 2 kinds of questions explained in full (276.5 s)
+  ? where was * * * went to the *: 62/66 amount: most (0,) (else c5) | * went to the * on # = put (0, 1) 0; * went to the * * * went to the * = two ('add', (0, 1), None) ('take', (0, 4), None); on # * went to the * = take (1, 0) 0
+  ? where was * on #: 8/8 amount: most () (else c4) | * went to the * on # = take (1,) 0; * went to the * * * went to the * = take (4,) None; on # * went to the * = take (1,) 0
+test  6: 718/930 = 77.2%; sure of 1 of 2 kinds of questions, 46/116 right on them
+      on the test 672/814 ? where was * * * went to the *
+      on the test 46/116 ? where was * on #
+task  7: learnt from 20 stories (asked for 20 more), 111/119 of their questions right, 2 of 3 kinds of questions explained in full (128.9 s)
+  ? does * have # * now: 47/55 amount: atleast (0, 1) | * has # * = add (0, 1) 0; * buys # * = add (0, 1) 0; * gives # * to * = pass (0, 2, 1) 0; * finds # * = add (0, 1) 0; * loses # * = take (0, 1) 0; * gets # * from * = pass (2, 0, 1) 0
+  ? how many * does * have now: 34/34 amount: amount (1, 0) | * has # * = add (0, 1) 0; * buys # * = add (0, 1) 0; * gives # * to * = pass (0, 2, 1) 0; * finds # * = add (0, 1) 0; * loses # * = take (0, 1) 0; * gets # * from * = pass (2, 0, 1) 0
+  ? who has the most * now: 30/30 amount: most (0,) | * has # * = add (0, 1) 0; * buys # * = add (0, 1) 0; * gives # * to * = pass (0, 2, 1) 0; * finds # * = add (0, 1) 0; * loses # * = take (0, 1) 0; * gets # * from * = pass (2, 0, 1) 0
+test  7: 1360/1467 = 92.7%; sure of 2 of 3 kinds of questions, 913/913 right on them
+      on the test 447/554 ? does * have # * now
+task  8: learnt from 20 stories (asked for 20 more), 114/114 of their questions right, 8 of 8 kinds of questions explained in full (1.1 s) - words of the sentence itself: east north south west
+  ? is the * east of the *: 27/27 value: any (0,) (turned over) | the * is north of the * = set 1 0; the * is west of the * = set 1 0; the * is east of the * = set 0 1; the * is south of the * = set 0 1
+  ? what is east of the *: 10/10 link: after (0,) | the * is west of the * = link 0 1; the * is east of the * = link 1 0
+  ? what is west of the *: 6/6 link: before (0,) | the * is west of the * = link 0 1; the * is east of the * = link 1 0
+  ? is the * south of the *: 23/23 link: leads (0, 1) (turned over) (else yes) | the * is north of the * = link 0 1; the * is west of the * = unlink 0 1; the * is east of the * = unlink 1 0; the * is south of the * = link 1 0
+  ? is the * north of the *: 16/16 link: leads (0, 1) (else yes) | the * is north of the * = link 0 1; the * is west of the * = unlink 0 1; the * is east of the * = unlink 1 0; the * is south of the * = link 1 0
+  ? is the * west of the *: 22/22 link: leads (0, 1) | the * is west of the * = link 0 1; the * is east of the * = link 1 0
+  ? what is north of the *: 5/5 link: before (0,) | the * is north of the * = link 0 1; the * is west of the * = unlink 0 1; the * is east of the * = unlink 1 0; the * is south of the * = link 1 0
+  ? what is south of the *: 5/5 value: inside (0,) | the * is north of the * = set 1 0; the * is west of the * = set 1 0; the * is east of the * = set 0 1; the * is south of the * = set 0 1
+test  8: 1312/1472 = 89.1%; sure of 8 of 8 kinds of questions, 1312/1472 right on them
+      on the test 237/322 ? is the * east of the *
+      on the test 274/293 ? is the * south of the *
+      on the test 290/311 ? is the * north of the *
+      on the test 55/71 ? what is north of the *
+      on the test 46/65 ? what is south of the *
+task  9: learnt from 20 stories (asked for 20 more), 69/82 of their questions right, 1 of 3 kinds of questions explained in full (39.7 s)
+  ? is * the * of the * of *: 29/34 value: isin (3, 0) | * has * a a * = two ('set', 0, 1) ('as', 0, 1); * is the * of * = two ('set', 2, 0) ('as', 2, 0)
+  ? who is the top * of *: 28/28 value: end (1,) | * has * a a * = two ('set', 0, 1) ('as', 0, 1); * is the * of * = two ('set', 2, 0) ('as', 2, 0)
+  ? who is the * of the * of *: 12/20 value: end (2,) | * has * a a * = two ('set', 0, 1) ('as', 0, 1); * is the * of * = two ('set', 2, 0) ('as', 2, 0)
+test  9: 793/966 = 82.1%; sure of 1 of 3 kinds of questions, 301/301 right on them
+      on the test 288/350 ? is * the * of the * of *
+      on the test 204/315 ? who is the * of the * of *
+task 10: learnt from 20 stories (asked for 10 more), 57/57 of their questions right, 4 of 4 kinds of questions explained in full (1.8 s)
+  ? which team is * in: 13/13 value: value (0,) (else 0) | * enters the * team = set 0 1; * moves from the * team to the * team = set 0 2; * leaves the * team = lift 0; * quits the * team = lift 0; * joins the * team = set 0 1
+  ? is * in the same team as *: 14/14 value: same (0, 1) (else no) | * enters the * team = set 0 1; * moves from the * team to the * team = set 0 2; * leaves the * team = lift 0; * quits the * team = lift 0; * joins the * team = set 0 1
+  ? are * and * in the same team: 18/18 value: same (0, 1) (else no) | * enters the * team = set 0 1; * moves from the * team to the * team = set 0 2; * leaves the * team = lift 0; * quits the * team = lift 0; * joins the * team = set 0 1
+  ? in which team is *: 12/12 value: value (0,) (else 0) | * enters the * team = set 0 1; * moves from the * team to the * team = set 0 2; * leaves the * team = lift 0; * quits the * team = lift 0; * joins the * team = set 0 1
+test 10: 1262/1262 = 100.0%; sure of 4 of 4 kinds of questions, 1262/1262 right on them
+task 11: learnt from 20 stories (asked for 10 more), 55/55 of their questions right, 3 of 3 kinds of questions explained in full (2.2 s)
+  ? is * *: 24/24 link: leads (0, 1) (else no) | every * thing is * = link 0 1; * is * = link 0 1; every * is * = link 0 1; * is a * = link 0 1; every * is a * = link 0 1; every * thing is a * = link 0 1
+  ? is * a *: 25/25 link: leads (0, 1) (else no) | every * thing is * = link 0 1; * is * = link 0 1; every * is * = link 0 1; * is a * = link 0 1; every * is a * = link 0 1; every * thing is a * = link 0 1
+  ? which thing are *: 6/6 link: before (0,) | every * thing is * = link 0 1; * is * = link 0 1; every * is * = link 0 1; * is a * = link 0 1; every * is a * = link 0 1; every * thing is a * = link 0 1
+test 11: 1415/1415 = 100.0%; sure of 3 of 3 kinds of questions, 1415/1415 right on them
+task 12: learnt from 20 stories (asked for 20 more), 87/96 of their questions right, 4 of 6 kinds of questions explained in full (139.9 s) - pointers: has hold
+  ? what does * *: 25/25 value: value (0,) (else a2) | * hold the * = set 0 1; * * the * = set 0 2; * has the * = set 0 1; * and * trade what they * and * = set 1 0; * * and * the * = lift 2
+  ? who * the *: 24/24 value: end (1,) | * hold the * = set 1 0; * * the * = set 2 0; * has the * = set 1 0; * and * trade what they * = set 1 0; * * and * the * = set 3 0
+  ? does * * the *: 14/14 value: is (0, 2) | * hold the * = set 0 1; * * the * = set 0 2; * has the * = set 0 1; * and * trade what they * = set 0 1
+  ? who * and * the *: 5/9 value: value (1,) (else b2) | * * the * = set 0 1; * and * swap their things = set 0 1; * and * trade what they * = set 2 1
+  ? what does * * and *: 7/12 value: holders (2,) | * hold the * = set 1 0; * * the * = set 2 0; * has the * = set 1 0; * and * trade what they * = set 1 0; * * and * the * = set 3 0
+  ? does * * and * the *: 12/12 value: same (0, 1) (else no) | * * the * = set 0 1; * and * swap their things = set 0 1; * and * trade what they * = set 2 1
+test 12: 950/1256 = 75.6%; sure of 4 of 6 kinds of questions, 858/994 right on them
+      on the test 246/289 ? what does * *
+      on the test 292/307 ? who * the *
+      on the test 271/286 ? does * * the *
+      on the test 39/127 ? who * and * the *
+      on the test 53/135 ? what does * * and *
+      on the test 49/112 ? does * * and * the *
