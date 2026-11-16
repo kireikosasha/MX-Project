@@ -1,0 +1,157 @@
+task  1: 17 things of 2 kinds; learnt from 20 stories (began from the best of 10 readings proposed) (asked for 20 more) (learnt anew after asking), 131/134 of their questions right, 4 of 5 kinds of statements and 5 of 5 kinds of questions read (6551 s, 820577 episodes played)
+  things: apple=a1 key=a10 room=a11 bag=a2 ball=a3 box=a4 chest=a5 coin=a6 garden=a7 hall=a8 hat=a9 ann=b1 ben=b2 cal=b3 dee=b4 eli=b5 fay=b6
+    * is in the * b a          set F0 of (0, 1); set F1 of (0, 1); set F2 of (0, 1)
+    * put the * in the * b a a        -
+    * took the * b a          set F1 of (1, 0)
+    * went to the * b a          set F0 of (0, 1); set F1 of (0, 1); set F2 of (0, 1)
+    the * is in the * a a          pair F0 of (0, 1); set F1 of (0, 1); set F2 of (0, 1)
+  ? how many things are in the * a            num 0 (count [>F0 <<F0] b)
+  ? is the * in the * a a          has 0 [^F1] 1
+  ? what is in the * a            list 0 [<F1] None (else nothing)
+  ? where is * b            list 0 [>F0] a
+  ? where is the * a            list 0 [^F1] a
+test  1: 1417/1514 = 93.6%
+sure  1: of 4 of 5 kinds of questions, 1202/1211 right on them; of the others 215/303
+deep  1: 1417/1514 = 93.6% (nothing composed)
+all: 1417/1514 = 93.59%
+task  2: 12 things of 3 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 15 more), 118/118 of their questions right, 6 of 6 kinds of statements and 4 of 4 kinds of questions read (17 s, 75 episodes played)
+  things: ann=a1 ben=a2 cara=a3 dan=a4 eli=a5 fay=a6 ball=b1 book=b2 cup=b3 hat=b4 key=b5 nobody=c1
+    * gives the * to * a b a        set F0 of (1, 2)
+    * passes the * to * a b a        set F0 of (1, 2)
+    * picks up the * a b          set F0 of (1, 0)
+    * puts the * down a b          unset F0 of (1,)
+    * swaps the * for the * with * a b b a      swap F0 of (1, 2)
+    * takes the * from * a b a        set F0 of (1, 0)
+  ? does * have the * a b          has 0 [<F0] 1
+  ? how many things does * have a            num 0 (count [<F0] None)
+  ? what does * have a            list 0 [<F0] b (else nothing)
+  ? who has the * b            list 0 [>F0] a (else c1)
+test  2: 1526/1526 = 100.0%
+sure  2: of 4 of 4 kinds of questions, 1526/1526 right on them; of the others 0/0
+deep  2: 1526/1526 = 100.0% (nothing composed)
+all: 1526/1526 = 100.00%
+task  3: 23 things of 4 kinds; learnt from 20 stories (taken at once: one of 5 readings proposed explains every question) (asked for 10 more), 77/77 of their questions right, 1 of 1 kinds of statements and 3 of 3 kinds of questions read (4 s, 45 episodes played)
+  things: ann=a1 jon=a10 bob=a2 cy=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 ivy=a9 heavier=b1 lighter=b2 older=b3 shorter=b4 taller=b5 younger=b6 heaviest=c1 lightest=c2 oldest=c3 shortest=c4 tallest=c5 youngest=c6 nobody=d1
+    * is * than * a b a        link L0 of (2, 0, 1)
+  ? is * * than * a b a        lis 0 2 0 1 {b1/b2,b3/b6,b4/b5}
+  ? who is * than * b a          lunder 0 1 0 {b1/b2,b3/b6,b4/b5} (else d1)
+  ? who is the * c            utmost (L 0 {b1/b2,b3/b6,b4/b5}) 0 a {c1 = b2, c2 = b1, c3 = b6, c4 = b5, c5 = b4, c6 = b3}
+test  3: 1098/1098 = 100.0%
+sure  3: of 3 of 3 kinds of questions, 1098/1098 right on them; of the others 0/0
+deep  3: 1098/1098 = 100.0% (nothing composed)
+all: 1098/1098 = 100.00%
+task  4: 16 things of 3 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 64/64 of their questions right, 6 of 6 kinds of statements and 3 of 3 kinds of questions read (5 s, 20 episodes played)
+  things: ann=a1 ben=a2 cole=a3 dana=a4 eli=a5 fay=a6 fern=b1 flower=b2 pine=b3 plant=b4 rose=b5 tulip=b6 soft=c1 sweet=c2 tall=c3 wet=c4
+    * is * a c          tie E0 of (0, 1)
+    * is a * a b          tie E0 of (0, 1)
+    * is not * a c          tie E0 of (0, 1)
+    every * is * b c          tie E0 of (0, 1)
+    every * is a * b b          tie E0 of (0, 1)
+    every * is not * b c          set F0 of (0, 1)
+  ? is * * a c          has 0 [>>E0] 1
+  ? is * a * a b          has 0 [>>E0] 1
+  ? what is * a            list 0 [>>E0] b
+test  4: 1266/1266 = 100.0%
+sure  4: of 3 of 3 kinds of questions, 1266/1266 right on them; of the others 0/0
+deep  4: 1266/1266 = 100.0% (nothing composed)
+all: 1266/1266 = 100.00%
+task  5: 9 things of 4 kinds; learnt from 20 stories (began from the best of 9 readings proposed) (asked for 20 more), 133/139 of their questions right, 8 of 8 kinds of statements and 4 of 4 kinds of questions read (3509 s, 676138 episodes played)
+  taken by what they explain - words that name the same: closes=closed; pointers: ann ben cal dee
+  things: big=a1 small=a2 blue=b1 green=b2 red=b3 closed=c1 open=c2 off=d1 on=d2
+    * * the * box a c a        set F0 of (2, 1); ecopy E0 of (0, 1)
+    * * the * box b c a        set F0 of (2, 1); ecopy E0 of (0, 1)
+    * flips the * lamp a b          swapall F0 of (0, 1)
+    * flips the * lamp b b          set F0 of (1, 0)
+    * turns the * lamp * a b d        pair F0 of (1, 2); tie2 E0 of (0, 2)
+    * turns the * lamp * b b d        pair F0 of (1, 2); tie2 E0 of (0, 2)
+    the * box is * a c          set F0 of (0, 1)
+    the * lamp is * b d          set F0 of (0, 1)
+  ? is the * box * a c          has 0 [>F0] 1
+  ? is the * lamp * b d          some 0 [<F0 >>E0] (turned over)
+  ? what is the state of the * box a            list 0 [>F0] c
+  ? what is the state of the * lamp b            list 0 [^F0] d (else d2)
+test  5: 1167/1503 = 77.6%
+sure  5: of 2 of 4 kinds of questions, 559/559 right on them; of the others 608/944
+deep  5: 1167/1503 = 77.6% (nothing composed)
+all: 1167/1503 = 77.64%
+task  7: 10 things of 2 kinds; learnt from 20 stories (began from the best of 10 readings proposed) (asked for 20 more), 132/148 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (5491 s, 1456547 episodes played)
+  things: ann=a1 bob=a2 cal=a3 eve=a4 fay=a5 gus=a6 apple=b1 ball=b2 coin=b3 pear=b4
+    * gets # more * a # b        qadd Q0 of (101,); qadd Q1 of (1,)
+    * gives # * to * a # b a      qpass Q0 of (101, 112)
+    * has # * a # b        qadd Q0 of (101,); qadd Q1 of (1,)
+    * loses # * a # b        qsub Q0 of (101,); qsub Q1 of (1,)
+    * takes # * from * a # b a      qpass Q0 of (112, 101)
+  ? do * have more * than * a b a        cmp 101 112 (q 0) >
+  ? how many * do * and * have together b a a        num 0 (q 1)
+  ? how many * do * have b a          num 101 (q 0)
+  ? who has the most * b            top 0 0 a True
+test  7: 1399/1510 = 92.6%
+sure  7: of 3 of 4 kinds of questions, 1160/1160 right on them; of the others 239/350
+deep  7: 1399/1510 = 92.6% (nothing composed)
+all: 1399/1510 = 92.65%
+task  8: 16 things of 2 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 68/68 of their questions right, 2 of 2 kinds of statements and 2 of 2 kinds of questions read (2 s, 20 episodes played)
+  things: east=a1 north=a2 south=a3 west=a4 barn=b1 pond=b10 tower=b11 well=b12 bridge=b2 cave=b3 farm=b4 field=b5 hill=b6 lake=b7 mill=b8 park=b9
+    the * is * of the * b a b        link L0 of (0, 2, 1)
+    the * lies * of the * b a b        link L0 of (0, 2, 1)
+  ? is the * * of the * b a b        isdir 0 0 2 1 {a1/a4,a2/a3}
+  ? which direction is the * from the * b b          dirs 0 0 1 {a1/a4,a2/a3}
+test  8: 1456/1456 = 100.0%
+sure  8: of 2 of 2 kinds of questions, 1456/1456 right on them; of the others 0/0
+deep  8: 1456/1456 = 100.0% (nothing composed)
+all: 1456/1456 = 100.00%
+task  9: 12 things of 1 kinds; learnt from 20 stories (began from the best of 10 readings proposed) (asked for 15 more), 110/112 of their questions right, 2 of 3 kinds of statements and 3 of 3 kinds of questions read (2032 s, 205678 episodes played)
+  things: ann=a1 jo=a10 kim=a11 lee=a12 bob=a2 cara=a3 dan=a4 eli=a5 fay=a6 gus=a7 hal=a8 ivy=a9
+    * has no parent a            -
+    * is the child of * a a          set F0 of (0, 1)
+    * is the parent of * a a          set F0 of (1, 0)
+  ? is * an ancestor of * a a          has 0 [<<F0] 1
+  ? who is the grandparent of * a            list 0 [>F0 >F0] a
+  ? who is the great grandparent of * a            list 0 [^F0] a
+test  9: 1441/1445 = 99.7%
+sure  9: of 2 of 3 kinds of questions, 1401/1401 right on them; of the others 40/44
+deep  9: 1441/1445 = 99.7% (nothing composed)
+all: 1441/1445 = 99.72%
+task 10: 12 things of 2 kinds; learnt from 20 stories (taken at once: one of 9 readings proposed explains every question) (asked for 20 more), 116/116 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (10 s, 110 episodes played)
+  things: ann=a1 ben=a2 cal=a3 dan=a4 eve=a5 fay=a6 gus=a7 hal=a8 east=b1 north=b2 south=b3 west=b4
+    * joined the * group a b          set F0 of (0, 1)
+    * left the * group a b          unset F0 of (0,)
+    * moved from the * group to the * group a b b        set F0 of (0, 2)
+  ? how many people are in the * group b            num 0 (count [<F0] None)
+  ? is * in the * group a b          has 0 [>F0] 1
+  ? which group is * in a            list 0 [>F0] b
+  ? who is in the * group b            list 0 [<F0] a
+test 10: 1507/1507 = 100.0%
+sure 10: of 4 of 4 kinds of questions, 1507/1507 right on them; of the others 0/0
+deep 10: 1507/1507 = 100.0% (nothing composed)
+all: 1507/1507 = 100.00%
+task 11: 13 things of 4 kinds; learnt from 20 stories (began from the best of 10 readings proposed) (asked for 20 more), 128/128 of their questions right, 4 of 9 kinds of statements and 4 of 5 kinds of questions read (677 s, 601352 episodes played)
+  things: ann=a1 bob=a2 cara=a3 dan=a4 ball=b1 box=b2 key=b3 garden=c1 hall=c2 kitchen=c3 shed=c4 rex=d1 tom=d2
+    * gives the * to * a b a        -
+    * goes to the * a c          set F0 of (0, 1)
+    * is a dog d            -
+    * is in the * a c          set F0 of (0, 1)
+    * takes the * a b          set F0 of (1, 0)
+    every dog is an animal              -
+    the * is in the * b c          set F0 of (0, 1)
+    whatever a person takes goes wherever the person goes              -
+    whoever has the * can open the gate b            -
+  ? can * open the gate a            some 0 [<F0]
+  ? is * an animal d            -
+  ? where is * a            list 0 [>F0] c
+  ? where is the * b            list 0 [^F0] c
+  ? who is in the * c            list 0 [<F0] a
+test 11: 1556/1560 = 99.7%
+sure 11: of 4 of 5 kinds of questions, 1439/1443 right on them; of the others 117/117
+deep 11: 1556/1560 = 99.7% (is * an animal: 0 -> 22 of 22; 0 s)
+all: 1556/1560 = 99.74%
+task 12: 14 things of 3 kinds; learnt from 20 stories (taken at once: one of 10 readings proposed explains every question) (asked for 5 more), 60/60 of their questions right, 3 of 3 kinds of statements and 2 of 2 kinds of questions read (4 s, 20 episodes played)
+  things: ann=a1 ben=a2 cal=a3 dee=a4 eve=a5 fay=a6 apple=b1 ball=b2 book=b3 coin=b4 cup=b5 hat=b6 pen=b7 nobody=c1
+    * drops the * a b          swapall F0 of (0, 1)
+    * gets the * a b          set F0 of (1, 0)
+    * gives the * to * a b a        set F0 of (1, 2)
+  ? does * have the * a b          has 0 [<F0] 1
+  ? who has the * b            list 0 [>F0] a (else c1)
+test 12: 1009/1021 = 98.8%
+sure 12: of 2 of 2 kinds of questions, 1009/1021 right on them; of the others 0/0
+deep 12: 1009/1021 = 98.8% (nothing composed)
+all: 1009/1021 = 98.82%
