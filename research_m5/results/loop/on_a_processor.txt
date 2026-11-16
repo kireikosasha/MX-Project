@@ -1,0 +1,14 @@
+machine: 120 numbers learnt in 4 s; opcodes whose field and kind are learnt rightly: 15 of 15
+looped transformer: 285696 weights, 2601 steps in 8.0 min
+
+answers right, %, by how many steps away the answer lies (taught: at most 4; chance: 2%)
+steps away                                                      1      2      4      8     16     32     40
+machine, routing made hard, 64 turns of the loop            100.0  100.0  100.0  100.0  100.0  100.0  100.0
+machine, routing made hard, 1024 turns                      100.0  100.0  100.0  100.0  100.0  100.0  100.0
+machine, routing left soft as learnt, 64 turns              100.0  100.0  100.0  100.0  100.0  100.0  100.0
+looped transformer, 9 turns (as taught)                       2.8    1.7    0.8    2.5    2.8    1.7    3.0
+looped transformer, twice as many turns as steps              3.0    2.3    1.5    1.0    2.3    2.0    1.7
+looped transformer, 64 turns                                  2.7    2.5    2.5    1.5    2.7    1.5    1.3
+
+the state of the looped transformer (mean length of a vector) after 1, 9, 32, 64 turns: 30.0, 10880.3, 9117785088.0, 1574414476751405056.0
+the state of the machine after 1024 turns: the mass of the pointer 1.0000 to 1.0000 (begun at 1)
