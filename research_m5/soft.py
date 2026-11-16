@@ -257,14 +257,16 @@ class Reader(torch.nn.Module):
     in each memory, what a question reads. It is taught through the layer, by the answers of many tasks at once -
     what a word means is what it makes the memory do"""
 
-    def __init__(self, vocab, width=48):
+    def __init__(self, vocab, width=48, whole=False):
         super().__init__()
+        self.whole = whole                                       # every kind of sentence is read knowing all the kinds of the task
         self.vocab = {w: i + 1 for i, w in enumerate(sorted(vocab))}
         self.embed = torch.nn.Embedding(len(self.vocab) + 1, width)      # (0: a word never met)
         self.gru = torch.nn.GRU(width, width, batch_first=True, bidirectional=True)
-        self.heads = torch.nn.ModuleDict({"value": torch.nn.Linear(2 * width, len(VALUE)), "link": torch.nn.Linear(2 * width, len(LINK)),
-                                          "also": torch.nn.Linear(2 * width, len(VALUE)), "turn": torch.nn.Linear(2 * width, 2),
-                                          **{k: torch.nn.Linear(2 * width, len(v)) for k, v in ASKS.items()}})
+        n = 6 * width if whole else 2 * width
+        self.heads = torch.nn.ModuleDict({"value": torch.nn.Linear(n, len(VALUE)), "link": torch.nn.Linear(n, len(LINK)),
+                                          "also": torch.nn.Linear(n, len(VALUE)), "turn": torch.nn.Linear(n, 2),
+                                          **{k: torch.nn.Linear(n, len(v)) for k, v in ASKS.items()}})
         with torch.no_grad():
             self.heads["value"].bias[0] += 1.0
             self.heads["link"].bias[0] += 1.0
@@ -285,6 +287,9 @@ class Reader(torch.nn.Module):
         asked = sorted(task.asked.items(), key=lambda x: x[1])
         h = self.read([words(f[0], False) for f, _ in said] + [words(f[0], True) for f, _ in asked])
         hs, hq = h[:len(said)], h[len(said):]
+        if self.whole:                                           # (with what the statements of the task are like, and its questions)
+            around = torch.cat([hs.mean(0), hq.mean(0)])
+            hs, hq = torch.cat([hs, around.expand(len(hs), -1)], 1), torch.cat([hq, around.expand(len(hq), -1)], 1)
         pad = lambda x: torch.cat([x, torch.zeros((1, x.shape[1]))])
         turn = self.heads["turn"](hq)
         return (pad(self.heads["value"](hs)), pad(self.heads["link"](hs)), pad(self.heads["also"](hs)),
@@ -367,7 +372,7 @@ def teach(tasks, a, log=print):
     read from its words, its stories gone through softly, and the answers pull at the reader -> the reader"""
     gen = torch.Generator().manual_seed(a.seed)
     vocab = {w for _, task, _, _ in tasks for f in list(task.forms) + list(task.asked) for w in words(f[0], False)} | {"?", "."}
-    net = Reader(vocab)
+    net = Reader(vocab, whole=a.whole)
     opt = torch.optim.Adam(net.parameters(), lr=2e-3)
     t0, mean = time.time(), None
     for step in range(a.teach):
@@ -402,6 +407,7 @@ def main():
     ap.add_argument("--hold", default="", help="sets the reader of words is not taught on")
     ap.add_argument("--teach", type=int, default=0, help="teach the reader of words for so many steps")
     ap.add_argument("--words", default="", help="the reader of words: where it is kept (with --teach), or the one to read new tasks with")
+    ap.add_argument("--whole", action="store_true", help="the reader of words reads every kind of sentence knowing all the kinds of the task")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--tasks", default="")
     ap.add_argument("--stories", type=int, default=40)
@@ -422,12 +428,12 @@ def main():
                 tasks.append((f"{name}{k}", got[1], data, Layer(data)))
         print(f"{len(tasks)} tasks the layer has learnt by itself, to teach the reader of words on: " + " ".join(t[0] for t in tasks), flush=True)
         net = teach(tasks, a)
-        torch.save({"vocab": sorted(net.vocab), "weights": net.state_dict()}, a.words)
+        torch.save({"vocab": sorted(net.vocab), "weights": net.state_dict(), "whole": a.whole}, a.words)
         return
     reader_of_words = None
     if a.words:
         saved = torch.load(a.words)
-        reader_of_words = Reader(saved["vocab"])
+        reader_of_words = Reader(saved["vocab"], whole=saved.get("whole", False))
         reader_of_words.load_state_dict(saved["weights"])
     files = glob.glob(os.path.join(a.data, "qa*_train.txt"))
     tasks = [int(x) for x in a.tasks.split(",") if x] or sorted(int(re.match(r"qa(\d+)_", os.path.basename(f)).group(1)) for f in files)
