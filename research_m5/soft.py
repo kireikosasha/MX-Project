@@ -371,6 +371,8 @@ def teach(tasks, a, log=print):
     opt = torch.optim.Adam(net.parameters(), lr=2e-3)
     t0, mean = time.time(), None
     for step in range(a.teach):
+        for group in opt.param_groups:                           # (the steps grow smaller to the end)
+            group["lr"] = 2e-3 * (1 - 0.9 * step / a.teach)
         loss = 0.0
         for i in torch.randint(len(tasks), (4,), generator=gen).tolist():
             _, task, data, layer = tasks[i]
