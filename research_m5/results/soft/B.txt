@@ -1,0 +1,76 @@
+task  1: by the gradient from 40 stories, 140/144 of their questions right when made hard, 2 of 5 kinds of questions explained in full (266.3 s)
+  ? where is the * now: 22/22 value: end (0,) | the * is on the * = set 0 1; ann moved the * to the * = set 0 1; kim moved the * to the * = two ('set', 0, 1) ('set', 0, 1); ben put the * in the * = set 0 1; ben moved the * to the * = two ('set', 0, 1) ('set', 0, 1); the * is in the * = as 0 1; ann t
+  ? where is the *: 28/28 value: end (0,) | the * is on the * = set 0 1; ann moved the * to the * = set 0 1; kim moved the * to the * = two ('set', 0, 1) ('set', 0, 1); ben put the * in the * = set 0 1; ben moved the * to the * = two ('set', 0, 1) ('set', 0, 1); the * is in the * = as 0 1; ann took 
+  ? how many things are in the *: 34/35 value: countin (0,) | the * is on the * = set 0 1; ann moved the * to the * = set 0 1; kim moved the * to the * = two ('set', 0, 1) ('set', 0, 1); ben put the * in the * = set 0 1; ben moved the * to the * = two ('set', 0, 1) ('set', 0, 1); the * is in the * =
+  ? what is in the *: 35/37 value: holders (0,) (else nothing) | the * is on the * = set 0 1; ann moved the * to the * = set 0 1; kim moved the * to the * = two ('set', 0, 1) ('set', 0, 1); ben put the * in the * = set 0 1; ben moved the * to the * = two ('set', 0, 1) ('set', 0, 1); the * is in the 
+  ? is the * in the *: 21/22 value: isin (0, 1) | the * is on the * = set 0 1; ann moved the * to the * = set 0 1; kim moved the * to the * = two ('set', 0, 1) ('set', 0, 1); ben put the * in the * = set 0 1; ben moved the * to the * = two ('set', 0, 1) ('set', 0, 1); the * is in the * = as 0 1; ann
+test  1: 1417/1514 = 93.6%; sure of 2 of 5 kinds of questions, 524/547 right on them
+task  2: by the gradient from 40 stories, 108/121 of their questions right when made hard, 3 of 5 kinds of questions explained in full (509.7 s) - words of the sentence itself: drops has holds
+  ? what does * have: 24/25 value: value (0,) (else nothing) | the * is with * = two ('set', 1, 0) ('set', 1, 0); * has the * = two ('as', 1, 0) ('set', 0, 1); * gives the * to * = two ('swap', 0, 2) ('set', 2, 1); * swaps with * = swap 0 1; * drops the * = two ('clear', 0) ('clear', 1)
+  ? how many things does * have: 25/37 value: countin (0,) | the * is with * = two ('set', 1, 0) ('set', 1, 0); * has the * = two ('as', 1, 0) ('set', 0, 1); * gives the * to * = two ('swap', 0, 2) ('set', 2, 1); * swaps with * = swap 0 1; * drops the * = two ('clear', 0) ('clear', 1)
+  ? who holds the *: 13/13 value: holders (0,) (else c1) | the * is with * = two ('set', 1, 0) ('set', 1, 0); * has the * = two ('as', 1, 0) ('set', 0, 1); * gives the * to * = two ('swap', 0, 2) ('set', 2, 1); * swaps with * = swap 0 1; * drops the * = two ('clear', 0) ('clear', 1)
+  ? does * have the *: 32/32 value: isin (0, 1) | the * is with * = two ('set', 1, 0) ('set', 1, 0); * has the * = two ('as', 1, 0) ('set', 0, 1); * gives the * to * = two ('swap', 0, 2) ('set', 2, 1); * swaps with * = swap 0 1; * drops the * = two ('clear', 0) ('clear', 1)
+  ? who has the *: 14/14 value: holders (0,) (else c1) | the * is with * = two ('set', 1, 0) ('set', 1, 0); * has the * = two ('as', 1, 0) ('set', 0, 1); * gives the * to * = two ('swap', 0, 2) ('set', 2, 1); * swaps with * = swap 0 1; * drops the * = two ('clear', 0) ('clear', 1)
+test  2: 1273/1470 = 86.6%; sure of 3 of 5 kinds of questions, 747/789 right on them
+task  3: by the gradient from 40 stories, 73/98 of their questions right when made hard, 3 of 4 kinds of questions explained in full (250.9 s) - words of the sentence itself: shorter taller
+  ? who is the *: 6/31 value: second (0,) (else a10) | * is taller than * = two ('set', 1, 0) ('set', 1, 0); * is shorter than * = two ('set', 0, 1) ('set', 0, 1)
+  ? who is shorter than *: 22/22 value: inside (0,) (else a1,a9) | * is taller than * = two ('set', 1, 0) ('set', 1, 0); * is shorter than * = two ('set', 0, 1) ('set', 0, 1)
+  ? who is taller than *: 28/28 link: before (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0
+  ? is * taller than *: 17/17 value: known (1,) | * is taller than * = two ('set', 1, 0) ('set', 1, 0); * is shorter than * = two ('set', 0, 1) ('set', 0, 1)
+test  3: 776/1212 = 64.0%; sure of 3 of 4 kinds of questions, 736/780 right on them
+task  4: by the gradient from 40 stories, 92/92 of their questions right when made hard, 3 of 3 kinds of questions explained in full (188.4 s)
+  ? is * *: 23/23 value: known (1,) | * is a * = as 0 1; every * is * = set 1 0; every * is an * = two ('set', 1, 0) ('set', 0, 1)
+  ? is * an *: 22/22 value: known (1,) | * is a * = as 0 1; every * is * = set 1 0; every * is an * = two ('set', 1, 0) ('set', 0, 1)
+  ? is * a *: 47/47 link: leads (0, 1) (else no) | * is a * = link 0 1; every * is a * = link 0 1; every * is * = link 1 0; every * is an * = link 1 0; * is an * = link 0 1
+test  4: 1055/1072 = 98.4%; sure of 3 of 3 kinds of questions, 1055/1072 right on them
+task  5: by the gradient from 40 stories, 94/133 of their questions right when made hard, 2 of 5 kinds of questions explained in full (343.0 s)
+  ? what colour is the box: 13/35 value: value (0,) (else b4) | * is in the * = two ('set', 1, 0) ('set', 0, 1); * goes to the * = two ('set', 0, 1) ('set', 1, 0); * switches the lamp * = set 1 0
+  ? is the lamp *: 11/21 value: known (0,) (turned over) | * is in the * = two ('set', 1, 0) ('set', 0, 1); * goes to the * = two ('set', 0, 1) ('set', 1, 0); * switches the lamp * = set 1 0
+  ? is the door *: 10/17 value: any (0,) (turned over) | * is in the * = two ('set', 1, 0) ('set', 0, 1); * goes to the * = two ('set', 0, 1) ('set', 1, 0); * switches the lamp * = set 1 0
+  ? where is *: 45/45 value: value (0,) | * is in the * = two ('set', 1, 0) ('set', 0, 1); * goes to the * = two ('set', 0, 1) ('set', 1, 0); * switches the lamp * = set 1 0
+  ? who is in the *: 15/15 value: holders (0,) (else e1) | * is in the * = two ('set', 1, 0) ('set', 0, 1); * goes to the * = two ('set', 0, 1) ('set', 1, 0); * switches the lamp * = set 1 0
+test  5: 1003/1515 = 66.2%; sure of 2 of 5 kinds of questions, 687/687 right on them
+task  6: by the gradient from 40 stories, 118/141 of their questions right when made hard, 0 of 3 kinds of questions explained in full (552.1 s)
+  ? where was * on #: 33/40 value: value (0,) | * went to the * the day * # = two ('set', 1, 0) ('set', 0, 1); on # * went to the * = two ('set', 0, 1) ('set', 1, 0); * went to the * on # = two ('set', 0, 1) ('set', 0, 1)
+  ? was * at the * on #: 26/27 link: leads (1, 0) (else no) | * went to the * the day * # = link 1 0; * went to the * on # = link 1 0
+  ? where did * go * #: 59/74 value: value (0,) | * went to the * the day * # = two ('set', 1, 0) ('set', 0, 1); on # * went to the * = two ('set', 0, 1) ('set', 1, 0); * went to the * on # = two ('set', 0, 1) ('set', 0, 1)
+test  6: 1149/1437 = 80.0%; sure of 0 of 3 kinds of questions, 0/0 right on them
+task  7: by the gradient from 40 stories, 73/135 of their questions right when made hard, 0 of 3 kinds of questions explained in full (576.5 s)
+  ? does * have more than # *: 27/43 value: same (1, 0) (else no) | * has # * = two ('set', 0, 1) ('set', 1, 0); * finds # * = two ('set', 0, 1) ('set', 1, 0); * gets # * from * = two ('set', 1, 0) ('set', 0, 1); * gives # * to * = two ('swap', 0, 2) ('swap', 0, 1)
+  ? who has the most *: 41/45 value: value (0,) | * has # * = two ('set', 0, 1) ('set', 1, 0); * finds # * = two ('set', 0, 1) ('set', 1, 0); * gets # * from * = two ('set', 1, 0) ('set', 0, 1); * gives # * to * = two ('swap', 0, 2) ('swap', 0, 1)
+  ? how many * does * have: 5/47 link: countafter (1,) | * has # * = link 0 1; * finds # * = link 0 1; * gets # * from * = link 2 1
+test  7: 739/1465 = 50.4%; sure of 0 of 3 kinds of questions, 0/0 right on them
+task  8: by the gradient from 40 stories, 110/120 of their questions right when made hard, 4 of 10 kinds of questions explained in full (349.1 s) - words of the sentence itself: east north south west
+  ? is the * south of the *: 14/15 value: known (0,) | the * lie south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie east of the * = set 1 0; the * is south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie west of the * = set 0 1; the * lie north of the * = lift 0; the * is north of the
+  ? does the * lie south of the *: 21/23 value: known (0,) | the * lie south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie east of the * = set 1 0; the * is south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie west of the * = set 0 1; the * lie north of the * = lift 0; the * is north 
+  ? what is south of the *: 1/4 link: before (0,) | the * lie south of the * = link 0 1; the * is south of the * = link 1 0; the * lie north of the * = link 1 0; the * is north of the * = link 0 1
+  ? does the * lie north of the *: 21/21 value: known (1,) | the * lie south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie east of the * = set 1 0; the * is south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie west of the * = set 0 1; the * lie north of the * = lift 0; the * is north 
+  ? is the * north of the *: 17/19 value: known (1,) | the * lie south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie east of the * = set 1 0; the * is south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie west of the * = set 0 1; the * lie north of the * = lift 0; the * is north of the
+  ? does the * lie west of the *: 10/11 value: any (1,) | the * lie south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie east of the * = set 1 0; the * is south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie west of the * = set 0 1; the * lie north of the * = lift 0; the * is north of 
+  ? is the * east of the *: 7/7 value: any (0,) | the * lie south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie east of the * = set 1 0; the * is south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie west of the * = set 0 1; the * lie north of the * = lift 0; the * is north of the * = 
+  ? does the * lie east of the *: 7/7 value: any (0,) | the * lie south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie east of the * = set 1 0; the * is south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie west of the * = set 0 1; the * lie north of the * = lift 0; the * is north of th
+  ? is the * west of the *: 10/10 value: any (1,) | the * lie south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie east of the * = set 1 0; the * is south of the * = two ('set', 0, 1) ('set', 0, 1); the * lie west of the * = set 0 1; the * lie north of the * = lift 0; the * is north of the * 
+  ? what is north of the *: 2/3 link: after (0,) | the * lie south of the * = link 0 1; the * is south of the * = link 1 0; the * lie north of the * = link 1 0; the * is north of the * = link 0 1
+test  8: 1106/1517 = 72.9%; sure of 4 of 10 kinds of questions, 528/720 right on them
+task  9: by the gradient from 40 stories, 100/107 of their questions right when made hard, 3 of 5 kinds of questions explained in full (127.4 s)
+  ? who is at the top above *: 55/55 value: end (0,) | * is the child of * = set 0 1; * is the boss of * = two ('set', 1, 0) ('set', 1, 0); * reports to * = set 0 1; * is the parent of * = two ('set', 1, 0) ('set', 1, 0)
+  ? who is the boss of the boss of *: 14/14 value: second (0,) | * is the child of * = set 0 1; * is the boss of * = two ('set', 1, 0) ('set', 1, 0); * reports to * = set 0 1; * is the parent of * = two ('set', 1, 0) ('set', 1, 0)
+  ? is * the boss of the boss of *: 15/17 link: leads (1, 0) (else no) | * is the boss of * = link 1 0; * reports to * = link 0 1; * is the parent of * = link 1 0
+  ? is * the grandparent of *: 8/13 link: leads (1, 0) (else no) | * is the boss of * = link 1 0; * reports to * = link 0 1; * is the parent of * = link 1 0
+  ? who is the grandparent of *: 8/8 value: end (0,) | * is the child of * = set 0 1; * is the boss of * = two ('set', 1, 0) ('set', 1, 0); * reports to * = set 0 1; * is the parent of * = two ('set', 1, 0) ('set', 1, 0)
+test  9: 1298/1401 = 92.6%; sure of 3 of 5 kinds of questions, 1004/1035 right on them
+task 10: by the gradient from 40 stories, 64/65 of their questions right when made hard, 4 of 5 kinds of questions explained in full (301.7 s)
+  ? how many are in the *: 26/26 value: count (0,) | * signs up for the * = two ('set', 0, 1) ('set', 0, 1); * leaves the * = two ('clear', 0) ('clear', 0); * joins the * = two ('set', 0, 1) ('set', 0, 1); * quits the * = two ('as', 0, 1) ('clear', 0)
+  ? which group is * in: 16/16 value: value (0,) | * signs up for the * = two ('set', 0, 1) ('set', 0, 1); * leaves the * = two ('clear', 0) ('clear', 0); * joins the * = two ('set', 0, 1) ('set', 0, 1); * quits the * = two ('as', 0, 1) ('clear', 0)
+  ? is * in the same group as *: 3/4 link: leads (1, 0) (else no) | * signs up for the * = link 0 1
+  ? who is in the *: 12/12 value: holders (0,) | * signs up for the * = two ('set', 0, 1) ('set', 0, 1); * leaves the * = two ('clear', 0) ('clear', 0); * joins the * = two ('set', 0, 1) ('set', 0, 1); * quits the * = two ('as', 0, 1) ('clear', 0)
+  ? are * and * in the same group: 7/7 value: same (0, 1) | * signs up for the * = two ('set', 0, 1) ('set', 0, 1); * leaves the * = two ('clear', 0) ('clear', 0); * joins the * = two ('set', 0, 1) ('set', 0, 1); * quits the * = two ('as', 0, 1) ('clear', 0)
+test 10: 851/890 = 95.6%; sure of 4 of 5 kinds of questions, 786/786 right on them
+task 11: by the gradient from 40 stories, 44/60 of their questions right when made hard, 0 of 1 kinds of questions explained in full (164.8 s)
+  ? is * *: 44/60 value: isin (1, 0) (turned over) | 
+test 11: 449/718 = 62.5%; sure of 0 of 1 kinds of questions, 0/0 right on them
+task 12: by the gradient from 40 stories, 68/76 of their questions right when made hard, 0 of 3 kinds of questions explained in full (254.5 s) - words of the sentence itself: shorter taller
+  ? is the * shorter than the *: 37/38 value: isin (0, 1) | the * is taller than the * = set 1 0; the * is shorter than the * = set 0 1
+  ? which is the *: 2/8 link: before (0,) (else a5) | the * is taller than the * = link 0 1; the * is shorter than the * = link 1 0
+  ? is the * taller than the *: 29/30 value: isin (1, 0) | the * is taller than the * = set 1 0; the * is shorter than the * = set 0 1
+test 12: 692/916 = 75.5%; sure of 0 of 3 kinds of questions, 0/0 right on them

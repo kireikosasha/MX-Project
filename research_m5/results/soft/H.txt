@@ -1,0 +1,96 @@
+task  1: by the gradient from 40 stories, 121/121 of their questions right when made hard, 4 of 4 kinds of questions explained in full (12.1 s)
+  ? is the * in the *: 37/37 value: isin (0, 1) | the * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is moved to the * = two ('set', 0, 1) ('set', 0, 1)
+  ? how many things are in the *: 41/41 value: countin (0,) | the * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is moved to the * = two ('set', 0, 1) ('set', 0, 1)
+  ? which things are in the *: 30/30 value: inside (0,) (else 0) | the * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is moved to the * = two ('set', 0, 1) ('set', 0, 1)
+  ? which place is the * in: 13/13 value: end (0,) | the * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is moved to the * = two ('set', 0, 1) ('set', 0, 1)
+test  1: 1488/1488 = 100.0%; sure of 4 of 4 kinds of questions, 1488/1488 right on them
+task  2: by the gradient from 40 stories, 100/100 of their questions right when made hard, 4 of 4 kinds of questions explained in full (15.5 s)
+  ? how many things does * have: 17/17 value: countin (0,) | * holds the * = two ('set', 1, 0) ('set', 1, 0); * has the * = two ('set', 1, 0) ('set', 1, 0); * gives the * to * = two ('set', 1, 2) ('set', 1, 2); * passes the * to * = two ('set', 1, 2) ('clear', 0); * swaps the * for the * = swap 1 2
+  ? does * have the *: 58/58 value: is (1, 0) | * holds the * = two ('set', 1, 0) ('set', 1, 0); * has the * = two ('set', 1, 0) ('set', 1, 0); * gives the * to * = two ('set', 1, 2) ('set', 1, 2); * passes the * to * = two ('set', 1, 2) ('clear', 0); * swaps the * for the * = swap 1 2
+  ? what does * have: 14/14 value: holders (0,) (else nothing) | * holds the * = two ('set', 1, 0) ('set', 1, 0); * has the * = two ('set', 1, 0) ('set', 1, 0); * gives the * to * = two ('set', 1, 2) ('set', 1, 2); * passes the * to * = two ('set', 1, 2) ('clear', 0); * swaps the * for the * = swap 
+  ? who has the *: 11/11 value: value (0,) | * holds the * = two ('set', 1, 0) ('set', 1, 0); * has the * = two ('set', 1, 0) ('set', 1, 0); * gives the * to * = two ('set', 1, 2) ('set', 1, 2); * passes the * to * = two ('set', 1, 2) ('clear', 0); * swaps the * for the * = swap 1 2
+test  2: 1287/1287 = 100.0%; sure of 4 of 4 kinds of questions, 1287/1287 right on them
+task  3: by the gradient from 40 stories, 115/123 of their questions right when made hard, 16 of 21 kinds of questions explained in full (372.0 s) - words of the sentence itself: faster older shorter slower taller younger
+  ? who is taller than *: 6/6 link: before (0,) (else 0) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? is * shorter than *: 8/8 link: leads (1, 0) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? how many people are shorter than *: 5/5 link: countafter (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? is * taller than *: 10/10 link: leads (0, 1) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? is * younger than *: 14/14 value: known (0,) | * is taller than * = two ('set', 1, 0) ('set', 0, 1); * is shorter than * = set 0 1; * is older than * = two ('lift', 0) ('set', 1, 0); * is younger than * = set 0 1; * is faster than * = set 0 1; * is slower than * = set 1 0
+  ? is * older than *: 11/11 value: known (1,) | * is taller than * = two ('set', 1, 0) ('set', 0, 1); * is shorter than * = set 0 1; * is older than * = two ('lift', 0) ('set', 1, 0); * is younger than * = set 0 1; * is faster than * = set 0 1; * is slower than * = set 1 0
+  ? how many people are younger than *: 10/10 value: countin (0,) | * is taller than * = two ('set', 1, 0) ('set', 0, 1); * is shorter than * = set 0 1; * is older than * = two ('lift', 0) ('set', 1, 0); * is younger than * = set 0 1; * is faster than * = set 0 1; * is slower than * = set 1 0
+  ? how many people are older than *: 4/4 link: countbefore (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? is * faster than *: 7/7 value: any (1,) | * is taller than * = two ('set', 1, 0) ('set', 0, 1); * is shorter than * = set 0 1; * is older than * = two ('lift', 0) ('set', 1, 0); * is younger than * = set 0 1; * is faster than * = set 0 1; * is slower than * = set 1 0
+  ? is * slower than *: 7/7 value: known (1,) | * is taller than * = two ('set', 1, 0) ('set', 0, 1); * is shorter than * = set 0 1; * is older than * = two ('lift', 0) ('set', 1, 0); * is younger than * = set 0 1; * is faster than * = set 0 1; * is slower than * = set 1 0
+  ? who is the *: 2/10 value: second (0,) (else a7) | * is taller than * = two ('set', 1, 0) ('set', 0, 1); * is shorter than * = set 0 1; * is older than * = two ('lift', 0) ('set', 1, 0); * is younger than * = set 0 1; * is faster than * = set 0 1; * is slower than * = set 1 0
+  ? who is shorter than *: 7/7 link: after (0,) (else 0) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? who is older than *: 4/4 link: before (0,) (else 0) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? how many people are faster than *: 5/5 link: countafter (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? who is slower than *: 3/3 link: before (0,) (else 0) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? who is younger than *: 3/3 value: inside (0,) (else 0) | * is taller than * = two ('set', 1, 0) ('set', 0, 1); * is shorter than * = set 0 1; * is older than * = two ('lift', 0) ('set', 1, 0); * is younger than * = set 0 1; * is faster than * = set 0 1; * is slower than * = set 1 0
+  ? how many people are taller than *: 3/3 link: countbefore (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? who is faster than *: 2/2 value: inside (0,) (else 0) | * is taller than * = two ('set', 1, 0) ('set', 0, 1); * is shorter than * = set 0 1; * is older than * = two ('lift', 0) ('set', 1, 0); * is younger than * = set 0 1; * is faster than * = set 0 1; * is slower than * = set 1 0
+  ? how many people are slower than *: 2/2 link: countbefore (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is older than * = link 0 1; * is younger than * = link 1 0; * is faster than * = link 1 0; * is slower than * = link 0 1
+  ? who is the slowest: 1/1 value: value (0,) (else a4) | * is taller than * = two ('set', 1, 0) ('set', 0, 1); * is shorter than * = set 0 1; * is older than * = two ('lift', 0) ('set', 1, 0); * is younger than * = set 0 1; * is faster than * = set 0 1; * is slower than * = set 1 0
+  ? who is the oldest: 1/1 value: value (0,) (else a5) | * is taller than * = two ('set', 1, 0) ('set', 0, 1); * is shorter than * = set 0 1; * is older than * = two ('lift', 0) ('set', 1, 0); * is younger than * = set 0 1; * is faster than * = set 0 1; * is slower than * = set 1 0
+test  3: 1261/1416 = 89.1%; sure of 16 of 21 kinds of questions, 1166/1222 right on them
+task  4: by the gradient from 40 stories, 106/106 of their questions right when made hard, 2 of 2 kinds of questions explained in full (142.7 s)
+  ? is * a *: 76/76 value: known (1,) | every * is a * = two ('set', 1, 0) ('set', 1, 0); * is a * = swap 0 1; every * can * = two ('set', 1, 0) ('as', 1, 0)
+  ? can * *: 30/30 link: leads (1, 0) (else no) | every * is a * = link 1 0; * is a * = link 1 0; every * can * = link 1 0
+test  4: 1204/1223 = 98.4%; sure of 2 of 2 kinds of questions, 1204/1223 right on them
+task  5: by the gradient from 40 stories, 122/129 of their questions right when made hard, 4 of 7 kinds of questions explained in full (458.7 s)
+  ? where is *: 26/26 value: value (0,) | the * is in the * = set 1 0; the * is * = set 0 1; * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is * = set 0 1; * goes to the * = two ('set', 0, 1) ('set', 0, 1); * carries the * to the * = two ('set', 0, 2) ('set', 2, 1); * closes the * = clear 1;
+  ? who is in the *: 59/59 value: holders (0,) (else 0) | the * is in the * = set 1 0; the * is * = set 0 1; * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is * = set 0 1; * goes to the * = two ('set', 0, 1) ('set', 0, 1); * carries the * to the * = two ('set', 0, 2) ('set', 2, 1); * closes 
+  ? is the * *: 11/11 value: isin (0, 1) | the * is in the * = set 1 0; the * is * = set 0 1; * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is * = set 0 1; * goes to the * = two ('set', 0, 1) ('set', 0, 1); * carries the * to the * = two ('set', 0, 2) ('set', 2, 1); * closes the * = clear 1
+  ? is the * *: 11/11 value: any (1,) | the * is in the * = set 1 0; the * is * = set 0 1; * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is * = set 0 1; * goes to the * = two ('set', 0, 1) ('set', 0, 1); * carries the * to the * = two ('set', 0, 2) ('set', 2, 1); * closes the * = clear 1; *
+  ? where is the *: 13/19 value: holders (0,) (else e2) | the * is in the * = set 1 0; the * is * = set 0 1; * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is * = set 0 1; * goes to the * = two ('set', 0, 1) ('set', 0, 1); * carries the * to the * = two ('set', 0, 2) ('set', 2, 1); * closes 
+  ? is the * off: 1/2 value: known (0,) | the * is in the * = set 1 0; the * is * = set 0 1; * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is * = set 0 1; * goes to the * = two ('set', 0, 1) ('set', 0, 1); * carries the * to the * = two ('set', 0, 2) ('set', 2, 1); * closes the * = clear 1;
+  ? is the * on: 1/1 value: known (0,) (turned over) | the * is in the * = set 1 0; the * is * = set 0 1; * is in the * = two ('set', 0, 1) ('set', 0, 1); the * is * = set 0 1; * goes to the * = two ('set', 0, 1) ('set', 0, 1); * carries the * to the * = two ('set', 0, 2) ('set', 2, 1); * closes the
+test  5: 1414/1552 = 91.1%; sure of 4 of 7 kinds of questions, 1233/1266 right on them
+task  6: its sentences have more things than the layer has places for
+task  7: by the gradient from 40 stories, 52/117 of their questions right when made hard, 1 of 6 kinds of questions explained in full (383.4 s)
+  ? how many * are there in all: 0/23 link: countbefore (0,) | * has # * = link 0 1; * loses # * = link 1 0; * gets # * = link 0 1; * gives # * to * = link 0 1; * takes # * from * = link 2 1
+  ? who has the most *: 18/22 value: value (0,) (else a5) | * has # * = two ('set', 0, 1) ('set', 0, 1); * loses # * = two ('set', 0, 1) ('set', 0, 1); * gets # * = two ('set', 1, 0) ('set', 1, 0); * gives # * to * = two ('set', 0, 1) ('set', 1, 2); * takes # * from * = two ('set', 1, 0) ('set', 1, 
+  ? does * have more * than *: 16/25 value: is (0, 1) | * has # * = two ('set', 0, 1) ('set', 0, 1); * loses # * = two ('set', 0, 1) ('set', 0, 1); * gets # * = two ('set', 1, 0) ('set', 1, 0); * gives # * to * = two ('set', 0, 1) ('set', 1, 2); * takes # * from * = two ('set', 1, 0) ('set', 1, 0)
+  ? how many * does * have: 1/17 link: countbefore (1,) | * has # * = link 0 1; * loses # * = link 1 0; * gets # * = link 0 1; * gives # * to * = link 0 1; * takes # * from * = link 2 1
+  ? what things does * have: 3/16 value: holders (0,) (else b2,b3) | * has # * = two ('set', 0, 1) ('set', 0, 1); * loses # * = two ('set', 0, 1) ('set', 0, 1); * gets # * = two ('set', 1, 0) ('set', 1, 0); * gives # * to * = two ('set', 0, 1) ('set', 1, 2); * takes # * from * = two ('set', 1, 0) ('
+  ? does * have any *: 14/14 value: known (0,) | * has # * = two ('set', 0, 1) ('set', 0, 1); * loses # * = two ('set', 0, 1) ('set', 0, 1); * gets # * = two ('set', 1, 0) ('set', 1, 0); * gives # * to * = two ('set', 0, 1) ('set', 1, 2); * takes # * from * = two ('set', 1, 0) ('set', 1, 0)
+test  7: 491/1470 = 33.4%; sure of 1 of 6 kinds of questions, 140/148 right on them
+task  8: by the gradient from 40 stories, 45/67 of their questions right when made hard, 0 of 1 kinds of questions explained in full (212.6 s)
+  ? which way is the * from the *: 45/67 value: value (0,) (else b1) | the * is * of the * = two ('set', 0, 1) ('set', 1, 0); the * lies * of the * = two ('set', 1, 0) ('set', 0, 1)
+test  8: 562/924 = 60.8%; sure of 0 of 1 kinds of questions, 0/0 right on them
+task  9: by the gradient from 40 stories, 102/131 of their questions right when made hard, 2 of 4 kinds of questions explained in full (141.1 s)
+  ? who is the grandparent of *: 29/29 value: second (0,) | * is the parent of * = set 1 0; the * is in the * = two ('set', 0, 1) ('set', 0, 1)
+  ? is the * finally in the *: 19/27 link: leads (0, 1) (else no) | * is the parent of * = link 0 1; the * is in the * = link 0 1
+  ? is * the grandparent of *: 45/66 value: any (0,) | * is the parent of * = set 1 0; the * is in the * = two ('set', 0, 1) ('set', 0, 1)
+  ? where is the * finally: 9/9 value: end (0,) | * is the parent of * = set 1 0; the * is in the * = two ('set', 0, 1) ('set', 0, 1)
+test  9: 1151/1420 = 81.1%; sure of 2 of 4 kinds of questions, 427/427 right on them
+task 10: by the gradient from 40 stories, 122/122 of their questions right when made hard, 4 of 4 kinds of questions explained in full (15.1 s)
+  ? is * in the * group: 25/25 value: is (0, 1) | * joins the * group = two ('set', 0, 1) ('set', 0, 1); * leaves the * group = two ('clear', 0) ('clear', 0); * moves to the * group = two ('set', 0, 1) ('set', 0, 1)
+  ? which group is * in: 36/36 value: value (0,) (else 0) | * joins the * group = two ('set', 0, 1) ('set', 0, 1); * leaves the * group = two ('clear', 0) ('clear', 0); * moves to the * group = two ('set', 0, 1) ('set', 0, 1)
+  ? how many are in the * group: 26/26 value: countin (0,) | * joins the * group = two ('set', 0, 1) ('set', 0, 1); * leaves the * group = two ('clear', 0) ('clear', 0); * moves to the * group = two ('set', 0, 1) ('set', 0, 1)
+  ? who is in the * group: 35/35 value: holders (0,) (else 0) | * joins the * group = two ('set', 0, 1) ('set', 0, 1); * leaves the * group = two ('clear', 0) ('clear', 0); * moves to the * group = two ('set', 0, 1) ('set', 0, 1)
+test 10: 1523/1523 = 100.0%; sure of 4 of 4 kinds of questions, 1523/1523 right on them
+task 11: by the gradient from 40 stories, 122/127 of their questions right when made hard, 4 of 6 kinds of questions explained in full (345.8 s)
+  ? who has the *: 21/21 value: value (0,) | * takes the * = two ('set', 1, 0) ('set', 1, 0); * gives the * to * = two ('set', 1, 2) ('set', 1, 2); * is a * = set 0 1
+  ? what is *: 18/18 link: before (0,) | * is a * = link 1 0; every * is a * = link 1 0
+  ? who can open the box: 4/8 value: value (0,) (else a1) | * takes the * = two ('set', 1, 0) ('set', 1, 0); * gives the * to * = two ('set', 1, 2) ('set', 1, 2); * is a * = set 0 1
+  ? is * a *: 13/13 value: is (1, 0) | * takes the * = two ('set', 1, 0) ('set', 1, 0); * gives the * to * = two ('set', 1, 2) ('set', 1, 2); * is a * = set 0 1
+  ? can * open the box: 25/26 value: any (0,) | * takes the * = two ('set', 1, 0) ('set', 1, 0); * gives the * to * = two ('set', 1, 2) ('set', 1, 2); * is a * = set 0 1
+  ? how many items does * have: 41/41 value: count (0,) | * takes the * = two ('set', 1, 0) ('set', 1, 0); * gives the * to * = two ('set', 1, 2) ('set', 1, 2); * is a * = set 0 1
+test 11: 1360/1467 = 92.7%; sure of 4 of 6 kinds of questions, 1125/1139 right on them
+task 12: by the gradient from 40 stories, 57/89 of their questions right when made hard, 3 of 14 kinds of questions explained in full (118.6 s) - words of the sentence itself: concert dinner game meeting party picnic quiz
+  ? what day is the picnic: 2/6 value: count (0,) (else 4) | 
+  ? is the game on #: 7/8 value: is (0, 1) (else no) | 
+  ? what day is the meeting: 4/10 value: count (0,) (else 3) | 
+  ? is the meeting on #: 9/9 value: is (0, 1) (else no) | 
+  ? is the quiz on #: 10/10 value: is (0, 1) (else no) | 
+  ? what day is the quiz: 6/15 value: count (0,) (else 4) | 
+  ? what day is the game: 2/4 value: count (0,) (else 2) | 
+  ? what day is the dinner: 2/6 value: count (0,) (else 2) | 
+  ? is the dinner on #: 5/5 value: is (0, 1) (else no) | 
+  ? what day is the party: 2/5 value: count (0,) (else 7) | 
+  ? is the party on #: 4/6 value: is (0, 1) (else no) | 
+  ? is the picnic on #: 2/2 value: is (0, 1) (else no) | 
+  ? is the concert on #: 1/2 value: is (0, 1) (else yes) | 
+  ? what day is the concert: 1/1 value: count (0,) (else 2) | 
+test 12: 481/1115 = 43.1%; sure of 3 of 14 kinds of questions, 190/228 right on them

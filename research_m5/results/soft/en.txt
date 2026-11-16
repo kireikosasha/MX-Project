@@ -1,0 +1,146 @@
+task  1: by the gradient from 40 stories, 200/200 of their questions right when made hard, 1 of 1 kinds of questions explained in full (5.6 s)
+  ? where is *: 200/200 value: value (0,) | * moved to the * = two ('set', 0, 1) ('set', 0, 1); * went to the * = two ('set', 0, 1) ('set', 0, 1); * went back to the * = two ('set', 0, 1) ('set', 0, 1); * journeyed to the * = two ('set', 0, 1) ('set', 0, 1); * travelled to the * = two ('set', 0, 1) 
+test  1: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
+task  2: by the gradient from 40 stories, 200/200 of their questions right when made hard, 1 of 1 kinds of questions explained in full (34.7 s) - things: daniel john mary sandra
+  ? where is the *: 200/200 value: end (0,) | * moved to the * = two ('set', 0, 1) ('clear', 1); * journeyed to the * = two ('set', 0, 1) ('as', 1, 0); * got the * there = two ('set', 1, 0) ('set', 1, 0); * went to the * = two ('set', 0, 1) ('clear', 1); * went back to the * = two ('set', 0, 1) ('cl
+test  2: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
+task  3: by the gradient from 40 stories, 163/200 of their questions right when made hard, 0 of 1 kinds of questions explained in full (361.0 s) - things: daniel john mary sandra
+  ? where was the * before the *: 163/200 value: value (1,) | * moved to the * = two ('swap', 0, 1) ('set', 0, 1); * journeyed to the * = two ('swap', 0, 1) ('set', 0, 1); * got the * there = set 0 1; * went back to the * = two ('swap', 0, 1) ('set', 0, 1); * took the * = two ('clear', 1) ('clear', 
+test  3: 755/1000 = 75.5%; sure of 0 of 1 kinds of questions, 0/0 right on them
+task  4: by the gradient from 40 stories, 40/40 of their questions right when made hard, 8 of 8 kinds of questions explained in full (3.1 s) - words of the sentence itself: east north south west
+  ? what is north of the *: 5/5 value: value (0,) | the * is north of the * = two ('set', 1, 0) ('set', 1, 0); the * is south of the * = set 0 1; the * is west of the * = set 0 1; the * is east of the * = set 1 0
+  ? what is the * east of: 8/8 value: holders (0,) | the * is north of the * = two ('set', 1, 0) ('set', 1, 0); the * is south of the * = set 0 1; the * is west of the * = set 0 1; the * is east of the * = set 1 0
+  ? what is the * north of: 4/4 value: holders (0,) | the * is north of the * = two ('set', 1, 0) ('set', 1, 0); the * is south of the * = set 0 1; the * is west of the * = set 0 1; the * is east of the * = set 1 0
+  ? what is west of the *: 4/4 value: holders (0,) | the * is north of the * = two ('set', 1, 0) ('set', 1, 0); the * is south of the * = set 0 1; the * is west of the * = set 0 1; the * is east of the * = set 1 0
+  ? what is east of the *: 3/3 value: value (0,) | the * is north of the * = two ('set', 1, 0) ('set', 1, 0); the * is south of the * = set 0 1; the * is west of the * = set 0 1; the * is east of the * = set 1 0
+  ? what is the * south of: 8/8 value: value (0,) | the * is north of the * = two ('set', 1, 0) ('set', 1, 0); the * is south of the * = set 0 1; the * is west of the * = set 0 1; the * is east of the * = set 1 0
+  ? what is the * west of: 5/5 value: value (0,) | the * is north of the * = two ('set', 1, 0) ('set', 1, 0); the * is south of the * = set 0 1; the * is west of the * = set 0 1; the * is east of the * = set 1 0
+  ? what is south of the *: 3/3 value: holders (0,) | the * is north of the * = two ('set', 1, 0) ('set', 1, 0); the * is south of the * = set 0 1; the * is west of the * = set 0 1; the * is east of the * = set 1 0
+test  4: 1000/1000 = 100.0%; sure of 8 of 8 kinds of questions, 1000/1000 right on them
+task  5: by the gradient from 40 stories, 180/200 of their questions right when made hard, 2 of 5 kinds of questions explained in full (360.1 s) - words of the sentence itself: gave handed passed received
+  ? what did * give to *: 81/87 value: holders (1,) | * travelled to the office = clear 0; * gave the * to * = two ('clear', 2) ('set', 1, 2); * handed the * to * = two ('set', 0, 1) ('set', 1, 2); * journeyed to the bedroom = clear 0; * moved to the hallway = clear 0; * journeyed to the bathroom = 
+  ? who received the *: 34/34 value: value (0,) | * travelled to the office = clear 0; * gave the * to * = two ('clear', 2) ('set', 1, 2); * handed the * to * = two ('set', 0, 1) ('set', 1, 2); * journeyed to the bedroom = clear 0; * moved to the hallway = clear 0; * journeyed to the bathroom = clea
+  ? who did * give the * to: 33/33 value: value (1,) | * travelled to the office = clear 0; * gave the * to * = two ('clear', 2) ('set', 1, 2); * handed the * to * = two ('set', 0, 1) ('set', 1, 2); * journeyed to the bedroom = clear 0; * moved to the hallway = clear 0; * journeyed to the bathroom =
+  ? who gave the * to *: 18/25 value: holders (0,) (else b2) | * travelled to the office = clear 0; * gave the * to * = two ('clear', 2) ('set', 1, 2); * handed the * to * = two ('set', 0, 1) ('set', 1, 2); * journeyed to the bedroom = clear 0; * moved to the hallway = clear 0; * journeyed to the ba
+  ? who gave the *: 14/21 value: holders (0,) (else b4) | * travelled to the office = clear 0; * gave the * to * = two ('clear', 2) ('set', 1, 2); * handed the * to * = two ('set', 0, 1) ('set', 1, 2); * journeyed to the bedroom = clear 0; * moved to the hallway = clear 0; * journeyed to the bathroo
+test  5: 813/1000 = 81.3%; sure of 2 of 5 kinds of questions, 324/324 right on them
+task  6: by the gradient from 40 stories, 200/200 of their questions right when made hard, 1 of 1 kinds of questions explained in full (8.6 s)
+  ? is * in the *: 200/200 value: isin (0, 1) | * moved to the * = two ('set', 0, 1) ('set', 0, 1); * journeyed to the * = two ('set', 0, 1) ('set', 0, 1); * went back to the * = two ('set', 0, 1) ('set', 1, 0); * went to the * = two ('set', 0, 1) ('set', 0, 1); * travelled to the * = two ('set', 0,
+test  6: 997/1000 = 99.7%; sure of 1 of 1 kinds of questions, 997/1000 right on them
+task  7: by the gradient from 40 stories, 200/200 of their questions right when made hard, 1 of 1 kinds of questions explained in full (55.4 s) - things: apple football milk
+  ? how many objects is * carrying: 200/200 value: count (0,) | * took the * there = two ('set', 1, 0) ('set', 1, 0); * travelled to the garden = clear 0; * dropped the * = two ('as', 1, 0) ('lift', 1); * got the * there = two ('set', 1, 0) ('set', 1, 0); * picked up the * there = two ('set', 1, 0) 
+test  7: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
+task  8: by the gradient from 40 stories, 200/200 of their questions right when made hard, 1 of 1 kinds of questions explained in full (62.2 s) - things: journeyed moved travelled went
+  ? what is * carrying: 200/200 value: holders (0,) (else nothing) | * got the * there = two ('set', 1, 0) ('set', 1, 0); * dropped the * = two ('clear', 1) ('clear', 1); * took the * there = two ('set', 1, 0) ('set', 1, 0); * picked up the * there = two ('set', 1, 0) ('set', 1, 0); * dropped the * 
+test  8: 979/1000 = 97.9%; sure of 1 of 1 kinds of questions, 979/1000 right on them
+task  9: by the gradient from 40 stories, 200/200 of their questions right when made hard, 1 of 1 kinds of questions explained in full (4.6 s)
+  ? is * in the *: 200/200 value: isin (0, 1) | * is no longer in the * = two ('lift', 0) ('clear', 1); * moved to the * = two ('set', 0, 1) ('set', 0, 1); * is in the * = two ('set', 0, 1) ('set', 0, 1); * is not in the * = two ('clear', 0) ('clear', 0); * went to the * = two ('set', 0, 1) ('set', 
+test  9: 996/1000 = 99.6%; sure of 1 of 1 kinds of questions, 996/1000 right on them
+task 10: by the gradient from 40 stories, 107/200 of their questions right when made hard, 0 of 6 kinds of questions explained in full (110.0 s) - words of the sentence itself: bedroom cinema kitchen office park school
+  ? is * in the office: 18/40 value: holders (0,) (else no) | 
+  ? is * in the park: 21/33 link: before (0,) (else yes) | 
+  ? is * in the cinema: 16/32 value: end (0,) (else no) | 
+  ? is * in the school: 20/31 value: second (0,) (else no) | 
+  ? is * in the bedroom: 17/34 link: before (0,) (else no) | 
+  ? is * in the kitchen: 15/30 value: inside (0,) (else yes) | 
+test 10: 426/1000 = 42.6%; sure of 0 of 6 kinds of questions, 0/0 right on them
+task 11: by the gradient from 40 stories, 200/200 of their questions right when made hard, 1 of 1 kinds of questions explained in full (16.4 s) - pointers: journeyed moved travelled went
+  ? where is *: 200/200 value: value (0,) | after that she * to the * = two ('set', 0, 1) ('set', 0, 1); afterwards he * to the * = two ('set', 0, 1) ('set', 0, 1); after that he * to the * = two ('set', 0, 1) ('set', 0, 1); following that she * back to the * = two ('set', 0, 1) ('set', 0, 1); after
+test 11: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
+task 12: by the gradient from 40 stories, 200/200 of their questions right when made hard, 1 of 1 kinds of questions explained in full (9.3 s)
+  ? where is *: 200/200 value: value (0,) | * and * travelled to the * = two ('set', 1, 2) ('set', 0, 2); * and * moved to the * = two ('set', 0, 2) ('set', 1, 2); * and * went to the * = two ('set', 0, 2) ('set', 1, 2); * and * went back to the * = two ('set', 1, 2) ('set', 0, 2); * and * journeyed
+test 12: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
+task 13: by the gradient from 40 stories, 132/200 of their questions right when made hard, 0 of 1 kinds of questions explained in full (198.4 s) - pointers: after following
+  ? where is *: 132/200 value: value (0,) (else a5) | * and * went to the * = two ('swap', 0, 2) ('lift', 0); * and * moved to the * = two ('clear', 0) ('lift', 2); * and * journeyed to the * = two ('clear', 1) ('swap', 0, 2); * and * travelled to the * = two ('clear', 0) ('lift', 2); * and * that t
+test 13: 589/1000 = 58.9%; sure of 0 of 1 kinds of questions, 0/0 right on them
+task 14: by the gradient from 40 stories, 115/200 of their questions right when made hard, 0 of 1 kinds of questions explained in full (348.6 s) - things: journeyed moved travelled went
+  ? where was * before the *: 115/200 value: value (0,) | * * back to the * # = two ('set', 0, 2) ('set', 0, 2); * * to the * this # = set 2 0; * * to the * # = two ('set', 0, 2) ('set', 0, 2); # * * to the * = two ('set', 2, 0) ('set', 0, 2); this # * * to the * = set 2 0; # * * back to the * = two
+test 14: 599/1000 = 59.9%; sure of 0 of 1 kinds of questions, 0/0 right on them
+task 15: by the gradient from 40 stories, 160/160 of their questions right when made hard, 1 of 1 kinds of questions explained in full (3.8 s)
+  ? what is * afraid of: 160/160 value: value (0,) | * are afraid of * = two ('set', 0, 1) ('set', 0, 1); * is a * = as 0 1
+test 15: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
+task 16: by the gradient from 40 stories, 31/40 of their questions right when made hard, 0 of 1 kinds of questions explained in full (101.9 s) - things: frog lion rhino swan
+  ? what color is *: 31/40 value: end (0,) (else c4) | * is a * = two ('swap', 0, 1) ('set', 1, 0); * is * = two ('set', 0, 1) ('set', 0, 1)
+test 16: 823/1000 = 82.3%; sure of 0 of 1 kinds of questions, 0/0 right on them
+task 17: by the gradient from 40 stories, 264/320 of their questions right when made hard, 18 of 42 kinds of questions explained in full (360.2 s) - words of the sentence itself: blue red yellow
+  ? is the pink rectangle to the * of the blue *: 7/8 link: leads (0, 1) (else yes) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the
+  ? is the blue * * the pink rectangle: 10/10 link: leads (0, 1) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of the
+  ? is the blue * to the * of the pink rectangle: 6/9 value: known (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * i
+  ? is the pink rectangle to the * of the yellow *: 6/6 link: leads (0, 1) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to th
+  ? is the yellow * to the * of the pink rectangle: 4/4 value: known (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red *
+  ? is the yellow * * the pink rectangle: 8/9 value: any (1,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the ye
+  ? is the pink rectangle * the yellow *: 3/5 value: any (1,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the ye
+  ? is the red * * the pink rectangle: 15/15 value: any (1,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the yel
+  ? is the pink rectangle * the red *: 9/14 value: any (1,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the yell
+  ? is the pink rectangle to the * of the red *: 6/6 link: leads (0, 1) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the *
+  ? is the red * * the triangle: 6/7 value: isin (0, 1) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the yellow *
+  ? is the triangle to the * of the red *: 3/3 value: isin (1, 0) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * th
+  ? is the triangle * the red *: 6/8 link: leads (0, 1) (else yes) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of the red * =
+  ? is the red * to the * of the triangle: 5/6 link: leads (0, 1) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of th
+  ? is the blue * * the yellow *: 4/4 value: known (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the yellow *
+  ? is the yellow * * the blue *: 6/6 link: leads (0, 1) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of the red * =
+  ? is the blue * to the * of the yellow *: 2/3 value: any (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the 
+  ? is the yellow * to the * of the blue *: 3/3 link: leads (2, 1) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of t
+  ? is the blue * * the triangle: 7/7 value: known (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the yellow *
+  ? is the triangle * the blue *: 9/9 link: leads (1, 0) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of the red * =
+  ? is the triangle to the * of the blue *: 5/8 value: known (1,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * th
+  ? is the blue * to the * of the triangle: 8/8 value: any (1,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the 
+  ? is the pink rectangle * the triangle: 10/13 value: known (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * th
+  ? is the pink rectangle to the * of the triangle: 10/11 value: known (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red
+  ? is the triangle to the * of the pink rectangle: 8/15 value: any (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * 
+  ? is the red * to the * of the blue *: 8/8 link: leads (0, 1) (turned over) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to
+  ? is the blue * to the * of the red *: 4/5 link: leads (2, 0) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of the 
+  ? is the blue * * the red *: 4/7 link: leads (1, 2) (else yes) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of the red * = l
+  ? is the red * * the blue *: 4/4 value: isin (2, 1) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the yellow * =
+  ? is the triangle * the pink rectangle: 7/9 value: any (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the ye
+  ? is the red * to the * of the pink rectangle: 5/5 value: same (1, 0) (else no) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; t
+  ? is the triangle * the yellow *: 8/9 value: isin (1, 0) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the yello
+  ? is the yellow * * the triangle: 8/8 value: any (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the yellow *
+  ? is the triangle to the * of the yellow *: 7/8 value: isin (1, 0) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is *
+  ? is the yellow * to the * of the triangle: 10/15 value: known (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is 
+  ? is the pink rectangle * the blue *: 5/5 value: any (1,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the yell
+  ? is the red * * the yellow *: 9/15 link: leads (2, 0) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of the red * =
+  ? is the yellow * * the red *: 4/6 link: leads (1, 2) (else yes) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of the red * =
+  ? is the yellow * to the * of the red *: 4/5 value: known (2,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the
+  ? is the red * to the * of the yellow *: 4/6 link: leads (2, 1) (else yes) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of t
+  ? is the red * * the red *: 4/5 value: any (0,) | the blue * is to the * of the triangle = set 1 0; the red * is to the * of the yellow * = two ('set', 2, 1) ('set', 2, 1); the red * is * the pink rectangle = set 0 1; the blue * is to the * of the red * = set 2 1; the red * is * the yellow * = two
+  ? is the red * to the * of the red *: 3/3 link: leads (0, 1) (else no) | the blue * is to the * of the triangle = link 0 1; the red * is to the * of the yellow * = link 1 2; the red * is * the pink rectangle = link 1 0; the red * is to the * of the red * = link 1 2; the blue * is to the * of the r
+test 17: 528/1000 = 52.8%; sure of 18 of 42 kinds of questions, 231/435 right on them
+task 18: by the gradient from 40 stories, 198/204 of their questions right when made hard, 4 of 6 kinds of questions explained in full (267.9 s)
+  ? does the * fit in the * of *: 13/13 value: any (2,) | the * of * fit inside the * = two ('lift', 0) ('lift', 2); the * is bigger than the * = two ('clear', 0) ('set', 1, 0); the * fit inside the * = set 0 1; the * of * is bigger than the * = set 2 0
+  ? is the * of * bigger than the *: 7/7 value: any (1,) | the * of * fit inside the * = two ('lift', 0) ('lift', 2); the * is bigger than the * = two ('clear', 0) ('set', 1, 0); the * fit inside the * = set 0 1; the * of * is bigger than the * = set 2 0
+  ? is the * bigger than the * of *: 12/12 link: leads (0, 2) (else yes) | the * is bigger than the * = link 0 1; the * fit inside the * = link 1 0
+  ? does the * of * fit in the *: 18/18 link: leads (1, 0) (turned over) (else yes) | the * is bigger than the * = link 0 1; the * fit inside the * = link 1 0
+  ? is the * bigger than the *: 80/82 value: known (1,) | the * of * fit inside the * = two ('lift', 0) ('lift', 2); the * is bigger than the * = two ('clear', 0) ('set', 1, 0); the * fit inside the * = set 0 1; the * of * is bigger than the * = set 2 0
+  ? does the * fit in the *: 68/72 value: any (1,) | the * of * fit inside the * = two ('lift', 0) ('lift', 2); the * is bigger than the * = two ('clear', 0) ('set', 1, 0); the * fit inside the * = set 0 1; the * of * is bigger than the * = set 2 0
+test 18: 915/1000 = 91.5%; sure of 4 of 6 kinds of questions, 267/267 right on them
+task 19: by the gradient from 40 stories, 27/40 of their questions right when made hard, 0 of 23 kinds of questions explained in full (42.2 s) - words of the sentence itself: bathroom bedroom garden hallway kitchen office
+  ? how do you go from the kitchen to the garden: 1/2 value: value (0,) (else a1,c1) | 
+  ? how do you go from the kitchen to the hallway: 1/3 value: value (0,) (else b1,d1) | 
+  ? how do you go from the garden to the bedroom: 1/1 value: value (0,) (else b1,b1) | 
+  ? how do you go from the bedroom to the kitchen: 2/5 value: value (0,) (else c1,d1) | 
+  ? how do you go from the bedroom to the garden: 1/2 value: value (0,) (else a1,c1) | 
+  ? how do you go from the garden to the office: 1/3 value: value (0,) (else b1,d1) | 
+  ? how do you go from the hallway to the kitchen: 1/2 value: value (0,) (else c1,c1) | 
+  ? how do you go from the hallway to the bedroom: 2/2 value: value (0,) (else b1,b1) | 
+  ? how do you go from the kitchen to the bathroom: 1/1 value: value (0,) (else b1,d1) | 
+  ? how do you go from the bathroom to the kitchen: 2/2 value: value (0,) (else d1,d1) | 
+  ? how do you go from the hallway to the office: 1/1 value: value (0,) (else b1,d1) | 
+  ? how do you go from the bedroom to the office: 1/1 value: value (0,) (else b1,d1) | 
+  ? how do you go from the hallway to the garden: 2/3 value: value (0,) (else a1,c1) | 
+  ? how do you go from the garden to the hallway: 1/1 value: value (0,) (else a1,a1) | 
+  ? how do you go from the office to the bedroom: 1/1 value: value (0,) (else c1,d1) | 
+  ? how do you go from the bedroom to the bathroom: 1/1 value: value (0,) (else c1,c1) | 
+  ? how do you go from the garden to the bathroom: 1/1 value: value (0,) (else a1,c1) | 
+  ? how do you go from the bathroom to the office: 1/2 value: value (0,) (else c1,d1) | 
+  ? how do you go from the office to the garden: 1/1 value: value (0,) (else d1,d1) | 
+  ? how do you go from the office to the kitchen: 1/1 value: value (0,) (else c1,c1) | 
+  ? how do you go from the bathroom to the garden: 1/1 value: value (0,) (else c1,d1) | 
+  ? how do you go from the bathroom to the bedroom: 1/1 value: value (0,) (else a1,a1) | 
+  ? how do you go from the bedroom to the hallway: 1/2 value: value (0,) (else a1,b1) | 
+test 19: 112/1000 = 11.2%; sure of 0 of 23 kinds of questions, 0/0 right on them
+task 20: by the gradient from 40 stories, 358/431 of their questions right when made hard, 2 of 3 kinds of questions explained in full (323.3 s)
+  ? where will * go: 87/160 value: second (0,) (else c3) | * is * = two ('as', 0, 1) ('set', 1, 0); * went back to the * = set 0 1; * travelled to the * = two ('set', 0, 1) ('as', 1, 0); * journeyed to the * = two ('set', 0, 1) ('as', 1, 0); * moved to the * = two ('set', 0, 1) ('as', 1, 0); * went 
+  ? why did * go to the *: 160/160 link: after (0,) | * is * = link 0 1; * travelled to the * = link 1 0; * went to the * = link 1 0
+  ? why did * get the *: 111/111 link: after (0,) | * is * = link 0 1; * travelled to the * = link 1 0; * went to the * = link 1 0
+test 20: 831/1000 = 83.1%; sure of 2 of 3 kinds of questions, 629/629 right on them

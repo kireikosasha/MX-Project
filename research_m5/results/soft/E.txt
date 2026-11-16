@@ -1,0 +1,57 @@
+task  1: by the gradient from 40 stories, 78/80 of their questions right when made hard, 2 of 4 kinds of questions explained in full (606.2 s) - things: left took
+  ? is the * in the *: 48/48 value: isin (0, 1) | * went to the * = two ('set', 0, 1) ('set', 0, 1); * * the * = two ('set', 2, 0) ('set', 2, 0); * put the * in the * = two ('swap', 1, 2) ('set', 1, 2)
+  ? who has the *: 11/13 value: value (0,) | * went to the * = two ('set', 0, 1) ('set', 0, 1); * * the * = two ('set', 2, 0) ('set', 2, 0); * put the * in the * = two ('swap', 1, 2) ('set', 1, 2)
+  ? where is the *: 18/18 value: second (0,) | * went to the * = two ('set', 0, 1) ('set', 0, 1); * * the * = two ('set', 2, 0) ('set', 2, 0); * put the * in the * = two ('swap', 1, 2) ('set', 1, 2)
+  ? what is in the *: 1/1 value: holders (0,) | * went to the * = two ('set', 0, 1) ('set', 0, 1); * * the * = two ('set', 2, 0) ('set', 2, 0); * put the * in the * = two ('swap', 1, 2) ('set', 1, 2)
+test  1: 1000/1008 = 99.2%; sure of 2 of 4 kinds of questions, 825/831 right on them
+task  2: its sentences have more things than the layer has places for
+task  3: by the gradient from 40 stories, 78/97 of their questions right when made hard, 3 of 4 kinds of questions explained in full (385.1 s) - words of the sentence itself: shorter taller
+  ? who is taller than *: 13/13 link: after (0,) | * is shorter than * = link 0 1; * is taller than * = link 1 0
+  ? who is the *: 5/24 value: second (0,) (else a1) | * is shorter than * = set 1 0; * is taller than * = set 0 1
+  ? is * shorter than *: 29/29 link: leads (0, 1) | * is shorter than * = link 0 1; * is taller than * = link 1 0
+  ? is * taller than *: 31/31 link: leads (1, 0) | * is shorter than * = link 0 1; * is taller than * = link 1 0
+test  3: 966/1211 = 79.8%; sure of 3 of 4 kinds of questions, 933/933 right on them
+task  4: by the gradient from 40 stories, 71/74 of their questions right when made hard, 2 of 3 kinds of questions explained in full (227.1 s)
+  ? is * *: 44/44 value: known (1,) | every * is not * = lift 1; every * is a * = two ('set', 1, 0) ('as', 1, 0); * is a * = two ('set', 0, 1) ('set', 1, 0); every * is * = set 1 0
+  ? which things are *: 3/6 value: second (0,) (else a7) | every * is not * = lift 1; every * is a * = two ('set', 1, 0) ('as', 1, 0); * is a * = two ('set', 0, 1) ('set', 1, 0); every * is * = set 1 0
+  ? is * a *: 24/24 link: leads (0, 1) (turned over) (else yes) | every * is a * = link 0 1; * is a * = link 1 0; every * is * = link 0 1
+test  4: 1020/1116 = 91.4%; sure of 2 of 3 kinds of questions, 949/993 right on them
+task  5: by the gradient from 40 stories, 59/69 of their questions right when made hard, 2 of 4 kinds of questions explained in full (224.4 s) - things: off on
+  ? is the door open: 9/18 value: is (0, 1) (else no) | the * is in the * = set 0 1; * is in the * = clear 1; * took the * = set 0 1; * switched the lamp * = set 1 0; * dropped the * = lift 0
+  ? where is the *: 20/20 value: value (0,) | the * is in the * = set 0 1; * is in the * = clear 1; * took the * = set 0 1; * switched the lamp * = set 1 0; * dropped the * = lift 0
+  ? is the lamp *: 11/12 value: known (0,) | the * is in the * = set 0 1; * is in the * = clear 1; * took the * = set 0 1; * switched the lamp * = set 1 0; * dropped the * = lift 0
+  ? who has the *: 19/19 value: holders (0,) (else nobody) | the * is in the * = set 0 1; * is in the * = clear 1; * took the * = set 0 1; * switched the lamp * = set 1 0; * dropped the * = lift 0
+test  5: 662/763 = 86.8%; sure of 2 of 4 kinds of questions, 445/475 right on them
+task  6: its sentences have more things than the layer has places for
+task  7: by the gradient from 40 stories, 62/135 of their questions right when made hard, 0 of 3 kinds of questions explained in full (274.5 s)
+  ? how many * does * have: 5/51 link: countbefore (1,) | * has # * = link 0 1; * gets # * = link 0 1; * loses # * = link 1 0; * takes # * from * = link 2 0; * gives # * to * = link 1 2
+  ? does * have more * than *: 28/44 value: is (2, 0) | * has # * = two ('set', 0, 1) ('set', 1, 0); * gets # * = two ('set', 0, 1) ('set', 1, 0); * loses # * = as 0 1; * takes # * from * = two ('set', 2, 0) ('set', 2, 0); * gives # * to * = two ('set', 0, 2) ('set', 0, 2)
+  ? who has more * of * and *: 29/40 value: second (1,) | * has # * = two ('set', 0, 1) ('set', 1, 0); * gets # * = two ('set', 0, 1) ('set', 1, 0); * loses # * = as 0 1; * takes # * from * = two ('set', 2, 0) ('set', 2, 0); * gives # * to * = two ('set', 0, 2) ('set', 0, 2)
+test  7: 570/1492 = 38.2%; sure of 0 of 3 kinds of questions, 0/0 right on them
+task  8: by the gradient from 40 stories, 91/123 of their questions right when made hard, 0 of 2 kinds of questions explained in full (213.1 s)
+  ? which direction is the * from the *: 27/42 value: end (0,) (else b2) | the * is * of the * = two ('swap', 0, 2) ('set', 0, 1)
+  ? is the * * of the *: 64/81 link: leads (2, 1) (else no) | the * is * of the * = link 2 1
+test  8: 977/1378 = 70.9%; sure of 0 of 2 kinds of questions, 0/0 right on them
+task  9: by the gradient from 40 stories, 96/139 of their questions right when made hard, 0 of 6 kinds of questions explained in full (104.1 s) - words of the sentence itself: boss parent
+  ? is * the grandparent of *: 36/58 value: known (1,) | * works for * = lift 1; * is the parent of * = two ('set', 1, 0) ('set', 1, 0); * is a child of * = set 0 1; * is the boss of * = as 0 1
+  ? is * the boss of the parent of *: 49/51 value: same (1, 0) (turned over) (else no) | * works for * = lift 1; * is the parent of * = two ('set', 1, 0) ('set', 1, 0); * is a child of * = set 0 1; * is the boss of * = as 0 1
+  ? who is the grandparent of *: 6/7 value: end (0,) | * works for * = lift 1; * is the parent of * = two ('set', 1, 0) ('set', 1, 0); * is a child of * = set 0 1; * is the boss of * = as 0 1
+  ? who is the boss of the parent of *: 2/6 value: second (0,) (else a4) | * works for * = lift 1; * is the parent of * = two ('set', 1, 0) ('set', 1, 0); * is a child of * = set 0 1; * is the boss of * = as 0 1
+  ? who is the parent of the boss of *: 0/10 link: before (0,) | * works for * = link 1 0; * is a child of * = link 1 0; * is the boss of * = link 0 1
+  ? who is the boss of the boss of *: 3/7 value: inside (0,) (else a1) | * works for * = lift 1; * is the parent of * = two ('set', 1, 0) ('set', 1, 0); * is a child of * = set 0 1; * is the boss of * = as 0 1
+test  9: 1074/1542 = 69.6%; sure of 0 of 6 kinds of questions, 0/0 right on them
+task 10: by the gradient from 40 stories, 126/126 of their questions right when made hard, 3 of 3 kinds of questions explained in full (19.2 s)
+  ? who is in the * group: 50/50 value: holders (0,) (else 0) | * joins the * group = two ('set', 0, 1) ('set', 0, 1); * leaves the * group = two ('clear', 0) ('clear', 0); * moves from the * group to the * group = two ('set', 0, 2) ('set', 0, 2)
+  ? which group is * in: 32/32 value: value (0,) (else 0) | * joins the * group = two ('set', 0, 1) ('set', 0, 1); * leaves the * group = two ('clear', 0) ('clear', 0); * moves from the * group to the * group = two ('set', 0, 2) ('set', 0, 2)
+  ? how many people are in the * group: 44/44 value: count (0,) | * joins the * group = two ('set', 0, 1) ('set', 0, 1); * leaves the * group = two ('clear', 0) ('clear', 0); * moves from the * group to the * group = two ('set', 0, 2) ('set', 0, 2)
+test 10: 1470/1470 = 100.0%; sure of 3 of 3 kinds of questions, 1470/1470 right on them
+task 11: by the gradient from 40 stories, 113/117 of their questions right when made hard, 1 of 4 kinds of questions explained in full (317.0 s)
+  ? is * *: 21/22 value: same (1, 0) (else no) | whoever has a * can * = as 1 0; * has a * = two ('set', 1, 0) ('set', 0, 1); * drops a * = clear 0
+  ? can * *: 32/32 value: known (1,) | whoever has a * can * = as 1 0; * has a * = two ('set', 1, 0) ('set', 0, 1); * drops a * = clear 0
+  ? how many things does * have: 27/29 link: countbefore (0,) | * has a * = link 1 0
+  ? who has a *: 33/34 value: holders (0,) (else 0) | whoever has a * can * = as 1 0; * has a * = two ('set', 1, 0) ('set', 0, 1); * drops a * = clear 0
+test 11: 1407/1505 = 93.5%; sure of 1 of 4 kinds of questions, 350/376 right on them
+task 12: by the gradient from 40 stories, 46/115 of their questions right when made hard, 0 of 2 kinds of questions explained in full (42.8 s)
+  ? is the meeting on #: 33/62 value: is (0, 1) (else yes) | 
+  ? what day is the meeting on: 13/53 value: count (0,) (else 5) | 
+test 12: 512/1501 = 34.1%; sure of 0 of 2 kinds of questions, 0/0 right on them

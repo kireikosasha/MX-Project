@@ -1,0 +1,133 @@
+task  1: by the gradient from 40 stories, 90/107 of their questions right when made hard, 9 of 15 kinds of questions explained in full (362.7 s) - words of the sentence itself: faster older shorter slower taller younger
+  ? who is younger than *: 14/14 link: after (0,) | * is older than * = link 0 1; * is younger than * = link 1 0; * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0
+  ? who is the youngest of * and * and *: 4/9 value: inside (2,) (else a1) | * is older than * = two ('set', 1, 0) ('set', 1, 0); * is younger than * = set 0 1; * is taller than * = swap 0 1; * is shorter than * = set 1 0; * is slower than * = set 0 1; * is faster than * = set 1 0
+  ? is * older than *: 6/6 link: leads (0, 1) | * is older than * = link 0 1; * is younger than * = link 1 0; * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0
+  ? who is older than *: 7/7 link: before (0,) | * is older than * = link 0 1; * is younger than * = link 1 0; * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0
+  ? who is taller than *: 5/5 link: before (0,) | * is older than * = link 0 1; * is younger than * = link 1 0; * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0
+  ? is * faster than *: 9/9 value: isin (1, 0) | * is older than * = two ('set', 1, 0) ('set', 1, 0); * is younger than * = set 0 1; * is taller than * = swap 0 1; * is shorter than * = set 1 0; * is slower than * = set 0 1; * is faster than * = set 1 0
+  ? who is the slowest of * and * and *: 1/7 link: before (1,) | * is older than * = link 0 1; * is younger than * = link 1 0; * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0
+  ? who is slower than *: 10/10 link: before (0,) | * is older than * = link 0 1; * is younger than * = link 1 0; * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0
+  ? who is the fastest of * and * and *: 7/8 value: end (1,) (else a5) | * is older than * = two ('set', 1, 0) ('set', 1, 0); * is younger than * = set 0 1; * is taller than * = swap 0 1; * is shorter than * = set 1 0; * is slower than * = set 0 1; * is faster than * = set 1 0
+  ? who is faster than *: 6/6 link: after (0,) | * is older than * = link 0 1; * is younger than * = link 1 0; * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0
+  ? who is the tallest of * and * and *: 1/5 value: holders (0,) (else a8) | * is older than * = two ('set', 1, 0) ('set', 1, 0); * is younger than * = set 0 1; * is taller than * = swap 0 1; * is shorter than * = set 1 0; * is slower than * = set 0 1; * is faster than * = set 1 0
+  ? is * taller than *: 9/9 link: leads (0, 1) | * is older than * = link 0 1; * is younger than * = link 1 0; * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0
+  ? who is the shortest of * and * and *: 2/2 value: second (1,) | * is older than * = two ('set', 1, 0) ('set', 1, 0); * is younger than * = set 0 1; * is taller than * = swap 0 1; * is shorter than * = set 1 0; * is slower than * = set 0 1; * is faster than * = set 1 0
+  ? who is the oldest of * and * and *: 4/5 link: before (0,) | * is older than * = link 0 1; * is younger than * = link 1 0; * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0
+  ? who is shorter than *: 5/5 link: after (0,) | * is older than * = link 0 1; * is younger than * = link 1 0; * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0
+test  1: 1122/1515 = 74.1%; sure of 9 of 15 kinds of questions, 988/1001 right on them
+task  2: by the gradient from 40 stories, 106/119 of their questions right when made hard, 3 of 7 kinds of questions explained in full (298.6 s) - words of the sentence itself: faster older shorter slower taller younger
+  ? is * taller than *: 34/34 value: known (0,) | * is taller than * = set 0 1; * is shorter than * = two ('set', 1, 0) ('lift', 0); * is slower than * = two ('set', 0, 1) ('as', 1, 0); * is faster than * = set 1 0; * is younger than * = set 1 0; * is older than * = set 0 1
+  ? is * faster than *: 35/35 link: leads (1, 0) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0; * is younger than * = link 0 1; * is older than * = link 1 0
+  ? is * older than *: 31/31 link: leads (1, 0) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0; * is younger than * = link 0 1; * is older than * = link 1 0
+  ? who is the *: 3/13 value: end (0,) (else a3) | * is taller than * = set 0 1; * is shorter than * = two ('set', 1, 0) ('lift', 0); * is slower than * = two ('set', 0, 1) ('as', 1, 0); * is faster than * = set 1 0; * is younger than * = set 1 0; * is older than * = set 0 1
+  ? how many people are older than *: 1/1 link: countafter (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0; * is younger than * = link 0 1; * is older than * = link 1 0
+  ? who is the shortest: 2/4 value: value (0,) (else a7) | * is taller than * = set 0 1; * is shorter than * = two ('set', 1, 0) ('lift', 0); * is slower than * = two ('set', 0, 1) ('as', 1, 0); * is faster than * = set 1 0; * is younger than * = set 1 0; * is older than * = set 0 1
+  ? how many people are taller than *: 0/1 link: countafter (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is slower than * = link 0 1; * is faster than * = link 1 0; * is younger than * = link 0 1; * is older than * = link 1 0
+test  2: 1123/1354 = 82.9%; sure of 3 of 7 kinds of questions, 1068/1082 right on them
+task  3: by the gradient from 40 stories, 54/101 of their questions right when made hard, 3 of 5 kinds of questions explained in full (248.7 s) - words of the sentence itself: shortest tallest
+  ? who is the tallest: 8/31 value: value (0,) (else a10) | * is shorter than * = set 1 0; * is taller than * = set 0 1
+  ? is * taller than *: 23/23 value: any (1,) | * is shorter than * = set 1 0; * is taller than * = set 0 1
+  ? who is the shortest: 5/29 value: value (0,) (else a5) | * is shorter than * = set 1 0; * is taller than * = set 0 1
+  ? who is shorter than *: 7/7 link: before (0,) | * is shorter than * = link 0 1; * is taller than * = link 1 0
+  ? who is taller than *: 11/11 link: after (0,) | * is shorter than * = link 0 1; * is taller than * = link 1 0
+test  3: 488/1226 = 39.8%; sure of 3 of 5 kinds of questions, 419/433 right on them
+task  4: by the gradient from 40 stories, 96/103 of their questions right when made hard, 6 of 7 kinds of questions explained in full (330.9 s) - words of the sentence itself: shorter taller
+  ? who is the *: 6/13 value: end (0,) (else a5) | * is shorter than * = two ('set', 1, 0) ('as', 0, 1)
+  ? how many people are shorter than *: 25/25 link: countafter (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0
+  ? who is taller than *: 14/14 link: before (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0
+  ? is * shorter than *: 11/11 link: leads (1, 0) | * is taller than * = link 0 1; * is shorter than * = link 1 0
+  ? how many people are taller than *: 23/23 link: countbefore (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0
+  ? who is shorter than *: 5/5 link: after (0,) | * is taller than * = link 0 1; * is shorter than * = link 1 0
+  ? is * taller than *: 12/12 link: leads (0, 1) | * is taller than * = link 0 1; * is shorter than * = link 1 0
+test  4: 1355/1543 = 87.8%; sure of 6 of 7 kinds of questions, 1332/1332 right on them
+task  5: by the gradient from 40 stories, 75/103 of their questions right when made hard, 8 of 10 kinds of questions explained in full (456.0 s) - words of the sentence itself: faster heavier lighter older shorter slower taller younger
+  ? is * heavier than *: 10/10 value: known (1,) | * is lighter than * = set 0 1; * is heavier than * = set 1 0; * is faster than * = two ('set', 0, 1) ('swap', 0, 1); * is younger than * = set 1 0
+  ? who is the *: 8/36 value: end (0,) (else a7) | * is lighter than * = set 0 1; * is heavier than * = set 1 0; * is faster than * = two ('set', 0, 1) ('swap', 0, 1); * is younger than * = set 1 0
+  ? is * lighter than *: 10/10 value: any (1,) | * is lighter than * = set 0 1; * is heavier than * = set 1 0; * is faster than * = two ('set', 0, 1) ('swap', 0, 1); * is younger than * = set 1 0
+  ? is * taller than *: 9/9 link: leads (0, 1) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is faster than * = link 1 0; * is younger than * = link 0 1
+  ? is * slower than *: 11/11 link: leads (0, 1) (else no) | * is taller than * = link 0 1; * is shorter than * = link 1 0; * is faster than * = link 1 0; * is younger than * = link 0 1
+  ? is * younger than *: 6/6 value: known (1,) | * is lighter than * = set 0 1; * is heavier than * = set 1 0; * is faster than * = two ('set', 0, 1) ('swap', 0, 1); * is younger than * = set 1 0
+  ? is * older than *: 4/4 value: known (0,) | * is lighter than * = set 0 1; * is heavier than * = set 1 0; * is faster than * = two ('set', 0, 1) ('swap', 0, 1); * is younger than * = set 1 0
+  ? is * faster than *: 11/11 value: any (1,) | * is lighter than * = set 0 1; * is heavier than * = set 1 0; * is faster than * = two ('set', 0, 1) ('swap', 0, 1); * is younger than * = set 1 0
+  ? is * shorter than *: 5/5 value: known (1,) | * is lighter than * = set 0 1; * is heavier than * = set 1 0; * is faster than * = two ('set', 0, 1) ('swap', 0, 1); * is younger than * = set 1 0
+  ? who is the fastest: 1/1 value: value (0,) (else a3) | * is lighter than * = set 0 1; * is heavier than * = set 1 0; * is faster than * = two ('set', 0, 1) ('swap', 0, 1); * is younger than * = set 1 0
+test  5: 744/1507 = 49.4%; sure of 8 of 10 kinds of questions, 680/856 right on them
+task  6: by the gradient from 40 stories, 56/117 of their questions right when made hard, 5 of 9 kinds of questions explained in full (290.3 s) - words of the sentence itself: older shorter taller younger
+  ? who is the *: 14/74 link: after (0,) (else a7) | * is taller than * = link 1 0; * is shorter than * = link 0 1; * is older than * = link 1 0; * is younger than * = link 0 1
+  ? who is younger than *: 12/12 link: before (0,) | * is taller than * = link 1 0; * is shorter than * = link 0 1; * is older than * = link 1 0; * is younger than * = link 0 1
+  ? is * taller than *: 1/1 link: leads (1, 0) | * is taller than * = link 1 0; * is shorter than * = link 0 1; * is older than * = link 1 0; * is younger than * = link 0 1
+  ? is * shorter than *: 1/2 value: known (0,) | * is taller than * = set 1 0; * is shorter than * = two ('set', 0, 1) ('set', 0, 1); * is older than * = set 0 1; * is younger than * = set 1 0
+  ? is * younger than *: 7/7 value: known (1,) | * is taller than * = set 1 0; * is shorter than * = two ('set', 0, 1) ('set', 0, 1); * is older than * = set 0 1; * is younger than * = set 1 0
+  ? is * older than *: 3/3 value: known (0,) | * is taller than * = set 1 0; * is shorter than * = two ('set', 0, 1) ('set', 0, 1); * is older than * = set 0 1; * is younger than * = set 1 0
+  ? who is taller than *: 2/2 link: after (0,) | * is taller than * = link 1 0; * is shorter than * = link 0 1; * is older than * = link 1 0; * is younger than * = link 0 1
+  ? who is older than *: 12/12 link: after (0,) | * is taller than * = link 1 0; * is shorter than * = link 0 1; * is older than * = link 1 0; * is younger than * = link 0 1
+  ? who is shorter than *: 4/4 value: inside (0,) (else a1) | * is taller than * = set 1 0; * is shorter than * = two ('set', 0, 1) ('set', 0, 1); * is older than * = set 0 1; * is younger than * = set 1 0
+test  6: 696/1479 = 47.1%; sure of 5 of 9 kinds of questions, 416/456 right on them
+task  7: by the gradient from 40 stories, 112/122 of their questions right when made hard, 10 of 56 kinds of questions explained in full (120.0 s) - words of the sentence itself: anna jack lily mary sam tom
+  ? was sam in the * just before jack went to the *: 1/1 value: known (1,) | 
+  ? was jack in the * just before sam went to the *: 3/3 value: same (1, 0) (else no) | 
+  ? was jack in the * just before jack went to the *: 8/8 value: known (0,) | 
+  ? how many times did sam move before lily went to the *: 1/1 link: countbefore (0,) | 
+  ? how many times did sam move before jack went to the *: 4/4 value: countin (0,) | 
+  ? was mary in the * just before jack went to the *: 1/1 value: same (1, 0) (else no) | 
+  ? where was jack just before anna went to the *: 2/2 value: holders (0,) (else a2) | 
+  ? how many times did lily move before anna went to the *: 2/2 value: count (0,) | 
+  ? was lily in the * just before anna went to the *: 1/1 value: any (1,) | 
+  ? was anna in the * just before anna went to the *: 6/6 value: isin (1, 0) | 
+  ? where was tom just before tom went to the *: 1/4 link: before (0,) (else a5) | 
+  ? was tom in the * just before sam went to the *: 4/4 value: is (0, 1) | 
+  ? was jack in the * just before mary went to the *: 4/5 value: known (1,) | 
+  ? how many times did sam move before sam went to the *: 2/2 link: countbefore (0,) | 
+  ? how many times did sam move before mary went to the *: 2/2 link: countbefore (0,) | 
+  ? how many times did lily move before lily went to the *: 2/2 value: count (0,) | 
+  ? was lily in the * just before sam went to the *: 2/2 link: leads (0, 1) (else no) | 
+  ? was lily in the * just before lily went to the *: 4/5 value: any (0,) | 
+  ? where was lily just before lily went to the *: 2/3 link: after (0,) (else a3) | 
+  ? was tom in the * just before jack went to the *: 4/4 value: same (0, 1) (else no) | 
+  ? was jack in the * just before tom went to the *: 1/1 value: any (0,) | 
+  ? how many times did lily move before sam went to the *: 1/1 value: count (0,) | 
+  ? where was sam just before sam went to the *: 1/3 link: before (0,) (else a5) | 
+  ? was mary in the * just before mary went to the *: 4/5 value: known (0,) | 
+  ? where was mary just before mary went to the *: 2/2 link: before (0,) (else a3) | 
+  ? was mary in the * just before anna went to the *: 4/4 value: same (1, 0) (else no) | 
+  ? how many times did mary move before jack went to the *: 1/1 link: countafter (0,) | 
+  ? was anna in the * just before jack went to the *: 3/3 value: any (0,) | 
+  ? where was mary just before jack went to the *: 1/1 value: value (0,) (else a2) | 
+  ? where was lily just before anna went to the *: 2/2 link: after (0,) (else a3) | 
+  ? how many times did lily move before tom went to the *: 1/1 value: count (0,) | 
+  ? where was jack just before mary went to the *: 2/2 link: before (0,) (else a4) | 
+  ? was lily in the * just before mary went to the *: 1/1 value: known (0,) | 
+  ? where was lily just before mary went to the *: 1/1 link: before (0,) (else a5) | 
+  ? how many times did tom move before tom went to the *: 4/4 link: countafter (0,) | 
+  ? was sam in the * just before sam went to the *: 5/5 link: leads (0, 1) (else no) | 
+  ? was mary in the * just before sam went to the *: 2/2 value: known (1,) | 
+  ? where was jack just before jack went to the *: 1/1 value: second (0,) (else a1) | 
+  ? how many times did mary move before tom went to the *: 1/1 link: countbefore (0,) | 
+  ? how many times did mary move before mary went to the *: 2/2 link: countbefore (0,) | 
+  ? how many times did anna move before anna went to the *: 1/1 link: countbefore (0,) | 
+  ? where was tom just before jack went to the *: 1/1 link: after (0,) (else a3) | 
+  ? was tom in the * just before lily went to the *: 1/2 value: same (0, 1) (else yes) | 
+  ? was sam in the * just before lily went to the *: 1/1 link: leads (0, 1) (else no) | 
+  ? was tom in the * just before tom went to the *: 1/1 value: is (0, 1) | 
+  ? was tom in the * just before anna went to the *: 1/1 value: known (1,) | 
+  ? was jack in the * just before anna went to the *: 1/1 link: leads (1, 0) (else no) | 
+  ? how many times did tom move before jack went to the *: 1/1 link: countafter (0,) | 
+  ? how many times did anna move before lily went to the *: 1/1 value: countin (0,) | 
+  ? where was anna just before jack went to the *: 1/1 value: inside (0,) (else a5) | 
+  ? how many times did mary move before lily went to the *: 1/1 link: countbefore (0,) | 
+  ? was mary in the * just before lily went to the *: 1/1 value: isin (0, 1) | 
+  ? was sam in the * just before anna went to the *: 1/1 value: is (0, 1) | 
+  ? was mary in the * just before tom went to the *: 1/1 value: is (0, 1) | 
+  ? where was anna just before anna went to the *: 1/1 value: value (0,) (else a5) | 
+  ? was tom in the * just before mary went to the *: 1/1 value: any (0,) | 
+test  7: 869/1527 = 56.9%; sure of 10 of 56 kinds of questions, 270/296 right on them
+task  8: its sentences have more things than the layer has places for
+task  9: its sentences have more things than the layer has places for
+task 10: by the gradient from 40 stories, 76/93 of their questions right when made hard, 0 of 4 kinds of questions explained in full (105.5 s)
+  ? where was * at #: 15/25 value: value (0,) (else d1) | * went to the * at # = two ('set', 1, 0) ('set', 0, 1); at # * went to the * = two ('set', 0, 1) ('set', 1, 0)
+  ? who was at the * at #: 17/22 value: holders (0,) (else c1) | * went to the * at # = two ('set', 1, 0) ('set', 0, 1); at # * went to the * = two ('set', 0, 1) ('set', 1, 0)
+  ? did * go to the * before #: 30/31 link: leads (0, 1) (else no) | * went to the * at # = link 0 1
+  ? who went to the * first: 14/15 value: value (0,) | * went to the * at # = two ('set', 1, 0) ('set', 0, 1); at # * went to the * = two ('set', 0, 1) ('set', 1, 0)
+test 10: 944/1215 = 77.7%; sure of 0 of 4 kinds of questions, 0/0 right on them
+task 11: its sentences have more things than the layer has places for
+task 12: its sentences have more things than the layer has places for
