@@ -31,7 +31,8 @@ explains more of the fifth kept aside is kept.
     python walk.py --data .../StepGame/Dataset/TrainVersion
     python walk.py --data ... --stories 300 --least 2         # taught on 300 stories, none answered by one sentence
     python walk.py --clutrr .../gen23                         # the files gen23_train.csv and gen23_test.csv
-    python walk.py --data ... --hold 0.2                      # a fifth of the kinds of sentences never shown, read from their words
+    python walk.py --data ... --hold 0.2                      # a fifth of the kinds of sentences never shown: read from their words,
+                                                              # and from stories without answers, by the register closing
 """
 import argparse
 import ast
@@ -320,11 +321,36 @@ class Reader(torch.nn.Module):
         return self.out((h * mask).sum(1) / mask.sum(1))
 
 
+def closings(model, path, kinds, held, only):
+    """stories read WITHOUT their answers. Where a sentence of a kind never shown links two things and another way
+    leads between them through kinds that are known, the register must come to the same by both: that says what the
+    sentence adds -> {kind: how often each choice came out}"""
+    data, votes = json.load(open(path)), {}
+    for n, key in enumerate(data):
+        if n not in only:
+            continue
+        links = []
+        for sentence in data[key]["story"]:
+            kind, names = masked(sentence)
+            if len(names) == 2 and kind in kinds:
+                links.append((kinds[kind], names[1], names[0]))
+        for i, (kind, x, y) in enumerate(links):
+            if kind in held:
+                other = way(links[:i] + links[i + 1:], y, x)
+                if other and not any(o in held for o, _ in other):
+                    total = tuple(sum(sign * model.offs[model.add[o]][d] for o, sign in other) for d in range(len(model.offs[0])))
+                    if total in model.offs:
+                        votes.setdefault(kind, Counter())[model.offs.index(total)] += 1
+    return votes
+
+
 def unseen(a, rng, t0):
     """StepGame with a share of the kinds of sentences never shown: the stories that have one of them on the way are
-    not taught on. The table of the kinds shown is learnt through the walk as ever; then a small network is taught
-    to say the same from the words of a sentence (five of them, their beliefs added), and it reads the kinds never
-    shown. Tried on the stories of the test apart: those of kinds shown only, and those with a kind never shown"""
+    not taught on. The table of the kinds shown is learnt through the walk as ever. The kinds never shown are then
+    read in two ways. From their words: a small network is taught to say of a sentence shown what the table says
+    (five of them, their beliefs added). And from stories without answers (the first half of every file of the
+    test, the answers not looked at): by the register closing on another way. Tried on the second half of every
+    file of the test, apart: the stories of kinds shown only, and the stories with a kind never shown on the way"""
     kinds, asks, answers = {}, {}, {}
     every = [x for x in read(os.path.join(a.data, "train.json"), kinds, asks, answers, True) if x[0] is not None]
     names = {i: k for k, i in kinds.items()}
@@ -348,24 +374,45 @@ def unseen(a, rng, t0):
         net.eval()
         with torch.no_grad():
             belief = belief + net([names[i].split() for i in sorted(held)]).softmax(-1)
-    for i, choice in zip(sorted(held), belief.argmax(-1).tolist()):
-        model.add[i] = choice
-    print(f"the readers: {sum(p.numel() for p in net.parameters())} weights each, taught on the {len(shown)} sentences shown ({time.time() - t0:.0f} s)\n")
-    print("tried on the stories of the test: right, %, on the stories whose way has only kinds shown; on those with a kind never shown on the way")
+    worded = dict(zip(sorted(held), belief.argmax(-1).tolist()))
+    print(f"the readers of words: {sum(p.numel() for p in net.parameters())} weights each, taught on the {len(shown)} sentences shown ({time.time() - t0:.0f} s)")
+    size = {k: len(json.load(open(os.path.join(a.data, f"qa{k}_test.json")))) for k in range(1, 11)}
+    first = {k: set(rng.sample(range(size[k] // 2), min(a.unanswered // 10, size[k] // 2)) if a.unanswered else range(size[k] // 2)) for k in range(1, 11)}
+    closed, t1, rounds = {}, time.time(), 0
+    while True:                                                  # (a kind settled is known from then on and helps to close on others)
+        votes, rounds = {}, rounds + 1
+        for k in range(1, 11):
+            for kind, c in closings(model, os.path.join(a.data, f"qa{k}_test.json"), kinds, held - set(closed), first[k]).items():
+                votes.setdefault(kind, Counter()).update(c)
+        new = {kind: c.most_common(1)[0][0] for kind, c in votes.items() if c.most_common(1)[0][1] >= max(3, 0.7 * sum(c.values()))}
+        if not new:
+            break
+        closed.update(new)
+        for i, choice in new.items():
+            model.add[i] = choice
+    print(f"{sum(len(x) for x in first.values())} stories read without their answers ({rounds} times over, {time.time() - t1:.0f} s): of the {len(held)} kinds never "
+          f"shown settled by the register closing on another way (three closings and more, seven in ten alike): {len(closed)}\n")
+    print("tried on the second half of the stories of the test: right, %, on the stories whose way has only kinds shown; on those with a kind never shown")
+    print("on the way - the kinds never shown read from their words; the same - read by the register closing (the rest from their words)")
+    alone = {}
     for k in range(1, 11):
-        tried = [x for x in read(os.path.join(a.data, f"qa{k}_test.json"), kinds, asks, answers, False) if x[0] is not None]
+        tried = [x for x in read(os.path.join(a.data, f"qa{k}_test.json"), kinds, asks, answers, False, set(range(size[k] // 2, size[k]))) if x[0] is not None]
         old = [x for x in tried if not any(kind in held for kind, _ in x[0])]
         new = [x for x in tried if any(kind in held for kind, _ in x[0])]
-        print(f"  k = {k:2d}: {100 * sum(model.hard(s, q) == g for s, q, g in old) / len(old):6.2f} ({len(old)} stories)   "
-              f"{100 * sum(model.hard(s, q) == g for s, q, g in new) / max(1, len(new)):6.2f} ({len(new)} stories)", flush=True)
-        if k == 1:
-            by = {}
-            for s, q, g in new:
-                by.setdefault(s[0][0], []).append(model.hard(s, q) == g)
-            wrong = sorted(names[i] for i, v in by.items() if sum(v) < 0.9 * len(v))
-    print(f"\nof the {len(by)} kinds never shown that stand alone in a story of the test, read rightly from their words: {len(by) - len(wrong)}; read wrongly:")
-    for t in wrong:
-        print("   ", t)
+        got = []
+        for reading in (worded, {**worded, **closed}):
+            for i, choice in reading.items():
+                model.add[i] = choice
+            got.append(100 * sum(model.hard(s, q) == g for s, q, g in new) / max(1, len(new)))
+            for s, q, g in new if k == 1 else ():
+                alone.setdefault((len(got), s[0][0]), []).append(model.hard(s, q) == g)
+        print(f"  k = {k:2d}: {100 * sum(model.hard(s, q) == g for s, q, g in old) / len(old):6.2f} ({len(old)} stories)   {got[0]:6.2f}   {got[1]:6.2f} ({len(new)} stories)", flush=True)
+    for n, label in ((1, "from their words"), (2, "by the register closing")):
+        wrong = sorted(names[i] for (m, i), v in alone.items() if m == n and sum(v) < 0.9 * len(v))
+        print(f"\nof the {sum(m == n for m, _ in alone)} kinds never shown that stand alone in a story tried, read rightly {label}: "
+              f"{sum(m == n for m, _ in alone) - len(wrong)}; wrongly:")
+        for t in wrong:
+            print("   ", t)
 
 
 def settle(taught, kinds, asks, answers, a, rng, t0):
@@ -387,6 +434,7 @@ def main():
     ap.add_argument("--data", default="", help="the folder TrainVersion of StepGame")
     ap.add_argument("--clutrr", default="", help="the files of CLUTRR without their ends: <this>_train.csv, <this>_test.csv")
     ap.add_argument("--hold", type=float, default=0, help="StepGame: so great a share of the kinds of sentences is never shown and is read from words")
+    ap.add_argument("--unanswered", type=int, default=0, help="with --hold: so many stories are read without answers (0: the first half of the test)")
     ap.add_argument("--short", action="store_true", help="CLUTRR: always the shortest way, not the links as they are told")
     ap.add_argument("--stories", type=int, default=0, help="taught on so many stories drawn at random (0: on all)")
     ap.add_argument("--least", type=int, default=1, help="taught only on stories the answer of which takes so many sentences and more")
