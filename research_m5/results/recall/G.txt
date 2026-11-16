@@ -1,4 +1,4 @@
-task  1: learnt from 20 stories (asked for 20 more), 114/118 of their questions right, 3 of 4 kinds of questions explained in full (0.9 s)
+task  1: learnt from 20 stories (asked for 20 more), 114/118 of their questions right, 3 of 4 kinds of questions explained in full (1.6 s)
   ? is the * in the *: 45/45 value: is (0, 1) | the * is in the * = set 0 1; cal takes the * to the * = set 0 1; ann takes the * to the * = set 0 1; ben takes the * to the * = set 0 1; ben puts the * in the * = set 0 1; cal takes the * out of the * = as 0 1; cal puts the * in the * = set 0 1; ann puts the * in the * = set
   ? where is the *: 31/31 value: end (0,) | the * is in the * = set 0 1; cal takes the * to the * = set 0 1; ann takes the * to the * = set 0 1; ben takes the * to the * = set 0 1; ben puts the * in the * = set 0 1; cal takes the * out of the * = as 0 1; cal puts the * in the * = set 0 1; ann puts the * in the * = set 
   ? how many things are in the *: 32/36 value: count (0,) | the * is in the * = set 0 1; cal takes the * to the * = set 0 1; ann takes the * to the * = set 0 1; ben takes the * to the * = set 0 1; ben puts the * in the * = set 0 1; cal takes the * out of the * = as 0 1; cal puts the * in the * = set 0 1; ann puts the * in the * = se
@@ -6,35 +6,35 @@ task  1: learnt from 20 stories (asked for 20 more), 114/118 of their questions 
 test  1: 1421/1504 = 94.5%; sure of 3 of 4 kinds of questions, 1029/1039 right on them
       on the test 439/449 ? is the * in the *
       on the test 392/465 ? how many things are in the *
-task  2: learnt from 20 stories (asked for 20 more), 106/106 of their questions right, 4 of 4 kinds of questions explained in full (1.5 s)
-  ? how many things does * have: 30/30 value: count (0,) | * has a * = set 1 0; * takes the * from * = set 1 0; * and * swap the * for the * = two ('set', 2, 1) ('set', 3, 0); * gives the * to * = set 1 2
-  ? what does * have: 20/20 value: holders (0,) (else nothing) | * has a * = set 1 0; * takes the * from * = set 1 0; * and * swap the * for the * = two ('set', 2, 1) ('set', 3, 0); * gives the * to * = set 1 2
-  ? does * have the *: 25/25 value: is (1, 0) | * has a * = set 1 0; * takes the * from * = set 1 0; * and * swap the * for the * = two ('set', 2, 1) ('set', 3, 0); * gives the * to * = set 1 2
-  ? who has the *: 31/31 value: value (0,) | * has a * = set 1 0; * takes the * from * = set 1 0; * and * swap the * for the * = two ('set', 2, 1) ('set', 3, 0); * gives the * to * = set 1 2
+task  2: learnt from 20 stories (asked for 20 more), 106/106 of their questions right, 4 of 4 kinds of questions explained in full (2.7 s)
+  ? how many things does * have: 30/30 value: count (0,) | * has a * = set 1 0; * takes the * from * = set 1 0; * and * swap the * for the * = swap 2 3; * gives the * to * = set 1 2
+  ? what does * have: 20/20 value: holders (0,) (else nothing) | * has a * = set 1 0; * takes the * from * = set 1 0; * and * swap the * for the * = swap 2 3; * gives the * to * = set 1 2
+  ? does * have the *: 25/25 value: is (1, 0) | * has a * = set 1 0; * takes the * from * = set 1 0; * and * swap the * for the * = swap 2 3; * gives the * to * = set 1 2
+  ? who has the *: 31/31 value: value (0,) | * has a * = set 1 0; * takes the * from * = set 1 0; * and * swap the * for the * = swap 2 3; * gives the * to * = set 1 2
 test  2: 1439/1439 = 100.0%; sure of 4 of 4 kinds of questions, 1439/1439 right on them
-task  3: learnt from 20 stories (asked for 20 more), 90/102 of their questions right, 6 of 10 kinds of questions explained in full (23.1 s) - words of the sentence itself: heavier lighter older shorter taller younger
+task  3: learnt from 20 stories (asked for 20 more), 85/102 of their questions right, 6 of 10 kinds of questions explained in full (28.0 s) - words of the sentence itself: heavier lighter older shorter taller younger
   ? who is the * of * and * and *: 25/36 value: value (2,) (else a1) | * is older than * = set 0 1; * is shorter than * = set 0 1; * is taller than * = set 0 1; * is younger than * = set 1 0; * is lighter than * = set 0 1; * is heavier than * = set 1 0
-  ? who is the youngest of * and * and *: 10/10 link: lastof () (else a4) | * is older than * = link 0 1; * is shorter than * = unlink 0 1; * is taller than * = unlink 1 0; * is younger than * = link 1 0; * is lighter than * = link 0 1
-  ? who is the oldest of * and * and *: 4/4 link: first () (else a4) | * is older than * = link 0 1; * is shorter than * = unlink 0 1; * is taller than * = unlink 1 0; * is younger than * = link 1 0; * is lighter than * = link 0 1
-  ? who is the lightest of * and * and *: 15/16 link: first () (else a3) | * is older than * = link 1 0; * is shorter than * = link 0 1; * is taller than * = link 1 0; * is younger than * = unlink 0 1; * is lighter than * = link 0 1; * is heavier than * = link 1 0
+  ? who is the youngest of * and * and *: 4/10 value: end (2,) (else a3) | * is older than * = set 0 1; * is shorter than * = set 0 1; * is taller than * = set 0 1; * is younger than * = set 1 0; * is lighter than * = set 0 1; * is heavier than * = set 1 0
+  ? who is the oldest of * and * and *: 4/4 link: last () (else a4) | * is older than * = link 1 0; * is shorter than * = unlink 1 0; * is taller than * = link 1 0; * is younger than * = link 0 1; * is lighter than * = link 0 1; * is heavier than * = link 1 0
+  ? who is the lightest of * and * and *: 16/16 link: firstof () (else a3) | * is older than * = link 1 0; * is shorter than * = unlink 1 0; * is taller than * = link 1 0; * is younger than * = link 0 1; * is lighter than * = link 0 1; * is heavier than * = link 1 0
   ? is * heavier than *: 9/9 value: isin (0, 1) (turned over) | * is older than * = set 0 1; * is shorter than * = set 0 1; * is taller than * = set 0 1; * is younger than * = set 1 0; * is lighter than * = set 0 1; * is heavier than * = set 1 0
-  ? is * older than *: 12/12 link: leads (0, 1) | * is older than * = link 0 1; * is shorter than * = unlink 0 1; * is taller than * = unlink 1 0; * is younger than * = link 1 0; * is lighter than * = link 0 1
-  ? who is the youngest of * and *: 1/1 value: holders (0,) (else a10) | * is older than * = set 0 1; * is shorter than * = set 0 1; * is taller than * = set 0 1; * is younger than * = set 1 0; * is lighter than * = set 0 1; * is heavier than * = set 1 0
+  ? is * older than *: 12/12 link: leads (1, 0) | * is older than * = link 1 0; * is shorter than * = unlink 1 0; * is taller than * = link 1 0; * is younger than * = link 0 1; * is lighter than * = link 0 1; * is heavier than * = link 1 0
+  ? who is the youngest of * and *: 1/1 value: second (0,) | * is older than * = set 0 1; * is shorter than * = set 0 1; * is taller than * = set 0 1; * is younger than * = set 1 0; * is lighter than * = set 0 1; * is heavier than * = set 1 0
   ? who is the lightest of * and *: 1/1 value: value (0,) (else a6) | * is older than * = set 0 1; * is shorter than * = set 0 1; * is taller than * = set 0 1; * is younger than * = set 1 0; * is lighter than * = set 0 1; * is heavier than * = set 1 0
-  ? who is the oldest of * and *: 8/8 link: firstof () | * is older than * = link 0 1; * is shorter than * = unlink 0 1; * is taller than * = unlink 1 0; * is younger than * = link 1 0; * is lighter than * = link 0 1
-  ? who is the * of * and *: 5/5 link: last () (else a3) | * is older than * = link 1 0; * is shorter than * = link 0 1; * is taller than * = link 1 0; * is younger than * = unlink 0 1; * is lighter than * = link 0 1; * is heavier than * = link 1 0
-test  3: 678/1467 = 46.2%; sure of 6 of 10 kinds of questions, 442/631 right on them
+  ? who is the oldest of * and *: 8/8 link: lastof () | * is older than * = link 1 0; * is shorter than * = unlink 1 0; * is taller than * = link 1 0; * is younger than * = link 0 1; * is lighter than * = link 0 1; * is heavier than * = link 1 0
+  ? who is the * of * and *: 5/5 amount: most () (else a3) | * is older than * = take (1,) None; * is shorter than * = take (1,) None; * is taller than * = take (1,) None; * is younger than * = take (1,) None; * is lighter than * = take (1,) None; * is heavier than * = take (1,) None
+test  3: 637/1467 = 43.4%; sure of 6 of 10 kinds of questions, 409/672 right on them
       on the test 164/500 ? who is the * of * and * and *
-      on the test 107/137 ? who is the youngest of * and * and *
-      on the test 95/149 ? who is the oldest of * and * and *
-      on the test 72/178 ? who is the lightest of * and * and *
+      on the test 53/137 ? who is the youngest of * and * and *
+      on the test 77/149 ? who is the oldest of * and * and *
+      on the test 106/178 ? who is the lightest of * and * and *
       on the test 85/103 ? is * heavier than *
       on the test 108/130 ? is * older than *
-      on the test 0/25 ? who is the youngest of * and *
+      on the test 11/25 ? who is the youngest of * and *
       on the test 0/24 ? who is the lightest of * and *
-      on the test 21/24 ? who is the oldest of * and *
-      on the test 26/88 ? who is the * of * and *
-task  4: learnt from 20 stories (asked for 20 more), 126/127 of their questions right, 3 of 4 kinds of questions explained in full (6.5 s)
+      on the test 17/24 ? who is the oldest of * and *
+      on the test 16/88 ? who is the * of * and *
+task  4: learnt from 20 stories (asked for 20 more), 126/127 of their questions right, 3 of 4 kinds of questions explained in full (9.2 s)
   ? is * a *: 28/28 value: is (0, 1) | * is a * = set 0 1; * is * = set 0 1
   ? is * *: 62/63 value: is (0, 1) | * is a * = set 0 1; * is * = set 0 1
   ? how many are *: 26/26 link: countafter (0,) | every * is a * = link 1 0; every * is * = link 1 0; * is * = link 1 0
@@ -43,67 +43,68 @@ test  4: 1411/1505 = 93.8%; sure of 3 of 4 kinds of questions, 756/822 right on 
       on the test 329/361 ? is * a *
       on the test 655/683 ? is * *
       on the test 360/394 ? how many are *
-task  5: learnt from 20 stories (asked for 20 more), 102/115 of their questions right, 0 of 4 kinds of questions explained in full (35.2 s)
+task  5: learnt from 20 stories (asked for 20 more), 102/115 of their questions right, 0 of 4 kinds of questions explained in full (44.9 s)
   ? what is the state of the * now: 21/23 value: value (0,) (else b4) | the * is * = set 0 1; fay * the * = set 1 0; eve * the * = set 1 0; ann * the * = set 1 0; bob * the * = set 1 0; gus * the * = set 0 1; dan * the * = set 1 0; dan turns * the * = set 1 0; ann fills the * = lift 0; eve turns * the * = set 1 0; gus turns * the * = 
   ? how many things are *: 42/46 value: count (0,) | the * is * = set 0 1; fay * the * = set 1 0; eve * the * = set 1 0; ann * the * = set 1 0; bob * the * = set 1 0; gus * the * = set 0 1; dan * the * = set 1 0; dan turns * the * = set 1 0; ann fills the * = lift 0; eve turns * the * = set 1 0; gus turns * the * = set 1 0; a
   ? is the * *: 34/38 value: is (0, 1) | the * is * = set 0 1; fay * the * = set 1 0; eve * the * = set 1 0; ann * the * = set 1 0; bob * the * = set 1 0; gus * the * = set 0 1; dan * the * = set 1 0; dan turns * the * = set 1 0; ann fills the * = lift 0; eve turns * the * = set 1 0; gus turns * the * = set 1 0; an
-  ? what is the state of the *: 5/8 value: holders (0,) (else b1) | the * is * = set 0 1; fay * the * = set 1 0; eve * the * = set 1 0; ann * the * = set 1 0; bob * the * = set 1 0; gus * the * = set 0 1; dan * the * = set 1 0; dan turns * the * = set 1 0; ann fills the * = lift 0; eve turns * the * = set 1 0; gus turns * the * = 
-test  5: 1101/1518 = 72.5%; sure of 0 of 4 kinds of questions, 0/0 right on them
+  ? what is the state of the *: 5/8 value: second (0,) (else b1) | the * is * = set 0 1; fay * the * = set 1 0; eve * the * = set 1 0; ann * the * = set 1 0; bob * the * = set 1 0; gus * the * = set 0 1; dan * the * = set 1 0; dan turns * the * = set 1 0; ann fills the * = lift 0; eve turns * the * = set 1 0; gus turns * the * = s
+test  5: 1098/1518 = 72.3%; sure of 0 of 4 kinds of questions, 0/0 right on them
       on the test 173/242 ? what is the state of the * now
       on the test 455/526 ? how many things are *
       on the test 397/503 ? is the * *
-      on the test 76/247 ? what is the state of the *
-task  6: learnt from 20 stories (asked for 20 more), 104/106 of their questions right, 4 of 6 kinds of questions explained in full (131.3 s) - words of the sentence itself: after before
+      on the test 73/247 ? what is the state of the *
+task  6: learnt from 20 stories (asked for 20 more), 103/106 of their questions right, 5 of 6 kinds of questions explained in full (158.3 s) - words of the sentence itself: after before
   ? where was * when * went to the *: 13/13 value: upto (1, 2) ('value', (0,)) (else b1) | * went to the * at time # = when 0 ('set', 0, 1); * went to the * after * went to the * = two ('set', 0, 1) ('set', 2, 3); * went to the * before * went to the * = two ('set', 0, 1) ('set', 2, 3); at time # * went to the * = when 0 ('set', 0, 1)
   ? did * go to the * before * went to the *: 14/14 value: any (1,) (turned over) | * went to the * at time # = set 0 1; * went to the * after * went to the * = set 0 1; * went to the * before * went to the * = set 0 3
   ? who went to the * first: 38/38 amount: most (0,) | * went to the * at time # = take (0, 1) 0; * went to the * after * went to the * = two ('add', (0, 1), None) ('add', (2, 3), None); * went to the * before * went to the * = two ('add', (0, 1), None) ('add', (2, 3), None); at time # * went to the * = take (0, 1) 0
-  ? where was * at time #: 15/16 value: asof 0 ('value', (0,)) (else b1) | * went to the * at time # = when 0 ('set', 0, 1); at time # * went to the * = when 0 ('set', 0, 1)
-  ? did * go to the * after * went to the *: 18/19 value: ere (0, 1) ('is', (2, 3)) (else yes) | * went to the * at time # = when 0 ('set', 0, 1); * went to the * after * went to the * = set 2 3; * went to the * before * went to the * = set 0 1; at time # * went to the * = when 0 ('set', 0, 1)
-  ? who was at the * at time #: 6/6 value: asof 0 ('holders', (0,)) (else d1) | * went to the * at time # = when 0 ('set', 0, 1); * went to the * after * went to the * = two ('set', 0, 1) ('set', 2, 3); * went to the * before * went to the * = two ('set', 0, 1) ('set', 2, 3); at time # * went to the * = when 0 ('set', 0, 1)
-test  6: 1336/1488 = 89.8%; sure of 4 of 6 kinds of questions, 802/924 right on them
+  ? where was * at time #: 16/16 value: asof 0 ('value', (0,)) (else c3) | * went to the * at time # = when 0 ('set', 0, 1); * went to the * after * went to the * = swap 0 2; * went to the * before * went to the * = swap 0 2; * started at the * = set 0 1; at time # * went to the * = when 0 ('set', 0, 1)
+  ? did * go to the * after * went to the *: 16/19 value: is (0, 1) | * went to the * at time # = set 0 1; * went to the * after * went to the * = set 0 1; * went to the * before * went to the * = set 0 3
+  ? who was at the * at time #: 6/6 value: asof 0 ('holders', (0,)) (else d1) | * went to the * at time # = when 0 ('set', 0, 1); * went to the * after * went to the * = swap 0 2; * went to the * before * went to the * = swap 0 2; * started at the * = set 0 1; at time # * went to the * = when 0 ('set', 0, 1)
+test  6: 1274/1488 = 85.6%; sure of 5 of 6 kinds of questions, 1089/1221 right on them
       on the test 199/227 ? where was * when * went to the *
       on the test 195/256 ? did * go to the * before * went to the *
       on the test 351/376 ? who went to the * first
-      on the test 287/297 ? where was * at time #
-      on the test 247/267 ? did * go to the * after * went to the *
-      on the test 57/65 ? who was at the * at time #
-task  7: learnt from 20 stories (asked for 10 more), 60/60 of their questions right, 3 of 3 kinds of questions explained in full (6.6 s)
+      on the test 281/297 ? where was * at time #
+      on the test 185/267 ? did * go to the * after * went to the *
+      on the test 63/65 ? who was at the * at time #
+task  7: learnt from 20 stories (asked for 10 more), 60/60 of their questions right, 3 of 3 kinds of questions explained in full (7.9 s)
   ? how many * does * have: 30/30 amount: total (1,) | * has # * = add (0,) 0; * gets # * = add (0,) 0; * gives # * to * = pass (0, 2) 0; * loses # * = take (0,) 0; * takes # * from * = pass (2, 0) 0
   ? does * have more * than *: 17/17 amount: morethan (0, 2) | * has # * = add (0,) 0; * gets # * = add (0,) 0; * gives # * to * = pass (0, 2) 0; * loses # * = take (0,) 0; * takes # * from * = pass (2, 0) 0
   ? who has the most *: 13/13 amount: most () | * has # * = add (0,) 0; * gets # * = add (0,) 0; * gives # * to * = pass (0, 2) 0; * loses # * = take (0,) 0; * takes # * from * = pass (2, 0) 0
-test  7: 1396/1396 = 100.0%; sure of 3 of 3 kinds of questions, 1396/1396 right on them
-task  8: learnt from 20 stories (asked for 20 more), 89/119 of their questions right, 0 of 2 kinds of questions explained in full (8.7 s)
+test  7: 1396/1396 = 100.0%; sure of 3 of 3 kinds of questions, 1396/1396 right on them; settled
+task  8: learnt from 20 stories (asked for 20 more), 90/119 of their questions right, 0 of 2 kinds of questions explained in full (9.8 s)
   ? is the * * of the *: 74/95 value: any (0,) 1 (turned over) | the * is to the * of the * = at 1 ('set', 0, 2); the * is * of the * = at 1 ('set', 0, 2)
-  ? which direction is the * from the *: 15/24 amount: most (0,) (else b4) | the * is to the * of the * = take (0, 1) None; the * is * of the * = add (0, 1) None
-test  8: 1050/1450 = 72.4%; sure of 0 of 2 kinds of questions, 0/0 right on them
+  ? which direction is the * from the *: 16/24 value: value (0,) (else b1) | the * is to the * of the * = two ('set', 0, 1) ('swap', 1, 2); the * is * of the * = two ('swap', 0, 2) ('set', 0, 1)
+test  8: 1036/1450 = 71.4%; sure of 0 of 2 kinds of questions, 0/0 right on them
       on the test 833/1050 ? is the * * of the *
-      on the test 217/400 ? which direction is the * from the *
-task  9: learnt from 20 stories (asked for 20 more), 105/123 of their questions right, 1 of 2 kinds of questions explained in full (5.4 s)
-  ? who is the grandparent of *: 50/68 value: was ('end', (0,)) (else 0) | * is the parent of * = set 1 0; * is the child of * = set 0 1
-  ? is * the ancestor of *: 55/55 value: isin (1, 0) | * is the parent of * = set 1 0; * is the child of * = set 0 1
-test  9: 1274/1475 = 86.4%; sure of 1 of 2 kinds of questions, 710/710 right on them
-      on the test 564/765 ? who is the grandparent of *
+      on the test 203/400 ? which direction is the * from the *
+task  9: learnt from 20 stories (asked for 10 more), 69/69 of their questions right, 2 of 2 kinds of questions explained in full (0.1 s)
+  ? who is the grandparent of *: 38/38 value: second (0,) (else 0) | * is the parent of * = set 1 0; * is the child of * = set 0 1
+  ? is * the ancestor of *: 31/31 value: isin (1, 0) | * is the parent of * = set 1 0; * is the child of * = set 0 1
+test  9: 1475/1475 = 100.0%; sure of 2 of 2 kinds of questions, 1475/1475 right on them; settled
 task 10: learnt from 20 stories (asked for 10 more), 56/56 of their questions right, 3 of 3 kinds of questions explained in full (0.4 s)
   ? how many are in the * club: 18/18 value: count (0,) | * joins the * club = set 0 1; * moves from the * club to the * club = set 0 2; * leaves the * club = lift 0
   ? who is in the * club: 16/16 value: holders (0,) (else 0) | * joins the * club = set 0 1; * moves from the * club to the * club = set 0 2; * leaves the * club = lift 0
   ? which club is * in: 22/22 value: value (0,) (else 0) | * joins the * club = set 0 1; * moves from the * club to the * club = set 0 2; * leaves the * club = lift 0
-test 10: 1439/1439 = 100.0%; sure of 3 of 3 kinds of questions, 1439/1439 right on them
-task 11: learnt from 20 stories (asked for 20 more), 92/93 of their questions right, 7 of 8 kinds of questions explained in full (3.9 s)
-  ? where is the *: 10/10 value: value (0,) (else c2) | the * is in the * = set 0 1; * is in the * = set 0 1; * went to the * = set 0 1; * took the * = lift 1; * dropped the * = as 1 0
+test 10: 1439/1439 = 100.0%; sure of 3 of 3 kinds of questions, 1439/1439 right on them; settled
+task 11: learnt from 20 stories (asked for 20 more), 92/93 of their questions right, 7 of 8 kinds of questions explained in full (4.0 s)
+  ? where is the *: 10/10 value: value (0,) (else c2) | the * is in the * = set 0 1; * is in the * = set 0 1; * went to the * = set 0 1; * took the * = lift 1; * dropped the * = swap 0 1
   ? is * *: 26/26 value: is (0, 1) | whoever has a * is * = set 0 1; * took the * = as 0 1; * dropped the * = as 0 1
-  ? where is *: 9/9 value: value (0,) | the * is in the * = set 0 1; * is in the * = set 0 1; * went to the * = set 0 1; * took the * = lift 1; * dropped the * = as 1 0
-  ? in which place is the *: 12/13 value: value (0,) (else c1) | the * is in the * = set 0 1; * is in the * = set 0 1; * went to the * = set 0 1; * took the * = lift 1; * dropped the * = as 1 0
+  ? where is *: 9/9 value: value (0,) | the * is in the * = set 0 1; * is in the * = set 0 1; * went to the * = set 0 1; * took the * = lift 1; * dropped the * = swap 0 1
+  ? in which place is the *: 12/13 value: value (0,) (else c1) | the * is in the * = set 0 1; * is in the * = set 0 1; * went to the * = set 0 1; * took the * = lift 1; * dropped the * = swap 0 1
   ? which person has the *: 12/12 value: value (0,) (else e1) | * took the * = set 1 0; * dropped the * = lift 1
   ? who has the *: 10/10 value: value (0,) (else e1) | * took the * = set 1 0; * dropped the * = lift 1
-  ? can * enter the *: 7/7 value: is (1, 0) | the * is in the * = set 0 1; * is in the * = set 0 1; * went to the * = set 0 1; * took the * = lift 1; * dropped the * = as 1 0
-  ? in which place is *: 6/6 value: value (0,) | the * is in the * = set 0 1; * is in the * = set 0 1; * went to the * = set 0 1; * took the * = lift 1; * dropped the * = as 1 0
-test 11: 1204/1237 = 97.3%; sure of 7 of 8 kinds of questions, 1105/1129 right on them
+  ? can * enter the *: 7/7 value: is (1, 0) | the * is in the * = set 0 1; * is in the * = set 0 1; * went to the * = set 0 1; * took the * = lift 1; * dropped the * = swap 0 1
+  ? in which place is *: 6/6 value: value (0,) (else c2) | the * is in the * = set 0 1; * is in the * = set 0 1; * went to the * = set 0 1; * took the * = lift 1; * dropped the * = swap 0 1
+test 11: 1195/1237 = 96.6%; sure of 7 of 8 kinds of questions, 1096/1129 right on them
       on the test 90/103 ? where is the *
       on the test 411/416 ? is * *
+      on the test 125/132 ? where is *
       on the test 99/108 ? in which place is the *
       on the test 139/145 ? can * enter the *
-task 12: learnt from 20 stories (asked for 10 more), 39/39 of their questions right, 3 of 3 kinds of questions explained in full (0.4 s) - words of the sentence itself: after before
+      on the test 112/114 ? in which place is *
+task 12: learnt from 20 stories (asked for 10 more), 39/39 of their questions right, 3 of 3 kinds of questions explained in full (0.5 s) - words of the sentence itself: after before
   ? is the * done after the *: 18/18 link: leads (0, 1) (turned over) | the * is done after the * = link 1 0; the * is done before the * = link 0 1
   ? what is done last: 9/9 link: last () | the * is done after the * = link 1 0; the * is done before the * = link 0 1
   ? is the * done before the *: 12/12 link: leads (0, 1) | the * is done after the * = link 1 0; the * is done before the * = link 0 1
-test 12: 902/902 = 100.0%; sure of 3 of 3 kinds of questions, 902/902 right on them
+test 12: 902/902 = 100.0%; sure of 3 of 3 kinds of questions, 902/902 right on them; settled

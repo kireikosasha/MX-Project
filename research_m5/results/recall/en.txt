@@ -1,19 +1,19 @@
 task  1: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (0.0 s)
   ? where is *: 100/100 value: value (0,) | * moved to the * = set 0 1; * went to the * = set 0 1; * went back to the * = set 0 1; * journeyed to the * = set 0 1; * travelled to the * = set 0 1
-test  1: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
-task  2: learnt from 20 stories (asked for 20 more), 200/200 of their questions right, 1 of 1 kinds of questions explained in full (5.8 s) - things: daniel john mary sandra
+test  1: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them; settled
+task  2: learnt from 20 stories (asked for 20 more), 200/200 of their questions right, 1 of 1 kinds of questions explained in full (6.7 s) - things: daniel john mary sandra
   ? where is the *: 200/200 value: end (0,) | * moved to the * = set 0 1; * journeyed to the * = set 0 1; * got the * there = set 1 0; * went to the * = set 0 1; * went back to the * = set 0 1; * dropped the * = as 1 0; * took the * there = set 1 0; * picked up the * there = set 1 0; * travelled to the * = set 0 1; * l
 test  2: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
-task  3: learnt from 20 stories (asked for 15 more), 125/125 of their questions right, 1 of 1 kinds of questions explained in full (182.0 s) - things: daniel john mary sandra
+task  3: learnt from 20 stories (asked for 15 more), 125/125 of their questions right, 1 of 1 kinds of questions explained in full (208.0 s) - things: daniel john mary sandra
   ? where was the * before the *: 125/125 value: prior 1 ('end', (0,)) | * moved to the * = set 0 1; * journeyed to the * = set 0 1; * got the * there = set 1 0; * went back to the * = set 0 1; * took the * = set 1 0; * left the * there = set 1 0; * travelled to the * = set 0 1; * went to the * = set 0 1; * dropped the * = set 1 0; 
-test  3: 990/1000 = 99.0%; sure of 1 of 1 kinds of questions, 990/1000 right on them
+test  3: 990/1000 = 99.0%; sure of 1 of 1 kinds of questions, 990/1000 right on them; settled
       on the test 990/1000 ? where was the * before the *
-task  4: learnt from 20 stories (asked for 20 more), 38/40 of their questions right, 1 of 2 kinds of questions explained in full (2.5 s)
+task  4: learnt from 20 stories (asked for 20 more), 38/40 of their questions right, 1 of 2 kinds of questions explained in full (2.3 s)
   ? what is * of the *: 15/15 value: value (1,) 0 | the * is * of the * = at 1 ('set', 2, 0)
   ? what is the * * of: 23/25 value: value (0,) | the * is * of the * = set 2 0
 test  4: 890/1000 = 89.0%; sure of 1 of 2 kinds of questions, 506/506 right on them
       on the test 384/494 ? what is the * * of
-task  5: learnt from 20 stories (asked for 20 more), 199/200 of their questions right, 4 of 5 kinds of questions explained in full (84.8 s) - words of the sentence itself: gave handed passed received
+task  5: learnt from 20 stories (asked for 20 more), 199/200 of their questions right, 4 of 5 kinds of questions explained in full (106.5 s) - words of the sentence itself: gave handed passed received
   ? what did * give to *: 86/87 amount: most (1,) (else a2) | * gave the * to * = add (2, 1) None; * handed the * to * = add (2, 1) None; * passed the * to * = take (1, 2) None
   ? who received the *: 34/34 value: value (0,) | * gave the * to * = set 1 2; * handed the * to * = set 1 2; * passed the * to * = set 1 2
   ? who did * give the * to: 33/33 value: value (1,) | * gave the * to * = set 1 2; * handed the * to * = set 1 2; * passed the * to * = set 1 2
@@ -23,18 +23,18 @@ test  5: 987/1000 = 98.7%; sure of 4 of 5 kinds of questions, 670/670 right on t
       on the test 317/330 ? what did * give to *
 task  6: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (0.0 s)
   ? is * in the *: 100/100 value: is (0, 1) | * moved to the * = set 0 1; * journeyed to the * = set 0 1; * went back to the * = set 0 1; * went to the * = set 0 1; * travelled to the * = set 0 1
-test  6: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
-task  7: learnt from 20 stories (asked for 20 more), 150/150 of their questions right, 1 of 1 kinds of questions explained in full (2.1 s) - things: apple football milk
+test  6: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them; settled
+task  7: learnt from 20 stories (asked for 20 more), 150/150 of their questions right, 1 of 1 kinds of questions explained in full (2.5 s) - things: apple football milk
   ? how many objects is * carrying: 150/150 value: count (0,) | * took the * there = set 1 0; * dropped the * = lift 1; * got the * there = set 1 0; * picked up the * there = set 1 0; * discarded the * = lift 1; * handed the * to * = set 1 2; * grabbed the * there = set 1 0; * put down the * = lift 1; * gave the * to * = set 1 2; * le
 test  7: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
-task  8: learnt from 20 stories (asked for 15 more), 125/125 of their questions right, 1 of 1 kinds of questions explained in full (0.5 s)
+task  8: learnt from 20 stories (asked for 15 more), 125/125 of their questions right, 1 of 1 kinds of questions explained in full (0.6 s)
   ? what is * carrying: 125/125 value: holders (0,) (else nothing) | * got the * there = set 1 0; * dropped the * = lift 1; * took the * there = set 1 0; * picked up the * there = set 1 0; * dropped the * there = lift 1; * discarded the * = lift 1; * grabbed the * there = set 1 0; * left the * there = lift 1; * left the * 
-test  8: 979/1000 = 97.9%; sure of 1 of 1 kinds of questions, 979/1000 right on them
+test  8: 979/1000 = 97.9%; sure of 1 of 1 kinds of questions, 979/1000 right on them; settled
       on the test 979/1000 ? what is * carrying
 task  9: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (0.2 s)
   ? is * in the *: 100/100 value: is (0, 1) | * is no longer in the * = lift 0; * moved to the * = set 0 1; * is in the * = set 0 1; * is not in the * = lift 0; * went to the * = set 0 1; * travelled to the * = set 0 1; * went back to the * = set 0 1; * journeyed to the * = set 0 1
-test  9: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
-task 10: learnt from 20 stories (asked for 20 more), 0/200 of their questions right, 0 of 6 kinds of questions explained in full (54.9 s) - words of the sentence itself: bedroom cinema kitchen office park school
+test  9: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them; settled
+task 10: learnt from 20 stories (asked for 20 more), 0/200 of their questions right, 0 of 6 kinds of questions explained in full (59.8 s) - words of the sentence itself: bedroom cinema kitchen office park school
   ? is * in the office: -
   ? is * in the park: -
   ? is * in the cinema: -
@@ -42,57 +42,57 @@ task 10: learnt from 20 stories (asked for 20 more), 0/200 of their questions ri
   ? is * in the bedroom: -
   ? is * in the kitchen: -
 test 10: 426/1000 = 42.6%; sure of 0 of 6 kinds of questions, 0/0 right on them
-task 11: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (3.6 s) - pointers: journeyed moved travelled went
+task 11: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (3.8 s) - pointers: journeyed moved travelled went
   ? where is *: 100/100 value: value (0,) | * went back to the * = set 0 1; after that she * to the * = set 0 1; afterwards he * to the * = set 0 1; after that he * to the * = set 0 1; following that she * back to the * = set 0 1; afterwards she * to the * = set 0 1; following that he * to the * = set 0 1; then she
-test 11: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
-task 12: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (2.2 s) - things: journeyed moved travelled went
+test 11: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them; settled
+task 12: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (2.5 s) - things: journeyed moved travelled went
   ? where is *: 100/100 value: value (0,) | * and * * to the * = two ('set', 0, 3) ('set', 1, 3); * and * * back to the * = two ('set', 0, 3) ('set', 1, 3)
-test 12: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
-task 13: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (6.3 s) - pointers: journeyed moved travelled went
+test 12: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them; settled
+task 13: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (6.7 s) - pointers: journeyed moved travelled went
   ? where is *: 100/100 value: end (0,) (else a2) | * and * went to the * = set 1 0; then they * and * to the * = two ('set', 0, 2) ('set', 1, 2); * and * * to the * = two ('set', 1, 0) ('set', 0, 1); after that they * and * to the * = two ('set', 0, 2) ('set', 1, 2); * and * * back to the * = set 1 0; following th
-test 13: 988/1000 = 98.8%; sure of 1 of 1 kinds of questions, 988/1000 right on them
+test 13: 988/1000 = 98.8%; sure of 1 of 1 kinds of questions, 988/1000 right on them; settled
       on the test 988/1000 ? where is *
-task 14: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (102.1 s)
+task 14: learnt from 20 stories (asked for 10 more), 100/100 of their questions right, 1 of 1 kinds of questions explained in full (109.3 s)
   ? where was * before the *: 100/100 value: prior 1 ('value', (0,)) | * went back to the * # = when 0 ('set', 0, 1); * went to the * this # = when 0 ('set', 0, 1); * went to the * # = when 0 ('set', 0, 1); # * went to the * = when 0 ('set', 0, 1); this # * travelled to the * = when 0 ('set', 0, 1); # * travelled to the * = when
-test 14: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
+test 14: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them; settled
 task 15: learnt from 20 stories (asked for 10 more), 80/80 of their questions right, 1 of 1 kinds of questions explained in full (0.0 s)
   ? what is * afraid of: 80/80 value: value (0,) | * are afraid of * = set 0 1; * is a * = as 0 1
-test 15: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them
-task 16: learnt from 20 stories (asked for 20 more), 19/40 of their questions right, 0 of 1 kinds of questions explained in full (11.1 s)
-  ? what color is *: 19/40 amount: most () (else b4) | * is * = add (1,) None
-test 16: 454/1000 = 45.4%; sure of 0 of 1 kinds of questions, 0/0 right on them
-      on the test 454/1000 ? what color is *
-task 17: learnt from 20 stories (asked for 20 more), 268/320 of their questions right, 1 of 14 kinds of questions explained in full (1464.9 s)
-  ? is the pink rectangle to the * of the * *: 18/20 value: is (0, 2) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of the * * = set 0 2
-  ? is the * * * the pink rectangle: 33/34 value: any (2,) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of the * * = set 0 2
-  ? is the * * to the * of the pink rectangle: 13/18 value: is (2, 1) (turned over) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of the * * = set 0 2
-  ? is the pink rectangle * the * *: 21/24 value: any (0,) (turned over) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of the * * = set 0 2
-  ? is the * * * the triangle: 21/22 value: is (0, 1) | the * * is to the * of the * * = set 0 4; the * * is * the * * = set 3 1
-  ? is the triangle to the * of the * *: 15/19 value: is (0, 2) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of the * * = set 0 2
+test 15: 1000/1000 = 100.0%; sure of 1 of 1 kinds of questions, 1000/1000 right on them; settled
+task 16: learnt from 20 stories (asked for 20 more), 23/40 of their questions right, 0 of 1 kinds of questions explained in full (12.1 s)
+  ? what color is *: 23/40 value: second (0,) (else b3) | * is a frog = to 0 b1; * is * = as 1 0; * is a lion = to 0 b4; * is a swan = to 0 b1; * is a rhino = to 0 b4
+test 16: 380/1000 = 38.0%; sure of 0 of 1 kinds of questions, 0/0 right on them
+      on the test 380/1000 ? what color is *
+task 17: learnt from 20 stories (asked for 20 more), 267/320 of their questions right, 1 of 14 kinds of questions explained in full (1989.4 s)
+  ? is the pink rectangle to the * of the * *: 17/20 value: is (0, 1) 2 | the * * is to the * of the * * = at 4 ('set', 2, 3); the * * is * the pink rectangle = set 0 2; the * * is * the * * = at 1 ('trade', 0, 3); the triangle is * the * * = set 1 0; the triangle is to the * of the * * = at 2 ('set', 0, 1); the pink rectangle is to the * of the
+  ? is the * * * the pink rectangle: 33/34 value: any (2,) | the * * is to the * of the * * = at 4 ('set', 2, 3); the * * is * the pink rectangle = set 0 2; the * * is * the * * = at 1 ('trade', 0, 3); the triangle is * the * * = set 1 0; the triangle is to the * of the * * = at 2 ('set', 0, 1); the pink rectangle is to the * of the * 
+  ? is the * * to the * of the pink rectangle: 15/18 value: any (1,) (turned over) | the * * is to the * of the * * = set 0 4; the * * is * the pink rectangle = set 0 1; the * * is * the * * = set 3 1
+  ? is the pink rectangle * the * *: 21/24 value: any (0,) (turned over) | the * * is to the * of the * * = at 4 ('set', 2, 3); the * * is * the pink rectangle = set 0 2; the * * is * the * * = at 1 ('trade', 0, 3); the triangle is * the * * = set 1 0; the triangle is to the * of the * * = at 2 ('set', 0, 1); the pink rectangle is to t
+  ? is the * * * the triangle: 21/22 value: is (0, 1) | the * * is to the * of the * * = set 0 4; the * * is * the pink rectangle = set 0 1; the * * is * the * * = set 3 1
+  ? is the triangle to the * of the * *: 13/19 value: is (0, 2) | the * * is to the * of the * * = at 4 ('set', 2, 3); the * * is * the pink rectangle = set 0 2; the * * is * the * * = at 1 ('trade', 0, 3); the triangle is * the * * = set 1 0; the triangle is to the * of the * * = at 2 ('set', 0, 1); the pink rectangle is to the * of the *
   ? is the triangle * the * *: 26/26 value: isin (0, 1) | the * * is to the * of the triangle = set 0 2; the * * is to the * of the * * = set 3 0; the * * is * the * * = set 2 3; the triangle is * the * * = set 0 1; the pink rectangle is * the * * = set 0 1; the pink rectangle is to the * of the * * = set 1 0
   ? is the * * to the * of the triangle: 24/29 value: is (0, 1) (turned over) | the * * is * the * * = set 3 1; the pink rectangle is * the * * = set 1 2
-  ? is the * * * the * *: 34/47 value: is (0, 2) (turned over) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of the * * = set 0 2
-  ? is the * * to the * of the * *: 27/33 value: upto (2, 4) ('is', (1, 3)) (turned over) (else no) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of
-  ? is the pink rectangle * the triangle: 11/13 value: any (0,) (turned over) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of the * * = set 0 2
-  ? is the pink rectangle to the * of the triangle: 7/11 value: known (0,) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of the * * = set 0 2
-  ? is the triangle to the * of the pink rectangle: 11/15 value: known (0,) (turned over) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of the * * = set 0 2
-  ? is the triangle * the pink rectangle: 7/9 value: any (0,) | the * * is to the * of the * * = set 2 4; the * * is * the pink rectangle = set 0 2; the * * is * the * * = set 1 0; the triangle is * the * * = set 1 0; the triangle is to the * of the * * = set 0 2; the pink rectangle is to the * of the * * = set 0 2
-test 17: 599/1000 = 59.9%; sure of 1 of 14 kinds of questions, 37/58 right on them
+  ? is the * * * the * *: 34/47 value: is (0, 2) (turned over) | the * * is to the * of the * * = at 4 ('set', 2, 3); the * * is * the pink rectangle = set 0 2; the * * is * the * * = at 1 ('trade', 0, 3); the triangle is * the * * = set 1 0; the triangle is to the * of the * * = at 2 ('set', 0, 1); the pink rectangle is to 
+  ? is the * * to the * of the * *: 27/33 value: is (2, 3) 4 | the * * is to the * of the * * = at 4 ('set', 2, 3); the * * is * the pink rectangle = set 0 2; the * * is * the * * = at 1 ('trade', 0, 3); the triangle is * the * * = set 1 0; the triangle is to the * of the * * = at 2 ('set', 0, 1); the pink rectangle is to the * of the
+  ? is the pink rectangle * the triangle: 11/13 value: any (0,) (turned over) | the * * is to the * of the * * = at 4 ('set', 2, 3); the * * is * the pink rectangle = set 0 2; the * * is * the * * = at 1 ('trade', 0, 3); the triangle is * the * * = set 1 0; the triangle is to the * of the * * = at 2 ('set', 0, 1); the pink rectangle is to t
+  ? is the pink rectangle to the * of the triangle: 7/11 value: known (0,) | the * * is to the * of the * * = at 4 ('set', 2, 3); the * * is * the pink rectangle = set 0 2; the * * is * the * * = at 1 ('trade', 0, 3); the triangle is * the * * = set 1 0; the triangle is to the * of the * * = at 2 ('set', 0, 1); the pink rectangle is to the * of the *
+  ? is the triangle to the * of the pink rectangle: 11/15 value: known (0,) (turned over) | the * * is to the * of the * * = at 4 ('set', 2, 3); the * * is * the pink rectangle = set 0 2; the * * is * the * * = at 1 ('trade', 0, 3); the triangle is * the * * = set 1 0; the triangle is to the * of the * * = at 2 ('set', 0, 1); the pink rectangle is to
+  ? is the triangle * the pink rectangle: 7/9 value: any (0,) | the * * is to the * of the * * = at 4 ('set', 2, 3); the * * is * the pink rectangle = set 0 2; the * * is * the * * = at 1 ('trade', 0, 3); the triangle is * the * * = set 1 0; the triangle is to the * of the * * = at 2 ('set', 0, 1); the pink rectangle is to the * of the * * 
+test 17: 584/1000 = 58.4%; sure of 1 of 14 kinds of questions, 37/58 right on them
       on the test 59/69 ? is the pink rectangle to the * of the * *
       on the test 31/64 ? is the * * * the pink rectangle
-      on the test 53/69 ? is the * * to the * of the pink rectangle
+      on the test 34/69 ? is the * * to the * of the pink rectangle
       on the test 30/62 ? is the pink rectangle * the * *
-      on the test 29/58 ? is the * * * the triangle
-      on the test 36/51 ? is the triangle to the * of the * *
+      on the test 30/58 ? is the * * * the triangle
+      on the test 32/51 ? is the triangle to the * of the * *
       on the test 37/58 ? is the triangle * the * *
       on the test 33/65 ? is the * * to the * of the triangle
       on the test 102/216 ? is the * * * the * *
-      on the test 148/216 ? is the * * to the * of the * *
+      on the test 149/216 ? is the * * to the * of the * *
       on the test 14/20 ? is the pink rectangle * the triangle
-      on the test 7/16 ? is the pink rectangle to the * of the triangle
-      on the test 7/21 ? is the triangle to the * of the pink rectangle
+      on the test 8/16 ? is the pink rectangle to the * of the triangle
+      on the test 12/21 ? is the triangle to the * of the pink rectangle
       on the test 13/15 ? is the triangle * the pink rectangle
-task 18: learnt from 20 stories (asked for 20 more), 179/179 of their questions right, 6 of 6 kinds of questions explained in full (5.2 s)
+task 18: learnt from 20 stories (asked for 20 more), 179/179 of their questions right, 6 of 6 kinds of questions explained in full (6.2 s)
   ? does the * fit in the * of *: 13/13 link: leads (0, 2) (turned over) | the * of * fit inside the * = link 2 1; the * is bigger than the * = link 0 1; the * fit inside the * = link 1 0; the * is bigger than the * of * = link 0 2
   ? is the * of * bigger than the *: 7/7 link: leads (0, 1) (turned over) (else no) | the * of * fit inside the * = link 2 1; the * is bigger than the * = link 0 1; the * fit inside the * = link 1 0; the * is bigger than the * of * = link 0 2
   ? is the * bigger than the * of *: 12/12 link: leads (0, 2) | the * of * fit inside the * = link 2 1; the * is bigger than the * = link 0 1; the * fit inside the * = link 1 0; the * is bigger than the * of * = link 0 2
@@ -100,7 +100,7 @@ task 18: learnt from 20 stories (asked for 20 more), 179/179 of their questions 
   ? is the * bigger than the *: 73/73 link: leads (0, 1) | the * of * fit inside the * = link 2 1; the * is bigger than the * = link 0 1; the * fit inside the * = link 1 0; the * is bigger than the * of * = link 0 2
   ? does the * fit in the *: 56/56 link: leads (0, 1) (turned over) | the * of * fit inside the * = link 2 1; the * is bigger than the * = link 0 1; the * fit inside the * = link 1 0; the * is bigger than the * of * = link 0 2
 test 18: 1000/1000 = 100.0%; sure of 6 of 6 kinds of questions, 1000/1000 right on them
-task 19: learnt from 20 stories (asked for 20 more), 16/40 of their questions right, 0 of 23 kinds of questions explained in full (5.6 s) - words of the sentence itself: bathroom bedroom garden hallway kitchen office
+task 19: learnt from 20 stories (asked for 20 more), 16/40 of their questions right, 0 of 23 kinds of questions explained in full (7.0 s) - words of the sentence itself: bathroom bedroom garden hallway kitchen office
   ? how do you go from the kitchen to the garden: -
   ? how do you go from the kitchen to the hallway: -
   ? how do you go from the garden to the bedroom: 1/1 link: first () (else b1,b1) | 
@@ -139,7 +139,7 @@ test 19: 112/1000 = 11.2%; sure of 0 of 23 kinds of questions, 0/0 right on them
       on the test 2/24 ? how do you go from the office to the kitchen
       on the test 9/38 ? how do you go from the bathroom to the garden
       on the test 2/23 ? how do you go from the bathroom to the bedroom
-task 20: learnt from 20 stories (asked for 20 more), 271/431 of their questions right, 2 of 3 kinds of questions explained in full (79.9 s)
+task 20: learnt from 20 stories (asked for 20 more), 271/431 of their questions right, 2 of 3 kinds of questions explained in full (93.0 s)
   ? where will * go: -
   ? why did * go to the *: 160/160 value: value (0,) | * is * = set 0 1
   ? why did * get the *: 111/111 value: value (0,) | * is * = set 0 1

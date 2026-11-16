@@ -133,7 +133,8 @@ def options(sort, nt, nn, consts):
     """what a kind of statement with so many things and numbers may be to a kind of question, for a way of looking"""
     if sort == "value":                                      # a thing gets a thing of the row for its value; or the value another has
         return [("set", i, j) for i in range(nt) for j in range(nt) if i != j] + [("as", i, j) for i in range(nt) for j in range(nt) if i != j] \
-            + [("lift", i) for i in range(nt)] + [("clear", i) for i in range(nt)] + [("to", i, c) for i in range(nt) for c in consts]      # now; or the value of
+            + [("lift", i) for i in range(nt)] + [("clear", i) for i in range(nt)] + [("to", i, c) for i in range(nt) for c in consts] \
+            + [(name, i, j) for name in ("swap", "trade") for i in range(nt) for j in range(i + 1, nt)]      # now; or the value of
                                                                  # its value (it leaves its holder where the holder is); or none; or a value never named in the row
     if sort == "link":
         return [(name, i, j) for name in ("link", "unlink") for i in range(nt) for j in range(nt) if i != j]
@@ -170,6 +171,19 @@ def said(state, sort, role, things, numbers):
                 state.pop(things[role[1]], None)
         elif name == "to":
             state[things[role[1]]] = role[2]
+        elif name == "swap":                                 # two things change their values with each other
+            a, b = things[role[1]], things[role[2]]
+            va, vb = state.get(a), state.get(b)
+            for x, v in ((a, vb), (b, va)):
+                if v is None:
+                    state.pop(x, None)
+                else:
+                    state[x] = v
+        elif name == "trade":                                # what had the one for its value has the other now, and the other way
+            a, b = things[role[1]], things[role[2]]
+            for x, v in list(state.items()):
+                if v == a or v == b:
+                    state[x] = b if v == a else a
         else:
             state.pop(things[role[1]], None)
     elif sort == "link":
@@ -302,10 +316,10 @@ def asked(sort, slots, nn, shape):
     one, two = [(i,) for i in slots], [(i, j) for i in slots for j in slots if i != j]
     if sort == "value":
         if shape == "t":
-            return [(n, a) for n in ("value", "end", "holders", "inside") for a in one] + [("values", a) for a in one] + [("both", a) for a in two]
+            return [(n, a) for n in ("value", "end", "second", "holders", "inside") for a in one] + [("values", a) for a in one] + [("both", a) for a in two]
         if shape == "n":
             return [(n, a) for n in ("count", "countin") for a in one]
-        return [(n, a) for n in ("is", "isin", "same") for a in two] + [(n, a) for n in ("any", "known") for a in one]
+        return [(n, a) for n in ("is", "isin", "issecond", "same") for a in two] + [(n, a) for n in ("any", "known") for a in one]
     if sort == "link":
         if shape == "t":
             return [(n, a) for n in ("after", "before", "next", "prev") for a in one] + [("first", ()), ("last", ())] + ([("firstof", ()), ("lastof", ())] if nt >= 2 else [])
@@ -326,6 +340,10 @@ def answer(sort, ask, state, things, numbers, own, names):
     if sort == "value":
         if name == "value":
             return state.get(t[0])
+        if name == "second":                                 # the value of its value
+            return state.get(state.get(t[0]))
+        if name == "issecond":
+            return state.get(state.get(t[0])) == t[1]
         if name == "values":
             return ",".join(chain(state, t[0])) or None
         if name == "end":

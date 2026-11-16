@@ -1,24 +1,25 @@
-task  1: learnt from 20 stories (asked for 20 more), 115/125 of their questions right, 3 of 7 kinds of questions explained in full (5.7 s)
+task  1: learnt from 20 stories (asked for 20 more), 120/125 of their questions right, 3 of 7 kinds of questions explained in full (8.9 s)
   ? qeb: 14/14 value: same (0, 1) (else yes) | dek = set 0 1; gor = set 0 1; dek = set 1 0; dek = set 0 1; fuz = lift 0
-  ? zuv: 9/9 value: end (0,) | dek = set 0 1; gor = set 0 1; dek = set 0 1; dek = set 0 1; fuz = lift 0; dek = set 0 1
-  ? qeb: 16/16 value: same (0, 1) | dek = set 0 1; gor = set 0 1; dek = set 0 1; dek = set 0 1; fuz = lift 0; dek = set 0 1
+  ? zuv: 9/9 value: end (0,) | dek = set 0 1; gor = set 0 1; dek = set 0 1; dek = set 0 1; fuz = lift 0
+  ? qeb: 16/16 value: same (0, 1) | dek = set 0 1; gor = set 0 1; dek = set 0 1; dek = set 0 1; fuz = lift 0
   ? pimo: 57/61 value: count (0,) | dek = set 0 1; dek = set 0 1
-  ? qeb: 16/22 value: any (0,) | dek = set 0 1; dek = set 0 1
+  ? qeb: 21/22 value: same (0, 1) (else no) | dek = set 0 1; gor = set 0 1; dek = set 1 0; dek = set 0 1; fuz = lift 0
   ? zuv: 1/1 value: value (0,) (else p3) | dek = set 0 1; dek = set 0 1
   ? qeb: 2/2 value: is (0, 1) | dek = set 0 1; dek = set 0 1
-test  1: 1182/1468 = 80.5%; sure of 3 of 7 kinds of questions, 418/493 right on them
+test  1: 1195/1468 = 81.4%; sure of 3 of 7 kinds of questions, 405/493 right on them
       on the test 134/179 ? qeb
-      on the test 160/190 ? qeb
+      on the test 118/124 ? zuv
+      on the test 153/190 ? qeb
       on the test 638/750 ? pimo
-      on the test 81/143 ? qeb
+      on the test 107/143 ? qeb
       on the test 6/17 ? zuv
       on the test 39/65 ? qeb
-task  2: learnt from 20 stories (asked for 10 more), 52/52 of their questions right, 3 of 3 kinds of questions explained in full (3.3 s)
-  ? hol: 12/12 value: value (0,) | dax = set 1 0; mev = set 1 2; zoq = lift 1; swp = two ('set', 3, 0) ('set', 1, 2)
-  ? kep: 13/13 value: holders (0,) | dax = set 1 0; mev = set 1 2; zoq = lift 1; swp = two ('set', 3, 0) ('set', 1, 2)
-  ? ynq: 27/27 value: is (1, 0) | dax = set 1 0; mev = set 1 2; zoq = lift 1; swp = two ('set', 3, 0) ('set', 1, 2)
-test  2: 1461/1461 = 100.0%; sure of 3 of 3 kinds of questions, 1461/1461 right on them
-task  3: learnt from 20 stories (asked for 20 more), 74/114 of their questions right, 3 of 5 kinds of questions explained in full (6.9 s)
+task  2: learnt from 20 stories (asked for 10 more), 52/52 of their questions right, 3 of 3 kinds of questions explained in full (2.9 s)
+  ? hol: 12/12 value: value (0,) | dax = set 1 0; mev = set 1 2; zoq = lift 1; swp = swap 1 3
+  ? kep: 13/13 value: holders (0,) | dax = set 1 0; mev = set 1 2; zoq = lift 1; swp = swap 1 3
+  ? ynq: 27/27 value: is (1, 0) | dax = set 1 0; mev = set 1 2; zoq = lift 1; swp = swap 1 3
+test  2: 1461/1461 = 100.0%; sure of 3 of 3 kinds of questions, 1461/1461 right on them; settled
+task  3: learnt from 20 stories (asked for 20 more), 74/114 of their questions right, 3 of 5 kinds of questions explained in full (9.8 s)
   ? mx: 42/42 link: firstof () | qen = link 1 0; zor = link 0 1
   ? xo: 25/25 link: leads (0, 1) | qen = link 1 0; zor = link 0 1
   ? ruk: 4/38 link: after (1,) 0 (else k8,k7,k4) | qen = link 1 0; zor = link 0 1
@@ -26,19 +27,19 @@ task  3: learnt from 20 stories (asked for 20 more), 74/114 of their questions r
   ? mx: 3/3 link: firstof () | qen = link 1 0; zor = link 0 1
 test  3: 913/1450 = 63.0%; sure of 3 of 5 kinds of questions, 912/912 right on them
       on the test 1/458 ? ruk
-task  4: learnt from 20 stories (asked for 10 more), 50/50 of their questions right, 3 of 3 kinds of questions explained in full (0.4 s)
-  ? qhp: 31/31 value: is (0, 1) | hax = set 0 1; bev = as 0 1
-  ? gip: 10/10 link: after (0,) | lod = link 0 1; hax = link 0 1; bev = link 0 1
-  ? qkn: 9/9 link: after (0,) | lod = link 0 1; hax = link 0 1; bev = link 0 1
-test  4: 1107/1132 = 97.8%; sure of 3 of 3 kinds of questions, 1107/1132 right on them
-      on the test 716/741 ? qhp
+task  4: learnt from 20 stories (asked for 20 more), 75/75 of their questions right, 3 of 3 kinds of questions explained in full (0.8 s)
+  ? qhp: 47/47 value: isin (0, 1) | hax = set 0 1; bev = set 0 1
+  ? gip: 13/13 link: after (0,) | lod = link 0 1; hax = link 0 1; bev = link 0 1
+  ? qkn: 15/15 link: after (0,) | lod = link 0 1; hax = link 0 1; bev = link 0 1
+test  4: 1120/1132 = 98.9%; sure of 3 of 3 kinds of questions, 1120/1132 right on them
+      on the test 729/741 ? qhp
 task  5: learnt from 20 stories (asked for 10 more), 40/40 of their questions right, 4 of 4 kinds of questions explained in full (0.1 s)
   ? sb: 14/14 value: value (0,) | fx = set 0 1; mv = set 0 1; rm = lift 0
   ? ls: 18/18 value: holders (0,) | fx = set 0 1; mv = set 0 1; rm = lift 0
   ? ls: 5/5 value: holders (0,) | fx = set 0 1; mv = set 0 1; rm = lift 0
   ? wh: 3/3 value: value (0,) | fx = set 0 1; mv = set 0 1; rm = lift 0
-test  5: 986/986 = 100.0%; sure of 4 of 4 kinds of questions, 986/986 right on them
-task  6: learnt from 20 stories (asked for 20 more), 92/108 of their questions right, 0 of 3 kinds of questions explained in full (5.8 s)
+test  5: 986/986 = 100.0%; sure of 4 of 4 kinds of questions, 986/986 right on them; settled
+task  6: learnt from 20 stories (asked for 20 more), 92/108 of their questions right, 0 of 3 kinds of questions explained in full (7.2 s)
   ? rav: 29/31 value: prior 1 ('value', (0,)) | zom = set 0 1
   ? kor: 33/39 value: began ('holders', (0,)) | zom = set 0 1
   ? tuk: 30/38 value: value (0,) | zom = set 0 1
@@ -46,7 +47,7 @@ test  6: 1313/1493 = 87.9%; sure of 0 of 3 kinds of questions, 0/0 right on them
       on the test 503/511 ? rav
       on the test 400/450 ? kor
       on the test 410/532 ? tuk
-task  7: learnt from 20 stories (asked for 20 more), 116/130 of their questions right, 2 of 5 kinds of questions explained in full (61.8 s)
+task  7: learnt from 20 stories (asked for 20 more), 116/130 of their questions right, 2 of 5 kinds of questions explained in full (76.3 s)
   ? hav: 38/38 amount: amount (0,) | fip = add (0,) 0; vrq = pass (0, 1) 0; gom = take (0,) 0; zet = put (0,) 0
   ? geq: 37/37 amount: atleast (0,) | fip = add (0,) 0; vrq = pass (0, 1) 0; gom = take (0,) 0; zet = put (0,) 0
   ? mxo: 10/13 amount: more (0, 1) (else p1) | fip = add (0,) 0; vrq = pass (0, 1) 0; gom = take (0,) 0; zet = put (0,) 0
@@ -56,19 +57,19 @@ test  7: 1160/1516 = 76.5%; sure of 2 of 5 kinds of questions, 747/747 right on 
       on the test 87/161 ? mxo
       on the test 219/367 ? mxo
       on the test 107/241 ? mxo
-task  8: learnt from 20 stories (asked for 20 more), 63/106 of their questions right, 1 of 3 kinds of questions explained in full (7.6 s)
+task  8: learnt from 20 stories (asked for 20 more), 64/106 of their questions right, 2 of 3 kinds of questions explained in full (9.6 s)
   ? qpa: 27/69 value: values (0,) | tiz = two ('set', 1, 0) ('set', 0, 1); pem = two ('set', 1, 0) ('set', 0, 1); kuv = two ('set', 1, 0) ('set', 0, 1); vob = two ('set', 1, 0) ('set', 0, 1)
   ? qnu: 14/14 value: any (0,) (turned over) | tiz = set 1 0; pem = set 0 1; kuv = set 0 1; vob = set 0 1
-  ? qeu: 22/23 value: any (0,) (turned over) | tiz = as 0 1; pem = set 0 1; kuv = as 0 1; vob = set 1 0
-test  8: 679/1370 = 49.6%; sure of 1 of 3 kinds of questions, 146/196 right on them
+  ? qeu: 23/23 value: any (1,) (turned over) | tiz = as 0 1; pem = set 1 0; kuv = as 0 1; vob = set 0 1
+test  8: 685/1370 = 50.0%; sure of 2 of 3 kinds of questions, 350/415 right on them
       on the test 335/955 ? qpa
       on the test 146/196 ? qnu
-      on the test 198/219 ? qeu
+      on the test 204/219 ? qeu
 task  9: learnt from 20 stories (asked for 10 more), 74/74 of their questions right, 3 of 3 kinds of questions explained in full (0.1 s)
   ? qor: 30/30 value: end (0,) | zor = set 0 1; xul = lift 0
   ? vup: 23/23 value: end (0,) | zor = set 0 1; xul = lift 0
   ? jiv: 21/21 value: isin (1, 0) | zor = set 0 1; xul = lift 0
-test  9: 1417/1467 = 96.6%; sure of 3 of 3 kinds of questions, 1417/1467 right on them
+test  9: 1417/1467 = 96.6%; sure of 3 of 3 kinds of questions, 1417/1467 right on them; settled
       on the test 470/472 ? qor
       on the test 487/534 ? vup
       on the test 460/461 ? jiv
@@ -76,14 +77,14 @@ task 10: learnt from 20 stories (asked for 10 more), 52/52 of their questions ri
   ? wg: 18/18 value: value (0,) | jn = set 0 1; mv = set 0 1; lv = lift 0
   ? mb: 12/12 value: holders (0,) | jn = set 0 1; mv = set 0 1; lv = lift 0
   ? ct: 22/22 value: count (0,) | jn = set 0 1; mv = set 0 1; lv = lift 0
-test 10: 1374/1374 = 100.0%; sure of 3 of 3 kinds of questions, 1374/1374 right on them
-task 11: learnt from 20 stories (asked for 20 more), 96/100 of their questions right, 2 of 3 kinds of questions explained in full (5.9 s)
+test 10: 1374/1374 = 100.0%; sure of 3 of 3 kinds of questions, 1374/1374 right on them; settled
+task 11: learnt from 20 stories (asked for 20 more), 96/100 of their questions right, 2 of 3 kinds of questions explained in full (8.6 s)
   ? hez: 67/67 link: leads (0, 1) (turned over) (else no) | fom = link 1 0; ulk = link 1 0; bzi = link 1 0; hel = link 1 0
   ? mun: 24/24 link: after (0,) | fom = link 1 0; ulk = link 1 0; bzi = link 1 0; hel = link 1 0
   ? nuq: 5/9 amount: sum () | wgt = put (0,) 0
 test 11: 1320/1384 = 95.4%; sure of 2 of 3 kinds of questions, 1274/1274 right on them
       on the test 46/110 ? nuq
-task 12: learnt from 20 stories (asked for 20 more), 60/95 of their questions right, 1 of 3 kinds of questions explained in full (20.8 s)
+task 12: learnt from 20 stories (asked for 20 more), 60/95 of their questions right, 1 of 3 kinds of questions explained in full (24.4 s)
   ? qwh: 12/12 value: holders (0,) | cst = set 0 1
   ? qld: 40/61 amount: most () (else o4) | cst = add (1,) None
   ? qtl: 8/22 amount: amount (0,) | cst = add (1,) None
