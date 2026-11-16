@@ -33,6 +33,7 @@ explains more of the fifth kept aside is kept.
     python walk.py --clutrr .../gen23                         # the files gen23_train.csv and gen23_test.csv
     python walk.py --data ... --hold 0.2                      # a fifth of the kinds of sentences never shown: read from their words,
                                                               # and from stories without answers, by the register closing
+    python walk.py --data DIR --foreign                       # the stories of anew.py: the test in the words of other authors
 """
 import argparse
 import ast
@@ -321,10 +322,10 @@ class Reader(torch.nn.Module):
         return self.out((h * mask).sum(1) / mask.sum(1))
 
 
-def closings(model, path, kinds, held, only):
-    """stories read WITHOUT their answers. Where a sentence of a kind never shown links two things and another way
-    leads between them through kinds that are known, the register must come to the same by both: that says what the
-    sentence adds -> {kind: how often each choice came out}"""
+def closings(model, path, kinds, asked, unknown, only):
+    """stories read WITHOUT their answers. Where a sentence of a kind asked about links two things and another way
+    leads between them through kinds that are known (none of the unknown, and not the same kind), the register must
+    come to the same by both: that says what the sentence adds -> {kind: how often each choice came out}"""
     data, votes = json.load(open(path)), {}
     for n, key in enumerate(data):
         if n not in only:
@@ -335,13 +336,33 @@ def closings(model, path, kinds, held, only):
             if len(names) == 2 and kind in kinds:
                 links.append((kinds[kind], names[1], names[0]))
         for i, (kind, x, y) in enumerate(links):
-            if kind in held:
-                other = way(links[:i] + links[i + 1:], y, x)
-                if other and not any(o in held for o, _ in other):
+            if kind in asked:
+                other = way([link for j, link in enumerate(links) if j != i and link[0] != kind and link[0] not in unknown], y, x)
+                if other:
                     total = tuple(sum(sign * model.offs[model.add[o]][d] for o, sign in other) for d in range(len(model.offs[0])))
                     if total in model.offs:
                         votes.setdefault(kind, Counter())[model.offs.index(total)] += 1
     return votes
+
+
+def beliefs(lessons, gold, texts, choices, seed):
+    """five readers of words taught on the lessons (sentences and what the table says of them) -> what they believe of
+    the texts, their beliefs averaged; how many weights a reader has"""
+    belief = 0
+    for n in range(5):
+        torch.manual_seed(seed + n)
+        net = Reader({w for t in lessons for w in t}, choices)
+        opt = torch.optim.Adam(net.parameters(), lr=3e-3, weight_decay=1e-4)
+        for step in range(400):
+            net.train()
+            loss = torch.nn.functional.cross_entropy(net(lessons), gold)
+            opt.zero_grad()
+            loss.backward()
+            opt.step()
+        net.eval()
+        with torch.no_grad():
+            belief = belief + net(texts).softmax(-1) / 5
+    return belief, sum(p.numel() for p in net.parameters())
 
 
 def unseen(a, rng, t0):
@@ -382,7 +403,7 @@ def unseen(a, rng, t0):
     while True:                                                  # (a kind settled is known from then on and helps to close on others)
         votes, rounds = {}, rounds + 1
         for k in range(1, 11):
-            for kind, c in closings(model, os.path.join(a.data, f"qa{k}_test.json"), kinds, held - set(closed), first[k]).items():
+            for kind, c in closings(model, os.path.join(a.data, f"qa{k}_test.json"), kinds, held - set(closed), held - set(closed), first[k]).items():
                 votes.setdefault(kind, Counter()).update(c)
         new = {kind: c.most_common(1)[0][0] for kind, c in votes.items() if c.most_common(1)[0][1] >= max(3, 0.7 * sum(c.values()))}
         if not new:
@@ -415,6 +436,107 @@ def unseen(a, rng, t0):
             print("   ", t)
 
 
+def foreign(a, rng, t0):
+    """StepGame said anew (anew.py): the stories of the test are in the words of other authors than the stories taught
+    on, and not one of their kinds of sentences has been met. The table of the kinds taught on is learnt through the
+    walk as ever, and five small networks are taught to say the same from the words of a sentence. A kind of
+    sentence of the test is first read from its words. Then stories of the test are read without their answers (the
+    first half of every file): a kind the readers are sure of is taken as known for a start, and wherever another
+    way of known sentences leads between the two things of a sentence, the register closing says what that sentence
+    adds - also against what the readers said. Tried on the second half of every file, with the answers"""
+    kinds, asks, answers = {}, {}, {}
+    taught = [x for x in read(os.path.join(a.data, "train.json"), kinds, asks, answers, True) if x[0] is not None]
+    shown = sorted({k for s, _, _ in taught for k, _ in s})
+    model = register(taught, len(kinds), len(asks), len(answers), a, rng, lambda line: None)
+    size, held = {}, set()
+    for k in range(1, 11):                                       # the kinds of sentences of the test: their words only
+        data = json.load(open(os.path.join(a.data, f"qa{k}_test.json")))
+        size[k] = len(data)
+        for story in data.values():
+            for sentence in story["story"]:
+                kind, names = masked(sentence)
+                if len(names) == 2 and kind not in kinds:
+                    kinds[kind] = len(kinds)
+                    held.add(kinds[kind])
+    names = {i: k for k, i in kinds.items()}
+    model.add += [0] * len(held)
+    print(f"taught on {len(taught)} stories: {len(shown)} kinds of sentences, the table explains {100 * sum(model.hard(s, q) == g for s, q, g in taught) / len(taught):.2f}% "
+          f"of them; the stories of the test have {len(held)} kinds of sentences, none of them met ({time.time() - t0:.0f} s)", flush=True)
+    texts, gold, order = [names[i].split() for i in shown], torch.tensor([model.add[i] for i in shown]), sorted(held)
+    belief, weights = beliefs(texts, gold, [names[i].split() for i in order], len(model.offs), a.seed)
+    worded = dict(zip(order, belief.argmax(-1).tolist()))
+    sure = {i: c for i, c, p in zip(order, belief.argmax(-1).tolist(), belief.max(-1).values.tolist()) if p >= a.trust}
+    new = len({w for i in held for w in names[i].split()} - {w for t in texts for w in t})
+    print(f"the readers of words: {weights} weights each, taught on the {len(shown)} sentences; the sentences of the test have "
+          f"{new} words never met; the readers are sure ({a.trust:g} and more) of {len(sure)} kinds ({time.time() - t0:.0f} s)", flush=True)
+    first = {k: set(rng.sample(range(size[k] // 2), min(a.unanswered // 10, size[k] // 2)) if a.unanswered else range(size[k] // 2)) for k in range(1, 11)}
+    known, closed, t1, rounds = dict(sure), {}, time.time(), 0
+    while rounds < 10:
+        rounds += 1
+        for i, choice in known.items():
+            model.add[i] = choice
+        votes = {}
+        for k in range(1, 11):
+            for kind, c in closings(model, os.path.join(a.data, f"qa{k}_test.json"), kinds, held, held - set(known), first[k]).items():
+                votes.setdefault(kind, Counter()).update(c)
+        said = {kind: c.most_common(1)[0][0] for kind, c in votes.items() if c.most_common(1)[0][1] >= max(3, 0.7 * sum(c.values()))}
+        if all(known.get(kind) == choice for kind, choice in said.items()):
+            break
+        closed.update(said)
+        known.update(said)
+    against = sum(worded[i] != c for i, c in closed.items())
+    print(f"{sum(len(x) for x in first.values())} stories read without their answers ({rounds} times over, {time.time() - t1:.0f} s): settled by the register closing "
+          f"{len(closed)} of the {len(held)} kinds, {against} of them against what the readers of words said\n")
+    print("tried on the second half of the stories of the test: right, %, with the kinds of sentences read from their words; the same, read by the register closing")
+    print("(what it has not settled - from the words)")
+    alone, total = {}, [[], []]
+    for k in range(1, 11):
+        tried = [x for x in read(os.path.join(a.data, f"qa{k}_test.json"), kinds, asks, answers, False, set(range(size[k] // 2, size[k]))) if x[0] is not None]
+        got = []
+        for n, reading in enumerate((worded, {**worded, **closed})):
+            for i, choice in reading.items():
+                model.add[i] = choice
+            got.append(100 * sum(model.hard(s, q) == g for s, q, g in tried) / max(1, len(tried)))
+            total[n].append(got[-1])
+            for s, q, g in tried:
+                if len(s) == 1:
+                    alone.setdefault((n, s[0][0]), []).append(model.hard(s, q) == g)
+        print(f"  k = {k:2d}: {got[0]:6.2f}   {got[1]:6.2f}   ({len(tried)} stories)", flush=True)
+    print(f"  mean:   {sum(total[0]) / 10:6.2f}   {sum(total[1]) / 10:6.2f}")
+    for n, label in ((0, "from their words"), (1, "by the register closing")):
+        seen = [v for (m, _), v in alone.items() if m == n]
+        print(f"of the {len(seen)} kinds of sentences that stand alone on the way of a story tried, read rightly {label}: {sum(sum(v) >= 0.9 * len(v) for v in seen)}")
+    if a.then:                                                   # do the readers of words read better for what the closing has taught?
+        third = set()
+        for k in range(1, 11):
+            for story in json.load(open(os.path.join(a.then, f"qa{k}_test.json"))).values():
+                for sentence in story["story"]:
+                    kind, who = masked(sentence)
+                    if len(who) == 2 and kind not in kinds:
+                        kinds[kind] = len(kinds)
+                        third.add(kinds[kind])
+        names = {i: k for k, i in kinds.items()}
+        model.add += [0] * len(third)
+        order = sorted(third)
+        more = sorted(closed)
+        before, _ = beliefs(texts, gold, [names[i].split() for i in order], len(model.offs), a.seed)
+        after, _ = beliefs(texts + [names[i].split() for i in more], torch.cat([gold, torch.tensor([closed[i] for i in more])]),
+                           [names[i].split() for i in order], len(model.offs), a.seed)
+        print(f"\na third group of authors ({a.then}): {len(third)} kinds of sentences, none met, no stories of theirs read at all. Their stories tried, right, %:")
+        print(f"read by readers taught on the {len(texts)} sentences taught with answers; by readers taught on these and on the {len(more)} that the closing settled")
+        total = [[], []]
+        for k in range(1, 11):
+            tried = [x for x in read(os.path.join(a.then, f"qa{k}_test.json"), kinds, asks, answers, False) if x[0] is not None]
+            got = []
+            for n, belief in enumerate((before, after)):
+                for i, choice in zip(order, belief.argmax(-1).tolist()):
+                    model.add[i] = choice
+                got.append(100 * sum(model.hard(s, q) == g for s, q, g in tried) / max(1, len(tried)))
+                total[n].append(got[-1])
+            print(f"  k = {k:2d}: {got[0]:6.2f}   {got[1]:6.2f}   ({len(tried)} stories)", flush=True)
+        print(f"  mean:   {sum(total[0]) / 10:6.2f}   {sum(total[1]) / 10:6.2f}")
+
+
 def settle(taught, kinds, asks, answers, a, rng, t0):
     """which way of joining links the stories take: both taught on four fifths of them, the fifth kept aside tells.
     -> its name, and the table taught on all the stories if it is the table"""
@@ -434,6 +556,9 @@ def main():
     ap.add_argument("--data", default="", help="the folder TrainVersion of StepGame")
     ap.add_argument("--clutrr", default="", help="the files of CLUTRR without their ends: <this>_train.csv, <this>_test.csv")
     ap.add_argument("--hold", type=float, default=0, help="StepGame: so great a share of the kinds of sentences is never shown and is read from words")
+    ap.add_argument("--foreign", action="store_true", help="StepGame said anew (anew.py): the kinds of sentences of the test are none of them met in teaching")
+    ap.add_argument("--then", default="", help="with --foreign: the stories of a third group of authors (another folder of anew.py), read from words only")
+    ap.add_argument("--trust", type=float, default=0.9, help="with --foreign: the readers of words are taken at their word when so sure")
     ap.add_argument("--unanswered", type=int, default=0, help="with --hold: so many stories are read without answers (0: the first half of the test)")
     ap.add_argument("--short", action="store_true", help="CLUTRR: always the shortest way, not the links as they are told")
     ap.add_argument("--stories", type=int, default=0, help="taught on so many stories drawn at random (0: on all)")
@@ -446,6 +571,8 @@ def main():
     torch.set_num_threads(2)
     rng, t0 = random.Random(a.seed), time.time()
     kinds, asks, answers = {}, {}, {}
+    if a.foreign:
+        return foreign(a, rng, t0)
     if a.hold:
         return unseen(a, rng, t0)
     if a.clutrr:
