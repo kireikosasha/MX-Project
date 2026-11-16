@@ -434,6 +434,8 @@ def main():
     ap.add_argument("--seeds", type=int, default=3)
     ap.add_argument("--minutes", type=float, default=6, help="a task is given so long at the most")
     ap.add_argument("--polish", action="store_true", help="what the gradient has found is finished by the exact check of recall.py")
+    ap.add_argument("--text", type=int, default=0, help="so many more stories of the task are read with their answers hidden: from them the reader "
+                    "of templates learns which words are things (no answer more is used)")
     ap.add_argument("--show", action="store_true")
     a = ap.parse_args()
     torch.set_num_threads(1)
@@ -459,10 +461,12 @@ def main():
     for k in tasks:
         t0 = time.time()
         raw = rows.stories(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], a.stories)
+        hidden = [[(words, None if gold is None else []) for words, gold in story]
+                  for story in rows.stories(glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0], a.stories + a.text)[a.stories:]] if a.text else []
         best, tried = None, []
         if reader_of_words is not None:                          # the choices read from the words alone, made hard and checked: at once;
             later = rows.stories(glob.glob(os.path.join(a.data, f"qa{k}_*test.txt"))[0])
-            for reader in rows.guesses(raw[:20]):                # then the same choices as a beginning for the gradient (a third of the steps)
+            for reader in rows.guesses(raw[:20] + hidden):       # then the same choices as a beginning for the gradient (a third of the steps)
                 task = recall.Task(reader.rows(raw), False)
                 if max(sum(k != "#" for k in f[2]) for f in list(task.forms) + list(task.asked)) > SLOTS:
                     continue
@@ -490,7 +494,7 @@ def main():
             tried = [(mark, reader, task, readings, right, total)]
             print(f"task {k:2d}: read from its words at once {once[0]}/{once[1]}" + (" - taken at once" if once[0] == once[1] else
                   f"; after {a.steps // 3} steps of the gradient from there {tuned}/{total}" + ("" if tuned == total else f"; finished by the exact check {right}/{total}")), flush=True)
-        for reader in rows.guesses(raw[:20]) if reader_of_words is None else ():      # the stories as they are, then with one guess about their words (the
+        for reader in rows.guesses(raw[:20] + hidden) if reader_of_words is None else ():      # the stories as they are, then with one guess about their words (the
             task = recall.Task(reader.rows(raw), False)          # guesses of rows.py; a guess is paid for as in recall.py): each
             if max(sum(k != "#" for k in f[2]) for f in list(task.forms) + list(task.asked)) > SLOTS:        # taught shortly
                 continue

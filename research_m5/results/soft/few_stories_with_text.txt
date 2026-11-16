@@ -1,0 +1,17 @@
+stories | set | words: mean, at 95+ | search: mean, at 95+ | on the tasks both ran
+      1 | K   |  45.7,  1 |  37.3,  0 | 12
+      1 | L   |  38.5,  0 |  33.3,  0 | 11
+      1 | M2  |  27.1,  0 |  26.5,  0 | 12
+      3 | K   |  56.4,  1 |  55.2,  0 | 10
+      3 | L   |  64.3,  3 |  58.1,  0 | 11
+      3 | M2  |  53.9,  1 |  58.7,  1 | 12
+      5 | K   |  67.1,  1 |  66.9,  0 | 10
+      5 | L   |  70.2,  3 |  62.9,  0 | 11
+      5 | M2  |  61.9,  1 |  64.5,  1 | 11
+     10 | K   |  70.3,  1 |  75.5,  1 | 10
+     10 | L   |  74.1,  5 |  82.5,  2 | 11
+     10 | M2  |  68.3,  2 |  76.2,  2 | 11
+from  1 stories, 35 tasks: words 37.1% (1 at 95+), search 32.3% (0 at 95+)
+from  3 stories, 33 tasks: words 58.1% (5 at 95+), search 57.5% (1 at 95+)
+from  5 stories, 32 tasks: words 66.4% (5 at 95+), search 64.7% (1 at 95+)
+from 10 stories, 32 tasks: words 70.9% (8 at 95+), search 78.2% (5 at 95+)

@@ -890,6 +890,8 @@ def main():
     ap.add_argument("--stories", type=int, default=20)
     ap.add_argument("--ask", type=int, default=20, help="how many more stories it may ask the answers of")
     ap.add_argument("--show", action="store_true")
+    ap.add_argument("--text", type=int, default=0, help="so many more stories of the task are read with their answers hidden: from them the reader "
+                    "of templates learns which words are things (no answer more is used)")
     a = ap.parse_args()
     files = glob.glob(os.path.join(a.data, "qa*_train.txt"))
     tasks = [int(x) for x in a.tasks.split(",") if x] or sorted(int(re.match(r"qa(\d+)_", os.path.basename(f)).group(1)) for f in files)
@@ -898,8 +900,10 @@ def main():
         path = glob.glob(os.path.join(a.data, f"qa{k}_*train.txt"))[0]
         raw = records.read(path, a.stories + a.ask) if a.records else rows.stories(path, a.stories + a.ask)
         tried, plain = [], None                                  # the stories as they are, then with one guess about their words (which
+        hidden = [[(words, None if gold is None else []) for words, gold in story]
+                  for story in rows.stories(path, a.stories + a.ask + a.text)[a.stories + a.ask:]] if a.text and not a.records else []
         for deep in (False, True):                               # of them are things; whether a word is part of the kind of sentence):
-            for reader in [Records] if a.records else rows.guesses(raw[:a.stories]):     # each weighed by what it explains, less what its
+            for reader in [Records] if a.records else rows.guesses(raw[:a.stories] + hidden):     # each weighed by what it explains, less what its
                 for split in (False, True):                      # readings cost and half a question for every kind of question it makes;
                     m = Learner(reader.rows(raw[:a.stories]), split, deep=deep)      # first quickly (of the story as it is now), then,
                     right, total = m.explained()                                     # if nothing explains all, in full
