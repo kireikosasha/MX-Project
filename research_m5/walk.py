@@ -1,25 +1,41 @@
 #!/usr/bin/env python3
 """
-A walk with a register over links read from sentences: the benchmark StepGame (Shi, Zhang, Lipani, 2022).
+A walk over links read from a story, on two outside benchmarks: StepGame (Shi, Zhang, Lipani, 2022) and CLUTRR
+(Sinha et al., 2019).
 
 A story of StepGame says where things stand against each other ("Y is at a 45 degree angle to I, in the lower
-righthand corner.") in some three hundred ways; the question asks how one thing stands against another, which
+righthand corner.") in some two hundred ways; the question asks how one thing stands against another, which
 takes up to ten such sentences one after another, among sentences that do not matter. The models of the paper are
-taught on 50 000 stories of one to five steps and tried on ten thousand stories of every number of steps up to ten.
+taught on 50 000 stories of one to five sentences and tried on ten thousand stories of every number up to ten.
+A story of CLUTRR is a chain of kin ("the father of", "the sister of"...), the question is what the last is to
+the first; taught on chains of two and three links, tried on chains of up to ten.
 
-Here nothing is said of space. A sentence with two names is a link between two things; of every kind of sentence
-(the sentence with the names taken out) it is learnt what it adds to a register - a few whole numbers (two by
-default), each of them -1, 0 or 1 more - softly. The question is answered by a walk: from one thing to the other
-along the links (the shortest way, found exactly), the register taking every link in, against the link if it is
-gone backwards. What is said is learnt too: a table from the signs of the numbers of the register to the words of
-the answers. The state of the walk is how much is believed of everything the register may hold; the gradient of
-the answers goes through the walk. Then the choices are made hard, the walk is run on whole numbers, and every
-choice is tried over against the stories taught on (exactly: one choice changed, the stories counted).
+Here nothing is said of space or of kin. A story is links between things, every link of some kind (in StepGame:
+the sentence with the names taken out); the question is answered by a walk from one thing to the other along the
+links (the shortest way, found exactly). How the links of the way join is learnt, and there are two ways to join:
+
+  register  of every kind of link it is learnt what it adds to a register - a few whole numbers (two by default),
+            each of them -1, 0 or 1 more - softly; a link gone backwards takes away. What is said is learnt too: a
+            table from the signs of the numbers of the register to the words of the answers. The state of the walk
+            is how much is believed of everything the register may hold; the gradient of the answers goes through
+            the walk. Then the choices are made hard, the walk is run on whole numbers, and every choice is tried
+            over against the stories taught on (exactly: one choice changed, the stories counted).
+  table     two links one after another make a relation that has a name - the answer of a story of two links; a
+            named relation and a link make a named relation again (from the stories of three links). The table is
+            learnt by counting; the way is joined by a chart - every stretch of it, in every order of joining that
+            the table knows.
+
+Which of the two a benchmark takes is not told: both are taught on four fifths of the stories and the one that
+explains more of the fifth kept aside is kept.
 
     python walk.py --data .../StepGame/Dataset/TrainVersion
     python walk.py --data ... --stories 300 --least 2         # taught on 300 stories, none answered by one sentence
+    python walk.py --clutrr .../gen23                         # the files gen23_train.csv and gen23_test.csv
+    python walk.py --data ... --hold 0.2                      # a fifth of the kinds of sentences never shown, read from their words
 """
 import argparse
+import ast
+import csv
 import itertools
 import json
 import os
@@ -100,6 +116,86 @@ def read(path, kinds, asks, answers, grow, only=None):
     return out
 
 
+def told(links, a, b):
+    """the links in the order they are told, if so they lead from a to b (each from where the one before came to; a
+    thing may be come to twice) -> the way, or None"""
+    out, at = [], a
+    for kind, x, y in links:
+        if y != at and x != at:
+            return None
+        out.append((kind, 1 if y == at else -1))
+        at = x if y == at else y
+    return out if at == b and out else None
+
+
+def kin(path, kinds, asks, answers, grow, short=False):
+    """a file of CLUTRR -> [(the way, the kind of the question, the answer, how many links the story has)]: the links
+    are given as they are (who, the kind of kin, whom), the question is what the last is to the first. The way: the
+    links as they are told, if they lead from the one to the other, else (or short) the shortest"""
+    out = []
+    for row in csv.DictReader(open(path, newline="", encoding="utf-8")):
+        edges, types, ask = (ast.literal_eval(row[x]) for x in ("story_edges", "edge_types", "query_edge"))
+        if grow:
+            for t in types:
+                kinds.setdefault(t, len(kinds))
+            asks.setdefault("", len(asks))
+            answers.setdefault(row["target_text"], len(answers))
+        links = [(kinds.get(t), y, x) for (x, y), t in zip(edges, types)]
+        steps = (None if short else told(links, ask[0], ask[1])) or way(links, ask[0], ask[1])
+        if steps is not None and any(k is None for k, _ in steps):
+            steps = None
+        out.append((steps, 0, answers.get(row["target_text"]), len(types)))
+    return out
+
+
+class Table:
+    """the other way for links to join: a table learnt by counting, the way joined by a chart"""
+
+    def __init__(self, taught, names, answers):
+        self.names, self.words, self.pairs = names, dict(answers), {}
+        for steps, ask, gold in taught:                          # two links make what the story of the two is answered with
+            if len(steps) == 2:
+                self.count(ask, self.state(steps[0]), self.state(steps[1]), gold)
+        for steps, ask, gold in taught:                          # three links: two of them joined by what is known already
+            if len(steps) == 3:
+                a, b, c = (self.state(x) for x in steps)
+                for left in self.best(ask, a, b):
+                    self.count(ask, ("name", left), c, gold)
+                for right in self.best(ask, b, c):
+                    self.count(ask, a, ("name", right), gold)
+
+    def count(self, ask, a, b, gold):
+        self.pairs.setdefault((ask, a, b), Counter())[gold] += 1
+
+    def state(self, link):
+        """a link -> itself, or the named relation, if the kind of the link is called by the word of an answer"""
+        kind, sign = link
+        word = self.names.get(kind)
+        return ("name", self.words[word]) if sign > 0 and word in self.words else ("link", kind, sign)
+
+    def best(self, ask, a, b):
+        c = self.pairs.get((ask, a, b))
+        return [c.most_common(1)[0][0]] if c else []
+
+    def hard(self, steps, ask):
+        """the chart: of every stretch of the way what named relations it may make and how much stands for each"""
+        n = len(steps)
+        span = {(i, i + 1): {self.state(steps[i]): 1.0} for i in range(n)}
+        for width in range(2, n + 1):
+            for i in range(n - width + 1):
+                got = {}
+                for m in range(i + 1, i + width):
+                    for x, wx in span[(i, m)].items():
+                        for y, wy in span[(m, i + width)].items():
+                            c = self.pairs.get((ask, x, y))
+                            for gold, times in (c or {}).items():
+                                got[("name", gold)] = got.get(("name", gold), 0) + wx * wy * times / sum(c.values())
+                whole = sum(got.values())
+                span[(i, i + width)] = {k: v / whole for k, v in got.items()}
+        top = {k: v for k, v in span[(0, n)].items() if k[0] == "name"}
+        return max(top, key=top.get)[1] if top else None
+
+
 class Walk(torch.nn.Module):
     """learnt: of every kind of sentence what it adds to the register; of every kind of question what is said by the
     signs of the register"""
@@ -173,28 +269,11 @@ class Walk(torch.nn.Module):
         return changed
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--data", required=True, help="the folder TrainVersion of StepGame")
-    ap.add_argument("--stories", type=int, default=0, help="taught on so many stories drawn at random (0: on all)")
-    ap.add_argument("--least", type=int, default=1, help="taught only on stories the answer of which takes so many sentences and more")
-    ap.add_argument("--steps", type=int, default=300)
-    ap.add_argument("--numbers", type=int, default=2, help="how many numbers the register holds")
-    ap.add_argument("--begin", type=int, default=6, help="so many beginnings; the one that explains the stories taught on best is kept")
-    ap.add_argument("--seed", type=int, default=0)
-    a = ap.parse_args()
-    torch.set_num_threads(2)
-    rng, t0 = random.Random(a.seed), time.time()
-    kinds, asks, answers = {}, {}, {}
-    keys = [i for i, x in enumerate(read(os.path.join(a.data, "train.json"), {}, {}, {}, True)) if x[0] is not None and len(x[0]) >= a.least]
-    keys = set(rng.sample(keys, a.stories) if a.stories else keys)
-    taught = [x for i, x in enumerate(read(os.path.join(a.data, "train.json"), kinds, asks, answers, True, keys)) if x[0] is not None]
-    print(f"taught on {len(taught)} stories (the answer takes {a.least} sentences and more): {len(kinds)} kinds of sentences, {len(asks)} of questions, "
-          f"{len(answers)} answers", flush=True)
-
+def register(taught, kinds, asks, answers, a, rng, log):
+    """the register taught on the stories: several beginnings, the one that explains the stories best is kept"""
     best, long = None, [x for x in taught if len(x[0]) > 1]
     for seed in range(a.seed, a.seed + a.begin):                 # (begun anew several times: about one beginning in four ends in choices
-        model = Walk(len(kinds), len(asks), len(answers), seed, a.numbers)       # that do not add up; the exact count on the stories taught on tells)
+        model = Walk(kinds, asks, answers, seed, a.numbers)      # that do not add up; the exact count on the stories taught on tells)
         opt = torch.optim.Adam(model.parameters(), lr=0.1)
         for step in range(a.steps):
             few = long if step < a.steps // 2 and len(long) >= 20 else taught        # (first the stories that take several sentences:
@@ -210,15 +289,145 @@ def main():
         first = sum(model.hard(s, q) == g for s, q, g in taught) / len(taught)
         changed = model.polish(taught)
         right = sum(model.hard(s, q) == g for s, q, g in taught) / len(taught)
-        print(f"begun from {seed}: loss {loss.item():.3f}; made hard, of the stories taught on right {100 * first:.2f}%; "
-              f"every choice tried over ({changed} changed): {100 * right:.2f}%", flush=True)
+        log(f"begun from {seed}: loss {loss.item():.3f}; made hard, of the stories taught on right {100 * first:.2f}%; "
+            f"every choice tried over ({changed} changed): {100 * right:.2f}%")
         if best is None or right > best[0]:
             best = (right, model)
         if right == 1:
             break
-    model = best[1]
-    print(f"kept: the beginning that explains {100 * best[0]:.2f}% of the stories taught on; {sum(p.numel() for p in model.parameters())} numbers learnt, "
-          f"{time.time() - t0:.0f} s with all the beginnings", flush=True)
+    log(f"kept: the beginning that explains {100 * best[0]:.2f}% of the stories taught on")
+    return best[1]
+
+
+class Reader(torch.nn.Module):
+    """a small network that says from the words of a sentence what its kind adds to the register"""
+
+    def __init__(self, vocab, choices, width=32):
+        super().__init__()
+        self.vocab = {w: i + 1 for i, w in enumerate(sorted(vocab))}
+        self.embed = torch.nn.Embedding(len(self.vocab) + 1, 24, padding_idx=0)
+        self.gru = torch.nn.GRU(24, width, batch_first=True, bidirectional=True)
+        self.out = torch.nn.Linear(2 * width, choices)
+
+    def forward(self, texts):
+        most = max(len(t) for t in texts)
+        ids = torch.tensor([[self.vocab.get(w, 0) for w in t] + [0] * (most - len(t)) for t in texts])
+        mask = torch.tensor([[1.0] * len(t) + [0.0] * (most - len(t)) for t in texts])[:, :, None]
+        if self.training:                                        # (a word in seven is hidden; the places of the names never)
+            names = sum(ids == self.vocab.get(w, -1) for w in ("<0>", "<1>")) > 0
+            ids = torch.where((torch.rand(ids.shape) < 0.15) & ~names, torch.zeros_like(ids), ids)
+        h, _ = self.gru(self.embed(ids))
+        return self.out((h * mask).sum(1) / mask.sum(1))
+
+
+def unseen(a, rng, t0):
+    """StepGame with a share of the kinds of sentences never shown: the stories that have one of them on the way are
+    not taught on. The table of the kinds shown is learnt through the walk as ever; then a small network is taught
+    to say the same from the words of a sentence (five of them, their beliefs added), and it reads the kinds never
+    shown. Tried on the stories of the test apart: those of kinds shown only, and those with a kind never shown"""
+    kinds, asks, answers = {}, {}, {}
+    every = [x for x in read(os.path.join(a.data, "train.json"), kinds, asks, answers, True) if x[0] is not None]
+    names = {i: k for k, i in kinds.items()}
+    held = set(rng.sample(sorted(names), int(a.hold * len(names))))
+    taught = [x for x in every if not any(k in held for k, _ in x[0])]
+    shown = sorted({k for s, _, _ in taught for k, _ in s})
+    model = register(taught, len(kinds), len(asks), len(answers), a, rng, lambda line: None)
+    print(f"{len(names)} kinds of sentences, {len(held)} of them never shown; taught on {len(taught)} stories of {len(every)}: the table explains "
+          f"{100 * sum(model.hard(s, q) == g for s, q, g in taught) / len(taught):.2f}% of them ({time.time() - t0:.0f} s)", flush=True)
+    texts, gold, belief = [names[i].split() for i in shown], torch.tensor([model.add[i] for i in shown]), 0
+    for seed in range(5):
+        torch.manual_seed(a.seed + seed)
+        net = Reader({w for t in texts for w in t}, len(model.offs))
+        opt = torch.optim.Adam(net.parameters(), lr=3e-3, weight_decay=1e-4)
+        for step in range(400):
+            net.train()
+            loss = torch.nn.functional.cross_entropy(net(texts), gold)
+            opt.zero_grad()
+            loss.backward()
+            opt.step()
+        net.eval()
+        with torch.no_grad():
+            belief = belief + net([names[i].split() for i in sorted(held)]).softmax(-1)
+    for i, choice in zip(sorted(held), belief.argmax(-1).tolist()):
+        model.add[i] = choice
+    print(f"the readers: {sum(p.numel() for p in net.parameters())} weights each, taught on the {len(shown)} sentences shown ({time.time() - t0:.0f} s)\n")
+    print("tried on the stories of the test: right, %, on the stories whose way has only kinds shown; on those with a kind never shown on the way")
+    for k in range(1, 11):
+        tried = [x for x in read(os.path.join(a.data, f"qa{k}_test.json"), kinds, asks, answers, False) if x[0] is not None]
+        old = [x for x in tried if not any(kind in held for kind, _ in x[0])]
+        new = [x for x in tried if any(kind in held for kind, _ in x[0])]
+        print(f"  k = {k:2d}: {100 * sum(model.hard(s, q) == g for s, q, g in old) / len(old):6.2f} ({len(old)} stories)   "
+              f"{100 * sum(model.hard(s, q) == g for s, q, g in new) / max(1, len(new)):6.2f} ({len(new)} stories)", flush=True)
+        if k == 1:
+            by = {}
+            for s, q, g in new:
+                by.setdefault(s[0][0], []).append(model.hard(s, q) == g)
+            wrong = sorted(names[i] for i, v in by.items() if sum(v) < 0.9 * len(v))
+    print(f"\nof the {len(by)} kinds never shown that stand alone in a story of the test, read rightly from their words: {len(by) - len(wrong)}; read wrongly:")
+    for t in wrong:
+        print("   ", t)
+
+
+def settle(taught, kinds, asks, answers, a, rng, t0):
+    """which way of joining links the stories take: both taught on four fifths of them, the fifth kept aside tells.
+    -> its name, and the table taught on all the stories if it is the table"""
+    mixed = rng.sample(taught, len(taught))
+    aside, most = mixed[:len(mixed) // 5], mixed[len(mixed) // 5:]
+    names = {i: k for k, i in kinds.items()}
+    by = {"register": register(most, len(kinds), len(asks), len(answers), a, rng, lambda line: None), "table": Table(most, names, answers)}
+    right = {name: 100 * sum(model.hard(s, q) == g for s, q, g in aside) / max(1, len(aside)) for name, model in by.items()}
+    kept = max(right, key=right.get)
+    print(f"of the fifth of the stories kept aside ({len(aside)}) explained: by the register {right['register']:.2f}%, by the table {right['table']:.2f}% "
+          f"- kept: the {kept} ({time.time() - t0:.0f} s)", flush=True)
+    return kept, Table(taught, names, answers) if kept == "table" else None
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--data", default="", help="the folder TrainVersion of StepGame")
+    ap.add_argument("--clutrr", default="", help="the files of CLUTRR without their ends: <this>_train.csv, <this>_test.csv")
+    ap.add_argument("--hold", type=float, default=0, help="StepGame: so great a share of the kinds of sentences is never shown and is read from words")
+    ap.add_argument("--short", action="store_true", help="CLUTRR: always the shortest way, not the links as they are told")
+    ap.add_argument("--stories", type=int, default=0, help="taught on so many stories drawn at random (0: on all)")
+    ap.add_argument("--least", type=int, default=1, help="taught only on stories the answer of which takes so many sentences and more")
+    ap.add_argument("--steps", type=int, default=300)
+    ap.add_argument("--numbers", type=int, default=2, help="how many numbers the register holds")
+    ap.add_argument("--begin", type=int, default=6, help="so many beginnings; the one that explains the stories taught on best is kept")
+    ap.add_argument("--seed", type=int, default=0)
+    a = ap.parse_args()
+    torch.set_num_threads(2)
+    rng, t0 = random.Random(a.seed), time.time()
+    kinds, asks, answers = {}, {}, {}
+    if a.hold:
+        return unseen(a, rng, t0)
+    if a.clutrr:
+        taught = [x[:3] for x in kin(a.clutrr + "_train.csv", kinds, asks, answers, True, a.short) if x[0] is not None]
+        print(f"taught on {len(taught)} stories: {len(kinds)} kinds of links, {len(answers)} answers", flush=True)
+        kept, model = settle(taught, kinds, asks, answers, a, rng, t0)
+        if kept == "register":
+            model = register(taught, len(kinds), len(asks), len(answers), a, rng, print)
+        else:
+            print(f"the table: {len(model.pairs)} pairs counted; {time.time() - t0:.0f} s with everything", flush=True)
+        tried = kin(a.clutrr + "_test.csv", kinds, asks, answers, False, a.short)
+        print("\ntried on the stories of the test, by how many links the story has: right, %")
+        total = []
+        for k in sorted({x[3] for x in tried}):
+            some = [x for x in tried if x[3] == k]
+            total.append(100 * sum(s is not None and model.hard(s, q) == g for s, q, g, _ in some) / len(some))
+            print(f"  {k:2d} links: {total[-1]:6.2f}   ({len(some)} stories)", flush=True)
+        print(f"  mean over the numbers of links: {sum(total) / len(total):.2f}; over the stories: "
+              f"{100 * sum(s is not None and model.hard(s, q) == g for s, q, g, _ in tried) / len(tried):.2f}")
+        return
+    keys = [i for i, x in enumerate(read(os.path.join(a.data, "train.json"), {}, {}, {}, True)) if x[0] is not None and len(x[0]) >= a.least]
+    keys = set(rng.sample(keys, a.stories) if a.stories else keys)
+    taught = [x for i, x in enumerate(read(os.path.join(a.data, "train.json"), kinds, asks, answers, True, keys)) if x[0] is not None]
+    print(f"taught on {len(taught)} stories (the answer takes {a.least} sentences and more): {len(kinds)} kinds of sentences, {len(asks)} of questions, "
+          f"{len(answers)} answers", flush=True)
+
+    kept, model = settle(taught, kinds, asks, answers, a, rng, t0)
+    if kept == "register":
+        model = register(taught, len(kinds), len(asks), len(answers), a, rng, print)
+        print(f"{sum(p.numel() for p in model.parameters())} numbers learnt; {time.time() - t0:.0f} s with everything", flush=True)
 
     said = {}                                                    # the kinds of sentences the stories use for two things: alone in a
     for s, q, g in read(os.path.join(a.data, "train.json"), kinds, asks, answers, False):    # story, the same sentence the same way round is answered differently
