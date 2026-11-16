@@ -74,6 +74,19 @@ test  5: 1167/1503 = 77.6%
 sure  5: of 2 of 4 kinds of questions, 559/559 right on them; of the others 608/944
 deep  5: 1167/1503 = 77.6% (nothing composed)
 all: 1167/1503 = 77.64%
+task  6: 12 things of 4 kinds; learnt from 20 stories (began from the best of 10 readings proposed) (asked for 20 more) (learnt anew after asking), 141/150 of their questions right, 3 of 3 kinds of statements and 4 of 4 kinds of questions read (8397 s, 1018363 episodes played)
+  things: ann=a1 bob=a2 cat=a3 dan=a4 eve=a5 garden=b1 hall=b2 kitchen=b3 office=b4 shed=b5 nobody=c1 nowhere=d1
+    * went to the * a b          pair F0 of (0, 1)
+    * went to the * after * went to the * a b a b      set F0 of (1, 0); set F1 of (1, 0)
+    * went to the * before * went to the * a b a b      pair F0 of (0, 1); pair F1 of (2, 3)
+  ? did * go to the * before * went to the * a b a b      has 2 [<F1] 3
+  ? where is * now a            eldest 0 [<~F0] b (else d1)
+  ? where was * when * went to the * a a b        list 0 [~F0] b (else d1)
+  ? who was in the * before * went to the * b a b        first 1 0 2 1 (else c1)
+test  6: 1385/1478 = 93.7%
+sure  6: of 1 of 4 kinds of questions, 137/147 right on them; of the others 1248/1331
+deep  6: 1374/1478 = 93.0% (where was * when * went to the *: 45 -> 48 of 51; 2 s)
+all: 1385/1478 = 93.71%
 task  7: 10 things of 2 kinds; learnt from 20 stories (began from the best of 10 readings proposed) (asked for 20 more), 132/148 of their questions right, 5 of 5 kinds of statements and 4 of 4 kinds of questions read (5491 s, 1456547 episodes played)
   things: ann=a1 bob=a2 cal=a3 eve=a4 fay=a5 gus=a6 apple=b1 ball=b2 coin=b3 pear=b4
     * gets # more * a # b        qadd Q0 of (101,); qadd Q1 of (1,)
