@@ -792,6 +792,69 @@ def study(reader, raw, stories=20, ask=20, split=True):
     return m, used - stories, clean == 2 and used - stories < ask
 
 
+# ---------------------------------------------------------------- dreams of the ground itself
+def drawn(rng):
+    """a task no one wrote: kinds of things, and one or two ways of looking, each with kinds of statements whose parts
+    are drawn at random and kinds of questions with what they ask -> (the names, the statements, the questions)"""
+    kinds = "abcdefgh"[:rng.randint(2, 4)]
+    names = {k: [k + str(i) for i in range(1, rng.randint(4, 8))] for k in kinds}
+    says, asks_ = [], []
+    for view in range(rng.choice((1, 1, 2))):
+        sort = rng.choice(("value", "value", "link", "amount"))
+        x, y, z = rng.choice(kinds), rng.choice(kinds), rng.choice(kinds)
+        if sort == "value":
+            says += rng.sample([((x, y), 0, ("set", 0, 1)), ((y, x), 0, ("set", 1, 0)), ((z, x, y), 0, ("set", 1, 2)), ((x,), 0, ("clear", 0)),
+                                ((x, x), 0, ("as", 0, 1)), ((x, y), 0, ("set", 0, 1))], rng.randint(1, 3))
+            asks_ += rng.sample([((x,), 0, ("end", (0,)) if x == y else ("value", (0,))), ((y,), 0, ("holders", (0,))), ((y,), 0, ("count", (0,))),
+                                 ((x, y), 0, ("is", (0, 1))), ((x, x), 0, ("same", (0, 1)))], rng.randint(1, 3))
+        elif sort == "link":
+            says += rng.sample([((x, x), 0, ("link", 0, 1)), ((x, x), 0, ("link", 1, 0)), ((x, x), 0, ("unlink", 0, 1)), ((z, x, x), 0, ("link", 1, 2))], rng.randint(1, 2))
+            asks_ += rng.sample([((x, x), 0, ("leads", (0, 1))), ((x,), 0, ("after", (0,))), ((x,), 0, ("before", (0,))), ((x,), 0, ("countafter", (0,))),
+                                 ((), 0, ("last", ()))], rng.randint(1, 3))
+        else:
+            says += rng.sample([((x,), 1, ("put", (0,), 0)), ((x,), 1, ("add", (0,), 0)), ((x,), 1, ("take", (0,), 0)), ((x, x), 1, ("pass", (0, 1), 0)),
+                                ((x,), 0, ("add", (0,), None))], rng.randint(1, 3))
+            asks_ += rng.sample([((x,), 0, ("amount", (0,))), ((x, x), 0, ("morethan", (0, 1))), ((), 0, ("most", ())), ((x, x), 0, ("more", (0, 1)))], rng.randint(1, 2))
+        says, asks_ = [f if len(f) == 5 else f + (sort, view) for f in says], [f if len(f) == 5 else f + (sort, view) for f in asks_]
+    return names, says, asks_
+
+
+def dreams(rng, stories=20):
+    """an endless stream of such tasks, each in so many stories (or from so many to so many); the questions are
+    answered by the ground -> (the stories as rows, None, "ground")"""
+    while True:
+        names, says, asks_ = drawn(rng)
+        eps = []
+        for _ in range(stories if stories.__class__ is int else rng.randint(*stories)):
+            ep, states, met = [], {}, []
+            for i in range(rng.randint(5, 14)):
+                quest = i > 1 and rng.random() < 0.3 or i > 8 and not any(r[1] for r in ep)
+                n = rng.randrange(len(asks_ if quest else says))
+                ks, nn, part, sort, view = (asks_ if quest else says)[n]
+                things = []
+                for k in ks:
+                    pool = [t for t in met if t[0] == k and t not in things] if rng.random() < 0.7 else []
+                    things.append(rng.choice(pool or [t for t in names[k] if t not in things]))
+                numbers = tuple(rng.randint(1, 9) for _ in range(nn))
+                state = states.setdefault(view, {})
+                if quest:
+                    told = answer(sort, part, state, things, numbers, None, ())
+                    told = ("yes" if told else "no") if told.__class__ is bool else told
+                    if told is None and part[0] in ("holders", "after", "before"):
+                        told = "none"
+                    if told is not None and not told.startswith("-"):
+                        ep.append((f"q{n}", True, tuple(things), numbers, ks + ("#",) * nn, told))
+                else:
+                    said(state, sort, part, things, numbers)
+                    met += things
+                    ep.append((f"s{n}", False, tuple(things), numbers, ks + ("#",) * nn, None))
+            if any(r[1] for r in ep):
+                eps.append(ep)
+        golds = [r[5] for ep in eps for r in ep if r[1]]
+        if len(eps) >= 2 and len(set(golds)) > 1:
+            yield eps, None, "ground"
+
+
 class Records:
     """stories that are records already (no words: the name of an operation and its things), as a reader of them"""
     guessed = ()

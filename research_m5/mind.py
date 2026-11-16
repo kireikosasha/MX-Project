@@ -31,6 +31,7 @@ import torch
 from torch import nn
 
 import guess
+import recall
 import records
 import relive
 from guess import ANS, EACH, KINDS, N0, NUMS, OTHER, PAD, PLAIN, Q0, S0, STORY, T0, VOCAB, order
@@ -236,7 +237,8 @@ class Dreams(torch.utils.data.IterableDataset):
     def __iter__(self):
         info = torch.utils.data.get_worker_info()
         rng = random.Random(1000003 * self.a.seed + 1009 * self.turn + (info.id if info else 0))
-        for eps, _, _ in relive.dreams(self.tasks, rng, (min(self.a.least, self.a.stories), self.a.stories), self.a.varied):
+        span = (min(self.a.least, self.a.stories), self.a.stories)
+        for eps, _, _ in recall.dreams(rng, span) if self.a.ground else relive.dreams(self.tasks, rng, span, self.a.varied):
             got = tokens(eps, rng, self.a.most)
             if got:
                 yield got[0], got[1], got[3]
@@ -382,6 +384,8 @@ def main():
     ap.add_argument("--lived", required=True, help="the tasks as they were understood (made by relive.py)")
     ap.add_argument("--hold", default="", help="sets left out of teaching and tried on: H,I,J,K")
     ap.add_argument("--only", default="", help="teach on these tasks alone (a check): en1,H1")
+    ap.add_argument("--ground", action="store_true", help="the dreams are of the ground of records itself (recall.py): tasks drawn at random, none "
+                    "of them written by anyone; every task of --lived is then one never seen")
     ap.add_argument("--net", default="", help="a network already taught")
     ap.add_argument("--out", default="")
     ap.add_argument("--minutes", type=float, default=30)
@@ -409,7 +413,7 @@ def main():
     only = tuple(x for x in a.only.split(",") if x)
     apart = [t for t in tasks if t["name"].rstrip("0123456789") in hold]
     mine = [t for t in tasks if t["full"] and t not in apart and (not only or t["name"] in only)]
-    print(f"{len(mine)} tasks to dream of, {len(apart)} left out to try on; {device}", flush=True)
+    print((f"dreams of the ground itself, {len(apart)} tasks to try on" if a.ground else f"{len(mine)} tasks to dream of, {len(apart)} left out to try on") + f"; {device}", flush=True)
     if a.net:
         saved = torch.load(a.net, map_location=device)
         net = Mind(*saved["size"]).to(device)
