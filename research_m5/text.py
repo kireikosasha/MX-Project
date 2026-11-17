@@ -310,32 +310,45 @@ def beside(taught, tried, a, rng, log, only=None):
     def state(word):
         return ("name", answers[word]) if word in answers else ("link", kinds[word], 1) if word in kinds else None
 
-    read, links, by, added, no_way = 0, 0, {}, {}, 0
-    for told, pairs, gold, (x, y), answer, n, more in tried:
+    each = []
+    for told, pairs, *_ in tried:
         bel = believe([view(told, p, q) for p, q in pairs])
-        belief = {pair: bel[i] for i, pair in enumerate(pairs)}
-        for pair, word in gold.items():                          # (how the links are read: counted, not used)
-            links += 1
-            read += pair in belief and SAID[int(belief[pair].argmax())] == word
-        steps = None                                             # the surest way: the product of how surely something is said of every pair on it
-        if x is not None and y is not None:
-            steps = surest(pairs, lambda p, q: -math.log(max(1e-6, 1 - float(belief[(p, q)][0]))), x, y)
-        got = None
-        if steps:
-            leaves = []
-            for pair in steps:
-                b = belief[pair].clone()
-                b[0] = 0
-                leaf = {state(SAID[i]): float(b[i] / b.sum()) for i in range(1, len(SAID)) if b[i] / b.sum() > 0.02 and state(SAID[i])}
-                leaves.append(leaf)
-            got = table.hard(leaves, 0)
-        else:
-            no_way += 1
-        good = got is not None and got == answers.get(answer)
-        by.setdefault(n, []).append(good)
-        added.setdefault(more, []).append(good)
-    log(f"the links of the stories of the test read rightly from the words: {100 * read / links:.1f}% (of {links}); no way found in {no_way} stories")
-    shown(by, added, "the readers taught by the links beside the stories of two and three")
+        each.append({pair: bel[i] for i, pair in enumerate(pairs)})
+
+    def answered(beliefs, how):
+        read, links, by, added, no_way = 0, 0, {}, {}, 0
+        for (told, pairs, gold, (x, y), answer, n, more), belief in zip(tried, beliefs):
+            for pair, word in gold.items():                      # (how the links are read: counted, not used)
+                links += 1
+                read += pair in belief and SAID[int(belief[pair].argmax())] == word
+            steps = None                                         # the surest way: the product of how surely something is said of every pair on it
+            if x is not None and y is not None:
+                steps = surest(pairs, lambda p, q: -math.log(max(1e-6, 1 - float(belief[(p, q)][0]))), x, y)
+            got = None
+            if steps:
+                leaves = []
+                for pair in steps:
+                    b = belief[pair].clone()
+                    b[0] = 0
+                    leaf = {state(SAID[i]): float(b[i] / b.sum()) for i in range(1, len(SAID)) if b[i] / b.sum() > 0.02 and state(SAID[i])}
+                    leaves.append(leaf)
+                got = table.hard(leaves, 0)
+            else:
+                no_way += 1
+            good = got is not None and got == answers.get(answer)
+            by.setdefault(n, []).append(good)
+            added.setdefault(more, []).append(good)
+        log(f"the links of the stories of the test read rightly from the words: {100 * read / links:.1f}% (of {links}); no way found in {no_way} stories")
+        shown(by, added, how)
+
+    answered(each, "the readers taught by the links beside the stories of two and three")
+    same = {}                                                    # the same sentences with the same two names marked are read the same wherever
+    for (told, pairs, *_), belief in zip(tried, each):           # they stand in the stories tried: what is believed of them is put together
+        for p, q in pairs:                                       # (no answer is looked at)
+            same.setdefault(tuple(view(told, p, q, True)), []).append(belief[(p, q)])
+    same = {k: sum(v) / len(v) for k, v in same.items()}
+    answered([{(p, q): same[tuple(view(told, p, q, True))] for p, q in pairs} for told, pairs, *_ in tried],
+             "the same readers; the same sentences read the same in all the stories tried")
 
 
 def chart(leaves, table):
