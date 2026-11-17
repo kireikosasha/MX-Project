@@ -197,6 +197,22 @@ class Hinted(torch.nn.Module):
         return self.net(texts) + self.much * met
 
 
+class Known(torch.nn.Module):
+    """a reader with a memory of the views met many times: of every such view a row of its own is added to what is
+    said of its words. In teaching it is now and then read as if it were new, that the words be learnt as well"""
+
+    def __init__(self, net, views, choices):
+        super().__init__()
+        self.net, self.index = net, {tuple(v): i + 1 for i, v in enumerate(views)}
+        self.rows = torch.nn.Parameter(torch.zeros(len(self.index) + 1, choices))
+
+    def forward(self, texts):
+        ids = torch.tensor([self.index.get(tuple(t), 0) for t in texts], device=DEV)
+        if self.training:
+            ids = torch.where(torch.rand(ids.shape, device=DEV) < 0.2, torch.zeros_like(ids), ids)
+        return self.net(texts) + self.rows[ids] * (ids > 0)[:, None]
+
+
 def reader(vocab, choices, a):
     """a reader not yet taught, and how it is taught: the rate, how many lessons at a step"""
     if a.encoder:
@@ -210,8 +226,10 @@ def reader(vocab, choices, a):
 def rates(net, rate):
     """the weights of a reader as they are taught: those taught beforehand on plain text slowly, the rest at the rate"""
     old = {id(p) for m in net.modules() if isinstance(m, Encoder) for p in m.net.parameters()}
-    out = [{"params": [p for p in net.parameters() if id(p) not in old], "lr": rate, "base": rate, "weight_decay": 1e-5}]
-    return out + ([{"params": [p for p in net.parameters() if id(p) in old], "lr": 2e-5, "base": 2e-5, "weight_decay": 1e-5}] if old else [])
+    rows = {id(m.rows) for m in net.modules() if isinstance(m, Known)}
+    out = [{"params": [p for p in net.parameters() if id(p) not in old | rows], "lr": rate, "base": rate, "weight_decay": 1e-5}]
+    out += [{"params": [p for p in net.parameters() if id(p) in old], "lr": 2e-5, "base": 2e-5, "weight_decay": 1e-5}] if old else []
+    return out + ([{"params": [p for p in net.parameters() if id(p) in rows], "lr": 0.1, "base": 0.1}] if rows else [])
 
 
 def believing(nets):
@@ -394,6 +412,7 @@ def mind(items, vocab, a, seed, log):
     rng = random.Random(seed)
     net, rate, _ = reader(vocab, len(WORDS), a)
     net = net if a.bare else Hinted(net, WORDS).to(DEV)
+    net = Known(net, a.known, len(WORDS)).to(DEV) if getattr(a, "known", None) else net
     table = torch.nn.Parameter((0.01 * torch.randn(len(WORDS), len(WORDS), len(WORDS))).to(DEV))
     opt = torch.optim.Adam(rates(net, rate) + [{"params": [table], "lr": a.rate, "base": a.rate}])
     groups = {}
@@ -423,8 +442,9 @@ def mind(items, vocab, a, seed, log):
     return net
 
 
-def alone(taught, tried, a, log):
-    """the readers taught by the answers alone"""
+def minds(taught, a, log):
+    """readers and tables taught by the answers alone -> those kept [(what it explains, the reader, its table, its
+    readings of the ways taught on)], the numbers of the answers, the ways taught on"""
     answers = {w: i for i, w in enumerate(WORDS)}
     items, lengths, beside_them, where = [], {}, [], []
     for at, (told, pairs, gold, (x, y), answer, n, _) in enumerate(taught):        # the way: by the names that stand together, nothing read yet
@@ -439,7 +459,7 @@ def alone(taught, tried, a, log):
             lengths[len(steps)] = lengths.get(len(steps), 0) + 1
     vocab = {w for views, _ in items for v in views for w in v} | {"<0>", "<1>", "<o>"}
     log(f"taught on {len(items)} stories of {len(taught)}; ways by their length: {sorted(lengths.items())}")
-    flat, minds = [v for views, _ in items for v in views], []
+    flat, every = [v for views, _ in items for v in views], []
     for n in range(a.readers):
         net = mind(items, vocab, a, a.seed + n, log)
         read = believing([net])(flat).argmax(-1).tolist()
@@ -456,33 +476,47 @@ def alone(taught, tried, a, log):
         explained = sum(table.hard(s, 0) == g for s, _, g in ways) / len(ways)
         log(f"mind {n + 1}: its readings and the table counted from them explain {100 * explained:.1f}% of the stories taught on; "
             f"(not used: {100 * good / max(1, links):.1f}% of the links are read as given beside the stories)")
-        minds.append((explained, net, table, read))
-    best = max(e for e, *_ in minds)
-    kept = sorted([x for x in minds if x[0] >= best - 0.05], key=lambda x: -x[0])
-    log(f"{len(kept)} of {len(minds)} minds kept")
+        every.append((explained, net, table, read))
+    best = max(e for e, *_ in every)
+    kept = sorted([x for x in every if x[0] >= best - 0.05], key=lambda x: -x[0])
+    log(f"{len(kept)} of {len(every)} minds kept")
+    return kept, answers, items, where
 
+
+def voted(kept, story, a):
+    """every mind kept answers the story by its own readings and table, and they vote -> the answer (its number, or
+    None), what the first of them believes of every pair"""
+    told, pairs, _, (x, y), *_ = story
+    views, votes, one, first = [view(told, p, q, True) for p, q in pairs], {}, together(told), None
+    for m, (_, net, table, _) in enumerate(kept):
+        bel = believing([net])(views)
+        belief = {pair: bel[i] for i, pair in enumerate(pairs)}
+        first = first or belief
+        steps = None                                             # the way: through the most names (--short: short), and by pairs read surely
+        if x is not None and y is not None:
+            sure = {pair: -math.log(max(1e-6, float(b.max()))) for pair, b in belief.items()}
+            ways = [] if a.short else longest(one, x, y)
+            steps = min(ways, key=lambda w: sum(sure[pair] for pair in w)) if ways else surest(pairs, lambda p, q: (1 if (p, q) in one else 4) + sure[(p, q)], x, y)
+        if steps:
+            got = table.hard([{table.state((i, 1)): float(belief[pair][i]) for i in range(len(WORDS)) if belief[pair][i] > 0.02} for pair in steps], 0)
+            if got is not None:
+                votes[got] = votes.get(got, 0) + 1 + 0.01 * (len(kept) - m)
+    return (max(votes, key=votes.get) if votes else None), first or {}
+
+
+def alone(taught, tried, a, log):
+    """the readers taught by the answers alone"""
+    kept, answers, items, where = minds(taught, a, log)
     for name, some in tried:
         by, added, links, good, none = {}, {}, 0, 0, 0
-        for told, pairs, gold, (x, y), answer, n, more in some:
-            views, votes, one = [view(told, p, q, True) for p, q in pairs], {}, together(told)
-            for m, (_, net, table, _) in enumerate(kept):        # every mind kept answers by its own readings and table; they vote
-                bel = believing([net])(views)
-                belief = {pair: bel[i] for i, pair in enumerate(pairs)}
-                if m == 0:
-                    for pair, word in gold.items():
-                        links += 1
-                        good += pair in belief and WORDS[int(belief[pair].argmax())] == word
-                steps = None                                     # the way: through the most names (--short: short), and by pairs read surely
-                if x is not None and y is not None:
-                    sure = {pair: -math.log(max(1e-6, float(b.max()))) for pair, b in belief.items()}
-                    ways = [] if a.short else longest(one, x, y)
-                    steps = min(ways, key=lambda w: sum(sure[pair] for pair in w)) if ways else surest(pairs, lambda p, q: (1 if (p, q) in one else 4) + sure[(p, q)], x, y)
-                if steps:
-                    got = table.hard([{table.state((i, 1)): float(belief[pair][i]) for i in range(len(WORDS)) if belief[pair][i] > 0.02} for pair in steps], 0)
-                    if got is not None:
-                        votes[got] = votes.get(got, 0) + 1 + 0.01 * (len(kept) - m)
-            none += not votes
-            ok = bool(votes) and max(votes, key=votes.get) == answers.get(answer)
+        for story in some:
+            _, _, gold, _, answer, n, more = story
+            got, belief = voted(kept, story, a)
+            for pair, word in gold.items():
+                links += 1
+                good += pair in belief and WORDS[int(belief[pair].argmax())] == word
+            none += got is None
+            ok = got is not None and got == answers.get(answer)
             by.setdefault(n, []).append(ok)
             added.setdefault(more, []).append(ok)
         log(f"(not used: {100 * good / max(1, links):.1f}% of the links of the test are read as given beside the stories); no answer in {none} stories")
