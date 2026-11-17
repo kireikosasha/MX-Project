@@ -445,12 +445,13 @@ def foreign(a, rng, t0):
     way of known sentences leads between the two things of a sentence, the register closing says what that sentence
     adds - also against what the readers said. Tried on the second half of every file, with the answers"""
     kinds, asks, answers = {}, {}, {}
+    tests = a.tests or a.data                                    # (the stories of the test may lie in another folder: --tests)
     taught = [x for x in read(os.path.join(a.data, "train.json"), kinds, asks, answers, True) if x[0] is not None]
     shown = sorted({k for s, _, _ in taught for k, _ in s})
     model = register(taught, len(kinds), len(asks), len(answers), a, rng, lambda line: None)
     size, held = {}, set()
     for k in range(1, 11):                                       # the kinds of sentences of the test: their words only
-        data = json.load(open(os.path.join(a.data, f"qa{k}_test.json")))
+        data = json.load(open(os.path.join(tests, f"qa{k}_test.json")))
         size[k] = len(data)
         for story in data.values():
             for sentence in story["story"]:
@@ -477,7 +478,7 @@ def foreign(a, rng, t0):
             model.add[i] = choice
         votes = {}
         for k in range(1, 11):
-            for kind, c in closings(model, os.path.join(a.data, f"qa{k}_test.json"), kinds, held, held - set(known), first[k]).items():
+            for kind, c in closings(model, os.path.join(tests, f"qa{k}_test.json"), kinds, held, held - set(known), first[k]).items():
                 votes.setdefault(kind, Counter()).update(c)
         said = {kind: c.most_common(1)[0][0] for kind, c in votes.items() if c.most_common(1)[0][1] >= max(3, 0.7 * sum(c.values()))}
         if all(known.get(kind) == choice for kind, choice in said.items()):
@@ -491,15 +492,15 @@ def foreign(a, rng, t0):
     print("(what it has not settled - from the words)")
     alone, total = {}, [[], []]
     for k in range(1, 11):
-        tried = [x for x in read(os.path.join(a.data, f"qa{k}_test.json"), kinds, asks, answers, False, set(range(size[k] // 2, size[k]))) if x[0] is not None]
-        got = []
+        tried = read(os.path.join(tests, f"qa{k}_test.json"), kinds, asks, answers, False, set(range(size[k] // 2, size[k])))
+        got = []                                                 # (a story with no way - a thing never named - counts as wrong)
         for n, reading in enumerate((worded, {**worded, **closed})):
             for i, choice in reading.items():
                 model.add[i] = choice
-            got.append(100 * sum(model.hard(s, q) == g for s, q, g in tried) / max(1, len(tried)))
+            got.append(100 * sum(s is not None and model.hard(s, q) == g for s, q, g in tried) / max(1, len(tried)))
             total[n].append(got[-1])
             for s, q, g in tried:
-                if len(s) == 1:
+                if s is not None and len(s) == 1:
                     alone.setdefault((n, s[0][0]), []).append(model.hard(s, q) == g)
         print(f"  k = {k:2d}: {got[0]:6.2f}   {got[1]:6.2f}   ({len(tried)} stories)", flush=True)
     print(f"  mean:   {sum(total[0]) / 10:6.2f}   {sum(total[1]) / 10:6.2f}")
@@ -557,6 +558,7 @@ def main():
     ap.add_argument("--clutrr", default="", help="the files of CLUTRR without their ends: <this>_train.csv, <this>_test.csv")
     ap.add_argument("--hold", type=float, default=0, help="StepGame: so great a share of the kinds of sentences is never shown and is read from words")
     ap.add_argument("--foreign", action="store_true", help="StepGame said anew (anew.py): the kinds of sentences of the test are none of them met in teaching")
+    ap.add_argument("--tests", default="", help="with --foreign: the stories of the test are taken from this folder (e.g. the original StepGame)")
     ap.add_argument("--then", default="", help="with --foreign: the stories of a third group of authors (another folder of anew.py), read from words only")
     ap.add_argument("--trust", type=float, default=0.9, help="with --foreign: the readers of words are taken at their word when so sure")
     ap.add_argument("--unanswered", type=int, default=0, help="with --hold: so many stories are read without answers (0: the first half of the test)")
