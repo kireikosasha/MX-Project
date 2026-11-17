@@ -1,0 +1,21 @@
+text.py --readers 3 --joined  (the test of the first split, here a working set; without --joined three readers give 69.1 and 73.6)
+[    1 s] taught on 9074 stories; of the links given beside them 100.0% are between names that stand near in the words
+[  427 s] the links of the stories of the test read rightly from the words: 81.8% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the links beside the stories of two and three):
+      2      3      4      5      6      7      8      9     10    all
+   76.3   74.3   74.7   67.8   72.0   70.1   61.3   72.3   57.1   69.0
+[  429 s] the links of the stories of the test read rightly from the words: 84.4% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the links beside the stories of two and three; the same sentences read the same in all the stories tried):
+      2      3      4      5      6      7      8      9     10    all
+   76.3   77.1   78.9   71.8   74.8   71.5   65.3   73.9   65.5   72.6
+
+text.py --readers 3 --joined --steps 3000
+[    1 s] taught on 9074 stories; of the links given beside them 100.0% are between names that stand near in the words
+[  888 s] the links of the stories of the test read rightly from the words: 82.1% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the links beside the stories of two and three):
+      2      3      4      5      6      7      8      9     10    all
+   76.3   76.2   75.3   71.8   73.8   73.6   64.7   73.9   58.0   71.2
+[  891 s] the links of the stories of the test read rightly from the words: 84.5% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the links beside the stories of two and three; the same sentences read the same in all the stories tried):
+      2      3      4      5      6      7      8      9     10    all
+   76.3   82.9   81.1   76.4   72.9   76.4   72.0   77.3   68.1   76.1

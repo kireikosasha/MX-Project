@@ -1,0 +1,82 @@
+[    2 s] taught on 9070 stories of 9074; ways by their length: [(1, 661), (2, 4111), (3, 4298)]
+[    3 s]   step 0: loss 3.000
+[   70 s]   step 500: loss 0.350
+[  130 s]   step 1000: loss 0.275
+[  194 s]   step 1500: loss 0.202
+[  259 s]   step 2000: loss 0.119
+[  320 s]   step 2499: loss 0.198
+[  322 s] mind 1: its readings and the table counted from them explain 98.4% of the stories taught on; (not used: 89.7% of the links are read as given beside the stories)
+[  322 s]   step 0: loss 3.005
+[  388 s]   step 500: loss 0.435
+[  451 s]   step 1000: loss 0.185
+[  511 s]   step 1500: loss 0.221
+[  572 s]   step 2000: loss 0.151
+[  633 s]   step 2499: loss 0.126
+[  635 s] mind 2: its readings and the table counted from them explain 98.2% of the stories taught on; (not used: 91.2% of the links are read as given beside the stories)
+[  635 s]   step 0: loss 2.978
+[  694 s]   step 500: loss 0.494
+[  753 s]   step 1000: loss 0.272
+[  811 s]   step 1500: loss 0.174
+[  869 s]   step 2000: loss 0.134
+[  929 s]   step 2499: loss 0.100
+[  931 s] mind 3: its readings and the table counted from them explain 98.6% of the stories taught on; (not used: 91.6% of the links are read as given beside the stories)
+[  931 s]   step 0: loss 3.016
+[  999 s]   step 500: loss 0.398
+[ 1060 s]   step 1000: loss 0.296
+[ 1121 s]   step 1500: loss 0.225
+[ 1180 s]   step 2000: loss 0.170
+[ 1240 s]   step 2499: loss 0.186
+[ 1242 s] mind 4: its readings and the table counted from them explain 98.1% of the stories taught on; (not used: 89.6% of the links are read as given beside the stories)
+[ 1242 s]   step 0: loss 3.007
+[ 1304 s]   step 500: loss 0.503
+[ 1369 s]   step 1000: loss 0.219
+[ 1434 s]   step 1500: loss 0.192
+[ 1496 s]   step 2000: loss 0.139
+[ 1556 s]   step 2499: loss 0.142
+[ 1557 s] mind 5: its readings and the table counted from them explain 98.5% of the stories taught on; (not used: 91.4% of the links are read as given beside the stories)
+[ 1557 s] 5 of 5 minds kept
+[ 1597 s] (not used: 72.3% of the links of the test are read as given beside the stories); no answer in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen23_test.csv: the readers taught by the answers alone):
+      2      3      4      5      6      7      8      9     10    all
+   84.2   74.3   65.3   59.8   61.7   61.8   56.0   55.5   42.9   60.6
+[ 1635 s] (not used: 72.3% of the links of the test are read as given beside the stories); no answer in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen234_test.csv: the readers taught by the answers alone):
+      2      3      4      5      6      7      8      9     10    all
+   68.4   66.4   63.6   60.5   60.0   55.5   65.2   54.8   60.7   60.8
+[ 1641 s] (not used: 0.0% of the links of the test are read as given beside the stories); no answer in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (clean_100.csv: the readers taught by the answers alone):
+      3    all
+   76.5   76.5
+by what is added to the story: nothing 88.0, a second way 72.0, a link aside 74.0, a link apart 72.0
+[ 1641 s] the minds together explain 98.6% of the stories taught on; these give the lessons of single links
+[ 1759 s] reader 1 of 5 taught (101557 weights, 55012 lessons, loss 0.396)
+[ 1881 s] reader 2 of 5 taught (101557 weights, 55012 lessons, loss 0.382)
+[ 2003 s] reader 3 of 5 taught (101557 weights, 55012 lessons, loss 0.349)
+[ 2120 s] reader 4 of 5 taught (101557 weights, 55012 lessons, loss 0.376)
+[ 2240 s] reader 5 of 5 taught (101557 weights, 55012 lessons, loss 0.497)
+[ 2274 s] the links of the stories of the test read rightly from the words: 53.6% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen23_test.csv: the readers taught by the answers alone, and then by what they read themselves):
+      2      3      4      5      6      7      8      9     10    all
+   76.3   77.1   65.3   62.6   69.2   61.1   52.0   52.1   41.2   60.6
+[ 2276 s] the links of the stories of the test read rightly from the words: 58.4% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen23_test.csv: the readers taught by the answers alone, and then by what they read themselves; the same sentences read the same in all the stories tried):
+      2      3      4      5      6      7      8      9     10    all
+   73.7   78.1   67.4   63.8   76.6   62.5   56.7   53.8   47.9   63.4
+[ 2308 s] the links of the stories of the test read rightly from the words: 52.6% (of 12882); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen234_test.csv: the readers taught by the answers alone, and then by what they read themselves):
+      2      3      4      5      6      7      8      9     10    all
+   63.2   75.7   55.8   60.5   58.1   50.3   59.3   44.4   54.9   57.3
+[ 2309 s] the links of the stories of the test read rightly from the words: 57.0% (of 12882); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen234_test.csv: the readers taught by the answers alone, and then by what they read themselves; the same sentences read the same in all the stories tried):
+      2      3      4      5      6      7      8      9     10    all
+   63.2   75.7   55.8   61.1   58.1   52.9   63.0   50.8   59.8   59.6
+[ 2315 s] the links of the stories of the test read rightly from the words: 0.0% (of 0); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (clean_100.csv: the readers taught by the answers alone, and then by what they read themselves):
+      3    all
+   76.0   76.0
+by what is added to the story: nothing 81.0, a second way 72.0, a link aside 75.0, a link apart 76.0
+[ 2315 s] the links of the stories of the test read rightly from the words: 0.0% (of 0); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (clean_100.csv: the readers taught by the answers alone, and then by what they read themselves; the same sentences read the same in all the stories tried):
+      3    all
+   76.5   76.5
+by what is added to the story: nothing 81.0, a second way 73.0, a link aside 76.0, a link apart 76.0

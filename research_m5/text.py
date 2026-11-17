@@ -228,6 +228,18 @@ def believing(nets):
 def readers(taught, a, log, said=SAID):
     """five readers taught on the views of the stories, by the links given beside them (a pair given as None is not
     a lesson) -> a function: views -> beliefs (averaged)"""
+    if a.joined:                                                 # (every story once more with some of its full stops left out, as they often are
+        rng = random.Random(a.seed)                              #  in the stories of the test: two or three sentences run together)
+        again = []
+        for told, pairs, gold, *rest in taught:
+            run = [list(told[0])]
+            for sentence in told[1:]:
+                if rng.random() < 0.5:
+                    run[-1] = run[-1][:-1] + sentence if run[-1][-1] in ".!?" else run[-1] + sentence
+                else:
+                    run.append(list(sentence))
+            again.append((run, near(run), gold, *rest))
+        taught = list(taught) + again
     lessons = [(view(told, x, y), said.index(gold.get((x, y), "nothing"))) for told, pairs, gold, *_ in taught for x, y in pairs
                if gold.get((x, y), "nothing") is not None]
     vocab = {w for t, _ in lessons for w in t} | {"<0>", "<1>", "<o>"}
@@ -519,6 +531,7 @@ def main():
     ap.add_argument("--bare", action="store_true", help="--answers: without the hint (a word of an answer that stands in a sentence is the likelier to be what the sentence says)")
     ap.add_argument("--lessons", action="store_true", help="--answers: what the minds read of the stories taught on is given as lessons to readers of single links, "
                     "and the stories tried are answered by those")
+    ap.add_argument("--joined", action="store_true", help="the readers of single links are taught on every story twice: as it is, and with some of its full stops left out")
     ap.add_argument("--short", action="store_true", help="--answers: the way is the shortest by the names that stand together (else it goes through the most names)")
     ap.add_argument("--apart", type=float, default=0, help="a trial on the stories taught on alone: such a share of the kinds of sentences is kept apart, "
                     "taught on the stories with none of them, tried on the stories made of them only")
