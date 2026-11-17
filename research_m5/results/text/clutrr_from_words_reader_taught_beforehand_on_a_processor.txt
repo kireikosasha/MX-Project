@@ -1,0 +1,7 @@
+text.py --encoder distilroberta-base --readers 1 --steps 1500 --threads 4  (on a processor, one run on the test)
+[    1 s] taught on 9074 stories; of the links given beside them 100.0% are between names that stand near in the words
+[ 2395 s] reader 1 of 1 taught (82146833 weights, 77814 lessons, loss 0.244)
+[ 2947 s] the links of the stories of the test read rightly from the words: 81.6% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the links beside the stories of two and three):
+      2      3      4      5      6      7      8      9     10    all
+   89.5   77.1   81.1   74.1   78.5   70.1   52.7   64.7   52.1   69.9
