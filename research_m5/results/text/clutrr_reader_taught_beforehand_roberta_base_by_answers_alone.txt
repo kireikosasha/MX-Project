@@ -1,0 +1,38 @@
+text.py --answers --encoder roberta-base --readers 1 --threads 4 --test gen23_test.csv,gen234_test.csv,<the four files of CLUTRR 1.3 put together>
+(on a processor; killed once for lack of memory at step 781 and taken up from its saved state: the two parts follow)
+[    1 s] taught on 9070 stories of 9074; ways by their length: [(1, 661), (2, 4111), (3, 4298)]
+[   15 s]   step 0: loss 3.011
+[ 1209 s]   kept at step 148 of 2500: loss 0.783
+[ 2417 s]   kept at step 291 of 2500: loss 0.215
+[ 3625 s]   kept at step 442 of 2500: loss 0.444
+[ 4042 s]   step 500: loss 0.259
+[ 4833 s]   kept at step 614 of 2500: loss 0.285
+[ 6042 s]   kept at step 781 of 2500: loss 0.204
+[    2 s] taught on 9070 stories of 9074; ways by their length: [(1, 661), (2, 4111), (3, 4298)]
+[   12 s]   taken up at step 781
+[ 1121 s]   step 1000: loss 0.154
+[ 1216 s]   kept at step 1020 of 2500: loss 0.139
+[ 2421 s]   kept at step 1268 of 2500: loss 0.046
+[ 3538 s]   step 1500: loss 0.112
+[ 3626 s]   kept at step 1518 of 2500: loss 0.024
+[ 4834 s]   kept at step 1772 of 2500: loss 0.237
+[ 5870 s]   step 2000: loss 0.056
+[ 6038 s]   kept at step 2038 of 2500: loss 0.064
+[ 7245 s]   kept at step 2302 of 2500: loss 0.101
+[ 8124 s]   step 2499: loss 0.032
+[ 8128 s]   kept at step 2500 of 2500: loss 0.032
+[ 8301 s] mind 1: its readings and the table counted from them explain 98.5% of the stories taught on; (not used: 91.9% of the links are read as given beside the stories)
+[ 8301 s] 1 of 1 minds kept
+[ 9132 s] (not used: 81.4% of the links of the test are read as given beside the stories); no answer in 4 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen23_test.csv: the readers taught by the answers alone):
+      2      3      4      5      6      7      8      9     10    all
+   89.5   75.2   78.9   66.7   73.8   63.9   54.7   62.2   51.3   66.9
+[10000 s] (not used: 81.0% of the links of the test are read as given beside the stories); no answer in 6 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen234_test.csv: the readers taught by the answers alone):
+      2      3      4      5      6      7      8      9     10    all
+   94.7   73.8   64.9   68.6   68.6   60.0   65.9   60.5   57.4   65.9
+[10120 s] (not used: 0.0% of the links of the test are read as given beside the stories); no answer in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (clean_100.csv: the readers taught by the answers alone):
+      3    all
+   81.5   81.5
+by what is added to the story: nothing 89.0, a second way 76.0, a link aside 76.0, a link apart 85.0
