@@ -1,0 +1,16 @@
+24 nodes, 1 fields, 2 kinds; asked: node; 3 opcodes
+machine: 30 numbers learnt in 17 s; opcodes whose meaning is learnt rightly: 3 of 3
+looped transformer: 129617 weights, 17612 steps in 40.0 min
+
+answers right, %, by how many steps away the answer lies (taught: at most 4); for every model four rows: what is asked
+steps away                                                          1      2      4      8     16
+machine, routing made hard, 64 turns of the loop    node        100.0  100.0  100.0  100.0  100.0
+machine, routing made hard, 1024 turns              node        100.0  100.0  100.0  100.0  100.0
+machine, routing left soft as learnt, 64 turns      node        100.0  100.0  100.0  100.0  100.0
+looped transformer, 9 turns (as taught)             node         99.5  100.0  100.0   60.6    2.8
+looped transformer, twice as many turns as steps    node        100.0  100.0  100.0   59.0    7.5
+looped transformer, 64 turns                        node         99.5  100.0  100.0   51.4    8.9
+always the commonest answer of the column           node          5.2    5.1    5.2    5.4    5.8
+
+the state of the looped transformer (how far it stands from the input, mean) after 1, 9, 32, 64 turns: 15.8, 15.7, 15.6, 15.6
+the state of the machine after 256 turns, routing left soft: its mass 1.0000 to 1.0000 (begun at 1)
