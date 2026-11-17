@@ -125,6 +125,11 @@ def stories(path, only=None):
         if only is not None and i not in only:
             continue
         told, names = sentences(row["story"])
+        if "genders" not in row:                                 # (a file with nothing but the story, the two asked about and the answer)
+            asked = tuple(names.index(name) if name in names else None for name in ast.literal_eval(row["query"]))
+            added = [i + 1 for i, w in enumerate(("clean", "supporting", "irrelevant", "disconnected")) if os.path.basename(path).startswith(w)]
+            out.append((told, near(told), {}, asked, {"neice": "niece"}.get(row["target"], row["target"]), 3, added[0] if added else 1))
+            continue
         people = [g.split(":") for g in row["genders"].split(",")]
         number = {name: names.index(name) for name, _ in people if name in names}
         edges, types, ask = (ast.literal_eval(row[x]) for x in ("story_edges", "edge_types", "query_edge"))
@@ -338,7 +343,7 @@ def beside(taught, tried, a, rng, log, only=None):
             good = got is not None and got == answers.get(answer)
             by.setdefault(n, []).append(good)
             added.setdefault(more, []).append(good)
-        log(f"the links of the stories of the test read rightly from the words: {100 * read / links:.1f}% (of {links}); no way found in {no_way} stories")
+        log(f"the links of the stories of the test read rightly from the words: {100 * read / max(1, links):.1f}% (of {links}); no way found in {no_way} stories")
         shown(by, added, how)
 
     answered(each, "the readers taught by the links beside the stories of two and three")
@@ -458,7 +463,7 @@ def alone(taught, tried, a, log):
         ok = bool(votes) and max(votes, key=votes.get) == answers.get(answer)
         by.setdefault(n, []).append(ok)
         added.setdefault(more, []).append(ok)
-    log(f"(not used: {100 * good / links:.1f}% of the links of the test are read as given beside the stories); no answer in {none} stories")
+    log(f"(not used: {100 * good / max(1, links):.1f}% of the links of the test are read as given beside the stories); no answer in {none} stories")
     shown(by, added, "the readers taught by the answers alone")
 
 
@@ -466,7 +471,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", required=True, help="the folder with gen23_train.csv and gen23_test.csv")
     ap.add_argument("--teach", default="gen23_train.csv")
-    ap.add_argument("--test", default="gen23_test.csv")
+    ap.add_argument("--test", default="gen23_test.csv", help="the file tried on (or several, with commas between; with .. a file of another folder)")
     ap.add_argument("--answers", action="store_true", help="the readers are taught by the answers alone")
     ap.add_argument("--bare", action="store_true", help="--answers: without the hint (a word of an answer that stands in a sentence is the likelier to be what the sentence says)")
     ap.add_argument("--short", action="store_true", help="--answers: the way is the shortest by the names that stand together (else it goes through the most names)")
@@ -495,7 +500,7 @@ def main():
         taught, tried = stories(teach, only), stories(teach, kept)
         log(f"a trial: {len(taught)} stories to teach on, {len(tried)} stories made only of sentences of the kinds kept apart")
     else:
-        taught, tried = stories(teach), stories(os.path.join(a.data, a.test))
+        taught, tried = stories(teach), [story for name in a.test.split(",") for story in stories(os.path.join(a.data, name))]
     if a.answers:
         alone(taught, tried, a, log)
     else:
