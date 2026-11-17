@@ -14,6 +14,10 @@ learns to read and to join what it reads, and then answers stories it has not se
                the register  a link adds -1, 0 or +1 to each of a few whole numbers, and going against it takes the
                              same away; the answer is told by the signs of the numbers at the end of the way
                the table     two links one after another make a relation that has a name; a way is joined by a chart
+  reading without answers
+             the register reads the stories it is to be asked about before it is asked: where a sentence of a kind
+             not met in teaching links two things and another way of sentences understood leads between them,
+             the register must come to the same by both, and that says what the sentence means
   learning   by the answers alone: the choices are soft and a gradient goes through the machine; then they are made
              hard and counted exactly on the stories taught on (text.py, walk.py). Which machine suits the stories
              is told by the stories themselves: both are taught on those with short ways and tried on those with
@@ -213,6 +217,61 @@ class Register:
         with torch.no_grad():
             return [k for i in range(0, len(views), 500) for k in net([list(v) for v in views[i:i + 500]]).argmax(-1).tolist()]
 
+    def close(self, stories, log):
+        """stories read WITHOUT their answers. Where a sentence of a kind not met in teaching links two things and
+        another way of sentences already understood leads between them, the register must come to the same by
+        both: that says what the sentence adds. What is settled so helps to settle the rest. A kind read from its
+        words very surely is taken at its word to begin with, and is set right if the ways say otherwise"""
+        offs, links, new = self.hard.offs, [], set()
+        for told, *_ in stories:
+            links.append([])
+            for p, q in sorted(text.together(told)):
+                if p < q:
+                    first = next(w for s in told if p in s and q in s for w in s if w in (p, q))
+                    a, b = (p, q) if first == p else (q, p)
+                    links[-1].append((tuple(text.view(told, a, b, True)), a, b))
+                    if links[-1][-1][0] not in self.kinds:
+                        new.add(links[-1][-1][0])
+        if not new:
+            return
+        views = sorted(new)
+        with torch.no_grad():
+            said = torch.cat([self.net([list(v) for v in views[i:i + 500]]).softmax(-1).cpu() for i in range(0, len(views), 500)])
+        words = {v: int(said[i].argmax()) for i, v in enumerate(views)}
+        sure = {v: words[v] for i, v in enumerate(views) if float(said[i].max()) >= 0.9}
+        settled = {}
+        for turn in range(8):
+            def known(v):
+                return self.hard.add[self.kinds[v]] if v in self.kinds else settled.get(v, sure.get(v))
+            votes = {}
+            for story in links:
+                for i, (v, a, b) in enumerate(story):
+                    if v in new:                                 # another way from a to b, by sentences understood, none of this kind
+                        at, edge = {a: (0,) * len(offs[0])}, [a]
+                        while edge and b not in at:
+                            x = edge.pop(0)
+                            for j, (w, c, d) in enumerate(story):
+                                k = known(w) if j != i and w != v and x in (c, d) else None
+                                y = d if x == c else c
+                                if k is not None and y not in at:
+                                    at[y] = tuple(t + (o if x == c else -o) for t, o in zip(at[x], offs[k]))
+                                    edge.append(y)
+                        if b in at and at[b] in offs:
+                            votes.setdefault(v, Counter())[offs.index(at[b])] += 1
+            changed = 0
+            for v, c in votes.items():
+                top, times = c.most_common(1)[0]
+                if times >= 2 and times >= 0.8 * sum(c.values()) and settled.get(v) != top:
+                    settled[v], changed = top, changed + 1
+            if not changed:
+                break
+        against = sum(settled[v] != words[v] for v in settled)
+        log(f"read without answers: {len(new)} kinds of sentences not met in teaching; {len(settled)} settled by the register having to come to the same "
+            f"by two ways ({against} of them against what the words said), {len(new) - len(settled)} left to the words")
+        for v in views:
+            self.kinds[v] = len(self.kinds)
+            self.hard.add.append(settled.get(v, words[v]))
+
     def answer(self, one):
         steps = steps_of(one)
         if not steps or one[6] not in self.asks:
@@ -264,6 +323,8 @@ def main():
     ap.add_argument("--width", type=int, default=48)
     ap.add_argument("--encoder", default="", help="a network taught beforehand on plain text in the reader's place (a video card)")
     ap.add_argument("--only", default="", help="register or table: the other machine is not tried")
+    ap.add_argument("--unread", action="store_true", help="the stories tried are not read without their answers beforehand")
+    ap.add_argument("--tests-in", default="", help="--stepgame: the stories tried are taken from this folder (the stories taught on stay)")
     ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
@@ -276,6 +337,7 @@ def main():
 
     if a.stepgame:
         taught, tried = stepgame(a.stepgame)
+        tried = stepgame(a.tests_in)[1] if a.tests_in else tried
     elif a.clutrr:
         taught, tried = clutrr(a.clutrr, tests=a.tests.split(","))
     elif a.babi:
@@ -308,12 +370,25 @@ def main():
     model = machines[kept](taught, a, log)
     log(f"the {kept} explains {100 * model.explains:.2f}% of the stories taught on; {model.weights} weights in the reading")
 
-    print("\nthe stories tried, answered rightly, %:")
-    for name, some in tried.items():
-        some, by = rng.sample(some, a.few) if 0 < a.few < len(some) else some, {}
-        for one in some:
-            by.setdefault(one[5], []).append(model.answer(one) == one[4])
-        print(f"  {name:24s}" + "".join(f"  {k}: {100 * sum(v) / len(v):5.1f}" for k, v in sorted(by.items())) + f"   all: {100 * sum(map(sum, by.values())) / len(some):5.1f}  ({len(some)} stories)", flush=True)
+    def shown(how):
+        print(f"\nthe stories tried, answered rightly, %{how}:")
+        for name, some in tried.items():
+            by = {}
+            for one in some:
+                by.setdefault(one[5], []).append(model.answer(one) == one[4])
+            print(f"  {name:24s}" + "".join(f"  {k}: {100 * sum(v) / len(v):5.1f}" for k, v in sorted(by.items())) + f"   all: {100 * sum(map(sum, by.values())) / len(some):5.1f}  ({len(some)} stories)", flush=True)
+
+    tried = {name: rng.sample(some, a.few) if 0 < a.few < len(some) else some for name, some in tried.items()}
+    if kept == "register" and not a.unread:                      # (the register can read the stories it will be asked about, without their answers)
+        fresh = copy.deepcopy((model.kinds, model.hard.add))
+        new = sum(v not in model.kinds for some in tried.values() for one in some for v, _ in steps_of(one) or [])
+        if new:
+            shown(" (sentences not met in teaching read from their words alone)")
+            model.kinds, model.hard.add = fresh
+            model.close([one for some in tried.values() for one in some], log)
+            shown(" (after the stories tried were read without their answers)")
+            return log("done")
+    shown("")
     log("done")
 
 
