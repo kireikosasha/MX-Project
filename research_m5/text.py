@@ -225,19 +225,21 @@ def believing(nets):
     return believe
 
 
-def readers(taught, a, log):
-    """five readers taught on the views of the stories, by the links given beside them -> a function: views ->
-    beliefs (averaged)"""
-    lessons = [(view(told, x, y), SAID.index(gold.get((x, y), "nothing"))) for told, pairs, gold, *_ in taught for x, y in pairs]
+def readers(taught, a, log, said=SAID):
+    """five readers taught on the views of the stories, by the links given beside them (a pair given as None is not
+    a lesson) -> a function: views -> beliefs (averaged)"""
+    lessons = [(view(told, x, y), said.index(gold.get((x, y), "nothing"))) for told, pairs, gold, *_ in taught for x, y in pairs
+               if gold.get((x, y), "nothing") is not None]
     vocab = {w for t, _ in lessons for w in t} | {"<0>", "<1>", "<o>"}
     gold, nets = torch.tensor([g for _, g in lessons], device=DEV), []
     for n in range(a.readers):
         torch.manual_seed(a.seed + n)
-        net, rate, many = reader(vocab, len(SAID), a)
+        net, rate, many = reader(vocab, len(said), a)
         opt = torch.optim.Adam(rates(net, rate))
-        for step in range(a.steps):
+        steps = a.steps if said is SAID else 1500
+        for step in range(steps):
             for group in opt.param_groups:
-                group["lr"] = group["base"] * (0.05 + 0.95 * math.cos(0.5 * math.pi * step / a.steps))
+                group["lr"] = group["base"] * (0.05 + 0.95 * math.cos(0.5 * math.pi * step / steps))
             some = torch.randint(0, len(lessons), (many,)).tolist()
             net.train()
             loss = torch.nn.functional.cross_entropy(net([lessons[i][0] for i in some]), gold[some])
@@ -315,6 +317,12 @@ def beside(taught, tried, a, rng, log, only=None):
     def state(word):
         return ("name", answers[word]) if word in answers else ("link", kinds[word], 1) if word in kinds else None
 
+    for name, some in tried:
+        walked(some, believe, table, state, answers, SAID, log, name + "the readers taught by the links beside the stories of two and three")
+
+
+def walked(tried, believe, table, state, answers, said, log, how):
+    """the stories tried are answered: every pair near is read, the surest way is found, the table joins it"""
     each = []
     for told, pairs, *_ in tried:
         bel = believe([view(told, p, q) for p, q in pairs])
@@ -325,7 +333,7 @@ def beside(taught, tried, a, rng, log, only=None):
         for (told, pairs, gold, (x, y), answer, n, more), belief in zip(tried, beliefs):
             for pair, word in gold.items():                      # (how the links are read: counted, not used)
                 links += 1
-                read += pair in belief and SAID[int(belief[pair].argmax())] == word
+                read += pair in belief and said[int(belief[pair].argmax())] == word
             steps = None                                         # the surest way: the product of how surely something is said of every pair on it
             if x is not None and y is not None:
                 steps = surest(pairs, lambda p, q: -math.log(max(1e-6, 1 - float(belief[(p, q)][0]))), x, y)
@@ -335,7 +343,7 @@ def beside(taught, tried, a, rng, log, only=None):
                 for pair in steps:
                     b = belief[pair].clone()
                     b[0] = 0
-                    leaf = {state(SAID[i]): float(b[i] / b.sum()) for i in range(1, len(SAID)) if b[i] / b.sum() > 0.02 and state(SAID[i])}
+                    leaf = {state(said[i]): float(b[i] / b.sum()) for i in range(1, len(said)) if b[i] / b.sum() > 0.02 and state(said[i])}
                     leaves.append(leaf)
                 got = table.hard(leaves, 0)
             else:
@@ -346,14 +354,14 @@ def beside(taught, tried, a, rng, log, only=None):
         log(f"the links of the stories of the test read rightly from the words: {100 * read / max(1, links):.1f}% (of {links}); no way found in {no_way} stories")
         shown(by, added, how)
 
-    answered(each, "the readers taught by the links beside the stories of two and three")
+    answered(each, how)
     same = {}                                                    # the same sentences with the same two names marked are read the same wherever
     for (told, pairs, *_), belief in zip(tried, each):           # they stand in the stories tried: what is believed of them is put together
         for p, q in pairs:                                       # (no answer is looked at)
             same.setdefault(tuple(view(told, p, q, True)), []).append(belief[(p, q)])
     same = {k: sum(v) / len(v) for k, v in same.items()}
     answered([{(p, q): same[tuple(view(told, p, q, True))] for p, q in pairs} for told, pairs, *_ in tried],
-             "the same readers; the same sentences read the same in all the stories tried")
+             how + "; the same sentences read the same in all the stories tried")
 
 
 def chart(leaves, table):
@@ -406,8 +414,8 @@ def mind(items, vocab, a, seed, log):
 def alone(taught, tried, a, log):
     """the readers taught by the answers alone"""
     answers = {w: i for i, w in enumerate(WORDS)}
-    items, lengths, beside_them = [], {}, []
-    for told, pairs, gold, (x, y), answer, n, _ in taught:        # the way: by the names that stand together, nothing read yet
+    items, lengths, beside_them, where = [], {}, [], []
+    for at, (told, pairs, gold, (x, y), answer, n, _) in enumerate(taught):        # the way: by the names that stand together, nothing read yet
         one, steps = together(told), None
         if x is not None and y is not None:
             steps = ([] if a.short else longest(one, x, y)[:1]) or [surest(pairs, lambda p, q: 1 if (p, q) in one else 4, x, y)]
@@ -415,6 +423,7 @@ def alone(taught, tried, a, log):
         if steps and len(steps) <= 4 and answer in answers:
             items.append(([view(told, p, q, True) for p, q in steps], answers[answer]))
             beside_them.append([gold.get(pair) for pair in steps])
+            where.append((at, steps))
             lengths[len(steps)] = lengths.get(len(steps), 0) + 1
     vocab = {w for views, _ in items for v in views for w in v} | {"<0>", "<1>", "<o>"}
     log(f"taught on {len(items)} stories of {len(taught)}; ways by their length: {sorted(lengths.items())}")
@@ -435,45 +444,81 @@ def alone(taught, tried, a, log):
         explained = sum(table.hard(s, 0) == g for s, _, g in ways) / len(ways)
         log(f"mind {n + 1}: its readings and the table counted from them explain {100 * explained:.1f}% of the stories taught on; "
             f"(not used: {100 * good / max(1, links):.1f}% of the links are read as given beside the stories)")
-        minds.append((explained, net, table))
-    best = max(e for e, _, _ in minds)
+        minds.append((explained, net, table, read))
+    best = max(e for e, *_ in minds)
     kept = sorted([x for x in minds if x[0] >= best - 0.05], key=lambda x: -x[0])
     log(f"{len(kept)} of {len(minds)} minds kept")
 
-    by, added, links, good, none = {}, {}, 0, 0, 0
-    for told, pairs, gold, (x, y), answer, n, more in tried:
-        views, votes, one = [view(told, p, q, True) for p, q in pairs], {}, together(told)
-        for m, (_, net, table) in enumerate(kept):               # every mind kept answers by its own readings and table; they vote
-            bel = believing([net])(views)
-            belief = {pair: bel[i] for i, pair in enumerate(pairs)}
-            if m == 0:
-                for pair, word in gold.items():
-                    links += 1
-                    good += pair in belief and WORDS[int(belief[pair].argmax())] == word
-            steps = None                                         # the way: through the most names (--short: short), and by pairs read surely
-            if x is not None and y is not None:
-                sure = {pair: -math.log(max(1e-6, float(b.max()))) for pair, b in belief.items()}
-                ways = [] if a.short else longest(one, x, y)
-                steps = min(ways, key=lambda w: sum(sure[pair] for pair in w)) if ways else surest(pairs, lambda p, q: (1 if (p, q) in one else 4) + sure[(p, q)], x, y)
-            if steps:
-                got = table.hard([{table.state((i, 1)): float(belief[pair][i]) for i in range(len(WORDS)) if belief[pair][i] > 0.02} for pair in steps], 0)
-                if got is not None:
-                    votes[got] = votes.get(got, 0) + 1 + 0.01 * (len(kept) - m)
-        none += not votes
-        ok = bool(votes) and max(votes, key=votes.get) == answers.get(answer)
-        by.setdefault(n, []).append(ok)
-        added.setdefault(more, []).append(ok)
-    log(f"(not used: {100 * good / max(1, links):.1f}% of the links of the test are read as given beside the stories); no answer in {none} stories")
-    shown(by, added, "the readers taught by the answers alone")
+    for name, some in tried:
+        by, added, links, good, none = {}, {}, 0, 0, 0
+        for told, pairs, gold, (x, y), answer, n, more in some:
+            views, votes, one = [view(told, p, q, True) for p, q in pairs], {}, together(told)
+            for m, (_, net, table, _) in enumerate(kept):        # every mind kept answers by its own readings and table; they vote
+                bel = believing([net])(views)
+                belief = {pair: bel[i] for i, pair in enumerate(pairs)}
+                if m == 0:
+                    for pair, word in gold.items():
+                        links += 1
+                        good += pair in belief and WORDS[int(belief[pair].argmax())] == word
+                steps = None                                     # the way: through the most names (--short: short), and by pairs read surely
+                if x is not None and y is not None:
+                    sure = {pair: -math.log(max(1e-6, float(b.max()))) for pair, b in belief.items()}
+                    ways = [] if a.short else longest(one, x, y)
+                    steps = min(ways, key=lambda w: sum(sure[pair] for pair in w)) if ways else surest(pairs, lambda p, q: (1 if (p, q) in one else 4) + sure[(p, q)], x, y)
+                if steps:
+                    got = table.hard([{table.state((i, 1)): float(belief[pair][i]) for i in range(len(WORDS)) if belief[pair][i] > 0.02} for pair in steps], 0)
+                    if got is not None:
+                        votes[got] = votes.get(got, 0) + 1 + 0.01 * (len(kept) - m)
+            none += not votes
+            ok = bool(votes) and max(votes, key=votes.get) == answers.get(answer)
+            by.setdefault(n, []).append(ok)
+            added.setdefault(more, []).append(ok)
+        log(f"(not used: {100 * good / max(1, links):.1f}% of the links of the test are read as given beside the stories); no answer in {none} stories")
+        shown(by, added, name + "the readers taught by the answers alone")
+    if a.lessons:
+        lessons(taught, tried, items, where, kept, answers, a, log)
+
+
+def lessons(taught, tried, items, where, kept, answers, a, log):
+    """what the answers have taught comes back as lessons of single links. Of every link of the ways taught on the
+    minds kept say what it is (the most of them; the best, when they differ evenly); a table is counted from that,
+    and the stories it explains give the lessons: the links of the way as read, and of the other names that stand
+    near that nothing is said. Readers of single links are taught on these as on links given beside the stories
+    (text.py without --answers), and the stories tried are answered in the same way. No link given is looked at"""
+    ways, at = [], 0
+    for views, gold in items:
+        said = []
+        for i in range(at, at + len(views)):
+            votes = {}
+            for m, (_, _, _, read) in enumerate(kept):
+                votes[read[i]] = votes.get(read[i], 0) + 1 + 0.01 * (len(kept) - m)
+            said.append(max(votes, key=votes.get))
+        at += len(views)
+        ways.append(([(k, 1) for k in said], 0, gold))
+    table = walk.Table(ways, dict(enumerate(WORDS)), answers)
+    words, again = ["nothing"] + WORDS, []
+    for (steps, _, gold), (n, pairs) in zip(ways, where):
+        if table.hard(steps, 0) == gold:
+            told, near_pairs, _, asked, answer, links, more = taught[n]
+            read = {pair: WORDS[k] for pair, (k, _) in zip(pairs, steps)}
+            read.update({(q, p): None for p, q in pairs if (q, p) not in read})
+            again.append((told, near_pairs, read, asked, answer, links, more))
+    log(f"the minds together explain {100 * len(again) / len(ways):.1f}% of the stories taught on; these give the lessons of single links")
+    believe = readers(again, a, log, words)
+    for name, some in tried:
+        walked(some, believe, table, lambda word: table.state((WORDS.index(word), 1)), answers, words, log,
+               name + "the readers taught by the answers alone, and then by what they read themselves")
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", required=True, help="the folder with gen23_train.csv and gen23_test.csv")
     ap.add_argument("--teach", default="gen23_train.csv")
-    ap.add_argument("--test", default="gen23_test.csv", help="the file tried on (or several, with commas between; with .. a file of another folder)")
+    ap.add_argument("--test", default="gen23_test.csv", help="the file tried on; several with commas between are tried each by itself, with a plus between they are put together")
     ap.add_argument("--answers", action="store_true", help="the readers are taught by the answers alone")
     ap.add_argument("--bare", action="store_true", help="--answers: without the hint (a word of an answer that stands in a sentence is the likelier to be what the sentence says)")
+    ap.add_argument("--lessons", action="store_true", help="--answers: what the minds read of the stories taught on is given as lessons to readers of single links, "
+                    "and the stories tried are answered by those")
     ap.add_argument("--short", action="store_true", help="--answers: the way is the shortest by the names that stand together (else it goes through the most names)")
     ap.add_argument("--apart", type=float, default=0, help="a trial on the stories taught on alone: such a share of the kinds of sentences is kept apart, "
                     "taught on the stories with none of them, tried on the stories made of them only")
@@ -497,10 +542,13 @@ def main():
     teach, only = os.path.join(a.data, a.teach), None
     if a.apart:                                                  # (the test is not opened)
         only, kept = apart(teach, a.apart)
-        taught, tried = stories(teach, only), stories(teach, kept)
-        log(f"a trial: {len(taught)} stories to teach on, {len(tried)} stories made only of sentences of the kinds kept apart")
-    else:
-        taught, tried = stories(teach), [story for name in a.test.split(",") for story in stories(os.path.join(a.data, name))]
+        taught, tried = stories(teach, only), [("", stories(teach, kept))]
+        log(f"a trial: {len(taught)} stories to teach on, {len(tried[0][1])} stories made only of sentences of the kinds kept apart")
+    else:                                                        # (files with a comma between are tried each by itself; with a plus, put together)
+        several = len(a.test.split(",")) > 1
+        taught = stories(teach)
+        tried = [(os.path.basename(names.split("+")[0]) + ": " if several else "", [story for name in names.split("+") for story in stories(os.path.join(a.data, name))])
+                 for names in a.test.split(",")]
     if a.answers:
         alone(taught, tried, a, log)
     else:

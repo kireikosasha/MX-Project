@@ -1,0 +1,87 @@
+Trial code on beliefs kept (three readers taught by the links, the test of the first split, here a working set).
+
+== where the stories are lost
+                                                               2     3     4     5     6     7     8     9    10    all
+the surest way (as now)                                     76.3  75.2  74.2  71.3  77.6  70.1  61.3  65.5  54.6   69.1
+  the way is of links given beside the story                76.3  85.7  88.4  87.4  85.0  86.8  82.0  75.6  78.2   83.9
+  ... and every link on it read as given                    71.1  56.2  57.4  51.7  45.8  40.3  24.7  23.5  17.6   41.7
+  right, of the stories with the way of links given         76.3  75.2  74.2  71.3  77.6  70.1  61.3  65.5  54.6   69.1
+eight surest ways, weighed                                  76.3  76.2  72.6  70.7  77.6  68.8  59.3  66.4  53.8   68.4
+the way through the most names of pairs said of             76.3  76.2  74.2  71.3  76.6  70.8  62.0  66.4  55.5   69.5
+right when the way is of links given: 73.5% (961 stories); when not: 46.5%; when all its links read as given: 90.0% (478)
+
+== how the links given are read
+right                             10872  79.7%
+read as nothing                    2000  14.7%
+another kin                         606   4.4%
+the other sex of the same kin       154   1.1%
+not near                              8   0.1%
+[(('son', 'father'), 146), (('father', 'son'), 141), (('daughter', 'mother'), 59), (('mother', 'daughter'), 52), (('daughter', 'grandmother'), 16), (('mother', 'grandmother'), 15), (('mother', 'granddaughter'), 13), (('uncle', 'nephew'), 13), (('father', 'husband'), 11), (('nephew', 'uncle'), 10), (('daughter', 'wife'), 9), (('father', 'daughter'), 8)]
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-MX-Project/ace7a071-a9eb-520e-b8a4-5dce652d6be1/scratchpad/way/errs.py", line 32, in <module>
+    print("names taught on:", len(tr), "names of the test:", len(te), "of them met in teaching:", sum(n in tr for n in te), "; mentions of the test by names met: %.1f%%" % (100 * sum(c for n, c in te.items() if n in tr) / sum(te.values())))
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+
+== a pair and the pair turned about made to agree (power), walking only through pairs said of (below)
+                                                 2     3     4     5     6     7     8     9    10    all
+agree^0, pairs said of only below None        76.3  75.2  74.2  71.3  77.6  70.1  61.3  65.5  54.6   69.1
+agree^0, pairs said of only below 0.7         76.3  75.2  74.2  71.3  77.6  70.1  62.0  66.4  55.5   69.4
+agree^0, pairs said of only below 0.5         76.3  75.2  74.2  71.3  77.6  70.1  61.3  66.4  54.6   69.2
+agree^0, pairs said of only below 0.3         76.3  75.2  74.2  71.3  77.6  70.1  61.3  65.5  54.6   69.1
+agree^0.5, pairs said of only below None      76.3  72.4  74.7  72.4  75.7  77.1  65.3  70.6  60.5   71.5
+agree^0.5, pairs said of only below 0.7       76.3  72.4  74.7  72.4  75.7  77.1  65.3  70.6  60.5   71.5
+agree^0.5, pairs said of only below 0.5       76.3  72.4  74.7  72.4  75.7  77.1  65.3  70.6  60.5   71.5
+agree^0.5, pairs said of only below 0.3       76.3  72.4  74.7  72.4  75.7  77.1  65.3  70.6  60.5   71.5
+agree^1.0, pairs said of only below None      76.3  72.4  73.7  72.4  78.5  75.0  64.7  68.9  57.1   70.7
+agree^1.0, pairs said of only below 0.7       76.3  72.4  73.7  72.4  77.6  75.0  64.7  68.9  57.1   70.6
+agree^1.0, pairs said of only below 0.5       76.3  72.4  73.7  72.4  78.5  75.0  64.7  68.9  57.1   70.7
+agree^1.0, pairs said of only below 0.3       76.3  72.4  73.7  72.4  78.5  75.0  64.7  68.9  57.1   70.7
+
+== the same sentences read the same in all the stories tried
+kinds of views: 26002 of 35022 views
+                                                 2     3     4     5     6     7     8     9    10    all
+as now (links 79.7%)                          76.3  75.2  74.2  71.3  77.6  70.1  61.3  65.5  54.6   69.1
+agreed (links 80.0%)                          76.3  72.4  74.7  72.4  75.7  77.1  65.3  70.6  60.5   71.5
+one reading of a kind (mean) (links 82.3%)    76.3  77.1  80.0  74.1  77.6  70.8  69.3  72.3  65.5   73.6
+one reading of a kind (geo) (links 82.6%)     76.3  72.4  80.5  73.0  75.7  71.5  70.0  69.7  63.0   72.6
+one reading of a kind, agreed (links 82.5%)   76.3  75.2  77.9  74.1  73.8  77.1  67.3  75.6  65.5   73.6
+
+== links read as another kin, in a sentence of two names: a sample
+566 links read as another kin, in a sentence of two names
+given: <1> is <0>'s son           read: father        | <1> got his son , <0> , a car for his birthday .
+given: <1> is <0>'s daughter      read: grandmother   | <1> just had a baby and presented the baby proudly to the new maternal grandmother , <0> .
+given: <1> is <0>'s daughter      read: mother        | <1> went to dinner with her daughter <0> .
+given: <1> is <0>'s son           read: father        | <1> has a few children , <0> , bradley and claire
+given: <1> is <0>'s daughter      read: grandmother   | <1> just had a baby and presented the baby proudly to the new maternal grandmother , <0> .
+given: <1> is <0>'s son           read: father        | <1> and his son <0> went to look at cars .
+given: <1> is <0>'s son           read: father        | <1> and his son <0> went to look at cars .
+given: <1> is <0>'s daughter      read: mother        | <1> went to dinner with her daughter <0> .
+given: <1> is <0>'s mother        read: daughter      | <0> went to dinner with her daughter <1> .
+given: <1> is <0>'s sister        read: daughter      | <0> and <1> asked their mother , if they could go play in the pool .
+given: <1> is <0>'s daughter      read: grandmother   | <1> just had a baby and presented the baby proudly to the new maternal grandmother , <0> .
+given: <1> is <0>'s daughter      read: mother        | <0> , <1> 's mom , was expected to arrive later .
+given: <1> is <0>'s son           read: father        | <1> took his son <0> out for pizza .
+given: <1> is <0>'s son           read: father        | <1> took his favorite son <0> to a baseball game where he caught a foul ball as a souvenir .
+given: <1> is <0>'s sister        read: brother       | <1> , who is the sister of <0> , is a lovely girl .
+given: <1> is <0>'s daughter      read: mother        | <1> went to dinner with her daughter <0> .
+given: <1> is <0>'s husband       read: brother       | <0> and <1> are happy with each other .
+given: <1> is <0>'s uncle         read: aunt          | <1> 's nephew <0> was happy to hear that he will be arriving at the airport later tonight .
+given: <1> is <0>'s mother        read: daughter      | <0> went to dinner with her daughter <1> .
+given: <1> is <0>'s mother        read: granddaughter | <0> just had a baby and presented the baby proudly to the new maternal grandmother , <1> .
+given: <1> is <0>'s son           read: father        | she always bought him snacks <1> got his son , <0> , a car for his birthday .
+given: <1> is <0>'s father        read: son           | <0> took his son <1> out to play gold later that night .
+given: <1> is <0>'s mother        read: daughter      | <0> went to dinner with her daughter <1> .
+given: <1> is <0>'s sister        read: brother       | <0> , who is the sister of <1> , is a lovely girl .
+given: <1> is <0>'s father        read: son           | <0> took his favorite son <1> to a baseball game where he caught a foul ball as a souvenir .
+given: <1> is <0>'s sister        read: brother       | <1> , who is the sister of <0> , is a lovely girl .
+given: <1> is <0>'s son           read: father        | <1> got his son , <0> , a car for his birthday .
+given: <1> is <0>'s grandmother   read: grandfather   | <1> 's grandson , <0> , was scolded for misbehaving at dinner .
+given: <1> is <0>'s mother        read: grandmother   | <0> just had a baby and presented the baby proudly to the new maternal grandmother , <1> .
+given: <1> is <0>'s mother        read: grandmother   | <0> just had a baby and presented the baby proudly to the new maternal grandmother , <1> .
+given: <1> is <0>'s mother        read: daughter      | <0> went to dinner with her daughter <1> .
+given: <1> is <0>'s daughter      read: mother        | <1> went to dinner with her daughter <0> .
+given: <1> is <0>'s mother        read: daughter      | <0> went to dinner with her daughter <1> .
+given: <1> is <0>'s son           read: father        | <0> rushed to the hospital to find out that his wife and already given birth to a boy and had named him <1> .
+given: <1> is <0>'s son           read: father        | <1> took his favorite son <0> to a baseball game where he caught a foul ball as a souvenir .
+given: <1> is <0>'s son           read: father        | <1> took his son <0> out for pizza .
