@@ -66,6 +66,7 @@ def main():
     ap.add_argument("--phrasings", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "newtasks", "phrasings"))
     ap.add_argument("--draws", type=int, default=4, help="so many times the four authors kept apart are drawn anew")
     ap.add_argument("--width", type=int, default=32, help="of the readers")
+    ap.add_argument("--skip", type=int, default=0, help="the first so many draws are passed over")
     ap.add_argument("--counts", default="", help="the numbers of authors learnt from, e.g. 4,20 (all seven by default)")
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
@@ -83,6 +84,8 @@ def main():
         apart = rng.sample(authors, 4)
         rest = [n for n in authors if n not in apart]
         rng.shuffle(rest)
+        if draw < a.skip:                                        # (drawn as before, not counted again)
+            continue
         tried = lessons(a.phrasings, apart, dropped)
         print("%-22s" % f"apart: {','.join(map(str, sorted(apart)))}", end="", flush=True)
         row = []
@@ -91,7 +94,7 @@ def main():
             print(f"{row[-1]:8.1f}", end="", flush=True)
         print(flush=True)
         table.append(row)
-    print("%-22s" % "mean" + "".join(f"{sum(r[i] for r in table) / len(table):8.1f}" for i in range(len(counts))))
+    print("%-22s" % "mean" + "".join(f"{sum(r[i] for r in table) / max(1, len(table)):8.1f}" for i in range(len(counts))))
 
 
 if __name__ == "__main__":
