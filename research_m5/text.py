@@ -179,6 +179,12 @@ class Encoder(torch.nn.Module):
         self.out = torch.nn.Linear(2 * self.net.config.hidden_size, choices)
 
     def forward(self, texts):
+        if len(texts) > 32:                                      # (by their length, a few at a time: one long view does not stretch all the others)
+            order = sorted(range(len(texts)), key=lambda i: len(texts[i]))
+            back = [0] * len(order)
+            for place, i in enumerate(order):
+                back[i] = place
+            return torch.cat([self.forward([texts[i] for i in order[j:j + 32]]) for j in range(0, len(order), 32)])[torch.tensor(back, device=DEV)]
         enc = self.tok([" ".join(t) for t in texts], return_tensors="pt", padding=True, truncation=True, max_length=256).to(DEV)
         h = self.net(**enc).last_hidden_state
         at = [(h * m[:, :, None]).sum(1) / m.sum(1, keepdim=True).clamp(min=1) for m in ((enc["input_ids"] == k).float() for k in self.marks)]
