@@ -20,6 +20,7 @@ learns to read and to join what it reads, and then answers stories it has not se
 
     python one.py --stepgame .../StepGame/Dataset/TrainVersion
     python one.py --clutrr DIR            (gen23_train.csv and gen23_test.csv, as for text.py)
+    python one.py --babi .../en/qa17_positional-reasoning_train.txt
     python one.py --stories teach.jsonl --tried try.jsonl
                                           (a line: {"story": "... [Ann] ... [Bob] ...", "asked": ["Ann", "Bob"],
                                                     "question": "", "answer": "sister", "k": 3})
@@ -86,6 +87,34 @@ def clutrr(folder, teach="gen23_train.csv", tests=("gen23_test.csv",)):
             out.append(story(row["story"], ast.literal_eval(row["query"]), "", answer, len(ast.literal_eval(row["edge_types"])) if "edge_types" in row else 0))
         return out
     return read(teach), {name: read(name) for name in tests}
+
+
+def babi(teach, tests):
+    """a task of bAbI about two things (17, 18): the things are what stands after "the" at the head of a sentence,
+    up to the verb; every question of a story is a story of its own"""
+    def lines(path):
+        told = []
+        for line in open(path, encoding="utf-8"):
+            number, rest = line.rstrip("\n").split(" ", 1)
+            if number == "1":
+                told = []
+            if "\t" in rest:
+                question, answer = rest.split("\t")[:2]
+                yield list(told), question, answer
+            else:
+                told.append(rest)
+    things = sorted({m.group(1).lower() for path in [teach] + list(tests) for told, _, _ in lines(path) for s in told
+                     for m in [re.match(r"The (.+?) (?:is|fits|are|fit)\b", s)] if m}, key=len, reverse=True)
+    find = re.compile(r"\b[Tt]he (" + "|".join(map(re.escape, things)) + r")\b")
+    mark = lambda text: find.sub(lambda m: "[" + m.group(1).lower() + "]", text)
+
+    def read(path):
+        out = []
+        for told, question, answer in lines(path):
+            marked = mark(question)
+            out.append(story([mark(x) for x in told], re.findall(r"\[([^\]]+)\]", marked)[:2], re.sub(r"\[[^\]]+\]", "<>", marked).lower(), answer, len(told)))
+        return out
+    return read(teach), {os.path.basename(name): read(name) for name in tests}
 
 
 def plain(path):
@@ -218,6 +247,7 @@ def main():
     ap.add_argument("--stepgame", default="", help="the folder TrainVersion of StepGame")
     ap.add_argument("--clutrr", default="", help="a folder with CLUTRR as tables (gen23_train.csv, gen23_test.csv)")
     ap.add_argument("--tests", default="gen23_test.csv", help="--clutrr: the files tried on, with commas between")
+    ap.add_argument("--babi", default="", help="a task of bAbI about two things: its file to teach on (..._train.txt); tried on the file ..._test.txt beside it")
     ap.add_argument("--stories", default="", help="stories to teach on, a line each (see above)")
     ap.add_argument("--tried", default="", help="stories to try on, a line each; several files with commas between")
     ap.add_argument("--most", type=int, default=0, help="taught on so many stories only, drawn at random")
@@ -246,6 +276,8 @@ def main():
         taught, tried = stepgame(a.stepgame)
     elif a.clutrr:
         taught, tried = clutrr(a.clutrr, tests=a.tests.split(","))
+    elif a.babi:
+        taught, tried = babi(a.babi, [a.babi.replace("_train", "_test")])
     else:
         taught, tried = plain(a.stories), {os.path.basename(name): plain(name) for name in a.tried.split(",")}
     taught = rng.sample(taught, a.most) if a.most else taught
