@@ -1,0 +1,45 @@
+text.py --encoder roberta-base --readers 1 --steps 6000 --threads 4 --test gen23_test.csv,gen234_test.csv,<the four files of CLUTRR 1.3 put together>  (on a processor: 5 h 11 min of teaching, 44 min of answering)
+[    1 s] taught on 9074 stories; of the links given beside them 100.0% are between names that stand near in the words
+[ 1216 s]   reader 1, step 330 of 6000: loss 0.538
+[ 2425 s]   reader 1, step 657 of 6000: loss 0.767
+[ 3630 s]   reader 1, step 1030 of 6000: loss 0.659
+[ 4837 s]   reader 1, step 1433 of 6000: loss 0.170
+[ 6043 s]   reader 1, step 1853 of 6000: loss 0.041
+[ 7250 s]   reader 1, step 2274 of 6000: loss 0.143
+[ 8456 s]   reader 1, step 2677 of 6000: loss 0.052
+[ 9662 s]   reader 1, step 3045 of 6000: loss 0.146
+[10868 s]   reader 1, step 3425 of 6000: loss 0.030
+[12073 s]   reader 1, step 3792 of 6000: loss 0.054
+[13278 s]   reader 1, step 4185 of 6000: loss 0.079
+[14484 s]   reader 1, step 4579 of 6000: loss 0.390
+[15689 s]   reader 1, step 4998 of 6000: loss 0.092
+[16896 s]   reader 1, step 5420 of 6000: loss 0.067
+[18103 s]   reader 1, step 5832 of 6000: loss 0.112
+[18642 s]   reader 1, step 6000 of 6000: loss 0.002
+[18642 s] reader 1 of 1 taught (124674065 weights, 77814 lessons, loss 0.002)
+[19852 s] the links of the stories of the test read rightly from the words: 90.1% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen23_test.csv: the readers taught by the links beside the stories of two and three):
+      2      3      4      5      6      7      8      9     10    all
+   81.6   70.5   82.1   81.6   85.0   79.2   76.0   79.0   69.7   78.4
+[19853 s] the links of the stories of the test read rightly from the words: 90.7% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen23_test.csv: the readers taught by the links beside the stories of two and three; the same sentences read the same in all the stories tried):
+      2      3      4      5      6      7      8      9     10    all
+   81.6   75.2   85.8   85.6   86.9   83.3   78.7   82.4   72.3   81.8
+[21125 s] the links of the stories of the test read rightly from the words: 89.8% (of 12882); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen234_test.csv: the readers taught by the links beside the stories of two and three):
+      2      3      4      5      6      7      8      9     10    all
+  100.0   78.5   62.3   80.0   81.9   74.2   74.8   68.5   73.8   75.9
+[21126 s] the links of the stories of the test read rightly from the words: 90.1% (of 12882); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen234_test.csv: the readers taught by the links beside the stories of two and three; the same sentences read the same in all the stories tried):
+      2      3      4      5      6      7      8      9     10    all
+  100.0   86.0   66.2   81.6   81.9   79.4   75.6   78.2   74.6   79.3
+[21275 s] the links of the stories of the test read rightly from the words: 0.0% (of 0); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (clean_100.csv: the readers taught by the links beside the stories of two and three):
+      3    all
+   90.8   90.8
+by what is added to the story: nothing 96.0, a second way 87.0, a link aside 85.0, a link apart 95.0
+[21275 s] the links of the stories of the test read rightly from the words: 0.0% (of 0); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (clean_100.csv: the readers taught by the links beside the stories of two and three; the same sentences read the same in all the stories tried):
+      3    all
+   90.8   90.8
+by what is added to the story: nothing 96.0, a second way 87.0, a link aside 85.0, a link apart 95.0
