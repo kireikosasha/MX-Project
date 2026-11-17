@@ -1,0 +1,32 @@
+[    1 s] taught on 9074 stories; of the links given beside them 100.0% are between names that stand near in the words
+[  233 s] reader 1 of 5 taught (101361 weights, 77814 lessons, loss 0.201)
+[  469 s] reader 2 of 5 taught (101361 weights, 77814 lessons, loss 0.169)
+[  704 s] reader 3 of 5 taught (101361 weights, 77814 lessons, loss 0.159)
+[  941 s] reader 4 of 5 taught (101361 weights, 77814 lessons, loss 0.171)
+[ 1166 s] reader 5 of 5 taught (101361 weights, 77814 lessons, loss 0.207)
+[ 1201 s] the links of the stories of the test read rightly from the words: 80.6% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen23_test.csv: the readers taught by the links beside the stories of two and three):
+      2      3      4      5      6      7      8      9     10    all
+   76.3   77.1   76.8   70.7   75.7   68.1   61.3   68.1   58.8   69.9
+[ 1203 s] the links of the stories of the test read rightly from the words: 83.2% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen23_test.csv: the readers taught by the links beside the stories of two and three; the same sentences read the same in all the stories tried):
+      2      3      4      5      6      7      8      9     10    all
+   76.3   81.9   82.1   74.1   76.6   72.2   73.3   75.6   64.7   75.3
+[ 1235 s] the links of the stories of the test read rightly from the words: 80.9% (of 12882); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen234_test.csv: the readers taught by the links beside the stories of two and three):
+      2      3      4      5      6      7      8      9     10    all
+   89.5   82.2   58.4   68.6   70.5   67.1   70.4   59.7   66.4   68.9
+[ 1237 s] the links of the stories of the test read rightly from the words: 83.4% (of 12882); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (gen234_test.csv: the readers taught by the links beside the stories of two and three; the same sentences read the same in all the stories tried):
+      2      3      4      5      6      7      8      9     10    all
+   94.7   86.0   62.3   71.9   75.2   69.7   77.0   68.5   75.4   74.1
+[ 1243 s] the links of the stories of the test read rightly from the words: 0.0% (of 0); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (clean_100.csv: the readers taught by the links beside the stories of two and three):
+      3    all
+   84.8   84.8
+by what is added to the story: nothing 88.0, a second way 79.0, a link aside 81.0, a link apart 91.0
+[ 1243 s] the links of the stories of the test read rightly from the words: 0.0% (of 0); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (clean_100.csv: the readers taught by the links beside the stories of two and three; the same sentences read the same in all the stories tried):
+      3    all
+   84.5   84.5
+by what is added to the story: nothing 89.0, a second way 78.0, a link aside 81.0, a link apart 90.0
