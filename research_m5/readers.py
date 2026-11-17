@@ -48,9 +48,10 @@ def right(taught, tried, seed, width):
         net = walk.Reader({w for t, _ in taught for w in t}, len(anew.RELATIONS), width)
         opt = torch.optim.Adam(net.parameters(), lr=3e-3, weight_decay=1e-4)
         texts, gold = [t for t, _ in taught], torch.tensor([g for _, g in taught])
-        for step in range(400):
+        for step in range(400 + len(taught) // 4):               # (512 lessons at a step, drawn at random, when there are more)
+            some = torch.randperm(len(taught))[:512].tolist()
             net.train()
-            loss = torch.nn.functional.cross_entropy(net(texts), gold)
+            loss = torch.nn.functional.cross_entropy(net([texts[i] for i in some]), gold[some])
             opt.zero_grad()
             loss.backward()
             opt.step()
@@ -82,9 +83,13 @@ def main():
         rest = [n for n in authors if n not in apart]
         rng.shuffle(rest)
         tried = lessons(a.phrasings, apart, dropped)
-        row = [right(lessons(a.phrasings, rest[:n], dropped), tried, a.seed + 10 * draw, a.width) for n in counts]
+        print("%-22s" % f"apart: {','.join(map(str, sorted(apart)))}", end="", flush=True)
+        row = []
+        for n in counts:
+            row.append(right(lessons(a.phrasings, rest[:n], dropped), tried, a.seed + 10 * draw, a.width))
+            print(f"{row[-1]:8.1f}", end="", flush=True)
+        print(flush=True)
         table.append(row)
-        print("%-22s" % f"apart: {','.join(map(str, sorted(apart)))}" + "".join(f"{x:8.1f}" for x in row), flush=True)
     print("%-22s" % "mean" + "".join(f"{sum(r[i] for r in table) / len(table):8.1f}" for i in range(len(counts))))
 
 
