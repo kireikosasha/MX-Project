@@ -16,7 +16,8 @@ learns to read and to join what it reads, and then answers stories it has not se
                the table     two links one after another make a relation that has a name; a way is joined by a chart
   learning   by the answers alone: the choices are soft and a gradient goes through the machine; then they are made
              hard and counted exactly on the stories taught on (text.py, walk.py). Which machine suits the stories
-             is told by the fifth of them kept aside
+             is told by the stories themselves: both are taught on those with short ways and tried on those with
+             longer ones, and the one that carries further is kept
 
     python one.py --stepgame .../StepGame/Dataset/TrainVersion
     python one.py --clutrr DIR            (gen23_train.csv and gen23_test.csv, as for text.py)
@@ -127,8 +128,8 @@ def steps_of(one):
     told, pairs, _, (x, y), *_ = one
     if x is None or y is None:
         return None
-    together = text.together(told)
-    way = text.surest(pairs, lambda p, q: 1 if (p, q) in together else 4, x, y)
+    together = text.together(told)                               # (by names that stand in one sentence; only if there is no such way,
+    way = text.surest(sorted(together), lambda p, q: 1, x, y) or text.surest(pairs, lambda p, q: 1 if (p, q) in together else 4, x, y)    #  by sentences next to each other too)
     out = []
     for p, q in way or []:
         both = [s for s in told if p in s and q in s] or [s for s in told if p in s or q in s]
@@ -251,7 +252,8 @@ def main():
     ap.add_argument("--stories", default="", help="stories to teach on, a line each (see above)")
     ap.add_argument("--tried", default="", help="stories to try on, a line each; several files with commas between")
     ap.add_argument("--most", type=int, default=0, help="taught on so many stories only, drawn at random")
-    ap.add_argument("--sample", type=int, default=4000, help="the two machines are compared on so many stories (four fifths taught on, a fifth kept aside)")
+    ap.add_argument("--sample", type=int, default=4000, help="the two machines are compared on so many stories")
+    ap.add_argument("--few", type=int, default=0, help="of every set tried so many stories only, drawn at random (0: all)")
     ap.add_argument("--often", type=int, default=20, help="a view met so many times in teaching is remembered as it is")
     ap.add_argument("--numbers", type=int, default=2, help="the register: how many numbers it holds")
     ap.add_argument("--begin", type=int, default=6, help="the register: so many beginnings")
@@ -280,13 +282,20 @@ def main():
         taught, tried = babi(a.babi, [a.babi.replace("_train", "_test")])
     else:
         taught, tried = plain(a.stories), {os.path.basename(name): plain(name) for name in a.tried.split(",")}
-    taught = rng.sample(taught, a.most) if a.most else taught
+    taught = rng.sample(taught, a.most) if 0 < a.most < len(taught) else taught
     log(f"{len(taught)} stories to teach on, {sum(map(len, tried.values()))} to try on; answers: {' '.join(sorted({one[4] for one in taught}))}")
 
     machines, kept = {"register": Register, "table": Tabled}, a.only
-    if not kept:                                                 # which machine: both taught on four fifths of a sample, the fifth kept aside tells
-        some = rng.sample(taught, min(len(taught), a.sample))
-        aside, most = some[:len(some) // 5], some[len(some) // 5:]
+    if not kept:                                                 # which machine: both are taught on the stories of a sample with the shorter ways
+        some = rng.sample(taught, min(len(taught), a.sample))    # and tried on those with the longer ones - the machine is kept that carries
+        far = [len(steps_of(one) or []) for one in some]         # what it learnt further. (If all the ways are of one length: a fifth kept aside)
+        short = max(2, sorted(far)[len(far) // 2])
+        aside, most = [one for one, n in zip(some, far) if n > short], [one for one, n in zip(some, far) if 0 < n <= short]
+        if len(aside) < 50:
+            aside, most = some[:len(some) // 5], some[len(some) // 5:]
+            log(f"the two machines are compared on a fifth of {len(some)} stories kept aside")
+        else:
+            log(f"the two machines are taught on {len(most)} stories with ways of up to {short} links and compared on {len(aside)} stories with longer ways")
         quick = copy.copy(a)
         quick.begin, quick.readers, quick.steps = 2, 1, 800
         share = {}
@@ -301,7 +310,7 @@ def main():
 
     print("\nthe stories tried, answered rightly, %:")
     for name, some in tried.items():
-        by = {}
+        some, by = rng.sample(some, a.few) if 0 < a.few < len(some) else some, {}
         for one in some:
             by.setdefault(one[5], []).append(model.answer(one) == one[4])
         print(f"  {name:24s}" + "".join(f"  {k}: {100 * sum(v) / len(v):5.1f}" for k, v in sorted(by.items())) + f"   all: {100 * sum(map(sum, by.values())) / len(some):5.1f}  ({len(some)} stories)", flush=True)
