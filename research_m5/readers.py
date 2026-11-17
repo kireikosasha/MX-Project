@@ -66,6 +66,7 @@ def main():
     ap.add_argument("--phrasings", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "newtasks", "phrasings"))
     ap.add_argument("--draws", type=int, default=4, help="so many times the four authors kept apart are drawn anew")
     ap.add_argument("--width", type=int, default=32, help="of the readers")
+    ap.add_argument("--counts", default="", help="the numbers of authors learnt from, e.g. 4,20 (all seven by default)")
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
     torch.set_num_threads(2)
@@ -74,7 +75,7 @@ def main():
     for f in glob.glob(os.path.join(a.phrasings, "checked_*.json")):
         dropped |= {(n, r, p) for n, r, p in json.load(open(f))}
     authors = sorted(int(os.path.basename(f)[7:9]) for f in glob.glob(os.path.join(a.phrasings, "author_*.json")))
-    counts = [n for n in (1, 2, 4, 8, 12, 16, 20) if n <= len(authors) - 4]
+    counts = [n for n in ([int(x) for x in a.counts.split(",")] if a.counts else (1, 2, 4, 8, 12, 16, 20)) if n <= len(authors) - 4]
     print(f"{len(authors)} authors; readers of width {a.width}; the share of the sentences of four authors kept apart read rightly, %, by the number of authors learnt from")
     print("%-22s" % "authors learnt from" + "".join(f"{n:8d}" for n in counts))
     table = []
