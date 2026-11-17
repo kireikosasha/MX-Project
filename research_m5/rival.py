@@ -96,9 +96,13 @@ def main():
     ap.add_argument("--turns", type=int, default=8, help="looped: so many turns on the average in teaching; tried with as many, twice and four times as many")
     ap.add_argument("--stories", type=int, default=0, help="taught on so many stories only (0: on all)")
     ap.add_argument("--tried", type=int, default=2000, help="so many stories of the test for every k")
+    ap.add_argument("--save", default="", help="a file to keep the state in every few minutes, and to take the teaching up from")
+    ap.add_argument("--threads", type=int, default=0)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
     torch.manual_seed(a.seed)
+    if a.threads:
+        torch.set_num_threads(a.threads)
     rng = random.Random(a.seed)
     vocab, answers = {"<pad>": 0, "<new>": 1}, {}
     taught = read(os.path.join(a.data, "train.json"), vocab, answers, True)
@@ -109,7 +113,13 @@ def main():
     print(f"{'looped' if a.looped else 'plain'} transformer: {sum(p.numel() for p in model.parameters())} weights ({layers} layers"
           f"{' in the block' if a.looped else ''}, width {a.width}); taught on {len(taught)} stories, {a.minutes:g} minutes, on {DEV}", flush=True)
     opt = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.01)
-    t0, step, seen = time.time(), 0, 0.0
+    t0, step, seen, saved = time.time(), 0, 0.0, time.time()
+    if a.save and os.path.exists(a.save):                        # (taken up where it was left: the machine may be restarted)
+        state = torch.load(a.save, map_location=DEV)
+        model.load_state_dict(state["model"])
+        opt.load_state_dict(state["opt"])
+        step, seen, t0 = state["step"], state["seen"], time.time() - state["spent"]
+        print(f"taken up at step {step}, {state['spent'] / 60:.1f} min", flush=True)
     while time.time() - t0 < 60 * a.minutes:
         spent = (time.time() - t0) / (60 * a.minutes)
         for group in opt.param_groups:
@@ -126,6 +136,12 @@ def main():
         seen = 0.98 * seen + 0.02 * float((out.argmax(-1) == gold).float().mean())
         if step % 500 == 0:
             print(f"step {step}, {(time.time() - t0) / 60:.1f} min: loss {loss.item():.3f}, right on the stories taught on {100 * seen:.0f}%", flush=True)
+        if a.save and time.time() - saved > 240:
+            torch.save({"model": model.state_dict(), "opt": opt.state_dict(), "step": step, "seen": seen, "spent": time.time() - t0}, a.save + ".new")
+            os.replace(a.save + ".new", a.save)
+            saved = time.time()
+    if a.save:
+        torch.save({"model": model.state_dict(), "opt": opt.state_dict(), "step": step, "seen": seen, "spent": time.time() - t0}, a.save)
     model.eval()
 
     def right(stories, turns):
