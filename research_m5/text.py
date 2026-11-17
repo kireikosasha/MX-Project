@@ -267,7 +267,14 @@ def readers(taught, a, log, said=SAID):
         net, rate, many = reader(vocab, len(said), a)
         opt = torch.optim.Adam(rates(net, rate))
         steps = a.steps if said is SAID else 1500
-        for step in range(steps):
+        kept, begun, saved, loss = getattr(a, "save", "") and f"{a.save}.{n}", 0, time.time(), torch.zeros(())
+        if kept and os.path.exists(kept):                        # (a long teaching is taken up where it was left: the machine may be restarted)
+            state = torch.load(kept, map_location=DEV)
+            net.load_state_dict(state["net"])
+            opt.load_state_dict(state["opt"])
+            begun = state["step"]
+            log(f"reader {n + 1} taken up at step {begun}")
+        for step in range(begun, steps):
             for group in opt.param_groups:
                 group["lr"] = group["base"] * (0.05 + 0.95 * math.cos(0.5 * math.pi * step / steps))
             some = torch.randint(0, len(lessons), (many,)).tolist()
@@ -276,6 +283,11 @@ def readers(taught, a, log, said=SAID):
             opt.zero_grad()
             loss.backward()
             opt.step()
+            if kept and (time.time() - saved > 1200 or step == steps - 1):
+                torch.save({"net": net.state_dict(), "opt": opt.state_dict(), "step": step + 1}, kept + ".new")
+                os.replace(kept + ".new", kept)
+                saved = time.time()
+                log(f"  reader {n + 1}, step {step + 1} of {steps}: loss {loss.item():.3f}")
         net.eval()
         nets.append(net)
         log(f"reader {n + 1} of {a.readers} taught ({sum(p.numel() for p in net.parameters())} weights, {len(lessons)} lessons, loss {loss.item():.3f})")
@@ -576,6 +588,7 @@ def main():
     ap.add_argument("--rate", type=float, default=0.05, help="--answers: of the soft table")
     ap.add_argument("--encoder", default="", help="a network taught beforehand on plain text, by its name (roberta-base), in place of the small reader")
     ap.add_argument("--stories", type=int, default=0, help="by the links: the readers are taught on so many stories only (0: on all)")
+    ap.add_argument("--save", default="", help="by the links: a file to keep the readers in while they are taught, and to take a long teaching up from")
     ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
