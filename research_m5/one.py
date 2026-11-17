@@ -34,15 +34,19 @@ import argparse
 import ast
 import copy
 import csv
+import glob
 import json
 import os
 import random
 import re
+import signal
 import time
 from collections import Counter
 
 import torch
 
+import recall
+import rows
 import text
 import walk
 
@@ -110,14 +114,15 @@ def babi(teach, tests):
                 told.append(rest)
     things = sorted({m.group(1).lower() for path in [teach] + list(tests) for told, _, _ in lines(path) for s in told
                      for m in [re.match(r"The (.+?) (?:is|fits|are|fit)\b", s)] if m}, key=len, reverse=True)
-    find = re.compile(r"\b[Tt]he (" + "|".join(map(re.escape, things)) + r")\b")
-    mark = lambda text: find.sub(lambda m: "[" + m.group(1).lower() + "]", text)
+    find = re.compile(r"\b[Tt]he (" + "|".join(map(re.escape, things)) + r")\b") if things else None
+    mark = lambda text: find.sub(lambda m: "[" + m.group(1).lower() + "]", text) if find else text
 
     def read(path):
         out = []
         for told, question, answer in lines(path):
             marked = mark(question)
-            out.append(story([mark(x) for x in told], re.findall(r"\[([^\]]+)\]", marked)[:2], re.sub(r"\[[^\]]+\]", "<>", marked).lower(), answer, len(told)))
+            asked = (re.findall(r"\[([^\]]+)\]", marked) + ["", ""])[:2]
+            out.append(story([mark(x) for x in told], asked, re.sub(r"\[[^\]]+\]", "<>", marked).lower(), answer, len(told)))
         return out
     return read(teach), {os.path.basename(name): read(name) for name in tests}
 
@@ -302,12 +307,59 @@ class Tabled:
         return None if got is None else text.WORDS[got]
 
 
+class Recalled:
+    """the third machine, joined as it is (recall.py): a story is kept as it was told, statement after statement,
+    and a question is answered by recalling - the latest value of a thing, where a chain of values ends, who has a
+    value, how many. It is for stories told in time with questions between (the form of bAbI); it finds the things
+    by itself (the words that take turns in one place of a sentence) and learns from the first twenty stories and
+    up to twenty more that it asks for. A hundred stories more are kept aside to tell what it explains. Its time is
+    bounded: a task it does not learn in time is not its task"""
+
+    def __init__(self, path, a, log):
+        raw, self.m, self.aside, self.used = rows.stories(path, 140), None, 0.0, 0
+
+        def late(*_):
+            raise TimeoutError
+        signal.signal(signal.SIGALRM, late)
+        signal.alarm(a.patience)
+        try:
+            tried, plain = [], None                              # (the stories as they are, then with one guess about their words: recall.py)
+            for deep in (False, True):
+                for reader in rows.guesses(raw[:20]):
+                    for split in (False, True):
+                        m = recall.Learner(reader.rows(raw[:20]), split, deep=deep)
+                        right, total = m.explained()
+                        plain = plain or len(m.readings)
+                        tried.append((right - 0.5 * len(m.readings) - m.cost() - 3 * bool(reader.guessed), right == total, reader, split))
+                        if right == total or not m.task.split:
+                            break
+                    if tried[-1][1] and len(m.readings) <= plain:
+                        break
+                best = max(tried, key=lambda t: t[0])
+                if best[1]:
+                    break
+            self.reader = best[2]
+            self.m, asked, _ = recall.study(self.reader, raw[:40], 20, 20, best[3])
+            right, total, _, _ = self.m.test(self.reader.rows(raw[40:140]))
+            self.aside, self.used = 100 * right / max(1, total), 20 + asked
+        except TimeoutError:
+            self.m = None
+        finally:
+            signal.alarm(0)
+
+    def tried(self, path):
+        right, total, _, _ = self.m.test(self.reader.rows(rows.stories(path)))
+        return right, total
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stepgame", default="", help="the folder TrainVersion of StepGame")
     ap.add_argument("--clutrr", default="", help="a folder with CLUTRR as tables (gen23_train.csv, gen23_test.csv)")
     ap.add_argument("--tests", default="gen23_test.csv", help="--clutrr: the files tried on, with commas between")
-    ap.add_argument("--babi", default="", help="a task of bAbI about two things: its file to teach on (..._train.txt); tried on the file ..._test.txt beside it")
+    ap.add_argument("--babi", default="", help="a task of bAbI: its file to teach on (..._train.txt), tried on the file ..._test.txt beside it; or a folder of such tasks")
+    ap.add_argument("--tasks", default="", help="--babi with a folder: the numbers of the tasks, with commas between (all by default)")
+    ap.add_argument("--patience", type=int, default=300, help="--babi: so many seconds are given to the machine of recalling")
     ap.add_argument("--stories", default="", help="stories to teach on, a line each (see above)")
     ap.add_argument("--tried", default="", help="stories to try on, a line each; several files with commas between")
     ap.add_argument("--most", type=int, default=0, help="taught on so many stories only, drawn at random")
@@ -330,6 +382,19 @@ def main():
     a = ap.parse_args()
     a.batch, a.rate, a.short, a.bare, a.lessons = 192, 0.05, False, False, False
     torch.set_num_threads(a.threads)
+    if os.path.isdir(a.babi):                                    # every task of the folder in its turn
+        wanted = {int(k) for k in a.tasks.split(",") if k}
+        for path in sorted(glob.glob(os.path.join(a.babi, "qa*_train.txt")), key=lambda f: int(re.match(r"qa(\d+)_", os.path.basename(f)).group(1))):
+            if not wanted or int(re.match(r"qa(\d+)_", os.path.basename(path)).group(1)) in wanted:
+                print(f"\n=== {os.path.basename(path)[:-10]}", flush=True)
+                one = copy.copy(a)
+                one.babi = path
+                solve(one)
+        return
+    solve(a)
+
+
+def solve(a):
     rng, t0 = random.Random(a.seed), time.time()
 
     def log(line):
@@ -347,8 +412,16 @@ def main():
     taught = rng.sample(taught, a.most) if 0 < a.most < len(taught) else taught
     log(f"{len(taught)} stories to teach on, {sum(map(len, tried.values()))} to try on; answers: {' '.join(sorted({one[4] for one in taught}))}")
 
-    machines, kept = {"register": Register, "table": Tabled}, a.only
-    if not kept:                                                 # which machine: both are taught on the stories of a sample with the shorter ways
+    machines, kept, share, third = {"register": Register, "table": Tabled}, a.only, {}, None
+    two = sum(None not in one[3] for one in taught) >= 0.9 * len(taught)         # (are the questions about two things named in the story?)
+    if a.babi and not kept:                                      # the machine of recalling: for stories told in time, with questions between
+        third = Recalled(a.babi, a, log)
+        share["recalling"] = third.aside
+        log(f"recalling: " + (f"learnt from {third.used} stories; of the questions of a hundred stories more, kept aside, it explains {third.aside:.1f}%" if third.m
+                              else f"not learnt in {a.patience} seconds"))
+    if not two and not kept:
+        log("the questions are not about two things named in the story: the register and the table are not tried")
+    if not kept and two:                                         # which machine: both are taught on the stories of a sample with the shorter ways
         some = rng.sample(taught, min(len(taught), a.sample))    # and tried on those with the longer ones - the machine is kept that carries
         far = [len(steps_of(one) or []) for one in some]         # what it learnt further. (If all the ways are of one length: a fifth kept aside)
         short = max(2, sorted(far)[len(far) // 2])
@@ -360,12 +433,17 @@ def main():
             log(f"the two machines are taught on {len(most)} stories with ways of up to {short} links and compared on {len(aside)} stories with longer ways")
         quick = copy.copy(a)
         quick.begin, quick.readers, quick.steps = 2, 1, 800
-        share = {}
         for name, machine in machines.items():
             model = machine(most, quick, lambda line: None)
             share[name] = 100 * sum(model.answer(one) == one[4] for one in aside) / len(aside)
             log(f"the {name}: of the {len(aside)} stories kept aside it explains {share[name]:.1f}%")
-        kept = max(share, key=share.get)
+    kept = kept or max(share, key=share.get)
+    if kept == "recalling":
+        if not third.m:
+            return log("no machine learnt the task")
+        right, total = third.tried(a.babi.replace("_train", "_test"))
+        print(f"kept: recalling (learnt from {third.used} stories). The questions of the test answered rightly: {100 * right / max(1, total):.1f}% ({total})", flush=True)
+        return log("done")
     log(f"kept: the {kept}; now taught on all the stories")
     model = machines[kept](taught, a, log)
     log(f"the {kept} explains {100 * model.explains:.2f}% of the stories taught on; {model.weights} weights in the reading")
