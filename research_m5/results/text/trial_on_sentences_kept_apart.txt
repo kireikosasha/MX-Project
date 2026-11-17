@@ -1,0 +1,55 @@
+A trial made of the stories taught on alone (the test not opened): sentences of three kinds in ten kept apart;
+taught on the 3584 stories with none of them, tried on the 746 stories made of them only.
+
+== the readers taught by the links beside the stories, two readers  (text.py --apart 0.3 --readers 2)
+[  188 s] the links of the stories of the test read rightly from the words: 82.1% (of 3494); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the links beside the stories of two and three):
+      2      3    all
+   79.4   76.9   78.6
+
+== by the answers alone, the first form, one mind  (text.py --answers --short --bare --apart 0.3 --readers 1)
+[  238 s] mind 1: its readings and the table counted from them explain 92.3% of the stories taught on; (not used: 38.6% of the links are read as given beside the stories)
+[  238 s] 1 of 1 minds kept
+[  239 s] (not used: 24.7% of the links of the test are read as given beside the stories); no answer in 2 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the answers alone):
+      2      3    all
+   53.4   43.9   50.1
+
+== by the answers alone, the first form, the view of a pair: all the sentences that name either  (trial code, not kept)
+[  388 s] mind 1: its readings and the table counted from them explain 98.3% of the stories taught on; (not used: 47.7% of the links are read as given beside the stories)
+[  388 s] 1 of 1 minds kept
+[  389 s] (not used: 28.7% of the links of the test are read as given beside the stories); no answer in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the answers alone):
+      2      3    all
+   52.5   48.2   51.1
+
+== by the links, but the lessons and the way as in the first form of the answers alone  (trial code, not kept)
+[  273 s] the links of the stories of the test read rightly from the words: 86.5% (of 1747); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the links beside the stories of two and three):
+      2      3    all
+   50.5   41.2   47.3
+
+== by the answers alone, the way through the most names, the reader may say that nothing is said  (trial code, not kept)
+[  978 s] mind 1: its readings and the table counted from them explain 75.4% of the stories taught on; (not used: 23.6% of the links are read as given beside the stories)
+[  978 s] 1 of 1 minds kept
+[  980 s] (not used: 25.0% of the links of the test are read as given beside the stories); no answer in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the answers alone):
+      2      3    all
+   35.2   29.8   33.4
+
+== by the answers alone, the way through the most names, two minds  (text.py --answers --bare --apart 0.3 --readers 2)
+[  493 s] mind 2: its readings and the table counted from them explain 89.1% of the stories taught on; (not used: 31.8% of the links are read as given beside the stories)
+[  493 s] 2 of 2 minds kept
+[  496 s] (not used: 23.1% of the links of the test are read as given beside the stories); no answer in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the answers alone):
+      2      3    all
+   59.7   48.2   55.8
+
+== by the answers alone, the way through the most names and the hint, two minds  (text.py --answers --apart 0.3 --readers 2)
+[  490 s] mind 2: its readings and the table counted from them explain 98.9% of the stories taught on; (not used: 87.1% of the links are read as given beside the stories)
+[  490 s] 2 of 2 minds kept
+[  493 s] (not used: 67.3% of the links of the test are read as given beside the stories); no answer in 4 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the answers alone):
+      2      3    all
+   77.2   66.3   73.5
+

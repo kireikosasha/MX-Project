@@ -1,0 +1,18 @@
+rival.py on the original version of StepGame, on a processor (4 threads), 75 minutes each
+
+plain transformer: 844297 weights (4 layers, width 128); taught on 50000 stories, 75 minutes, on cpu
+
+6683 steps. Stories kept aside (clean, as those taught on), k = 1..5: 51.2 22.2 20.2 15.2 15.2
+tried on the stories of the test (with sentences that do not matter), right, %, by k:
+k                                       1      2      3      4      5      6      7      8      9     10
+plain transformer                    26.9   18.3   18.9   16.1   16.7   16.3   14.3   16.1   17.0   15.8
+
+(the looped one shared the processor with other runs and made 992 steps against 6683 of the plain one)
+looped transformer: 249481 weights (1 layers in the block, width 128); taught on 50000 stories, 75 minutes, on cpu
+
+992 steps. Stories kept aside (clean, as those taught on), k = 1..5: 44.6 22.4 15.2 15.6 16.4
+tried on the stories of the test (with sentences that do not matter), right, %, by k:
+k                                       1      2      3      4      5      6      7      8      9     10
+looped transformer, 6 turns          21.8   17.9   16.0   13.7   12.8   12.8   12.9   14.5   12.8   15.0
+looped transformer, 12 turns         21.8   17.9   16.0   13.7   12.8   12.8   12.8   14.5   12.8   15.0
+looped transformer, 24 turns         21.8   17.9   16.0   13.7   12.8   12.8   12.8   14.5   12.8   15.0

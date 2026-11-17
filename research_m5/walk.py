@@ -182,7 +182,7 @@ class Table:
     def hard(self, steps, ask):
         """the chart: of every stretch of the way what named relations it may make and how much stands for each"""
         n = len(steps)
-        span = {(i, i + 1): {self.state(steps[i]): 1.0} for i in range(n)}
+        span = {(i, i + 1): steps[i] if steps[i].__class__ is dict else {self.state(steps[i]): 1.0} for i in range(n)}    # (a link, or what is believed of it)
         for width in range(2, n + 1):
             for i in range(n - width + 1):
                 got = {}
