@@ -392,6 +392,7 @@ def main():
     ap.add_argument("--only", default="", help="register or table: the other machine is not tried")
     ap.add_argument("--unread", action="store_true", help="the stories tried are not read without their answers beforehand")
     ap.add_argument("--tests-in", default="", help="--stepgame: the stories tried are taken from this folder (the stories taught on stay)")
+    ap.add_argument("--save", default="", help="the table: a file to keep its readers in while they are taught, and to take the teaching up from")
     ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
@@ -448,7 +449,7 @@ def solve(a):
         else:
             log(f"the two machines are taught on {len(most)} stories with ways of up to {short} links and compared on {len(aside)} stories with longer ways")
         quick = copy.copy(a)
-        quick.begin, quick.readers, quick.steps = 2, 1, 800
+        quick.begin, quick.readers, quick.steps, quick.save = 2, 1, 800, ""
         for name, machine in machines.items():
             model = machine(most, quick, lambda line: None)
             share[name] = 100 * sum(model.answer(one) == one[4] for one in aside) / len(aside)

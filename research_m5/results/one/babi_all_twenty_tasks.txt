@@ -3,154 +3,154 @@
 [    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
 [    0 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
 [    0 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 30 stories). The questions of the test answered rightly: 100.0% (1000)
+kept: recalling (learnt from 30 stories). The questions of the test  answered rightly: 100.0% (1000)
 [    0 s] done
-
-=== qa5_three-arg-relations
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: Bill Fred Jeff Mary apple football milk
-[   94 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 99.4%
-[   94 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 40 stories). The questions of the test answered rightly: 98.7% (1000)
-[   94 s] done
-
-=== qa9_simple-negation
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: no yes
-[    0 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
-[    0 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 30 stories). The questions of the test answered rightly: 100.0% (1000)
-[    0 s] done
-
-=== qa13_compound-coreference
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
-[    7 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 97.6%
-[    7 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 30 stories). The questions of the test answered rightly: 98.8% (1000)
-[    7 s] done
-
-=== qa17_positional-reasoning
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: no yes
-[  300 s] recalling: not learnt in 300 seconds
-[  300 s] the two machines are compared on a fifth of 1000 stories kept aside
-[  310 s] the register: of the 200 stories kept aside it explains 100.0%
-[  323 s] the table: of the 200 stories kept aside it explains 48.0%
-[  323 s] kept: the register; now taught on all the stories
-[  332 s] the register explains 100.00% of the stories taught on; 25814 weights in the reading
-
-the stories tried, answered rightly, %:
-  qa17_positional-reasoning_test.txt  2: 100.0   all: 100.0  (1000 stories)
-[  332 s] done
 
 === qa2_two-supporting-facts
 [    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
-[    6 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
-[    6 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 40 stories). The questions of the test answered rightly: 100.0% (1000)
-[    6 s] done
+[    5 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
+[    5 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 40 stories). The questions of the test  answered rightly: 100.0% (1000)
+[    5 s] done
+
+=== qa3_three-supporting-facts
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
+[  157 s] recalling: learnt from 35 stories; of the questions of a hundred stories more, kept aside, it explains 98.8%
+[  157 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 35 stories). The questions of the test  answered rightly: 99.0% (1000)
+[  157 s] done
+
+=== qa4_two-arg-relations
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
+[    2 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 90.0%
+[    2 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 40 stories). The questions of the test  answered rightly: 89.0% (1000)
+[    2 s] done
+
+=== qa5_three-arg-relations
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: Bill Fred Jeff Mary apple football milk
+[   80 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 99.4%
+[   80 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 40 stories). The questions of the test  answered rightly: 98.7% (1000)
+[   80 s] done
 
 === qa6_yes-no-questions
 [    0 s] 1000 stories to teach on, 1000 to try on; answers: no yes
 [    0 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
 [    0 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 30 stories). The questions of the test answered rightly: 100.0% (1000)
+kept: recalling (learnt from 30 stories). The questions of the test  answered rightly: 100.0% (1000)
 [    0 s] done
-
-=== qa10_indefinite-knowledge
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: maybe no yes
-[   60 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 44.0%
-[   60 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 40 stories). The questions of the test answered rightly: 42.6% (1000)
-[   60 s] done
-
-=== qa14_time-reasoning
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: bedroom cinema kitchen office park school
-[  104 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
-[  104 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 30 stories). The questions of the test answered rightly: 100.0% (1000)
-[  105 s] done
-
-=== qa18_size-reasoning
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: no yes
-[    6 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
-[    6 s] the two machines are compared on a fifth of 1000 stories kept aside
-[   44 s] the register: of the 200 stories kept aside it explains 99.5%
-[   89 s] the table: of the 200 stories kept aside it explains 48.5%
-kept: recalling (learnt from 40 stories). The questions of the test answered rightly: 100.0% (1000)
-[   89 s] done
-
-=== qa3_three-supporting-facts
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
-[  182 s] recalling: learnt from 35 stories; of the questions of a hundred stories more, kept aside, it explains 98.8%
-[  182 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 35 stories). The questions of the test answered rightly: 99.0% (1000)
-[  182 s] done
 
 === qa7_counting
 [    0 s] 1000 stories to teach on, 1000 to try on; answers: none one three two
 [    2 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
 [    2 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 40 stories). The questions of the test answered rightly: 100.0% (1000)
+kept: recalling (learnt from 40 stories). The questions of the test  answered rightly: 100.0% (1000)
 [    2 s] done
-
-=== qa11_basic-coreference
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
-[    4 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
-[    4 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 30 stories). The questions of the test answered rightly: 100.0% (1000)
-[    4 s] done
-
-=== qa15_basic-deduction
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: cat mouse sheep wolf
-[    0 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
-[    0 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 30 stories). The questions of the test answered rightly: 100.0% (1000)
-[    0 s] done
-
-=== qa19_path-finding
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: e,e e,n e,s n,e n,n n,w s,e s,s s,w w,n w,s w,w
-[    7 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 9.0%
-[    7 s] the two machines are compared on a fifth of 1000 stories kept aside
-[   24 s] the register: of the 200 stories kept aside it explains 66.0%
-[   36 s] the table: of the 200 stories kept aside it explains 72.0%
-[   36 s] kept: the table; now taught on all the stories
-[   36 s] taught on 1000 stories of 1000; ways by their length: [(2, 1000)]
-[  202 s] 4 of 5 minds kept
-[  202 s] the table explains 100.00% of the stories taught on; 108804 weights in the reading
-
-the stories tried, answered rightly, %:
-  qa19_path-finding_test.txt  5: 100.0   all: 100.0  (1000 stories)
-[  213 s] done
-
-=== qa4_two-arg-relations
-[    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
-[    3 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 90.0%
-[    3 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 40 stories). The questions of the test answered rightly: 89.0% (1000)
-[    3 s] done
 
 === qa8_lists-sets
 [    0 s] 1000 stories to teach on, 1000 to try on; answers: apple apple,football apple,football,milk apple,milk apple,milk,football football football,apple football,milk milk milk,apple milk,football milk,football,apple nothing
 [    1 s] recalling: learnt from 35 stories; of the questions of a hundred stories more, kept aside, it explains 98.2%
 [    1 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 35 stories). The questions of the test answered rightly: 97.9% (1000)
+kept: recalling (learnt from 35 stories). The questions of the test  answered rightly: 97.9% (1000)
 [    1 s] done
+
+=== qa9_simple-negation
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: no yes
+[    0 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
+[    0 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 30 stories). The questions of the test  answered rightly: 100.0% (1000)
+[    0 s] done
+
+=== qa10_indefinite-knowledge
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: maybe no yes
+[   52 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 44.0%
+[   52 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 40 stories). The questions of the test  answered rightly: 42.6% (1000)
+[   52 s] done
+
+=== qa11_basic-coreference
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
+[    4 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
+[    4 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 30 stories). The questions of the test  answered rightly: 100.0% (1000)
+[    4 s] done
 
 === qa12_conjunction
 [    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
-[    3 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
-[    3 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 30 stories). The questions of the test answered rightly: 100.0% (1000)
-[    3 s] done
+[    2 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
+[    2 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 30 stories). The questions of the test  answered rightly: 100.0% (1000)
+[    2 s] done
+
+=== qa13_compound-coreference
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: bathroom bedroom garden hallway kitchen office
+[    6 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 97.6%
+[    6 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 30 stories). The questions of the test  answered rightly: 98.8% (1000)
+[    6 s] done
+
+=== qa14_time-reasoning
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: bedroom cinema kitchen office park school
+[   87 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
+[   87 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 30 stories). The questions of the test  answered rightly: 100.0% (1000)
+[   87 s] done
+
+=== qa15_basic-deduction
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: cat mouse sheep wolf
+[    0 s] recalling: learnt from 30 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
+[    0 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 30 stories). The questions of the test  answered rightly: 100.0% (1000)
+[    0 s] done
 
 === qa16_basic-induction
 [    0 s] 1000 stories to teach on, 1000 to try on; answers: gray green white yellow
-[   11 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 46.0%
-[   11 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 40 stories). The questions of the test answered rightly: 38.0% (1000)
-[   11 s] done
+[   10 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 46.0%
+[   10 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 40 stories). The questions of the test  answered rightly: 38.0% (1000)
+[   10 s] done
+
+=== qa17_positional-reasoning
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: no yes
+[  300 s] recalling: not learnt in 300 seconds
+[  300 s] the two machines are compared on a fifth of 1000 stories kept aside
+[  309 s] the register: of the 200 stories kept aside it explains 100.0%
+[  322 s] the table: of the 200 stories kept aside it explains 48.0%
+[  322 s] kept: the register; now taught on all the stories
+[  330 s] the register explains 100.00% of the stories taught on; 25814 weights in the reading
+
+the stories tried, answered rightly, %:
+  qa17_positional-reasoning_test.txt  2: 100.0   all: 100.0  (1000 stories)
+[  330 s] done
+
+=== qa18_size-reasoning
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: no yes
+[    4 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 100.0%
+[    4 s] the two machines are compared on a fifth of 1000 stories kept aside
+[   40 s] the register: of the 200 stories kept aside it explains 99.5%
+[   82 s] the table: of the 200 stories kept aside it explains 48.5%
+kept: recalling (learnt from 40 stories). The questions of the test  answered rightly: 100.0% (1000)
+[   82 s] done
+
+=== qa19_path-finding
+[    0 s] 1000 stories to teach on, 1000 to try on; answers: e,e e,n e,s n,e n,n n,w s,e s,s s,w w,n w,s w,w
+[    5 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 9.0%
+[    5 s] the two machines are compared on a fifth of 1000 stories kept aside
+[   18 s] the register: of the 200 stories kept aside it explains 66.0%
+[   29 s] the table: of the 200 stories kept aside it explains 72.0%
+[   29 s] kept: the table; now taught on all the stories
+[   29 s] taught on 1000 stories of 1000; ways by their length: [(2, 1000)]
+[  199 s] 4 of 5 minds kept
+[  199 s] the table explains 100.00% of the stories taught on; 108804 weights in the reading
+
+the stories tried, answered rightly, %:
+  qa19_path-finding_test.txt  5: 100.0   all: 100.0  (1000 stories)
+[  209 s] done
 
 === qa20_agents-motivations
 [    0 s] 1000 stories to teach on, 1000 to try on; answers: bedroom bored garden hungry kitchen thirsty tired
-[   86 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 80.7%
-[   86 s] the questions are not about two things named in the story: the register and the table are not tried
-kept: recalling (learnt from 40 stories). The questions of the test answered rightly: 80.9% (1000)
-[   86 s] done
+[   69 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 80.7%
+[   69 s] the questions are not about two things named in the story: the register and the table are not tried
+kept: recalling (learnt from 40 stories). The questions of the test  answered rightly: 80.9% (1000)
+[   69 s] done
