@@ -1,0 +1,834 @@
+modular_arithmetic (DCF): 10 symbols; taught on 300 stories of 1-10; may ask 40 of 1494 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 59.2, transformer 32.5
+  1 states + a circle of 2 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 4 + a circle of 4: the solver gave up after 10 s
+  2 states + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 2: the solver gave up after 10 s
+  2 states + a circle of 4: the solver gave up after 10 s
+  1 states + a circle of 2 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 5: the solver gave up after 10 s
+  1 states + a circle of 3 + a circle of 6: the solver gave up after 10 s
+  1 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 2 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 5: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2): the solver gave up after 10 s
+  1 states + a circle of 4 + a circle of 5: the solver gave up after 10 s
+  1 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4: the solver gave up after 10 s
+  1 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6: the solver gave up after 10 s
+  2 states + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 3 + a circle of 7: the solver gave up after 10 s
+  1 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 5: the solver gave up after 10 s
+  1 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 8, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 2 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 3: the solver gave up after 10 s
+  2 states + a circle of 6: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 2: the solver gave up after 10 s
+  1 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 7: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 4 + a circle of 6: the solver gave up after 10 s
+  1 states + a circle of 3 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 9, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 5 + a circle of 5: the solver gave up after 10 s
+  1 states + a whole number (offsets -2..2, read clipped to -2..2) + a whole number (offsets -2..2, read clipped to -2..2): the solver gave up after 10 s
+  2 states + a circle of 7: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 10, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 4 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 6: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 2: the solver gave up after 10 s
+  2 states + a circle of 11, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1): the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 4: the solver gave up after 10 s
+  2 states + a circle of 8: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 2: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 6: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 12, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 3 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 3: the solver gave up after 10 s
+  2 states + a circle of 9: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1): the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2), the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2): the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 5 + a circle of 7: the solver gave up after 10 s
+  1 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 7: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 5: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 2: the solver gave up after 10 s
+  2 states + a circle of 10: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a whole number (offsets -2..2, read clipped to -1..1), the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 3 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 6 + a circle of 6: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 2: the solver gave up after 10 s
+  3 states + a circle of 4: the solver gave up after 10 s
+  1 states + a circle of 4 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 5 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1): the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 3: the solver gave up after 10 s
+  2 states + a circle of 11: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a whole number (offsets -1..1, read clipped to -2..2), the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 6: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 4: the solver gave up after 10 s
+  2 states + a circle of 12: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 3 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 6 + a circle of 7: the solver gave up after 10 s
+  3 states + a circle of 5: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2): the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a whole number (offsets -2..2, read clipped to -1..1): the solver gave up after 10 s
+  5 states named by the answers and one to begin in: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 8, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 4 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 7: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4: the solver gave up after 10 s
+  1 states + a circle of 6 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 9, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 3: the solver gave up after 10 s
+  3 states + a circle of 6: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 2: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 5: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 5: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 3: the solver gave up after 10 s
+  6 states: the solver gave up after 10 s
+  1 states + a circle of 5 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 7 + a circle of 7: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 10, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a whole number (offsets -2..2, read clipped to -2..2), the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1): the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 4: the solver gave up after 10 s
+  3 states + a circle of 11, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 4 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 5: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 12, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2), the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 4: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 6: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6: the solver gave up after 10 s
+  1 states + a circle of 7 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 2: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  5 states + a circle of 2: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2): the solver gave up after 10 s
+  1 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 4: the solver gave up after 10 s
+  3 states + a circle of 8: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 2: the solver gave up after 10 s
+  3 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 2: the solver gave up after 10 s
+  4 states + a circle of 4: the solver gave up after 10 s
+  1 states + a circle of 4 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 5 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 5: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a whole number (offsets -1..1, read clipped to -2..2): the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a whole number (offsets -1..1, read clipped to -2..2), the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1): the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 6 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 3: the solver gave up after 10 s
+  3 states + a circle of 9: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1): the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 7: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a whole number (offsets -2..2, read clipped to -1..1), the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  7 states: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 5: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 5: the solver gave up after 10 s
+  3 states + a circle of 10: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 2: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 8, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2): the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 7: the solver gave up after 10 s
+  1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 5 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 6: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 3: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 9, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 11: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 5: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 5: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a whole number (offsets -2..2, read clipped to -2..2): the solver gave up after 10 s
+  5 states + a circle of 3: the solver gave up after 10 s
+  5 states + a whole number (offsets -1..1, read clipped to -1..1): the solver gave up after 10 s
+  3 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 7 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 6 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 10, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 6: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 4: the solver gave up after 10 s
+  3 states + a circle of 12: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 3: the solver gave up after 10 s
+  4 states + a circle of 6: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 2: the solver gave up after 10 s
+  1 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 6: the solver gave up after 10 s
+  6 states + a circle of 2: the solver gave up after 10 s
+  5 states + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  5 states + a whole number (offsets -2..2, read clipped to -2..2), the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 11, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 5 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a whole number (offsets -2..2, read clipped to -2..2), the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 7: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a whole number (offsets -2..2, read clipped to -1..1): the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 12, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  5 states + a whole number (offsets -1..1, read clipped to -2..2): the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 7: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 6: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 6: the solver gave up after 10 s
+  8 states: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  5 states + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 7: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4: the solver gave up after 10 s
+  5 states + a circle of 4: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 6 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a whole number (offsets -1..1, read clipped to -2..2), the answer read from the numbers only: the solver gave up after 10 s
+  5 states + a whole number (offsets -2..2, read clipped to -1..1): the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 2: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 5: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 5: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 3: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 7: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  1 states + a circle of 7 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  1 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  5 states + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 4: the solver gave up after 10 s
+  4 states + a circle of 8: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 2: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 4: the solver gave up after 10 s
+  2 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  5 states + a circle of 8, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 7: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 7: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a whole number (offsets -2..2, read clipped to -1..1), the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  5 states + a circle of 5: the solver gave up after 10 s
+  5 states + a whole number (offsets -2..2, read clipped to -2..2): the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 3: the solver gave up after 10 s
+  4 states + a circle of 9: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1): the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 6: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 5: the solver gave up after 10 s
+  1 states + a circle of 6 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  6 states + a circle of 3: the solver gave up after 10 s
+  6 states + a whole number (offsets -1..1, read clipped to -1..1): the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 4: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  5 states + a circle of 9, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 6: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  5 states + a circle of 10, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 5: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 2: the solver gave up after 10 s
+  4 states + a circle of 10: the solver gave up after 10 s
+  6 states + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  6 states + a whole number (offsets -2..2, read clipped to -2..2), the answer read from the numbers only: the solver gave up after 10 s
+  9 states: the solver gave up after 10 s
+  1 states + a circle of 7 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  5 states + a circle of 11, the answer read from the numbers only: the solver gave up after 10 s
+  5 states + a circle of 6: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 5: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a whole number (offsets -1..1, read clipped to -2..2): the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  6 states + a whole number (offsets -1..1, read clipped to -2..2): the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 3: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6: the solver gave up after 10 s
+  4 states + a circle of 11: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 7: the solver gave up after 10 s
+  5 states + a circle of 12, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a whole number (offsets -2..2, read clipped to -2..2), the answer read from the numbers only: the solver gave up after 10 s
+  6 states + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 7: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  6 states + a circle of 4: the solver gave up after 10 s
+  2 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 6: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 4: the solver gave up after 10 s
+  4 states + a circle of 12: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4: the solver gave up after 10 s
+  6 states + a whole number (offsets -2..2, read clipped to -1..1): the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  5 states + a circle of 7: the solver gave up after 10 s
+  1 states + a circle of 7 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 5: the solver gave up after 10 s
+  4 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  6 states + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 7: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a whole number (offsets -2..2, read clipped to -1..1): the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 6: the solver gave up after 10 s
+  6 states + a circle of 8, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  10 states: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  5 states + a circle of 8: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 7: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 5: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 5: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a whole number (offsets -2..2, read clipped to -2..2): the solver gave up after 10 s
+  4 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 7: the solver gave up after 10 s
+  6 states + a circle of 5: the solver gave up after 10 s
+  6 states + a whole number (offsets -2..2, read clipped to -2..2): the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4: the solver gave up after 10 s
+  6 states + a circle of 9, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 5: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 5: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 3: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  6 states + a circle of 10, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  5 states + a circle of 9: the solver gave up after 10 s
+  2 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 6: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 7: the solver gave up after 10 s
+  6 states + a circle of 11, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 4: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  6 states + a circle of 6: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  6 states + a circle of 12, the answer read from the numbers only: the solver gave up after 10 s
+  5 states + a circle of 10: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 6: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 6: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 5: the solver gave up after 10 s
+  11 states: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 4: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 6: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6: the solver gave up after 10 s
+  3 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  5 states + a circle of 11: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  6 states + a circle of 7: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 7: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  5 states + a circle of 12: the solver gave up after 10 s
+  3 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 5: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a whole number (offsets -1..1, read clipped to -2..2): the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 7: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 7: the solver gave up after 10 s
+  6 states + a circle of 8: the solver gave up after 10 s
+  2 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 7: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 6: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  12 states: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 5: the solver gave up after 10 s
+  3 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  6 states + a circle of 9: the solver gave up after 10 s
+  4 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 7: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 6: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  6 states + a circle of 10: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 5: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 5: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a whole number (offsets -2..2, read clipped to -2..2): the solver gave up after 10 s
+  2 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 7: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 2, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 5 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  6 states + a circle of 11: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 6: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 7: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  6 states + a circle of 12: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 6: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 6: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 7: the solver gave up after 10 s
+  4 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 3 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 7: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 2, the second moved by the value of the first: the solver gave up after 10 s
+  2 states + a circle of 6 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 7: the solver gave up after 10 s
+  4 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 7: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 6: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 4 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 7: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 7 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 7: the solver gave up after 10 s
+  3 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 5 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 3, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 4 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 6 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 5 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 7 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 5, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 6 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 6, the second moved by the value of the first: the solver gave up after 10 s
+  4 states + a circle of 7 + a circle of 7, the second moved by the value of the first: the solver gave up after 10 s
+  modular_arithmetic: nothing found (2325 s)
+
+exit 0

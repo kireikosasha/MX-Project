@@ -1,0 +1,5 @@
+even_pairs (R): 2 symbols; taught on 300 stories of 1-10; may ask 40 of 1471 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 100.0, transformer 96.4
+  kept 3 states + a circle of 2, the answer read from the numbers only (18 bits, 0.9 s); 300 stories, 0 asked
+  even_pairs: 3 states + a circle of 2, the answer read from the numbers only; asked 0; on 41-500: 100.0 %  (22 s)
+
+exit 0
