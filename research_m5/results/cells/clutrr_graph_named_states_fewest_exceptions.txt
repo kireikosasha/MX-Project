@@ -1,0 +1,19 @@
+CLUTRR (graph), the form given: 18 states named by the answers and one to begin in; all 383 different chains of 2-3 links, each with the answer the set gives most often
+  at most 0 chains answered otherwise than the set: unsat
+  at most 1 chains answered otherwise than the set: unsat
+  at most 2 chains answered otherwise than the set: unsat
+  at most 3 chains answered otherwise than the set: sat
+  kept: the fewest exceptions, 3:
+    husband daughter grandfather                  set: father-in-law   machine: father
+    husband son                                   set: son             machine: daughter-in-law
+    wife daughter grandmother                     set: mother-in-law   machine: mother
+  1.2_test.csv     38 chains: 100.0 %  (0 with a kind of link never taught)
+  1.3_test.csv    105 chains:  95.2 %  (0 with a kind of link never taught)
+  1.4_test.csv    190 chains:  86.3 %  (0 with a kind of link never taught)
+  1.5_test.csv    174 chains:  81.0 %  (0 with a kind of link never taught)
+  1.6_test.csv    107 chains:  77.6 %  (1 with a kind of link never taught)
+  1.7_test.csv    144 chains:  72.2 %  (5 with a kind of link never taught)
+  1.8_test.csv    150 chains:  57.3 %  (6 with a kind of link never taught)
+  1.9_test.csv    119 chains:  66.4 %  (5 with a kind of link never taught)
+  1.10_test.csv   119 chains:  53.8 %  (5 with a kind of link never taught)
+  all tests: 75.0 %

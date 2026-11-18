@@ -1,0 +1,84 @@
+turtle: 4 symbols, 300 stories of 1-4 symbols
+  3 states + a circle of 10, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  kept 3 states + a circle of 12, the answer read from the numbers only (96 bits, 99.7 s); 300 stories, 0 asked
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only answers otherwise on 3 stories (10.1 s): asked step left noise step right = xy++ | left left step right noise step right noise step right noise step right noise step right noise = xy-0 | left left step left left left noise step = xy-+; the kept machine was wrong on 2
+  2 states + a circle of 3 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 10, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 2, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 11, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 12, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  kept 2 states + a circle of 3 + a whole number (offsets -1..1, read clipped to -2..2), the second moved by the value of the first, the answer read from the numbers only (104 bits, 172.0 s); 303 stories, 3 asked
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only answers otherwise on 3 stories (83.1 s): asked right right right step = xy0+ | right right left step left step left step left step left step left step left step left step = xy00 | left step noise left right noise step step = xy0+; the kept machine was wrong on 3
+  3 states + a circle of 2 + a circle of 5, the answer read from the numbers only: the solver gave up after 20 s
+  3 states + a circle of 10, the answer read from the numbers only: the solver gave up after 20 s
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 20 s
+  2 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 20 s
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 20 s
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 20 s
+  3 states + a circle of 12, the answer read from the numbers only: the solver gave up after 20 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 20 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 20 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 20 s
+  2 states + a circle of 4 + a circle of 5, the answer read from the numbers only: the solver gave up after 20 s
+  2 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 20 s
+  4 states + a circle of 8, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 3: the solver gave up after 10 s
+  3 states + a circle of 6: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 6: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 4: the solver gave up after 10 s
+  2 states + a circle of 12: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 9, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  kept 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only (110 bits, 154.5 s); 306 stories, 6 asked
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only answers otherwise on 3 stories (10.1 s): asked step noise left step step = xy++ | right step step step left step step left step step left = xy+- | right step noise right noise step right = xy--; the kept machine was wrong on 1
+  2 states + a circle of 4 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 11, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 4, the second moved by the value of the first: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 12, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 2 + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 8, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 4 + a circle of 5, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 3: the solver gave up after 10 s
+  3 states + a circle of 6: the solver gave up after 10 s
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 10 s
+  3 states + a circle of 2 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a circle of 3 + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a circle of 9, the answer read from the numbers only: the solver gave up after 10 s
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 10 s
+  kept 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only (111 bits, 238.6 s); 309 stories, 9 asked
+  no other machine within 8 bits; 12 longer stories asked, all answered rightly (102.7 s)
+  turtle: 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only; asked 21; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (871 s)
+

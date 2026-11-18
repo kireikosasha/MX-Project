@@ -1,0 +1,6 @@
+lies: 2 symbols, 300 stories of 1-4 symbols
+  kept 1 states + a circle of 2 (4 bits, 0.0 s); 300 stories, 0 asked
+  1 states + a circle of 5 answers otherwise on 3 stories (0.6 s): asked says-lies says-lies says-lies says-lies says-lies says-truth = no | says-lies says-truth says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies = no | says-lies says-truth says-lies says-lies says-truth says-lies says-lies says-truth says-lies says-lies says-truth says-lies = yes; the kept machine was wrong on 0
+  no other machine within 8 bits; 8 longer stories asked, all answered rightly (0.7 s)
+  lies: 1 states + a circle of 2; asked 11; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (1 s)
+
