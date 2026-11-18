@@ -40,6 +40,7 @@ import os
 import random
 import re
 import signal
+import tempfile
 import time
 from collections import Counter
 
@@ -307,6 +308,20 @@ class Tabled:
         return None if got is None else text.WORDS[got]
 
 
+def as_told(stories, path):
+    """stories of the common form written as stories told in time (the form of bAbI: the sentences, then the
+    question with its answer), for the machine of recalling -> the path"""
+    name = lambda i: "p" + "".join(chr(97 + int(d)) for d in str(i))
+    with open(path, "w", encoding="utf-8") as out:
+        for told, _, _, (x, y), answer, _, question in stories:
+            for n, sentence in enumerate(told):
+                out.write(f"{n + 1} " + " ".join(name(w) if w.__class__ is int else w for w in sentence if w.__class__ is int or w not in ".,!?") + "\n")
+            asked = iter([name(x) if x is not None else "nobody", name(y) if y is not None else "nobody"])
+            words = re.sub("<>", lambda m: next(asked, "nobody"), question) if "<>" in question else f"what is {next(asked)} to {next(asked)}"
+            out.write(f"{len(told) + 1} {words}\t{answer}\t1\n")
+    return path
+
+
 class Recalled:
     """the third machine, joined as it is (recall.py): a story is kept as it was told, statement after statement,
     and a question is answered by recalling - the latest value of a thing, where a chain of values ends, who has a
@@ -414,8 +429,9 @@ def solve(a):
 
     machines, kept, share, third = {"register": Register, "table": Tabled}, a.only, {}, None
     two = sum(None not in one[3] for one in taught) >= 0.9 * len(taught)         # (are the questions about two things named in the story?)
-    if a.babi and not kept:                                      # the machine of recalling: for stories told in time, with questions between
-        third = Recalled(a.babi, a, log)
+    if not kept:                                                 # the machine of recalling: it reads the stories as told in time (for the sets
+        folder = tempfile.mkdtemp()                              # that are not in that form, they are written out so: sentences, then the question)
+        third = Recalled(a.babi or as_told(taught[:140], os.path.join(folder, "taught.txt")), a, log)
         share["recalling"] = third.aside
         log(f"recalling: " + (f"learnt from {third.used} stories; of the questions of a hundred stories more, kept aside, it explains {third.aside:.1f}%" if third.m
                               else f"not learnt in {a.patience} seconds"))
@@ -441,8 +457,9 @@ def solve(a):
     if kept == "recalling":
         if not third.m:
             return log("no machine learnt the task")
-        right, total = third.tried(a.babi.replace("_train", "_test"))
-        print(f"kept: recalling (learnt from {third.used} stories). The questions of the test answered rightly: {100 * right / max(1, total):.1f}% ({total})", flush=True)
+        for name, some in ([("", None)] if a.babi else tried.items()):
+            right, total = third.tried(a.babi.replace("_train", "_test") if a.babi else as_told(some, os.path.join(folder, "tried.txt")))
+            print(f"kept: recalling (learnt from {third.used} stories). The questions of the test {name} answered rightly: {100 * right / max(1, total):.1f}% ({total})", flush=True)
         return log("done")
     log(f"kept: the {kept}; now taught on all the stories")
     model = machines[kept](taught, a, log)
