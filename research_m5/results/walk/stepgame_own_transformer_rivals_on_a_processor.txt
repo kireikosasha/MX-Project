@@ -16,3 +16,13 @@ k                                       1      2      3      4      5      6    
 looped transformer, 6 turns          21.8   17.9   16.0   13.7   12.8   12.8   12.9   14.5   12.8   15.0
 looped transformer, 12 turns         21.8   17.9   16.0   13.7   12.8   12.8   12.8   14.5   12.8   15.0
 looped transformer, 24 turns         21.8   17.9   16.0   13.7   12.8   12.8   12.8   14.5   12.8   15.0
+
+(the plain one taught on: taken up from its saved state for six hours more; the container was restarted half an hour later)
+plain transformer: 844297 weights (4 layers, width 128); taught on 50000 stories, 435 minutes, on cpu
+taken up at step 6683, 75.0 min
+step 7000, 78.8 min: loss 1.796, right on the stories taught on 27%
+step 7500, 84.4 min: loss 1.700, right on the stories taught on 28%
+step 8000, 90.3 min: loss 1.780, right on the stories taught on 28%
+step 8500, 95.7 min: loss 1.871, right on the stories taught on 27%
+step 9000, 100.8 min: loss 1.651, right on the stories taught on 27%
+step 9500, 105.7 min: loss 1.680, right on the stories taught on 28%
