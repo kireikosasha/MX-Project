@@ -1,0 +1,30 @@
+colab/one.ipynb on an A100 (run by the owner of the repository, 18 November 2026)
+
+[    1 s] 9074 stories to teach on, 2594 to try on; answers: aunt brother daughter daughter-in-law father father-in-law granddaughter grandfather grandmother grandson mother mother-in-law nephew niece sister son son-in-law uncle
+[    1 s] kept: the table; now taught on all the stories
+[    2 s] taught on 9070 stories of 9074; ways by their length: [(1, 661), (2, 4111), (3, 4298)]
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[  542 s] mind 1: its readings and the table counted from them explain 99.0% of the stories taught on; (not used: 0.0% of the links are read as given beside the stories)
+[  542 s] 1 of 1 minds kept
+[  542 s] the table explains 98.97% of the stories taught on; 124689649 weights in the reading
+
+the stories tried, answered rightly, %:
+  gen23_test.csv            2:  89.5  3:  77.1  4:  71.6  5:  69.0  6:  68.2  7:  60.4  8:  47.3  9:  55.5  10:  42.0   all:  62.7  (1146 stories)
+  gen234_test.csv           2:  94.7  3:  76.6  4:  62.3  5:  67.6  6:  72.4  7:  55.5  8:  63.0  9:  59.7  10:  54.9   all:  64.8  (1048 stories)
+  clean_100.csv             0:  89.0   all:  89.0  (100 stories)
+  supporting_100.csv        0:  77.0   all:  77.0  (100 stories)
+  irrelevant_100.csv        0:  76.0   all:  76.0  (100 stories)
+  disconnected_100.csv      0:  79.0   all:  79.0  (100 stories)
+[  624 s] done

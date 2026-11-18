@@ -1,0 +1,34 @@
+colab/one.ipynb on an A100 (run by the owner of the repository, 18 November 2026)
+
+[   25 s] 50000 stories to teach on, 100000 to try on; answers: above below left lower-left lower-right overlap right upper-left upper-right
+[   26 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 16.0%
+[   26 s] the two machines are taught on 3289 stories with ways of up to 2 links and compared on 696 stories with longer ways
+[   55 s] the register: of the 696 stories kept aside it explains 97.0%
+[   67 s] the table: of the 696 stories kept aside it explains 71.1%
+[   67 s] kept: the register; now taught on all the stories
+[  182 s] the register explains 97.89% of the stories taught on; 30471 weights in the reading
+
+the stories tried, answered rightly, % (sentences not met in teaching read from their words alone):
+  k=1                       1:  98.3   all:  98.3  (10000 stories)
+  k=2                       2:  97.7   all:  97.7  (10000 stories)
+  k=3                       3:  97.3   all:  97.3  (10000 stories)
+  k=4                       4:  97.0   all:  97.0  (10000 stories)
+  k=5                       5:  97.1   all:  97.1  (10000 stories)
+  k=6                       6:  96.9   all:  96.9  (10000 stories)
+  k=7                       7:  96.4   all:  96.4  (10000 stories)
+  k=8                       8:  96.1   all:  96.1  (10000 stories)
+  k=9                       9:  96.0   all:  96.0  (10000 stories)
+  k=10                      10:  96.1   all:  96.1  (10000 stories)
+
+the stories tried, answered rightly, % (after the stories tried were read without their answers):
+  k=1                       1:  98.3   all:  98.3  (10000 stories)
+  k=2                       2:  97.7   all:  97.7  (10000 stories)
+  k=3                       3:  97.3   all:  97.3  (10000 stories)
+  k=4                       4:  97.0   all:  97.0  (10000 stories)
+  k=5                       5:  97.1   all:  97.1  (10000 stories)
+  k=6                       6:  96.9   all:  96.9  (10000 stories)
+  k=7                       7:  96.4   all:  96.4  (10000 stories)
+  k=8                       8:  96.1   all:  96.1  (10000 stories)
+  k=9                       9:  96.0   all:  96.0  (10000 stories)
+  k=10                      10:  96.1   all:  96.1  (10000 stories)
+[  235 s] done

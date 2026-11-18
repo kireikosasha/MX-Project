@@ -1,0 +1,37 @@
+colab/one.ipynb on an A100 (run by the owner of the repository, 18 November 2026)
+
+qa9_test.json: 6882 stories of 10000 said anew
+qa10_test.json: 6725 stories of 10000 said anew
+[   22 s] 46134 stories to teach on, 78777 to try on; answers: above below left lower-left lower-right overlap right upper-left upper-right
+[   23 s] recalling: learnt from 40 stories; of the questions of a hundred stories more, kept aside, it explains 21.0%
+[   23 s] the two machines are taught on 3290 stories with ways of up to 2 links and compared on 710 stories with longer ways
+[   38 s] the register: of the 710 stories kept aside it explains 99.4%
+[   50 s] the table: of the 710 stories kept aside it explains 63.5%
+[   50 s] kept: the register; now taught on all the stories
+[   70 s] the register explains 100.00% of the stories taught on; 49589 weights in the reading
+
+the stories tried, answered rightly, % (sentences not met in teaching read from their words alone):
+  k=1                       1:  76.1   all:  76.1  (9205 stories)
+  k=2                       2:  71.6   all:  71.6  (8790 stories)
+  k=3                       3:  69.2   all:  69.2  (8614 stories)
+  k=4                       4:  66.2   all:  66.2  (8288 stories)
+  k=5                       5:  64.1   all:  64.1  (7980 stories)
+  k=6                       6:  62.8   all:  62.8  (7751 stories)
+  k=7                       7:  61.2   all:  61.2  (7479 stories)
+  k=8                       8:  59.9   all:  59.9  (7063 stories)
+  k=9                       9:  58.2   all:  58.2  (6882 stories)
+  k=10                      10:  57.8   all:  57.8  (6725 stories)
+[  173 s] read without answers: 635 kinds of sentences not met in teaching; 635 settled by the register having to come to the same by two ways (147 of them against what the words said), 0 left to the words
+
+the stories tried, answered rightly, % (after the stories tried were read without their answers):
+  k=1                       1: 100.0   all: 100.0  (9205 stories)
+  k=2                       2: 100.0   all: 100.0  (8790 stories)
+  k=3                       3: 100.0   all: 100.0  (8614 stories)
+  k=4                       4: 100.0   all: 100.0  (8288 stories)
+  k=5                       5: 100.0   all: 100.0  (7980 stories)
+  k=6                       6: 100.0   all: 100.0  (7751 stories)
+  k=7                       7: 100.0   all: 100.0  (7479 stories)
+  k=8                       8: 100.0   all: 100.0  (7063 stories)
+  k=9                       9: 100.0   all: 100.0  (6882 stories)
+  k=10                      10: 100.0   all: 100.0  (6725 stories)
+[  187 s] done
