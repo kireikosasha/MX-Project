@@ -1,0 +1,11 @@
+[    1 s] taught on 9074 stories; of the links given beside them 100.0% are between names that stand near in the words
+The new embeddings will be initialized from a multivariate normal distribution that has old embeddings' mean and covariance. As described in this article: https://nlp.stanford.edu/~johnhew/vocab-expansion.html. To disable this, use `mean_resizing=False`
+[ 2213 s] reader 1 of 1 taught (11180049 weights, 77814 lessons, loss 0.064)
+[ 2273 s] the links of the stories of the test read rightly from the words: 84.4% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the links beside the stories of two and three):
+      2      3      4      5      6      7      8      9     10    all
+   89.5   73.3   79.5   76.4   79.4   75.0   66.7   69.7   63.9   73.9
+[ 2274 s] the links of the stories of the test read rightly from the words: 85.9% (of 13640); no way found in 0 stories
+the stories of the test answered rightly from their words alone, %, by the number of links (the readers taught by the links beside the stories of two and three; the same sentences read the same in all the stories tried):
+      2      3      4      5      6      7      8      9     10    all
+   89.5   79.0   82.6   79.9   83.2   79.2   70.7   74.8   68.1   77.8
