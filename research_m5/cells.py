@@ -439,13 +439,16 @@ class Encoding:
         return m, "sat"
 
 
-def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lexicon=0):
+def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lexicon=0, weights=None, most=None):
     """A machine of this shape that answers every story of data rightly (and, given another machine and a pool of
     stories, answers some story of the pool otherwise than it). Solved first on a part of the stories; the stories the
-    machine found answers wrongly are added and it is solved again (a 'no' on a part is a 'no' on all)."""
+    machine found answers wrongly are added and it is solved again (a 'no' on a part is a 'no' on all).
+    excuse (a share of the stories) or most (a number): so many stories may be answered otherwise than the set; with
+    weights (story -> how many times it is told), a story counts as many times as it is told."""
     lab = {l: i for i, l in enumerate(labels)}
     rng = random.Random(len(data))
-    most = int(excuse * len(data))  # stories the machine may answer otherwise than the set (its errors, or the set's)
+    if most is None:  # stories the machine may answer otherwise than the set (its errors, or the set's)
+        most = int(excuse * (sum(weights.get(s, 1) for s, _ in data) if weights else len(data)))
     part = list(data) if most else rng.sample(data, min(40, len(data)))
     end = time.time() + seconds
     while True:
@@ -454,7 +457,8 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
             ex = [e.v("excused", i) for i in range(len(part))]
             for (seq, y), x in zip(part, ex):
                 e.says(seq, lab[y], x)
-            e.clauses += CardEnc.atmost(lits=ex, bound=most, vpool=e.ids, encoding=EncType.seqcounter).clauses
+            lits = [x for (seq, _), x in zip(part, ex) for _ in range(weights.get(seq, 1) if weights else 1)]
+            e.clauses += CardEnc.atmost(lits=lits, bound=most, vpool=e.ids, encoding=EncType.seqcounter).clauses
         else:
             for seq, y in part:
                 e.says(seq, lab[y])
@@ -464,7 +468,7 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
         if m is None:
             return None, how
         wrong = [(s, y) for s, y in data if m.run(s) != y]
-        if len(wrong) <= most:
+        if sum(weights.get(s, 1) if weights else 1 for s, _ in wrong) <= most:
             return m, "sat"
         if time.time() > end:
             return None, "unknown"
@@ -664,22 +668,64 @@ def clutrr(a):
     known = dict(every)
     oracle = lambda w: known.get(tuple(w))
     t0 = time.time()
+    answer = None
     if a.named:
-        # the form given (the states are the answers), all chains, the fewest chains answered otherwise than the set
+        # the form given (the states are the answers), all chains. Stories no machine of the form explains (the set
+        # tells some chains with different answers): the fewest, each counted as often as it is told.
         labels = sorted({y for _, y in every})
         sh = [x for x in shapes(len(syms), len(labels)) if x[3] == "named"][0]
+        weights = {s: sum(c.values()) for s, c in said.items()}
+        data = list(every)
+        if a.hint:  # a link whose word is a word of the answers: standing alone, it answers itself (stage 42's hint)
+            data += [((x,), x) for x in syms if x in labels]
         print(f"CLUTRR (graph): {len(train)} chains of 2-3 links, {len(every)} different; {len(syms)} kinds of link; "
-              f"the form given: {name(sh)}; taught on all {len(every)}", flush=True)
-        for most in range(0, 40):
-            m, how = fit(sh, syms, labels, every, a.seconds * 6, excuse=(most + 0.5) / len(every) if most else 0.0)
-            print(f"  at most {most} chains answered otherwise than the set: {how}", flush=True)
-            if m:
-                break
+              f"the form given: {name(sh)}; taught on all {len(every)}" + (f", and {len(data) - len(every)} links "
+              f"that are words of the answers, alone" if a.hint else ""), flush=True)
+        lo, hi, m = 0, 0, None
+        while m is None:  # doubled until a machine is found, then halved between
+            m, how = fit(sh, syms, labels, data, a.seconds * 30, weights=weights, most=hi)
+            if m is None:
+                lo, hi = hi + 1, max(1, 2 * hi)
+        while lo < hi:
+            mid = (lo + hi) // 2
+            got, how = fit(sh, syms, labels, data, a.seconds * 30, weights=weights, most=mid)
+            if got is not None:
+                hi, m = mid, got
+            else:
+                lo = mid + 1
+        if m is None or hi != lo:
+            m, how = fit(sh, syms, labels, data, a.seconds * 30, weights=weights, most=lo)
         if m is None:
-            return
-        for s, y in every:
+            print("  nothing found"); return
+        print(f"  the fewest stories answered otherwise than the set, counted with repeats: {lo} of {sum(weights.values())}")
+        for s, y in data:
             if m.run(s) != y:
-                print(f"    {' '.join(s):45s} the set: {y:15s} the machine: {m.run(s)}")
+                print(f"    {' '.join(s):45s} the set: {y:15s} the machine: {m.run(s)}  (told {weights.get(s, 1)} times)")
+        if a.chart:
+            # the table read by a chart: every bracketing of the chain, each join only through a move the stories
+            # taught on went through; the answer most bracketings give (stage 38 read its hand-written table so)
+            seen = set()
+            for s, y in data:
+                q = m.start
+                for x in s:
+                    seen.add((x, q))
+                    q = m.tau[x, q]
+            word = lambda q: m.labels[q] if q < len(m.labels) else None
+
+            def answer(s):
+                n, val = len(s), {}
+                for i in range(n):
+                    val[i, i + 1] = Counter([m.tau[s[i], m.start]] if (s[i], m.start) in seen else [])
+                for w in range(2, n + 1):
+                    for i in range(n - w + 1):
+                        c = Counter()
+                        for j in range(i + 1, i + w):
+                            for p, cp in val[i, j].items():
+                                for q, cq in val[j, i + w].items():
+                                    if word(q) in syms and (word(q), p) in seen:
+                                        c[m.tau[word(q), p]] += cp * cq
+                        val[i, i + w] = c
+                return word(val[0, n].most_common(1)[0][0]) if val[0, n] else m.run(s)
     else:
         print(f"CLUTRR (graph): {len(train)} chains of 2-3 links, {len(every)} different; {len(syms)} kinds of link; "
               f"taught on {len(data)}, may ask {a.asks} more of them", flush=True)
@@ -689,9 +735,9 @@ def clutrr(a):
             print("  nothing found"); return
         print(f"  kept {m}; asked {asked} ({time.time() - t0:.0f} s)")
     allr = alln = 0
-    for f in sorted(glob.glob(a.clutrr + "/*_test.csv"), key=lambda f: int(f.split("/")[-1].split("_")[0].split(".")[1])):
+    for f in sorted(glob.glob(a.clutrr + "/*_test.csv"), key=lambda f: tuple(int(x) for x in f.split("/")[-1].split("_")[0].split("."))):
         test = clutrr_chains(f)
-        right = sum(all(x in syms for x in s) and m.run(s) == y for s, y, _ in test)
+        right = sum(all(x in syms for x in s) and (answer or m.run)(s) == y for s, y, _ in test)
         allr += right; alln += len(test)
         print(f"  {f.split('/')[-1]:14s} {len(test):4d} chains, links {test[0][2]}: {100 * right / len(test):5.1f} %", flush=True)
     print(f"  all tests: {100 * allr / alln:.1f} %")
@@ -712,6 +758,8 @@ def main():
     ap.add_argument("--most-k", type=int, default=12)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--named", action="store_true", help="CLUTRR: give the form whose states are the answers")
+    ap.add_argument("--hint", action="store_true", help="CLUTRR --named: a link that is a word of the answers answers itself, alone")
+    ap.add_argument("--chart", action="store_true", help="CLUTRR --named: the table read by a chart, through moves seen in teaching")
     a = ap.parse_args()
     if a.clutrr:
         return clutrr(a)
