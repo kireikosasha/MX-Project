@@ -168,6 +168,8 @@ def name(shape):
 
 # ---------------------------------------------------------------- the machine, as found
 class Machine:
+    lex = None
+
     def __init__(self, shape, syms, labels, tau, dl, lam):
         self.shape, self.k, self.cells, self.syms, self.labels = shape, shape[1], shape[2], syms, labels
         self.by_state, self.chain = shape[3], shape[4]
@@ -175,6 +177,10 @@ class Machine:
         self.tau, self.dl, self.lam = tau, dl, lam
 
     def run(self, seq):
+        if self.lex is not None:
+            if any(a not in self.lex for a in seq):
+                return None
+            seq = [self.lex[a] for a in seq]
         q, z = self.start, [0] * len(self.cells)
         for a in seq:
             w = z[0] if self.chain else 0
@@ -203,12 +209,29 @@ class Encoding:
     every read; and for every node of the tree of stories (stories share their beginnings) its state and the value of
     every cell. Only what a node must be is implied; a machine read off the model is checked again in plain Python."""
 
-    def __init__(self, shape, syms, labels):
+    def __init__(self, shape, syms, labels, lexicon=0):
         self.shape, self.syms, self.labels = shape, syms, labels
+        self.raw = None
+        if lexicon:  # the symbols met are read into a few symbols of the machine; the reading is found with it
+            self.raw, self.syms = list(syms), [f"<{i}>" for i in range(lexicon)]
+            syms = self.syms
         _, self.k, self.cells, self.by_state, self.chain = shape
         self.ids, self.clauses = IDPool(), []
         self.reads = list(itertools.product(range(self.k) if self.by_state else [0], *[values(c) for c in self.cells]))
         k = self.k
+        if self.raw is not None:
+            m = len(self.syms)
+            for i, r in enumerate(self.raw):
+                self.exactly([self.v("w", r, s) for s in range(m)])
+                for s in range(m):  # u: symbol s of the machine is used by one of the first i + 1 symbols met
+                    u, w = self.v("u", i, s), self.v("w", r, s)
+                    self.clauses.append([-w, u])
+                    if i:
+                        self.clauses += [[-self.v("u", i - 1, s), u], [-u, self.v("u", i - 1, s), w]]
+                    else:
+                        self.clauses.append([-u, w])
+                    if s:  # a symbol of the machine is first used after the one before it
+                        self.clauses.append([-w, self.v("u", i - 1, s - 1)] if i else [-w])
         for a in syms:
             for q in range(k):
                 self.exactly([self.v("t", a, q, r) for r in range(k)])
@@ -320,13 +343,16 @@ class Encoding:
         a, n, dep = seq[-1], len(self.node), self.depth[seq[:-1]]
         self.node[seq], self.depth[seq], self.ndepth[n] = n, dep + 1, dep + 1
         neg = lambda l: (not l) if isinstance(l, bool) else -l
+        read = [(a, [])] if self.raw is None else [(s, [-self.v("w", a, i)]) for i, s in enumerate(self.syms)]
         for q in range(self.k):
             x = self.v("x", n0, q)
-            for r in range(self.k):
-                self.clauses.append([-x, -self.v("t", a, q, r), self.v("x", n, r)])
+            for a, guard in read:
+                for r in range(self.k):
+                    self.clauses.append([-x, -self.v("t", a, q, r), self.v("x", n, r)] + guard)
             for j, c in enumerate(self.cells):
                 for w in self.keys(j):
-                    key = [-self.v("z", n0, 0, w)] if self.chain and j else []
+                  for a, guard in read:
+                    key = ([-self.v("z", n0, 0, w)] if self.chain and j else []) + guard
                     for o in self.offsets(c):
                         off = self.v("o", j, a, q, w, o)
                         if c[0] == "Z":
@@ -407,10 +433,13 @@ class Encoding:
         dl = {(a, q, j, w): next(o for o in self.offsets(c) if on("o", j, a, q, w, o))
               for a in self.syms for q in range(self.k) for j, c in enumerate(self.cells) for w in self.keys(j)}
         lam = {r: next(y for y in range(len(self.labels)) if on("l", r, y)) for r in self.reads}
-        return Machine(self.shape, self.syms, self.labels, tau, dl, lam), "sat"
+        m = Machine(self.shape, self.syms, self.labels, tau, dl, lam)
+        if self.raw is not None:
+            m.lex = {r: self.syms[next(i for i in range(len(self.syms)) if on("w", r, i))] for r in self.raw}
+        return m, "sat"
 
 
-def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0):
+def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lexicon=0):
     """A machine of this shape that answers every story of data rightly (and, given another machine and a pool of
     stories, answers some story of the pool otherwise than it). Solved first on a part of the stories; the stories the
     machine found answers wrongly are added and it is solved again (a 'no' on a part is a 'no' on all)."""
@@ -420,7 +449,7 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0):
     part = list(data) if most else rng.sample(data, min(40, len(data)))
     end = time.time() + seconds
     while True:
-        e = Encoding(shape, syms, labels)
+        e = Encoding(shape, syms, labels, lexicon)
         if most:
             ex = [e.v("excused", i) for i in range(len(part))]
             for (seq, y), x in zip(part, ex):
@@ -440,6 +469,35 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0):
         if time.time() > end:
             return None, "unknown"
         part += rng.sample(wrong, min(20, len(wrong)))
+
+
+def fit_greedy(shape, syms, labels, data, seconds, lexicon=0, start=200, batch=10, log=print):
+    """For stories some of which no machine can explain (errors of the set, or of the way found between the two
+    asked about): a machine is found for a part; of the stories it answers wrongly, a few are added; if no machine
+    explains them all, they are tried one by one, and a story that cannot be added is set aside. Returns the machine
+    and the stories set aside."""
+    rng = random.Random(len(data))
+    part = rng.sample(data, min(start, len(data)))
+    aside = []
+    m, how = fit(shape, syms, labels, part, seconds, lexicon=lexicon)
+    if m is None:
+        return None, how
+    while True:
+        wrong = [x for x in data if x not in aside and m.run(x[0]) != x[1]]
+        log(f"  {len(part)} stories explained, {len(aside)} set aside, {len(wrong)} still answered wrongly")
+        if not wrong:
+            return m, aside
+        more = rng.sample(wrong, min(batch, len(wrong)))
+        got, how = fit(shape, syms, labels, part + more, seconds, lexicon=lexicon)
+        if got is not None:
+            m, part = got, part + more
+            continue
+        for x in more:  # one by one
+            got, how = fit(shape, syms, labels, part + [x], seconds, lexicon=lexicon)
+            if got is not None:
+                m, part = got, part + [x]
+            else:
+                aside.append(x)
 
 
 def rival(shape, syms, labels, data, machine, pool, seconds):

@@ -5,6 +5,7 @@ import argparse, math, random, time
 import torch
 import torch.nn as nn
 from cells import FAMILIES
+from deletang import TASKS as DEEPMIND
 
 DEVICE = torch.device("cpu")
 
@@ -82,7 +83,7 @@ def stories(syms, oracle, rng, n, lo, hi):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("families", nargs="*", default=list(FAMILIES))
+    ap.add_argument("families", nargs="*", default=list(FAMILIES), help="families of cells.py or tasks of deletang.py")
     ap.add_argument("--teach", type=int, default=300)
     ap.add_argument("--times", type=int, nargs="*", default=[1, 40], help="multiples of --teach to teach on")
     ap.add_argument("--longest", type=int, default=4)
@@ -99,20 +100,32 @@ def main():
     global DEVICE
     DEVICE = torch.device(a.device)
     for name in a.families:
-        syms, oracle = FAMILIES[name]
+        if name in DEEPMIND:  # a task of Deletang et al.: stories come from its own generator, not from any string
+            gen = DEEPMIND[name][1]
+            draw = lambda rng, n, lo, hi: [gen(rng, rng.randint(lo, hi)) for _ in range(n)]
+            tr = random.Random(7)
+            seen = draw(tr, 3000, 1, 20)
+            syms = sorted({x for s, _ in seen for x in s})
+            labels = sorted({y for _, y in seen})
+            tests = {"41-500": draw(random.Random(1041), a.test, 41, 500)}
+            fresh = draw(random.Random(99), a.test, 1, a.longest)
+            make = lambda rng, n: draw(rng, n, 1, a.longest)
+        else:
+            syms, oracle = FAMILIES[name]
+            tr = random.Random(7)
+            labels = sorted({oracle([tr.choice(syms) for _ in range(tr.randint(1, 30))]) for _ in range(5000)})
+            tests = {str(L): stories(syms, oracle, random.Random(1000 + L), a.test, L, L) for L in (20, 100, 500)}
+            fresh = stories(syms, oracle, random.Random(99), a.test, 1, a.longest)
+            make = lambda rng, n: stories(syms, oracle, rng, n, 1, a.longest)
         sid = {c: i for i, c in enumerate(syms)}
-        tr = random.Random(7)
-        labels = sorted({oracle([tr.choice(syms) for _ in range(tr.randint(1, 30))]) for _ in range(5000)})
         lid = {l: i for i, l in enumerate(labels)}
-        tests = {L: stories(syms, oracle, random.Random(1000 + L), a.test, L, L) for L in (20, 100, 500)}
-        fresh = stories(syms, oracle, random.Random(99), a.test, 1, a.longest)
         for kind in a.kinds:
             for times in a.times:
                 rows = []
                 for seed in range(a.seeds):
                     torch.manual_seed(seed)
                     rng = random.Random(seed)
-                    teach = stories(syms, oracle, rng, a.teach * times, 1, a.longest)
+                    teach = make(rng, a.teach * times)
                     model = (LSTM(len(syms), len(labels), a.width) if kind == "lstm" else
                              Transformer(len(syms), len(labels), a.width, a.layers)).to(DEVICE)
                     opt = torch.optim.Adam(model.parameters(), lr=1e-3)
@@ -123,13 +136,13 @@ def main():
                         loss = nn.functional.cross_entropy(model(x, l), y)
                         opt.zero_grad(); loss.backward(); opt.step()
                     taught = accuracy(model, fresh, sid, lid, len(syms))
-                    long = [accuracy(model, tests[L], sid, lid, len(syms), part=50 if L == 500 else 100) for L in (20, 100, 500)]
+                    long = [accuracy(model, tests[L], sid, lid, len(syms), part=50) for L in tests]
                     rows.append((taught, *long))
                     print(f"  {name:9s} {kind:11s} x{times:<3d} seed {seed}: taught lengths {taught:5.1f}  "
-                          f"length 20/100/500: {long[0]:5.1f} {long[1]:5.1f} {long[2]:5.1f}  ({time.time() - t0:.0f} s)", flush=True)
-                m = [sum(r[i] for r in rows) / len(rows) for i in range(4)]
+                          f"length {'/'.join(tests)}: {' '.join(f'{v:5.1f}' for v in long)}  ({time.time() - t0:.0f} s)", flush=True)
+                m = [sum(r[i] for r in rows) / len(rows) for i in range(len(rows[0]))]
                 print(f"{name:9s} {kind:11s} x{times:<3d} mean of {len(rows)}: taught lengths {m[0]:5.1f}  "
-                      f"length 20/100/500: {m[1]:5.1f} {m[2]:5.1f} {m[3]:5.1f}", flush=True)
+                      f"length {'/'.join(tests)}: {' '.join(f'{v:5.1f}' for v in m[1:])}", flush=True)
 
 
 if __name__ == "__main__":

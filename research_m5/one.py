@@ -389,10 +389,15 @@ def main():
     ap.add_argument("--steps", type=int, default=2500, help="the table: steps of teaching")
     ap.add_argument("--width", type=int, default=48)
     ap.add_argument("--encoder", default="", help="a network taught beforehand on plain text in the reader's place (a video card)")
-    ap.add_argument("--only", default="", help="register or table: the other machine is not tried")
+    ap.add_argument("--only", default="", help="register, table or found: the others are not tried")
     ap.add_argument("--unread", action="store_true", help="the stories tried are not read without their answers beforehand")
     ap.add_argument("--tests-in", default="", help="--stepgame: the stories tried are taken from this folder (the stories taught on stay)")
     ap.add_argument("--save", default="", help="the table: a file to keep its readers in while they are taught, and to take the teaching up from")
+    ap.add_argument("--found", action="store_true", help="the machine found by the solver of cells.py is tried beside the others")
+    ap.add_argument("--found-teach", type=int, default=3000, help="the machine found: taught on so many different stories")
+    ap.add_argument("--found-asks", type=int, default=40)
+    ap.add_argument("--found-seconds", type=float, default=10, help="the machine found: the solver's limit for one shape")
+    ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
@@ -408,6 +413,42 @@ def main():
                 solve(one)
         return
     solve(a)
+
+
+class Found:
+    """the machine found by the solver of cells.py, not written by hand: every link of the way is a symbol (the view
+    of the pair and the way it is gone), the kind of the question is one symbol more, at the end; the answer is what
+    the machine says. Taught on a sample of the stories; where machines that explain them part, it asks the answer of
+    another story it was given to learn from (as many as --found-asks)"""
+
+    def __init__(self, taught, a, log):
+        import cells
+        said = {}
+        for one in taught:
+            steps = steps_of(one)
+            if steps:
+                seq = tuple(steps) + (("asked", one[6]),)
+                said.setdefault(seq, Counter())[one[4]] += 1
+        every = [(seq, c.most_common(1)[0][0]) for seq, c in said.items()]   # (the answer given most often)
+        rng = random.Random(a.seed)
+        data = rng.sample(every, min(a.found_teach, len(every)))
+        known = dict(every)
+        self.syms = sorted({x for seq in known for x in seq}, key=repr)
+        log(f"the machine found by the solver: {len(every)} different stories, {len(self.syms)} symbols; "
+            f"taught on {len(data)}, may ask {a.found_asks} more")
+        self.m, asked = cells.learn(self.syms, lambda w: known.get(tuple(w)), data, rng, a.found_asks, a.found_seconds,
+                                    max(len(s) for s, _ in data), quiet=False, pool=list(known), workers=a.workers)
+        self.explains = 0.0 if self.m is None else sum(self.m.run(s) == y for s, y in every) / len(every)
+        self.weights = 0
+        self.symbols = set(self.syms)
+        log(f"the machine found by the solver: {self.m if self.m else 'nothing found'}; asked {asked}")
+
+    def answer(self, one):
+        steps = steps_of(one)
+        if self.m is None or not steps:
+            return None
+        seq = tuple(steps) + (("asked", one[6]),)
+        return self.m.run(seq) if all(x in self.symbols for x in seq) else None
 
 
 def solve(a):
@@ -429,6 +470,8 @@ def solve(a):
     log(f"{len(taught)} stories to teach on, {sum(map(len, tried.values()))} to try on; answers: {' '.join(sorted({one[4] for one in taught}))}")
 
     machines, kept, share, third = {"register": Register, "table": Tabled}, a.only, {}, None
+    if a.found or kept == "found":                               # the machine found by the solver beside the two written by hand
+        machines["found"] = Found
     two = sum(None not in one[3] for one in taught) >= 0.9 * len(taught)         # (are the questions about two things named in the story?)
     if not kept:                                                 # the machine of recalling: it reads the stories as told in time (for the sets
         folder = tempfile.mkdtemp()                              # that are not in that form, they are written out so: sentences, then the question)
