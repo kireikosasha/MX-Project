@@ -1,0 +1,79 @@
+"""One shot of the frozen learner (cells.py) on sealed families written by others.
+
+A family is a folder with family.py that defines ALPHABET (a list of token strings) and answer(seq) -> str for any
+sequence of tokens. The learner sees what it always sees: 300 sequences of 1-4 tokens with their answers, and may ask
+the answers of up to 40 more of its own choosing; it is tested on 300 sequences of length 20, 100 and 500. Nothing in
+cells.py was changed for these families; the commit of the code and the hashes of the families are written down before
+the run.
+
+    python sealed_run.py FOLDER_OF_FAMILIES [--minutes 30]
+"""
+import argparse, hashlib, importlib.util, multiprocessing as mp, os, random, sys, time
+import cells
+
+
+def load(path):
+    spec = importlib.util.spec_from_file_location("family", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return list(mod.ALPHABET), mod.answer
+
+
+def one(path, out, a):
+    syms, answer = load(path)
+    oracle = lambda w: str(answer(list(w)))
+    rng = random.Random(a.seed)
+    data = []
+    for _ in range(a.teach):
+        w = tuple(rng.choice(syms) for _ in range(rng.randint(1, a.longest)))
+        data.append((w, oracle(w)))
+    t0 = time.time()
+    m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers)
+    res = {"found": None if m is None else str(m), "asked": asked, "seconds": round(time.time() - t0)}
+    for L in (20, 100, 500):
+        tr = random.Random(1000 + L)
+        seqs = [[tr.choice(syms) for _ in range(L)] for _ in range(300)]
+        gold = [oracle(s) for s in seqs]
+        res[L] = None if m is None else 100 * sum(m.run(s) == g for s, g in zip(seqs, gold)) / len(seqs)
+        res[f"most{L}"] = 100 * max(gold.count(g) for g in set(gold)) / len(gold)   # the share of the commonest answer
+    out.put(res)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("folder")
+    ap.add_argument("--minutes", type=float, default=30, help="the time one family may take before it counts as not taken")
+    ap.add_argument("--teach", type=int, default=300)
+    ap.add_argument("--longest", type=int, default=4)
+    ap.add_argument("--asks", type=int, default=40)
+    ap.add_argument("--seconds", type=float, default=10)
+    ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--seed", type=int, default=0)
+    a = ap.parse_args()
+    names = sorted(d for d in os.listdir(a.folder) if os.path.exists(os.path.join(a.folder, d, "family.py")))
+    print(f"{len(names)} sealed families in {a.folder}", flush=True)
+    for d in names:
+        path = os.path.join(a.folder, d, "family.py")
+        digest = hashlib.sha256(open(path, "rb").read()).hexdigest()[:16]
+        out = mp.get_context("fork").Queue()
+        p = mp.get_context("fork").Process(target=one, args=(path, out, a))
+        p.start()
+        p.join(a.minutes * 60)
+        if p.is_alive():
+            p.kill()
+            print(f"{d} ({digest}): not taken within {a.minutes:.0f} minutes", flush=True)
+            continue
+        if out.empty():
+            print(f"{d} ({digest}): the run failed", flush=True)
+            continue
+        r = out.get()
+        if r["found"] is None:
+            print(f"{d} ({digest}): nothing found; asked {r['asked']} ({r['seconds']} s)", flush=True)
+        else:
+            print(f"{d} ({digest}): {r['found']}; asked {r['asked']}; length 20 / 100 / 500: "
+                  f"{r[20]:.1f} / {r[100]:.1f} / {r[500]:.1f} % (the commonest answer: {r['most20']:.0f} / {r['most100']:.0f} / "
+                  f"{r['most500']:.0f} %) ({r['seconds']} s)", flush=True)
+
+
+if __name__ == "__main__":
+    main()
