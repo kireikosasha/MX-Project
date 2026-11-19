@@ -1,0 +1,350 @@
+Colab, T4 (2 processor cores), the full mode of colab/cells.ipynb, run by the owner of the repository on 19 November 2026.
+
+=== cell 1
+import os, subprocess
+ROOT = os.environ.get('MX_ROOT', '/content')
+QUICK = bool(os.environ.get('MX_QUICK'))
+if os.path.exists(ROOT + '/MX-Project'):
+    subprocess.run(['git', '-C', ROOT + '/MX-Project', 'pull', '-q'])
+else:
+    subprocess.run(['git', 'clone', '-q', '--depth', '1', 'https://github.com/kireikosasha/MX-Project', ROOT + '/MX-Project'], check=True)
+M5 = ROOT + '/MX-Project/research_m5'
+!pip -q install python-sat
+G = ROOT + '/clutrr_graph'
+os.makedirs(G, exist_ok=True)
+RAW = 'https://raw.githubusercontent.com/azreasoners/LLM-ASP/main/clutrr/data/clutrr/data_089907f8'
+for f in ['1.2%2C1.3_train.csv'] + [f'1.{k}_test.csv' for k in range(2, 11)]:
+    out = G + '/' + f.replace('%2C', ',')
+    if not os.path.exists(out):
+        !wget -q -O "{out}" "{RAW}/{f}"
+WORKERS = os.cpu_count()
+--- output
+
+
+=== cell 3
+fams = 'parity lies weekday latest majority shells' if QUICK else 'parity lies weekday latest majority shells firstlast odometer navigate turtle'
+!cd {M5} && python cells.py {fams} --workers {WORKERS} | grep -v "gave up"
+--- output
+parity: 2 symbols, 300 stories of 1-4 symbols
+  kept 1 states + a circle of 2 (4 bits, 0.0 s); 300 stories, 0 asked
+  1 states + a circle of 5 answers otherwise on 3 stories (0.6 s): asked one one one one one one = even | zero one one one one one one one one one one one one one one one one = even | zero zero one one zero one one zero one one = even; the kept machine was wrong on 0
+  1 states + a circle of 2 + a circle of 3 answers otherwise on 3 stories (0.6 s): asked one one one one one zero = odd | zero zero zero one zero one zero one zero one zero one = odd | zero one zero one one one zero one = odd; the kept machine was wrong on 0
+  no other machine within 8 bits; 8 longer stories asked, all answered rightly (0.7 s)
+  parity: 1 states + a circle of 2; asked 14; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (2 s)
+
+lies: 2 symbols, 300 stories of 1-4 symbols
+  kept 1 states + a circle of 2 (4 bits, 0.0 s); 300 stories, 0 asked
+  1 states + a circle of 5 answers otherwise on 3 stories (0.6 s): asked says-lies says-lies says-lies says-lies says-lies says-truth = no | says-lies says-truth says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies says-lies = no | says-lies says-truth says-lies says-lies says-truth says-lies says-lies says-truth says-lies says-lies says-truth says-lies = yes; the kept machine was wrong on 0
+  no other machine within 8 bits; 8 longer stories asked, all answered rightly (0.7 s)
+  lies: 1 states + a circle of 2; asked 11; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (2 s)
+
+weekday: 3 symbols, 300 stories of 1-4 symbols
+  kept 1 states + a circle of 7 (28 bits, 0.2 s); 300 stories, 0 asked
+  1 states + a circle of 8 answers otherwise on 3 stories (2.9 s): asked next back noise back back back back back = d2 | next back back back back back back back back back back back back back back back back back = d5 | noise back next back back next back back next back back next back back = d2; the kept machine was wrong on 0
+  no other machine within 8 bits; 12 longer stories asked, all answered rightly (3.5 s)
+  weekday: 1 states + a circle of 7; asked 15; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (7 s)
+
+latest: 4 symbols, 300 stories of 1-4 symbols
+  kept 4 states (40 bits, 0.4 s); 300 stories, 0 asked
+  no other machine within 8 bits; 10 longer stories asked, all answered rightly (4.1 s)
+  latest: 4 states; asked 10; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (5 s)
+
+majority: 3 symbols, 300 stories of 1-4 symbols
+  kept 1 states + a whole number (offsets -1..1, read clipped to -1..1) (10 bits, 0.0 s); 300 stories, 0 asked
+  no other machine within 8 bits; 9 longer stories asked, all answered rightly (0.7 s)
+  majority: 1 states + a whole number (offsets -1..1, read clipped to -1..1); asked 9; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (1 s)
+
+shells: 4 symbols, 300 stories of 1-4 symbols
+  kept 2 states + a circle of 3, the answer read from the numbers only (25 bits, 0.1 s); 300 stories, 0 asked
+  no other machine within 8 bits; 9 longer stories asked, all answered rightly (3.3 s)
+  shells: 2 states + a circle of 3, the answer read from the numbers only; asked 9; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (4 s)
+
+firstlast: 3 symbols, 300 stories of 1-4 symbols
+  kept 4 states + a circle of 3, the answer read from the numbers only (46 bits, 6.4 s); 300 stories, 0 asked
+  no other machine within 8 bits; 8 longer stories asked, all answered rightly (52.9 s)
+  firstlast: 4 states + a circle of 3, the answer read from the numbers only; asked 8; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (59 s)
+
+odometer: 3 symbols, 300 stories of 1-4 symbols
+  kept 1 states + a circle of 8 (33 bits, 0.2 s); 300 stories, 0 asked
+  1 states + a circle of 9 answers otherwise on 3 stories (3.6 s): asked next back noise back back back back back = d2 w- | next back back back back back back back back back back back back back back back back back = d5 w- | noise back next back back next back back next back back next back back = d2 w-; the kept machine was wrong on 3
+  kept 1 states + a circle of 2 + a circle of 5 (42 bits, 0.8 s); 303 stories, 3 asked
+  no other machine within 8 bits; of 12 longer stories asked, 2 answered wrongly
+  kept 1 states + a circle of 2 + a circle of 7 (58 bits, 3.0 s); 315 stories, 15 asked
+  1 states + a circle of 2 + a circle of 7 answers otherwise on 3 stories (2.3 s): asked next next noise noise next noise next = d4 w0 | back noise back back noise back back noise back back noise back back noise back = d4 w- | next back back back back back back back back back back back = d4 w-; the kept machine was wrong on 1
+  kept 1 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7 (86 bits, 25.6 s); 318 stories, 18 asked
+  1 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7 answers otherwise on 3 stories (9.9 s): asked next back next next next next next = d5 w0 | next next next next next next next next next next next next next = d6 w+ | next next next next next next next next next next next next = d5 w+; the kept machine was wrong on 3
+  kept 2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 7, the answer read from the numbers only (117 bits, 130.7 s); 321 stories, 21 asked
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 7, the answer read from the numbers only answers otherwise on 3 stories (10.8 s): asked next next next next next back noise = d4 w0 | next noise back noise back noise back noise back noise back noise back noise back = d1 w- | next back back back back back back back back back back back back back back = d1 w-; the kept machine was wrong on 3
+  kept 2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 7, the answer read from the numbers only (119 bits, 188.2 s); 324 stories, 24 asked
+  1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first answers otherwise on 3 stories (35.3 s): asked next next noise next noise back = d2 w0 | back next next next next next next next next next next next next next next next next = d1 w+ | noise noise next next next noise next next = d5 w0; the kept machine was wrong on 2
+  kept 1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first (126 bits, 228.7 s); 327 stories, 27 asked
+  1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first answers otherwise on 3 stories (11.3 s): asked next next noise back = d1 w0 | noise back next next back next next back next next back next next back = d3 w0 | back next noise next noise next noise next noise next noise next = d5 w0; the kept machine was wrong on 3
+  kept 1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first (126 bits, 102.4 s); 330 stories, 30 asked
+  1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first answers otherwise on 3 stories (11.3 s): asked next noise next noise next noise next noise next noise = d5 w0 | next noise next back next next back next next back next next back next next back next = d6 w0 | noise back next next back next next back next next back next next back next next = d5 w0; the kept machine was wrong on 3
+  kept 1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first (128 bits, 222.6 s); 333 stories, 33 asked
+  1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first answers otherwise on 3 stories (13.9 s): asked next next next back back = d1 w0 | back noise next next next next next next next next next next next next next next next = d0 w+ | noise next next next next next next next next next next next next next next = d0 w+; the kept machine was wrong on 3
+  kept 1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first (129 bits, 203.8 s); 336 stories, 36 asked
+  1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first answers otherwise on 3 stories (10.9 s): asked next next next next next next next next next = d2 w+ | next back next next next next next next next next next next next next next next next next = d2 w+ | noise next next next next next next next next next = d2 w+; the kept machine was wrong on 3
+  kept 1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first (131 bits, 309.7 s); 339 stories, 39 asked
+  1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first answers otherwise on 3 stories (10.7 s): asked noise back back back back back back back back back back back = d3 w-; the kept machine was wrong on 0
+  odometer: 1 states + a circle of 7 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first; asked 40; exact on length 20 / 100 / 500: 91.7 / 50.3 / 49.0 %  (1542 s)
+
+navigate: 4 symbols, 300 stories of 1-4 symbols
+  kept 2 states + a whole number (offsets -1..1, read clipped to -1..1) (27 bits, 0.3 s); 300 stories, 0 asked
+  1 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first answers otherwise on 3 stories (3.1 s): asked backward turn-left turn-around backward backward turn-left backward = away | backward turn-left backward backward turn-left turn-around backward forward = away | turn-around turn-left backward backward turn-left backward turn-left = away; the kept machine was wrong on 2
+  kept 1 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first (29 bits, 0.1 s); 303 stories, 3 asked
+  1 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first answers otherwise on 2 stories (3.5 s): asked forward turn-left backward backward turn-around turn-left turn-around backward = away | backward backward forward turn-left forward turn-left forward turn-left forward turn-left = away; the kept machine was wrong on 2
+  kept 1 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first (29 bits, 0.2 s); 305 stories, 5 asked
+  1 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first answers otherwise on 2 stories (3.7 s): asked forward turn-left turn-around forward turn-left turn-around = away | forward turn-around turn-left turn-around backward turn-around turn-around = away; the kept machine was wrong on 0
+  1 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -1..1), the second moved by the value of the first answers otherwise on 3 stories (4.7 s): asked backward backward backward backward backward backward backward backward backward backward backward = away | forward backward backward backward backward backward backward backward backward backward backward backward backward backward backward backward backward = away | backward turn-around backward backward backward backward backward backward backward backward backward backward backward backward backward backward = away; the kept machine was wrong on 0
+  1 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first answers otherwise on 3 stories (10.9 s): asked backward turn-left turn-around backward = away | backward turn-around backward turn-around backward turn-around backward turn-around backward turn-around backward turn-around backward turn-around backward = home | backward turn-around turn-left forward turn-left backward backward turn-left = away; the kept machine was wrong on 0
+  1 states + a circle of 2 + a whole number (offsets -2..2, read clipped to -2..2), the second moved by the value of the first answers otherwise on 3 stories (14.0 s): asked turn-left backward backward turn-left turn-left backward backward turn-left = home | backward backward turn-around backward backward turn-around backward backward turn-around backward backward turn-around backward backward turn-around = away | backward backward backward backward backward backward backward backward backward backward backward backward = away; the kept machine was wrong on 1
+  kept 2 states + a circle of 9, the answer read from the numbers only (42 bits, 3.8 s); 316 stories, 16 asked
+  2 states + a circle of 11, the answer read from the numbers only answers otherwise on 3 stories (25.1 s): asked backward turn-around turn-left turn-left turn-left = away | turn-around turn-left backward turn-left backward backward turn-left backward backward turn-left backward backward turn-left backward backward turn-left backward = away | forward forward turn-left forward turn-left forward turn-left forward turn-left forward turn-left forward = away; the kept machine was wrong on 2
+  kept 2 states + a circle of 2 + a circle of 3, the second moved by the value of the first, the answer read from the numbers only (47 bits, 6.0 s); 319 stories, 19 asked
+  2 states + a circle of 8 answers otherwise on 3 stories (10.7 s): asked forward backward forward backward = home | backward turn-around turn-left forward turn-around turn-left forward turn-around turn-left forward turn-around turn-left forward turn-around turn-left forward = away | turn-left turn-around turn-around forward turn-around backward = away; the kept machine was wrong on 3
+  kept 2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only (47 bits, 4.0 s); 322 stories, 22 asked
+  2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only answers otherwise on 3 stories (11.3 s): asked backward backward turn-left turn-left forward = away | forward turn-around turn-left turn-left turn-left turn-left turn-left turn-left turn-left turn-left turn-left turn-left turn-left turn-left turn-left turn-left = away | backward backward turn-left forward forward turn-around turn-left turn-around = away; the kept machine was wrong on 3
+  kept 2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only (47 bits, 5.6 s); 325 stories, 25 asked
+  2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only answers otherwise on 3 stories (10.5 s): asked backward turn-around backward turn-left = home | backward forward turn-around backward turn-around backward turn-around backward turn-around backward turn-around backward turn-around backward turn-around backward = away | turn-around backward backward turn-around turn-left backward = away; the kept machine was wrong on 2
+  kept 2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only (47 bits, 3.9 s); 328 stories, 28 asked
+  2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only answers otherwise on 3 stories (11.0 s): asked forward turn-around forward backward backward = away | backward turn-around backward backward turn-around backward backward turn-around backward backward turn-around backward backward turn-around backward = home | forward backward backward forward turn-around turn-around turn-left = home; the kept machine was wrong on 0
+  2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only answers otherwise on 3 stories (12.2 s): asked forward forward turn-left turn-left = away | backward backward turn-around turn-left turn-around turn-left turn-around turn-left turn-around turn-left = away | forward forward turn-left turn-around turn-around turn-left backward = away; the kept machine was wrong on 0
+  2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first answers otherwise on 3 stories (45.9 s): asked backward backward forward forward = home | backward backward turn-left backward turn-around forward = away | turn-left backward backward turn-left = away; the kept machine was wrong on 1
+  kept 2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only (47 bits, 3.9 s); 337 stories, 37 asked
+  2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only answers otherwise on 2 stories (10.3 s): asked backward backward turn-around backward forward forward forward = away | backward backward turn-left forward backward turn-around forward = away; the kept machine was wrong on 2
+  kept 2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only (47 bits, 6.0 s); 339 stories, 39 asked
+  2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only answers otherwise on 3 stories (10.7 s): asked forward turn-left turn-left backward turn-around = away; the kept machine was wrong on 1
+  kept 2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only (47 bits, 10.2 s); 340 stories, 40 asked
+  navigate: 2 states + a circle of 2 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only; asked 40; exact on length 20 / 100 / 500: 91.3 / 98.7 / 99.7 %  (232 s)
+
+turtle: 4 symbols, 300 stories of 1-4 symbols
+  kept 3 states + a circle of 12, the answer read from the numbers only (96 bits, 71.9 s); 300 stories, 0 asked
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only answers otherwise on 3 stories (10.3 s): asked step right right step right = xy00 | left left step right noise step right noise step right noise step right noise step right noise = xy-0 | noise noise left step noise right left step = xy0+; the kept machine was wrong on 3
+  kept 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only (108 bits, 91.8 s); 303 stories, 3 asked
+  2 states + a circle of 4 + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only answers otherwise on 3 stories (21.6 s): asked right right step step = xy-0 | right right left step left step left step left step left step left step left step left step = xy00 | step left left left step left step = xy+-; the kept machine was wrong on 3
+  kept 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only (108 bits, 81.8 s); 306 stories, 6 asked
+  no other machine within 8 bits; of 12 longer stories asked, 3 answered wrongly
+  kept 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only (110 bits, 185.1 s); 318 stories, 18 asked
+  no other machine within 8 bits; of 12 longer stories asked, 1 answered wrongly
+  nothing found up to the largest shape (1783 s)
+
+
+=== cell 5
+tasks = 'parity_check cycle_navigation even_pairs missing_duplicate' if QUICK else 'even_pairs modular_arithmetic_simple parity_check cycle_navigation modular_arithmetic solve_equation missing_duplicate'
+for t in tasks.split():
+    !cd {M5} && timeout 2400 python deletang.py {t} --workers {WORKERS} | grep -v "gave up"
+--- output
+even_pairs (R): 2 symbols; taught on 300 stories of 1-10; may ask 40 of 1471 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 100.0, transformer 96.4
+  kept 3 states + a circle of 2, the answer read from the numbers only (18 bits, 0.8 s); 300 stories, 0 asked
+  even_pairs: 3 states + a circle of 2, the answer read from the numbers only; asked 0; on 41-500: 100.0 %  (20 s)
+
+modular_arithmetic_simple (R): 8 symbols; taught on 300 stories of 1-10; may ask 40 of 1656 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 100.0, transformer 24.2
+  modular_arithmetic_simple: nothing found (1199 s)
+
+parity_check (R): 2 symbols; taught on 300 stories of 1-10; may ask 40 of 1471 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 100.0, transformer 52.0
+  kept 1 states + a circle of 2 (4 bits, 0.1 s); 300 stories, 0 asked
+  parity_check: 1 states + a circle of 2; asked 0; on 41-500: 100.0 %  (4 s)
+
+cycle_navigation (R): 3 symbols; taught on 300 stories of 1-10; may ask 40 of 1678 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 100.0, transformer 61.9
+  kept 1 states + a circle of 5 (19 bits, 0.2 s); 300 stories, 0 asked
+  cycle_navigation: 1 states + a circle of 5; asked 0; on 41-500: 100.0 %  (3 s)
+
+modular_arithmetic (DCF): 10 symbols; taught on 300 stories of 1-10; may ask 40 of 1494 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 59.2, transformer 32.5
+  modular_arithmetic: nothing found (1221 s)
+
+solve_equation (DCF): 11 symbols; taught on 300 stories of 1-10; may ask 40 of 1298 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 67.8, transformer 25.7
+  solve_equation: nothing found (1253 s)
+
+missing_duplicate (CS): 4 symbols; taught on 300 stories of 1-10; may ask 40 of 1313 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 54.3, transformer 56.4
+  kept 1 states + a circle of 2 (6 bits, 0.1 s); 300 stories, 0 asked
+  missing_duplicate: 1 states + a circle of 2; asked 0; on 41-500: 100.0 %  (2 s)
+
+
+=== cell 7
+tasks = 'parity_check missing_duplicate' if QUICK else 'even_pairs modular_arithmetic_simple parity_check cycle_navigation modular_arithmetic solve_equation missing_duplicate'
+steps = 200 if QUICK else 3000
+!cd {M5} && python cells_rivals.py {tasks} --longest 10 --steps {steps} --seeds 3 --times 1 40 | grep "mean of"
+!cd {M5} && python cells_rivals.py {tasks} --longest 10 --steps {steps} --seeds 3 --times 40 --kinds transformer --width 256 --layers 6 | grep "mean of"
+--- output
+even_pairs lstm        x1   mean of 3: taught lengths 100.0  length 41-500: 100.0
+even_pairs lstm        x40  mean of 3: taught lengths 100.0  length 41-500: 100.0
+even_pairs transformer x1   mean of 3: taught lengths  99.9  length 41-500:  49.0
+even_pairs transformer x40  mean of 3: taught lengths 100.0  length 41-500:  47.1
+modular_arithmetic_simple lstm        x1   mean of 3: taught lengths  47.3  length 41-500:  20.3
+modular_arithmetic_simple lstm        x40  mean of 3: taught lengths  99.9  length 41-500:  31.4
+modular_arithmetic_simple transformer x1   mean of 3: taught lengths  51.1  length 41-500:  19.4
+modular_arithmetic_simple transformer x40  mean of 3: taught lengths  82.3  length 41-500:  18.2
+parity_check lstm        x1   mean of 3: taught lengths 100.0  length 41-500: 100.0
+parity_check lstm        x40  mean of 3: taught lengths 100.0  length 41-500: 100.0
+parity_check transformer x1   mean of 3: taught lengths  88.3  length 41-500:  52.1
+parity_check transformer x40  mean of 3: taught lengths  72.2  length 41-500:  52.1
+cycle_navigation lstm        x1   mean of 3: taught lengths  94.7  length 41-500:  22.8
+cycle_navigation lstm        x40  mean of 3: taught lengths 100.0  length 41-500:  23.3
+cycle_navigation transformer x1   mean of 3: taught lengths  99.2  length 41-500:  20.9
+cycle_navigation transformer x40  mean of 3: taught lengths 100.0  length 41-500:  19.8
+modular_arithmetic lstm        x1   mean of 3: taught lengths  71.6  length 41-500:  23.3
+modular_arithmetic lstm        x40  mean of 3: taught lengths  97.1  length 41-500:  23.2
+modular_arithmetic transformer x1   mean of 3: taught lengths  70.4  length 41-500:  16.9
+modular_arithmetic transformer x40  mean of 3: taught lengths  92.9  length 41-500:  20.3
+solve_equation lstm        x1   mean of 3: taught lengths  76.1  length 41-500:  19.0
+solve_equation lstm        x40  mean of 3: taught lengths 100.0  length 41-500:  21.8
+solve_equation transformer x1   mean of 3: taught lengths  77.0  length 41-500:  18.2
+solve_equation transformer x40  mean of 3: taught lengths  97.1  length 41-500:  21.1
+missing_duplicate lstm        x1   mean of 3: taught lengths  94.0  length 41-500:  50.0
+missing_duplicate lstm        x40  mean of 3: taught lengths 100.0  length 41-500:  67.8
+missing_duplicate transformer x1   mean of 3: taught lengths  95.1  length 41-500:  49.1
+missing_duplicate transformer x40  mean of 3: taught lengths  98.8  length 41-500:  49.8
+even_pairs transformer x40  mean of 3: taught lengths  93.6  length 41-500:  48.1
+modular_arithmetic_simple transformer x40  mean of 3: taught lengths  61.2  length 41-500:  21.9
+parity_check transformer x40  mean of 3: taught lengths  69.6  length 41-500:  53.4
+cycle_navigation transformer x40  mean of 3: taught lengths  99.8  length 41-500:  21.3
+modular_arithmetic transformer x40  mean of 3: taught lengths  86.8  length 41-500:  20.7
+solve_equation transformer x40  mean of 3: taught lengths  79.7  length 41-500:  20.9
+missing_duplicate transformer x40  mean of 3: taught lengths  91.8  length 41-500:  50.7
+
+=== cell 9
+if not os.path.exists(ROOT + '/StepGame'):
+    !git clone -q --depth 1 --filter=blob:none --sparse https://github.com/ZhengxiangShi/StepGame {ROOT}/StepGame && git -C {ROOT}/StepGame sparse-checkout set Dataset/TrainVersion
+!cd {M5} && python one.py --stepgame {ROOT}/StepGame/Dataset/TrainVersion --only found --workers {WORKERS} | grep -v "gave up"
+if not os.path.exists(ROOT + '/mx-mind/tasks_1-20_v1-2'):
+    !python -u {M5}/colab/mind.py --work {ROOT}/mx-mind --fetch | tail -1
+for t in (17, 19):
+    !cd {M5} && python one.py --babi $(ls {ROOT}/mx-mind/tasks_1-20_v1-2/en/qa{t}_*_train.txt) --only found --workers {WORKERS} | grep -v "gave up" | tail -4
+--- output
+[   23 s] 50000 stories to teach on, 100000 to try on; answers: above below left lower-left lower-right overlap right upper-left upper-right
+[   23 s] kept: the found; now taught on all the stories
+[   25 s] the machine found by the solver: 21039 different stories, 651 kinds of link, 1 of question; 597 links stand alone in some story, 593 of them read
+[   25 s] the machine found by the solver: 593 links read into 9 symbols; 2848 stories in those symbols (0 told with different answers)
+[   40 s] the machine found by the solver: 1 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1) (60 bits); taught on 60, asked 0; wrong on 0 of 2848
+[   41 s] the machine found by the solver: 1 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1); 651 of 651 kinds of link read; asked 0
+[   41 s] the found explains 97.29% of the stories taught on; 0 weights in the reading
+
+the stories tried, answered rightly, %:
+  k=1                       1:  98.2   all:  98.2  (10000 stories)
+  k=2                       2:  97.6   all:  97.6  (10000 stories)
+  k=3                       3:  97.6   all:  97.6  (10000 stories)
+  k=4                       4:  97.0   all:  97.0  (10000 stories)
+  k=5                       5:  96.9   all:  96.9  (10000 stories)
+  k=6                       6:  96.8   all:  96.8  (10000 stories)
+  k=7                       7:  96.5   all:  96.5  (10000 stories)
+  k=8                       8:  96.3   all:  96.3  (10000 stories)
+  k=9                       9:  96.2   all:  96.2  (10000 stories)
+  k=10                      10:  96.2   all:  96.2  (10000 stories)
+[   53 s] done
+downloading the tasks
+
+the stories tried, answered rightly, %:
+  qa17_positional-reasoning_test.txt  2: 100.0   all: 100.0  (1000 stories)
+[    3 s] done
+
+the stories tried, answered rightly, %:
+  qa19_path-finding_test.txt  5: 100.0   all: 100.0  (1000 stories)
+[   46 s] done
+
+=== cell 11
+!cd {M5} && python cells.py --clutrr {G} --named
+!cd {M5} && python cells.py --clutrr {G} --named --hint --chart
+if not QUICK:
+    !cd {M5} && python cells.py --clutrr {G} --teach 100 --asks 40 --workers {WORKERS} | grep -v "gave up"
+--- output
+CLUTRR (graph): 10094 chains of 2-3 links, 383 different; 14 kinds of link; the form given: 18 states named by the answers and one to begin in; taught on all 383
+  the fewest stories answered otherwise than the set, counted with repeats: 46 of 10094
+    husband daughter grandfather                  the set: father-in-law   the machine: father  (told 16 times)
+    husband son grandfather                       the set: father-in-law   the machine: father  (told 15 times)
+    wife daughter grandmother                     the set: mother-in-law   the machine: mother  (told 15 times)
+  1.2_test.csv     38 chains, links 2: 100.0 %
+  1.3_test.csv    105 chains, links 3:  81.0 %
+  1.4_test.csv    190 chains, links 4:  87.9 %
+  1.5_test.csv    174 chains, links 5:  83.9 %
+  1.6_test.csv    107 chains, links 6:  78.5 %
+  1.7_test.csv    144 chains, links 7:  73.6 %
+  1.8_test.csv    150 chains, links 8:  64.7 %
+  1.9_test.csv    119 chains, links 9:  61.3 %
+  1.10_test.csv   119 chains, links 10:  54.6 %
+  all tests: 75.1 %
+CLUTRR (graph): 10094 chains of 2-3 links, 383 different; 14 kinds of link; the form given: 18 states named by the answers and one to begin in; taught on all 383, and 12 links that are words of the answers, alone
+  the fewest stories answered otherwise than the set, counted with repeats: 46 of 10094
+    husband daughter grandfather                  the set: father-in-law   the machine: father  (told 16 times)
+    husband son grandfather                       the set: father-in-law   the machine: father  (told 15 times)
+    wife daughter grandmother                     the set: mother-in-law   the machine: mother  (told 15 times)
+  1.2_test.csv     38 chains, links 2: 100.0 %
+  1.3_test.csv    105 chains, links 3:  90.5 %
+  1.4_test.csv    190 chains, links 4:  98.4 %
+  1.5_test.csv    174 chains, links 5:  95.4 %
+  1.6_test.csv    107 chains, links 6:  95.3 %
+  1.7_test.csv    144 chains, links 7:  94.4 %
+  1.8_test.csv    150 chains, links 8:  90.0 %
+  1.9_test.csv    119 chains, links 9:  94.1 %
+  1.10_test.csv   119 chains, links 10:  89.9 %
+  all tests: 94.1 %
+CLUTRR (graph): 10094 chains of 2-3 links, 383 different; 14 kinds of link; taught on 100, may ask 40 more of them
+  kept 4 states + a whole number (offsets -2..2, read clipped to -2..2) + a whole number (offsets -2..2, read clipped to -2..2) (772 bits, 942.4 s); 100 stories, 0 asked
+  kept 4 states + a whole number (offsets -2..2, read clipped to -2..2) + a whole number (offsets -2..2, read clipped to -2..2); asked 0 (953 s)
+  1.2_test.csv     38 chains, links 2:  50.0 %
+  1.3_test.csv    105 chains, links 3:   0.0 %
+  1.4_test.csv    190 chains, links 4:  10.0 %
+  1.5_test.csv    174 chains, links 5:  20.1 %
+  1.6_test.csv    107 chains, links 6:  12.1 %
+  1.7_test.csv    144 chains, links 7:  15.3 %
+  1.8_test.csv    150 chains, links 8:  14.7 %
+  1.9_test.csv    119 chains, links 9:  14.3 %
+  1.10_test.csv   119 chains, links 10:  10.9 %
+  all tests: 14.0 %
+
+=== cell 13
+fams = 'parity weekday' if QUICK else 'parity lies weekday latest majority shells firstlast odometer navigate turtle'
+steps = 200 if QUICK else 3000
+!cd {M5} && python cells_rivals.py {fams} --steps {steps} --seeds 3 --times 1 40 | grep "mean of"
+!cd {M5} && python cells_rivals.py {fams} --steps {steps} --seeds 3 --times 40 --kinds transformer --width 256 --layers 6 | grep "mean of"
+--- output
+parity    lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500:  99.7  97.8  89.9
+parity    lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  99.8  96.4  85.3
+parity    transformer x1   mean of 3: taught lengths 100.0  length 20/100/500:  43.8  48.9  50.9
+parity    transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  60.2  50.8  48.4
+lies      lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500:  99.4  97.7  88.1
+lies      lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  99.7  99.6  90.6
+lies      transformer x1   mean of 3: taught lengths 100.0  length 20/100/500:  49.7  51.1  49.2
+lies      transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  49.9  49.0  49.2
+weekday   lstm        x1   mean of 3: taught lengths  99.7  length 20/100/500:  27.2  14.1  14.7
+weekday   lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  26.3  12.3  12.7
+weekday   transformer x1   mean of 3: taught lengths 100.0  length 20/100/500:  17.7  15.2  15.2
+weekday   transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  16.4  14.2  15.0
+latest    lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500: 100.0 100.0 100.0
+latest    lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500: 100.0 100.0 100.0
+latest    transformer x1   mean of 3: taught lengths 100.0  length 20/100/500:  36.0  35.2  36.4
+latest    transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  35.7  34.2  34.2
+majority  lstm        x1   mean of 3: taught lengths  99.9  length 20/100/500:  88.1  57.7  50.1
+majority  lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  92.6  57.6  50.3
+majority  transformer x1   mean of 3: taught lengths 100.0  length 20/100/500:  77.3  41.2  34.3
+majority  transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  71.3  28.3  18.2
+shells    lstm        x1   mean of 3: taught lengths  93.4  length 20/100/500:  35.2  33.0  37.0
+shells    lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  59.9  35.4  32.2
+shells    transformer x1   mean of 3: taught lengths  89.8  length 20/100/500:  32.7  33.2  33.2
+shells    transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  31.9  34.3  30.2
+firstlast lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500:  91.0  75.9  67.0
+firstlast lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500: 100.0 100.0 100.0
+firstlast transformer x1   mean of 3: taught lengths  99.9  length 20/100/500:  62.7  65.3  66.0
+firstlast transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  62.4  65.3  66.0
+odometer  lstm        x1   mean of 3: taught lengths  99.7  length 20/100/500:  30.3   6.1   4.4
+odometer  lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  42.8   7.4   3.7
+odometer  transformer x1   mean of 3: taught lengths 100.0  length 20/100/500:  15.1   9.3   4.3
+odometer  transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  14.7   8.9   4.6
+navigate  lstm        x1   mean of 3: taught lengths  97.8  length 20/100/500:  94.9  97.1  98.6
+navigate  lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  91.3  94.2  94.0
+navigate  transformer x1   mean of 3: taught lengths  94.1  length 20/100/500:  47.6  10.1   1.9
+navigate  transformer x40  mean of 3: taught lengths  99.0  length 20/100/500:  83.0  89.2  99.3
+turtle    lstm        x1   mean of 3: taught lengths  97.0  length 20/100/500:  13.3   5.9   2.7
+turtle    lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  12.6   5.6   1.8
+turtle    transformer x1   mean of 3: taught lengths  97.1  length 20/100/500:  11.6   4.4   1.3
+turtle    transformer x40  mean of 3: taught lengths  99.9  length 20/100/500:  17.1  10.1   6.9
+parity    transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  48.0  51.9  51.0
+lies      transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  53.4  52.7  47.7
+weekday   transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  15.1  14.2  14.2
+latest    transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  34.0  34.0  33.8
+majority  transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  68.1  24.0   3.8
+shells    transformer x40  mean of 3: taught lengths  95.0  length 20/100/500:  30.1  34.2  33.7
+firstlast transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  56.9  55.0  53.6
+odometer  transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  12.6   7.0   3.1
+navigate  transformer x40  mean of 3: taught lengths  94.3  length 20/100/500:  90.4  91.0  97.0
+turtle    transformer x40  mean of 3: taught lengths  99.4  length 20/100/500:  19.0  12.3   9.3

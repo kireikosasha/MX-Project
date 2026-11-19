@@ -25,6 +25,8 @@ from pysat.card import CardEnc, EncType
 from pysat.formula import IDPool
 from pysat.solvers import Solver
 
+CONFLICTS = 20000  # conflicts of the solver per second of a limit given in seconds (about glucose's rate here)
+
 
 # ---------------------------------------------------------------- families: symbols and an oracle, nothing else
 def turtle(s):
@@ -418,11 +420,15 @@ class Encoding:
         return ans
 
     def solve(self, seconds):
+        """The solver's limit is a number of conflicts (CONFLICTS a second of the old limit), not time: the same work on
+        any machine, so the same result. A wall clock far beyond it only guards against a hang."""
         with Solver(name="glucose4", bootstrap_with=self.clauses) as s:
-            timer = threading.Timer(seconds, s.interrupt)
+            s.conf_budget(max(1000, int(seconds * CONFLICTS)))
+            timer = threading.Timer(20 * seconds + 60, s.interrupt)
             timer.start()
             ok = s.solve_limited(expect_interrupt=True)
             timer.cancel()
+            self.used = s.accum_stats().get("conflicts", 0)
             if ok is None:
                 return None, "unknown"
             if not ok:
@@ -450,7 +456,7 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
     if most is None:  # stories the machine may answer otherwise than the set (its errors, or the set's)
         most = int(excuse * (sum(weights.get(s, 1) for s, _ in data) if weights else len(data)))
     part = list(data) if most else rng.sample(data, min(40, len(data)))
-    end = time.time() + seconds
+    left = seconds  # (in seconds of the old limit, spent by the conflicts each solving used)
     while True:
         e = Encoding(shape, syms, labels, lexicon)
         if most:
@@ -464,13 +470,14 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
                 e.says(seq, lab[y])
         if other is not None:
             e.clauses.append([-e.free(w)[lab[other.run(w)]] for w in pool])
-        m, how = e.solve(max(0.5, end - time.time()))
+        m, how = e.solve(max(0.05, left))
+        left -= e.used / CONFLICTS
         if m is None:
             return None, how
         wrong = [(s, y) for s, y in data if m.run(s) != y]
         if sum(weights.get(s, 1) if weights else 1 for s, _ in wrong) <= most:
             return m, "sat"
-        if time.time() > end:
+        if left <= 0:
             return None, "unknown"
         part += rng.sample(wrong, min(20, len(wrong)))
 
@@ -524,7 +531,7 @@ def pumped(syms, rng, lo, hi, n):
         v = tuple(rng.choice(syms) for _ in range(rng.randint(0, 2)))
         reps = rng.randint(max(1, lo // len(u)), max(1, hi // len(u)))
         out.add(v + u * reps)
-    return list(out)
+    return sorted(out)  # (a set's order changes from one run of Python to the next: sorted, it does not)
 
 
 def _call(job):
@@ -556,22 +563,25 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             pass  # the kept machine answered what was asked rightly: it stays
         else:
             machine = shape = None
-            live = [sh for sh in every if sh[1:] not in dead and tries.get(sh[1:], 0) <= 2]
             t0 = time.time()
-            for i in range(0, len(live), workers):  # the shapes in order of their length, several at once
-                part = live[i:i + workers]
-                got = side(fit, [(sh, syms, labels, data, seconds * 2 ** tries.get(sh[1:], 0)) for sh in part], workers)
-                for sh, (m, how) in zip(part, got):
-                    if m:
-                        machine, shape = m, sh
+            for cap in (2, 5):  # a shape the solver gave up on comes back with twice the work; if nothing at all is
+                live = [sh for sh in every if sh[1:] not in dead and tries.get(sh[1:], 0) <= cap]   # found, up to 32 times
+                for i in range(0, len(live), workers):  # the shapes in order of their length, several at once
+                    part = live[i:i + workers]
+                    got = side(fit, [(sh, syms, labels, data, seconds * 2 ** tries.get(sh[1:], 0)) for sh in part], workers)
+                    for sh, (m, how) in zip(part, got):
+                        if m:
+                            machine, shape = m, sh
+                            break
+                        if how == "unsat":  # only a proved 'no' is final
+                            dead.add(sh[1:])
+                        else:
+                            tries[sh[1:]] = tries.get(sh[1:], 0) + 1
+                            log(f"  {name(sh)}: the solver gave up after {int(seconds * 2 ** (tries[sh[1:]] - 1) * CONFLICTS)} conflicts")
+                    if machine:
+                        log(f"  kept {machine} ({shape[0]:.0f} bits, {time.time() - t0:.1f} s); {len(data)} stories, {asked} asked")
                         break
-                    if how == "unsat":  # only a proved 'no' is final; a shape the solver gave up on comes back with more time
-                        dead.add(sh[1:])
-                    else:
-                        tries[sh[1:]] = tries.get(sh[1:], 0) + 1
-                        log(f"  {name(sh)}: the solver gave up after {seconds * 2 ** (tries[sh[1:]] - 1):.0f} s")
                 if machine:
-                    log(f"  kept {machine} ({shape[0]:.0f} bits, {time.time() - t0:.1f} s); {len(data)} stories, {asked} asked")
                     break
         if machine is None:
             return None, asked
@@ -581,7 +591,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         # and some other story otherwise: ask that story
         seen = {s for s, _ in data}
         if fixed is None:
-            ask_from = list({tuple(rng.choice(syms) for _ in range(rng.randint(1, 2 * longest))) for _ in range(100)})
+            ask_from = sorted({tuple(rng.choice(syms) for _ in range(rng.randint(1, 2 * longest))) for _ in range(100)})
             ask_from += pumped(syms, rng, 2 * longest, 4 * longest, 40)
         else:
             ask_from = rng.sample(fixed, min(150, len(fixed)))
@@ -615,6 +625,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         for x in long:
             by.setdefault(machine.run(x), []).append(x)
         tried += [by[y][0] for y in sorted(by, key=lambda y: len(by[y]))[:6]]
+        tried = tried[:asks - asked]  # never more than the questions allowed
+        if not tried:
+            return machine, asked
         told = [(w, oracle(list(w))) for w in tried]
         asked += len(tried)
         wrong = [(w, y) for w, y in told if machine.run(w) != y]
