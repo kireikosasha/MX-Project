@@ -1,0 +1,81 @@
+--- cell 1: 2 lines of output
+[0m
+--- cell 3: 34 lines of output
+  latest: 4 states; asked 10; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (5 s)
+
+majority: 3 symbols, 300 stories of 1-4 symbols
+  kept 1 states + a whole number (offsets -1..1, read clipped to -1..1) (10 bits, 0.0 s); 300 stories, 0 asked
+  no other machine within 8 bits; 9 longer stories asked, all answered rightly (0.8 s)
+  majority: 1 states + a whole number (offsets -1..1, read clipped to -1..1); asked 9; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (1 s)
+
+shells: 4 symbols, 300 stories of 1-4 symbols
+  kept 2 states + a circle of 3, the answer read from the numbers only (25 bits, 0.1 s); 300 stories, 0 asked
+  no other machine within 8 bits; 9 longer stories asked, all answered rightly (3.0 s)
+  shells: 2 states + a circle of 3, the answer read from the numbers only; asked 9; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (3 s)
+
+--- cell 5: 16 lines of output
+cycle_navigation (R): 3 symbols; taught on 300 stories of 1-10; may ask 40 of 1678 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 100.0, transformer 61.9
+  kept 1 states + a circle of 5 (19 bits, 0.1 s); 300 stories, 0 asked
+  cycle_navigation: 1 states + a circle of 5; asked 0; on 41-500: 100.0 %  (4 s)
+
+even_pairs (R): 2 symbols; taught on 300 stories of 1-10; may ask 40 of 1471 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 100.0, transformer 96.4
+  kept 3 states + a circle of 2, the answer read from the numbers only (18 bits, 0.8 s); 300 stories, 0 asked
+  even_pairs: 3 states + a circle of 2, the answer read from the numbers only; asked 0; on 41-500: 100.0 %  (21 s)
+
+missing_duplicate (CS): 4 symbols; taught on 300 stories of 1-10; may ask 40 of 1313 of 1-20; tested on 400 of 41-500. Published (best of 10 seeds, taught on 1-40): LSTM 54.3, transformer 56.4
+  kept 1 states + a circle of 2 (6 bits, 0.0 s); 300 stories, 0 asked
+  missing_duplicate: 1 states + a circle of 2; asked 0; on 41-500: 100.0 %  (2 s)
+
+--- cell 7: 16 lines of output
+parity_check transformer x1   mean of 3: taught lengths  75.4  length 41-500:  51.9
+parity_check transformer x40  mean of 3: taught lengths  62.7  length 41-500:  49.2
+missing_duplicate lstm        x1   mean of 3: taught lengths  93.4  length 41-500:  50.9
+missing_duplicate lstm        x40  mean of 3: taught lengths  96.2  length 41-500:  49.7
+missing_duplicate transformer x1   mean of 3: taught lengths  89.1  length 41-500:  48.9
+missing_duplicate transformer x40  mean of 3: taught lengths  88.8  length 41-500:  47.2
+/content/MX-Project/research_m5/cells_rivals.py:31: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.body = nn.TransformerEncoder(layer, layers)
+/content/MX-Project/research_m5/cells_rivals.py:31: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.body = nn.TransformerEncoder(layer, layers)
+parity_check transformer x40  mean of 3: taught lengths  66.8  length 41-500:  51.3
+missing_duplicate transformer x40  mean of 3: taught lengths  75.8  length 41-500:  49.0
+--- cell 9: 155 lines of output
+  k=9                       9:  96.2   all:  96.2  (10000 stories)
+  k=10                      10:  96.2   all:  96.2  (10000 stories)
+[   44 s] done
+downloading the tasks
+
+the stories tried, answered rightly, %:
+  qa17_positional-reasoning_test.txt  2: 100.0   all: 100.0  (1000 stories)
+[    4 s] done
+
+the stories tried, answered rightly, %:
+  qa19_path-finding_test.txt  5: 100.0   all: 100.0  (1000 stories)
+[   50 s] done
+--- cell 11: 30 lines of output
+    husband son grandfather                       the set: father-in-law   the machine: father  (told 15 times)
+    wife daughter grandmother                     the set: mother-in-law   the machine: mother  (told 15 times)
+  1.2_test.csv     38 chains, links 2: 100.0 %
+  1.3_test.csv    105 chains, links 3:  90.5 %
+  1.4_test.csv    190 chains, links 4:  98.4 %
+  1.5_test.csv    174 chains, links 5:  95.4 %
+  1.6_test.csv    107 chains, links 6:  95.3 %
+  1.7_test.csv    144 chains, links 7:  94.4 %
+  1.8_test.csv    150 chains, links 8:  90.0 %
+  1.9_test.csv    119 chains, links 9:  94.1 %
+  1.10_test.csv   119 chains, links 10:  89.9 %
+  all tests: 94.1 %
+--- cell 13: 16 lines of output
+parity    transformer x1   mean of 3: taught lengths  96.4  length 20/100/500:  53.1  50.9  51.0
+parity    transformer x40  mean of 3: taught lengths  96.8  length 20/100/500:  46.9  46.7  52.1
+weekday   lstm        x1   mean of 3: taught lengths  99.7  length 20/100/500:  19.0  13.8  14.7
+weekday   lstm        x40  mean of 3: taught lengths  99.7  length 20/100/500:  17.1  14.9  14.1
+weekday   transformer x1   mean of 3: taught lengths 100.0  length 20/100/500:  15.7  13.0  14.6
+weekday   transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  16.1  13.2  15.2
+/content/MX-Project/research_m5/cells_rivals.py:31: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.body = nn.TransformerEncoder(layer, layers)
+/content/MX-Project/research_m5/cells_rivals.py:31: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.body = nn.TransformerEncoder(layer, layers)
+parity    transformer x40  mean of 3: taught lengths  89.7  length 20/100/500:  48.8  50.3  49.0
+weekday   transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  14.4  12.8  15.0
+done 867 s
