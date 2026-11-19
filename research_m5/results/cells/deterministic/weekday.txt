@@ -1,0 +1,6 @@
+weekday: 3 symbols, 300 stories of 1-4 symbols
+  kept 1 states + a circle of 7 (28 bits, 0.1 s); 300 stories, 0 asked
+  1 states + a circle of 8 answers otherwise on 3 stories (1.6 s): asked noise noise next next noise next next = d4 | next noise noise back noise back noise back noise back noise back noise back noise back noise back = d0 | back back back back back back back back back back back back back = d1; the kept machine was wrong on 0
+  no other machine within 8 bits; 21 longer stories asked, all answered rightly (2.7 s)
+  weekday: 1 states + a circle of 7; asked 24; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (5 s)
+

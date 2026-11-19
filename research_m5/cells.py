@@ -514,12 +514,12 @@ def fit_greedy(shape, syms, labels, data, seconds, lexicon=0, start=200, batch=1
 def rival(shape, syms, labels, data, machine, pool, seconds):
     """A machine of this shape that answers every story taught on rightly and some story of the pool otherwise; the
     stories on which the two part, at most three: the shortest, the longest and one between."""
-    other, _ = fit(shape, syms, labels, data, seconds, machine, pool)
+    other, how = fit(shape, syms, labels, data, seconds, machine, pool)
     if other is None:
-        return None
+        return how  # "unsat": there is no such machine; "unknown": the solver could not tell
     differs = sorted({w for w in pool if other.run(w) != machine.run(w)}, key=lambda w: (len(w), w))
     if not differs:
-        return None
+        return "unsat"
     return [differs[0]] + ([differs[-1]] if len(differs) > 1 else []) + ([differs[len(differs) // 2]] if len(differs) > 2 else [])
 
 
@@ -592,18 +592,27 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         seen = {s for s, _ in data}
         if fixed is None:
             ask_from = sorted({tuple(rng.choice(syms) for _ in range(rng.randint(1, 2 * longest))) for _ in range(100)})
+            ask_from += sorted({tuple(rng.choice(syms) for _ in range(rng.randint(2 * longest, 4 * longest))) for _ in range(30)})
             ask_from += pumped(syms, rng, 2 * longest, 4 * longest, 40)
         else:
             ask_from = rng.sample(fixed, min(150, len(fixed)))
         ask_from = [w for w in ask_from if w not in seen]
         t0, w = time.time(), None
         near = [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
-        for i in range(0, len(near), workers):
-            got = side(rival, [(sh, syms, labels, data, machine, ask_from, seconds) for sh in near[i:i + workers]], workers)
-            hit = [(sh, x) for sh, x in zip(near[i:i + workers], got) if x is not None]
-            if hit:
-                sh, w = hit[0]
+        unsettled = []
+        for more in (1, 4):  # a shape on which the solver could not tell is searched again with four times the work
+            for i in range(0, len(near), workers):
+                got = side(rival, [(sh, syms, labels, data, machine, ask_from, seconds * more) for sh in near[i:i + workers]], workers)
+                hit = [(sh, x) for sh, x in zip(near[i:i + workers], got) if isinstance(x, list)]
+                unsettled += [sh for sh, x in zip(near[i:i + workers], got) if x == "unknown"]
+                if hit:
+                    sh, w = hit[0]
+                    break
+            if w is not None or not unsettled:
                 break
+            near, unsettled = unsettled, []
+        if w is None and unsettled:
+            log(f"  of {len(unsettled)} shapes the solver could not tell whether a second machine is there")
         if w is not None:
             told = [(x, oracle(list(x))) for x in w[:max(1, asks - asked)]]
             asked += len(told)
@@ -615,8 +624,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         if fixed is not None:  # nothing longer can be asked
             return machine, asked
         # the check by trying: a few longer stories, pumped and plain
-        tried = pumped(syms, rng, 4 * longest, 8 * longest, 3) + \
-            [tuple(rng.choice(syms) for _ in range(rng.randint(3 * longest, 6 * longest))) for _ in range(3)]
+        tried = [tuple(rng.choice(syms) for _ in range(rng.randint(3 * longest, 6 * longest))) for _ in range(12)] + \
+            pumped(syms, rng, 4 * longest, 8 * longest, 3)
         # and stories on which the kept machine gives every answer it can give, the rarest first: where an answer is
         # rare among long stories, plain trying would almost never ask about it
         long = [tuple(rng.choice(syms) for _ in range(rng.randint(3 * longest, 6 * longest))) for _ in range(400)]

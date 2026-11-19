@@ -1,0 +1,164 @@
+turtle: 4 symbols, 300 stories of 1-4 symbols
+  3 states + a circle of 2 + a circle of 5, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 10, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 2, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 11, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 4, the second moved by the value of the first: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  kept 3 states + a circle of 12, the answer read from the numbers only (96 bits, 131.3 s); 300 stories, 0 asked
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only answers otherwise on 3 stories (7.8 s): asked right step left step step right step = xy+- | left left step right noise step right noise step right noise step right noise step right noise = xy-0 | left step left left step left left step left left step left left step left = xy0+; the kept machine was wrong on 3
+  3 states + a circle of 2 + a circle of 5, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 11, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 12, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 4 + a circle of 5, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a whole number (offsets -2..2, read clipped to -1..1), the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 3: the solver gave up after 200000 conflicts
+  3 states + a circle of 6: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 2: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 7, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 2 + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 8, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 7, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 6: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 4: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 9, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  kept 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only (108 bits, 294.5 s); 303 stories, 3 asked
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only answers otherwise on 3 stories (20.8 s): asked step step left left left step = xy+- | step step noise left step noise left step noise left = xy++ | step step left step left left left = xy++; the kept machine was wrong on 3
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 800000 conflicts
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 800000 conflicts
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 800000 conflicts
+  3 states + a circle of 12, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 2 + a circle of 3: the solver gave up after 400000 conflicts
+  3 states + a circle of 6: the solver gave up after 400000 conflicts
+  2 states + a circle of 3 + a circle of 7, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  4 states + a circle of 8, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 2 + a circle of 7, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  4 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  4 states + a circle of 9, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  kept 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only (108 bits, 452.2 s); 306 stories, 6 asked
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only answers otherwise on 3 stories (26.5 s): asked right step step right step step = xy-- | left step left step left step left step left step left step left step = xy-0 | right step right step step right step = xy-0; the kept machine was wrong on 1
+  2 states + a circle of 2 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 4 + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 5, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 10, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 5: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 11, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 4, the second moved by the value of the first: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 12, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a whole number (offsets -2..2, read clipped to -1..1), the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 4 + a circle of 5, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 2 + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 8, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 3: the solver gave up after 200000 conflicts
+  3 states + a circle of 6: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 7, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 7, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 7, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 4: the solver gave up after 200000 conflicts
+  2 states + a circle of 12: the solver gave up after 200000 conflicts
+  4 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 9, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  kept 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only (110 bits, 319.1 s); 309 stories, 9 asked
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only answers otherwise on 3 stories (26.2 s): asked step right right noise step left = xy00 | noise step left step left step left step left step left step left step left step left = xy00 | step noise left left right left step step = xy-0; the kept machine was wrong on 3
+  3 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 2 + a circle of 5, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a circle of 2 + a circle of 4, the second moved by the value of the first: the solver gave up after 400000 conflicts
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 12, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a circle of 4 + a circle of 5, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 2 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  4 states + a circle of 2 + a circle of 4, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  4 states + a circle of 8, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 2 + a circle of 3: the solver gave up after 400000 conflicts
+  3 states + a circle of 6: the solver gave up after 400000 conflicts
+  2 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  2 states + a circle of 3 + a circle of 7, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a circle of 2 + a circle of 7, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  4 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  4 states + a circle of 9, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 400000 conflicts
+  kept 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only (110 bits, 412.4 s); 312 stories, 12 asked
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only answers otherwise on 1 stories (425.3 s): asked step left step step left step step = xy-+; the kept machine was wrong on 1
+  3 states + a circle of 2 + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 8, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 5, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 9, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 5, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 10, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 2, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 11, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 6, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 4, the second moved by the value of the first: the solver gave up after 200000 conflicts
+  4 states + a circle of 7, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 6, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 3 + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 12, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 6, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -1..1, read clipped to -2..2) + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 2 + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 8, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 4 + a circle of 5, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 3: the solver gave up after 200000 conflicts
+  3 states + a circle of 6: the solver gave up after 200000 conflicts
+  3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  3 states + a circle of 2 + a circle of 7, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  2 states + a circle of 3 + a circle of 7, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 3 + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a circle of 9, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  4 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 3, the answer read from the numbers only: the solver gave up after 200000 conflicts
+  kept 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only (111 bits, 343.6 s); 313 stories, 13 asked
+  no other machine within 8 bits; 12 longer stories asked, all answered rightly (1397.0 s)
+  turtle: 4 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1), the answer read from the numbers only; asked 25; exact on length 20 / 100 / 500: 100.0 / 100.0 / 100.0 %  (3857 s)
+
