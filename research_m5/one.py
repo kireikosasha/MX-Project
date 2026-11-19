@@ -396,6 +396,8 @@ def main():
     ap.add_argument("--found", action="store_true", help="the machine found by the solver of cells.py is tried beside the others")
     ap.add_argument("--found-teach", type=int, default=3000, help="the machine found: taught on so many different stories")
     ap.add_argument("--found-asks", type=int, default=40)
+    ap.add_argument("--found-sure", type=float, default=2 / 3, help="the machine found: a link is read from the stories where it stands alone when so many of them agree")
+    ap.add_argument("--found-start", type=int, default=60, help="the machine found: stories in the read symbols taught on before asking")
     ap.add_argument("--found-seconds", type=float, default=10, help="the machine found: the solver's limit for one shape")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--threads", type=int, default=2)
@@ -416,10 +418,18 @@ def main():
 
 
 class Found:
-    """the machine found by the solver of cells.py, not written by hand: every link of the way is a symbol (the view
-    of the pair and the way it is gone), the kind of the question is one symbol more, at the end; the answer is what
-    the machine says. Taught on a sample of the stories; where machines that explain them part, it asks the answer of
-    another story it was given to learn from (as many as --found-asks)"""
+    """the machine found by the solver of cells.py, not written by hand. Every link of the way is a symbol (the view of
+    the pair and the way it is gone), the kind of the question one more, at the end.
+
+    1. The reading: a link means what the stories in which it stands alone answer, when they agree (at least
+       --found-sure of them). Links read alike make one symbol of the machine; the symbols are named by the size of
+       their group, not by the answer. (Where fewer than half of the links ever stand alone, there is no such
+       reading, and the machine is sought over the links themselves.)
+    2. The machine and its shape: cells.learn over the few symbols, on --found-start of the stories so read, asking
+       from the rest where machines that explain them part; then checked on all, and up to three it answers wrongly
+       added, until it answers all.
+    3. The links never read: each is read as the symbol of the machine that answers rightly the most of the teaching
+       stories it stands in (the machine kept as it is), twice over."""
 
     def __init__(self, taught, a, log):
         import cells
@@ -427,28 +437,83 @@ class Found:
         for one in taught:
             steps = steps_of(one)
             if steps:
-                seq = tuple(steps) + (("asked", one[6]),)
-                said.setdefault(seq, Counter())[one[4]] += 1
-        every = [(seq, c.most_common(1)[0][0]) for seq, c in said.items()]   # (the answer given most often)
+                said.setdefault(tuple(steps) + (("asked", one[6]),), Counter())[one[4]] += 1
+        every = {seq: c.most_common(1)[0][0] for seq, c in said.items()}   # (the answer given most often)
+        labels = sorted(set(every.values()))
+        links = sorted({x for seq in said for x in seq[:-1]}, key=repr)
+        asks = sorted({seq[-1] for seq in said}, key=repr)
         rng = random.Random(a.seed)
-        data = rng.sample(every, min(a.found_teach, len(every)))
-        known = dict(every)
-        self.syms = sorted({x for seq in known for x in seq}, key=repr)
-        log(f"the machine found by the solver: {len(every)} different stories, {len(self.syms)} symbols; "
-            f"taught on {len(data)}, may ask {a.found_asks} more")
-        self.m, asked = cells.learn(self.syms, lambda w: known.get(tuple(w)), data, rng, a.found_asks, a.found_seconds,
-                                    max(len(s) for s, _ in data), quiet=False, pool=list(known), workers=a.workers)
-        self.explains = 0.0 if self.m is None else sum(self.m.run(s) == y for s, y in every) / len(every)
+        alone = {}
+        for seq, c in said.items():
+            if len(seq) == 2:
+                alone.setdefault(seq[0], Counter()).update(c)
+        sure = {x: c.most_common(1)[0][0] for x, c in alone.items() if c.most_common(1)[0][1] >= a.found_sure * sum(c.values())}
+        log(f"the machine found by the solver: {len(every)} different stories, {len(links)} kinds of link, "
+            f"{len(asks)} of question; {len(alone)} links stand alone in some story, {len(sure)} of them read")
+        self.asked = 0
+        if len(alone) < len(links) / 2:                           # no reading: the machine over the links themselves
+            syms = links + asks
+            data = rng.sample(sorted(every.items(), key=repr), min(a.found_teach, len(every)))
+            self.m, self.asked = cells.learn(syms, every.get, data, rng, a.found_asks, a.found_seconds,
+                                             max(len(s) for s, _ in data), quiet=True, pool=list(every), workers=a.workers)
+            self.read = {x: x for x in syms}
+        else:
+            size = Counter(sure.values())
+            name = {y: f"<{i}>" for i, (y, _) in enumerate(size.most_common())}
+            self.read = {x: name[y] for x, y in sure.items()}
+            self.read.update({q: f"<asked {i}>" for i, q in enumerate(asks)})
+            small = sorted(set(self.read.values()))
+            told = {}
+            for seq, c in said.items():
+                if all(x in self.read for x in seq):
+                    told.setdefault(tuple(self.read[x] for x in seq), Counter()).update(c)
+            rdict = {s: c.most_common(1)[0][0] for s, c in told.items()}
+            rdata = sorted(rdict.items(), key=repr)
+            log(f"the machine found by the solver: {len(sure)} links read into {len(name)} symbols; {len(rdata)} stories "
+                f"in those symbols ({sum(len(c) > 1 for c in told.values())} told with different answers)")
+            data, extra = rng.sample(rdata, min(a.found_start, len(rdata))), []
+            oracle = lambda w: (extra.append((tuple(w), rdict[tuple(w)])), rdict[tuple(w)])[1]
+            for turn in range(10):
+                self.m, _ = cells.learn(small, oracle, data, rng, a.found_asks, a.found_seconds, max(len(s) for s, _ in rdata),
+                                        quiet=True, pool=[s for s, _ in rdata], workers=min(2, a.workers))
+                if self.m is None:
+                    break
+                data = data + [x for x in extra if x not in data]
+                extra.clear()
+                wrong = [x for x in rdata if self.m.run(x[0]) != x[1]]
+                log(f"the machine found by the solver: {self.m} ({self.m.shape[0]:.0f} bits); taught on {a.found_start}, "
+                    f"asked {len(data) - a.found_start}; wrong on {len(wrong)} of {len(rdata)}")
+                if not wrong:
+                    break
+                data = data + rng.sample(wrong, min(3, len(wrong)))
+            self.asked = len(data) - a.found_start
+            if self.m is not None:                                # the links never read, by the machine found
+                for turn in range(2):
+                    for u in links:
+                        if u in sure:
+                            continue
+                        stories = [(s, y) for s, y in every.items() if u in s and all(x in self.read or x == u for x in s)]
+                        if not stories:
+                            continue
+                        score = {}
+                        for c in small:
+                            look = dict(self.read)
+                            look[u] = c
+                            score[c] = sum(self.m.run(tuple(look[x] for x in s)) == y for s, y in stories)
+                        self.read[u] = max(small, key=lambda c: (score[c], c))
+        self.explains = 0.0 if self.m is None else sum(self.run(s) == y for s, y in every.items()) / len(every)
         self.weights = 0
-        self.symbols = set(self.syms)
-        log(f"the machine found by the solver: {self.m if self.m else 'nothing found'}; asked {asked}")
+        log(f"the machine found by the solver: {self.m if self.m else 'nothing found'}; "
+            f"{sum(x in self.read for x in links)} of {len(links)} kinds of link read; asked {self.asked}")
+
+    def run(self, seq):
+        if self.m is None or any(x not in self.read for x in seq):
+            return None
+        return self.m.run(tuple(self.read[x] for x in seq))
 
     def answer(self, one):
         steps = steps_of(one)
-        if self.m is None or not steps:
-            return None
-        seq = tuple(steps) + (("asked", one[6]),)
-        return self.m.run(seq) if all(x in self.symbols for x in seq) else None
+        return self.run(tuple(steps) + (("asked", one[6]),)) if steps else None
 
 
 def solve(a):

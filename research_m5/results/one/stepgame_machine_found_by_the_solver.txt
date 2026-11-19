@@ -1,0 +1,20 @@
+[   21 s] 50000 stories to teach on, 100000 to try on; answers: above below left lower-left lower-right overlap right upper-left upper-right
+[   21 s] kept: the found; now taught on all the stories
+[   23 s] the machine found by the solver: 21039 different stories, 651 kinds of link, 1 of question; 597 links stand alone in some story, 593 of them read
+[   23 s] the machine found by the solver: 593 links read into 9 symbols; 2848 stories in those symbols (0 told with different answers)
+[   39 s] the machine found by the solver: 1 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1) (60 bits); taught on 60, asked 0; wrong on 0 of 2848
+[   41 s] the machine found by the solver: 1 states + a whole number (offsets -1..1, read clipped to -1..1) + a whole number (offsets -1..1, read clipped to -1..1); 651 of 651 kinds of link read; asked 0
+[   41 s] the found explains 97.29% of the stories taught on; 0 weights in the reading
+
+the stories tried, answered rightly, %:
+  k=1                       1:  98.2   all:  98.2  (10000 stories)
+  k=2                       2:  97.6   all:  97.6  (10000 stories)
+  k=3                       3:  97.6   all:  97.6  (10000 stories)
+  k=4                       4:  97.0   all:  97.0  (10000 stories)
+  k=5                       5:  96.9   all:  96.9  (10000 stories)
+  k=6                       6:  96.8   all:  96.8  (10000 stories)
+  k=7                       7:  96.5   all:  96.5  (10000 stories)
+  k=8                       8:  96.3   all:  96.3  (10000 stories)
+  k=9                       9:  96.2   all:  96.2  (10000 stories)
+  k=10                      10:  96.2   all:  96.2  (10000 stories)
+[   53 s] done
