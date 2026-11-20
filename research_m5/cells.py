@@ -374,7 +374,7 @@ class Encoding:
         a0 = self.syms[0]
         w0 = tuple(0 for _ in self.cells) if self.guard else 0  # (a key that turning a number over or round keeps)
         for j, c in enumerate(self.cells):
-            if c[0] == "Z":
+            if c[0] == "Z" and not (j == 0 and self.by_state == "number"):  # (the number told is not turned over)
                 for o in range(-c[1], 0):
                     C.append([-v("o", j, a0, 0, w0, o)])
             elif c[0] == "M":
@@ -517,7 +517,12 @@ class Encoding:
         if self.by_state == "number":  # the first number is the answer: it is y
             n = self.at(tuple(seq))
             ex = [excused] if excused else []
-            for l in self.isnot(n, int(self.labels[y])):  # every literal of 'it is not y' is false
+            c, v = self.cells[0], int(self.labels[y])
+            if c[0] == "L" and 0 <= v < c[1]:  # a level: its value is v and no other (only the true value is implied)
+                for u in range(c[1]):
+                    if u != v:
+                        self.clauses.append([-self.v("z", n, 0, u)] + ex)
+            for l in self.isnot(n, v):  # every literal of 'it is not y' is false
                 if l is True:  # the number cannot be y here
                     self.clauses += [ex + [self.v("false")], [-self.v("false")]]
                 elif l is not False:
@@ -615,6 +620,8 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
             return m, "sat"
         if left <= 0:
             return None, "unknown"
+        if all(x in part for x in wrong):  # the solver's machine is wrong on stories it was given: nothing to add
+            return None, "unknown"
         part += rng.sample(wrong, min(20, len(wrong)))
 
 
@@ -697,7 +704,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         new = sorted(set(labels) | {y for _, y in data})
         if new != labels:
             labels, dead, tries, machine = new, set(), {}, None
-        numeric = guards and all(y.lstrip("-").isdigit() for y in labels)  # (answers that are all numbers)
+        numeric = guards and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (all numbers, as written)
         every = shapes(len(syms), len(labels), most_k, guards, numeric)
         if machine is not None and all(machine.run(s) == y for s, y in data):
             pass  # the kept machine answered what was asked rightly: it stays
