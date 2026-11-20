@@ -190,7 +190,7 @@ def shapes(nsym, nlab, most_k=12, guards=False, numeric=False):
     # "what is X to Z" follows from "what is X to Y" and the next link
     k = nlab + 1
     every.append((nsym * k * math.log2(k), k, (), "named", False))
-    return sorted(every)
+    return sorted(every, key=lambda s: (s[0], s[1], s[2], str(s[3]), str(s[4])))  # (the old order where the old shapes tie)
 
 
 def name(shape):
