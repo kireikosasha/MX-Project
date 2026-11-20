@@ -49,10 +49,16 @@ def main():
     ap.add_argument("--seconds", type=float, default=10)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--after", default="", help="a file of results so far: the families in it are not run again")
     a = ap.parse_args()
     names = sorted(d for d in os.listdir(a.folder) if os.path.exists(os.path.join(a.folder, d, "family.py")))
     print(f"{len(names)} sealed families in {a.folder}", flush=True)
+    done = set()
+    if a.after and os.path.exists(a.after):  # taken up after a stop: the families already written there are skipped
+        done = {line.split(" ")[0] for line in open(a.after) if line[:2].isdigit()}
     for d in names:
+        if d in done:
+            continue
         path = os.path.join(a.folder, d, "family.py")
         digest = hashlib.sha256(open(path, "rb").read()).hexdigest()[:16]
         out = mp.get_context("fork").Queue()
