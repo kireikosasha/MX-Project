@@ -28,7 +28,8 @@ def one(path, out, a):
         w = tuple(rng.choice(syms) for _ in range(rng.randint(1, a.longest)))
         data.append((w, oracle(w)))
     t0 = time.time()
-    m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers)
+    m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers,
+                           shorten=a.shorten)
     res = {"found": None if m is None else str(m), "asked": asked, "seconds": round(time.time() - t0)}
     for L in (20, 100, 500):
         tr = random.Random(1000 + L)
@@ -49,6 +50,7 @@ def main():
     ap.add_argument("--seconds", type=float, default=10)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--shorten", action="store_true", help="a long story answered wrongly is cut to where the machine first goes wrong")
     ap.add_argument("--after", default="", help="a file of results so far: the families in it are not run again")
     a = ap.parse_args()
     names = sorted(d for d in os.listdir(a.folder) if os.path.exists(os.path.join(a.folder, d, "family.py")))

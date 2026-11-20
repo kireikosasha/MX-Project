@@ -572,7 +572,7 @@ def side(f, jobs, workers):
 
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
-          workers=4):
+          workers=4, shorten=False):
     labels = sorted({y for _, y in data})
     asked, dead, fixed, tries = 0, set(), pool, {}
     log = (lambda *a: None) if quiet else (lambda *a: print(*a, flush=True))
@@ -667,7 +667,26 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             log(f"  no other machine within {slack} bits; {len(tried)} longer stories asked, all answered rightly ({time.time() - t0:.1f} s)")
             return machine, asked
         log(f"  no other machine within {slack} bits; of {len(tried)} longer stories asked, {len(wrong)} answered wrongly")
-        data = data + told
+        if not shorten:
+            data = data + told
+            continue
+        # a long story answered wrongly is not put into the stories taught on as it is (every formula after would
+        # carry it): the beginning where the machine first goes wrong is found by halving (Rivest and Schapire 1993)
+        known = dict(data)
+        for w, y in sorted(wrong, key=lambda x: len(x[0]))[:2]:
+            lo, hi = 0, len(w)
+            known[w] = y
+            while hi - lo > 1 and asked < asks:
+                mid = (lo + hi) // 2
+                if w[:mid] not in known:
+                    known[w[:mid]] = oracle(list(w[:mid]))
+                    asked += 1
+                if machine.run(w[:mid]) != known[w[:mid]]:
+                    hi = mid
+                else:
+                    lo = mid
+            data = data + [(w[:hi], known[w[:hi]])]
+            log(f"  of a story of {len(w)} the machine goes wrong at its first {hi}")
 
 
 def clutrr_chains(path):
