@@ -787,8 +787,10 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         for x in long:
             by.setdefault(machine.run(x), []).append(x)
         tried += [by[y][0] for y in sorted(by, key=lambda y: len(by[y]))[:6]]
+        full = len(tried)
         tried = tried[:asks - asked]  # never more than the questions allowed
         if not tried:
+            machine.sure = False
             return machine, asked
         if frugal:  # the stories that cover the answers first, then the pumped, then the plain; up to the first wrong
             tried = tried[15:] + tried[12:15] + tried[:12]
@@ -803,7 +805,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         wrong = [(w, y) for w, y in told if machine.run(w) != y]
         if not wrong:
             log(f"  no other machine within {slack} bits; {len(told)} longer stories asked, all answered rightly ({time.time() - t0:.1f} s)")
-            machine.sure = True
+            machine.sure = len(told) >= full  # a check cut short by the limit of questions is not passed
             return machine, asked
         log(f"  no other machine within {slack} bits; of {len(told)} longer stories asked, {len(wrong)} answered wrongly")
         if not shorten:
