@@ -229,6 +229,10 @@ class Machine:
         q, z = self.start, list(self.zstart)
         for a in seq:
             q, z = self.move(q, z, a)
+        return self.out(q, z)
+
+    def out(self, q, z):
+        """The answer read at a state and values of the cells."""
         if self.by_state == "number":
             return str(z[0])
         r = tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(self.cells, z))
@@ -328,6 +332,7 @@ class Encoding:
         else:
             self.symmetry()
         self.node = {(): 0}
+        self.memo = {}  # (the symbol variables of a story the solver writes; the answer variables of a node)
         self.depth = {(): 0}
         self.ndepth = {0: 0}
         self.clauses.append([self.v("x", 0, self.k - 1 if self.by_state == "named" else 0)])
@@ -447,7 +452,13 @@ class Encoding:
         a, n, dep = seq[-1], len(self.node), self.depth[seq[:-1]]
         self.node[seq], self.depth[seq], self.ndepth[n] = n, dep + 1, dep + 1
         neg = lambda l: (not l) if isinstance(l, bool) else -l
-        read = [(a, [])] if self.raw is None else [(s, [-self.v("w", a, i)]) for i, s in enumerate(self.syms)]
+        if isinstance(a, tuple) and a[:1] == ("?",):  # a symbol of a story the solver writes itself
+            if ("fx", a[1]) not in self.memo:
+                self.memo[("fx", a[1])] = True
+                self.exactly([self.v("f", a[1], s) for s in self.syms])
+            read = [(s, [-self.v("f", a[1], s)]) for s in self.syms]
+        else:
+            read = [(a, [])] if self.raw is None else [(s, [-self.v("w", a, i)]) for i, s in enumerate(self.syms)]
         for q in range(self.k):
             x = self.v("x", n0, q)
             for a, guard in read:
@@ -541,7 +552,10 @@ class Encoding:
             self.add([-d] + self.isnot(n, int(y)))
             return d
         if y in self.labels:
-            return -self.free(seq)[self.labels.index(y)]
+            n = self.at(tuple(seq))
+            if ("ans", n) not in self.memo:
+                self.memo[("ans", n)] = self.free(seq)
+            return -self.memo[("ans", n)][self.labels.index(y)]
         self.clauses.append([self.v("true")])
         return self.v("true")
 
@@ -586,7 +600,55 @@ class Encoding:
         return m, "sat"
 
 
-def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lexicon=0, weights=None, most=None):
+def story_differs(e, other, syms, D):
+    """Clauses: the machine of the encoding answers otherwise than `other` at the end of some beginning of a story of at
+    most D symbols that the solver writes itself (its symbols are variables). The other machine's run along that story is
+    given by the layers of its configurations reachable in t symbols."""
+    chain = tuple(("?", t) for t in range(1, D + 1))
+    c0 = (other.start, tuple(other.zstart))
+    layer, y = {c0}, {}
+    some = []
+    e.clauses.append([e.v("y", 0, c0)])
+    for t in range(1, D + 1):
+        nxt = set()
+        for c in layer:
+            for s in syms:
+                q2, z2 = other.move(c[0], list(c[1]), s)
+                c2 = (q2, tuple(z2))
+                nxt.add(c2)
+                e.clauses.append([-e.v("y", t - 1, c), -e.v("f", t, s), e.v("y", t, c2)])
+        layer = nxt
+        e.at(chain[:t])
+        d = e.v("d", t)
+        some.append(d)
+        for c in layer:
+            e.add([-d, -e.v("y", t, c), e.differs(chain[:t], other.out(c[0], list(c[1])))])
+    e.clauses.append(some)
+
+
+def separating(m1, m2, syms, D):
+    """The shortest story (of at most D symbols) on which two machines answer otherwise; a walk in breadth over the
+    pairs of their configurations."""
+    start = ((m1.start, tuple(m1.zstart)), (m2.start, tuple(m2.zstart)))
+    frontier, seen = [((), start)], {start}
+    for _ in range(D):
+        nxt = []
+        for w, (c1, c2) in frontier:
+            for s in syms:
+                q1, z1 = m1.move(c1[0], list(c1[1]), s)
+                q2, z2 = m2.move(c2[0], list(c2[1]), s)
+                p = ((q1, tuple(z1)), (q2, tuple(z2)))
+                if p in seen:
+                    continue
+                seen.add(p)
+                if m1.out(q1, z1) != m2.out(q2, z2):
+                    return w + (s,)
+                nxt.append((w + (s,), p))
+        frontier = nxt[:20000]
+    return None
+
+
+def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lexicon=0, weights=None, most=None, build=0):
     """A machine of this shape that answers every story of data rightly (and, given another machine and a pool of
     stories, answers some story of the pool otherwise than it). Solved first on a part of the stories; the stories the
     machine found answers wrongly are added and it is solved again (a 'no' on a part is a 'no' on all).
@@ -609,7 +671,9 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
         else:
             for seq, y in part:
                 e.says(seq, lab[y])
-        if other is not None:
+        if other is not None and build:  # the solver writes the story the two machines part on
+            story_differs(e, other, syms, build)
+        elif other is not None:
             e.clauses.append([e.differs(w, other.run(w)) for w in pool])
         m, how = e.solve(max(0.05, left))
         left -= e.used / CONFLICTS
@@ -654,12 +718,15 @@ def fit_greedy(shape, syms, labels, data, seconds, lexicon=0, start=200, batch=1
                 aside.append(x)
 
 
-def rival(shape, syms, labels, data, machine, pool, seconds):
+def rival(shape, syms, labels, data, machine, pool, seconds, build=0):
     """A machine of this shape that answers every story taught on rightly and some story of the pool otherwise; the
     stories on which the two part, at most three: the shortest, the longest and one between."""
-    other, how = fit(shape, syms, labels, data, seconds, machine, pool)
+    other, how = fit(shape, syms, labels, data, seconds, machine, pool, build=build)
     if other is None:
         return how  # "unsat": there is no such machine; "unknown": the solver could not tell
+    if build:  # the shortest story the two part on
+        w = separating(machine, other, syms, 2 * build)
+        return "unsat" if w is None else [w]
     differs = sorted({w for w in pool if other.run(w) != machine.run(w)}, key=lambda w: (len(w), w))
     if not differs:
         return "unsat"
@@ -692,7 +759,7 @@ def side(f, jobs, workers):
 
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
-          workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False):
+          workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987)"""
@@ -752,7 +819,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         unsettled = []
         for more in (1, 4):  # a shape on which the solver could not tell is searched again with four times the work
             for i in range(0, len(near), workers):
-                got = side(rival, [(sh, syms, labels, data, machine, ask_from, seconds * more) for sh in near[i:i + workers]], workers)
+                got = side(rival, [(sh, syms, labels, data, machine, ask_from, seconds * more, build) for sh in near[i:i + workers]], workers)
                 hit = [(sh, x) for sh, x in zip(near[i:i + workers], got) if isinstance(x, list)]
                 unsettled += [sh for sh, x in zip(near[i:i + workers], got) if x == "unknown"]
                 if hit:
