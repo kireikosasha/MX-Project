@@ -140,7 +140,13 @@ def step(c, z, o):
 
 def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
     each = lambda c: math.log2(2 * c[1] + 1) if c[0] == "Z" else math.log2(c[1]) if c[0] == "M" else math.log2(2 * c[2] + 1 + c[1])
-    if isinstance(chain, tuple):  # guarded: G symbols move by the read of the first cell, the others as without it
+    if isinstance(chain, tuple) and chain[0] == "s":  # a test of one cell: G symbols have a second row of moves, taken
+        G = chain[1]                                    # when the cell the solver picks reads at least a value it picks
+        one = (math.log2(k) if k > 1 else 0.0) + sum(each(c) for c in cells)
+        tests = sum(len(values(c)) - 1 for c in cells)
+        b = nsym * k * one + G * (k * one + math.log2(tests)) + math.log2(math.comb(nsym, G)) + \
+            sum(math.log2(c[1]) for c in cells if c[0] == "L")
+    elif isinstance(chain, tuple):  # guarded: G symbols move by the read of the first cell, the others as without it
         G, R = chain[1], math.prod(len(values(c)) for c in cells)
         one = (math.log2(k) if k > 1 else 0.0) + sum(each(c) for c in cells)
         b = (nsym - G) * k * one + G * R * k * one + math.log2(math.comb(nsym, G)) + \
@@ -183,6 +189,9 @@ def shapes(nsym, nlab, most_k=12, guards=False, numeric=False):
                [(k, cs) for k in range(1, 4) for cs in G2]
         every += [(bits_of(k, cs, nsym, nlab, by, ("g", G)), k, cs, by, ("g", G)) for k, cs in cand
                   for G in range(1, nsym + 1) for by in (True, False) if by or k > 1]
+        if guards == "tests":  # (and a test of one cell, the cheaper form of the same)
+            every += [(bits_of(k, cs, nsym, nlab, by, ("s", G)), k, cs, by, ("s", G)) for k, cs in cand
+                      for G in range(1, nsym + 1) for by in (True, False) if by or k > 1]
     if numeric:  # the answers are numbers: the answer may be the first cell's number itself (a count told as it is)
         firsts = [(k, cs, ch) for _, k, cs, by, ch in every if by is True and cs and cs[0][0] in "ZL"]
         every += [(bits_of(k, cs, nsym, nlab, "number", ch), k, cs, "number", ch) for k, cs, ch in firsts]
@@ -201,7 +210,9 @@ def name(shape):
     for c in cells:
         words.append(f"a whole number (offsets -{c[1]}..{c[1]}, read clipped to -{c[2]}..{c[2]})" if c[0] == "Z"
                      else f"a circle of {c[1]}" if c[0] == "M" else f"a level of {c[1]} (steps -{c[2]}..{c[2]}, held at the ends, or set)")
-    if isinstance(chain, tuple):
+    if isinstance(chain, tuple) and chain[0] == "s":
+        words[-1] += f", {chain[1]} of the symbols moving otherwise when a number reads at least a value"
+    elif isinstance(chain, tuple):
         words[-1] += f", {chain[1]} of the symbols moving by what the first number reads"
     return " + ".join(words) + (", the second moved by the value of the first" if chain is True else "") + \
         ("" if by_state or not cells else ", the answer read from the numbers only") + \
@@ -216,7 +227,9 @@ class Machine:
     def __init__(self, shape, syms, labels, tau, dl, lam):
         self.shape, self.k, self.cells, self.syms, self.labels = shape, shape[1], shape[2], syms, labels
         self.by_state, self.chain = shape[3], shape[4]
-        self.guard = isinstance(self.chain, tuple)
+        self.guard = isinstance(self.chain, tuple) and self.chain[0] == "g"
+        self.stump = isinstance(self.chain, tuple) and self.chain[0] == "s"
+        self.test = {}  # (stump) symbol -> (cell, value): the second row when the cell reads at least the value
         self.start = self.k - 1 if self.by_state == "named" else 0
         self.tau, self.dl, self.lam = tau, dl, lam
         self.zstart = [0] * len(self.cells)
@@ -241,6 +254,13 @@ class Machine:
     def move(self, q, z, a):
         """One symbol: the next state and values of the cells."""
         z = list(z)
+        if self.stump:  # one cell is read (clipped) before the move and compared with a value
+            j, v = self.test[a]
+            c = self.cells[j]
+            b = int((max(-c[2], min(c[2], z[j])) if c[0] == "Z" else z[j]) >= v)
+            for i, c in enumerate(self.cells):
+                z[i] = step(c, z[i], self.dl[a, q, i, b])
+            return self.tau[(a, b), q], z
         if self.guard:  # the cells are read (clipped) before the move, and the move depends on what they read
             g = tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(self.cells, z))
             for j, c in enumerate(self.cells):
@@ -256,6 +276,11 @@ class Machine:
 
     def table(self):
         lines = []
+        if self.stump:
+            return "\n".join(f"    {a:12s} {('cell %d >= %d' % self.test[a]) if b else 'else':12s}: states " +
+                             " ".join(f"{q}>{self.tau[(a, b), q]}" for q in range(self.k)) + "   numbers by state " +
+                             " ".join("(" + ",".join(str(self.dl[a, q, j, b]) for j in range(len(self.cells))) + ")" for q in range(self.k))
+                             for a in self.syms for b in (1, 0))
         if self.guard:
             return "\n".join(f"    {a:12s} read {g}: states " + " ".join(f"{q}>{self.tau[(a, g), q]}" for q in range(self.k)) +
                              "   numbers by state " + " ".join("(" + ",".join(str(self.dl[a, q, j, g]) for j in range(len(self.cells))) + ")"
@@ -281,7 +306,9 @@ class Encoding:
             self.raw, self.syms = list(syms), [f"<{i}>" for i in range(lexicon)]
             syms = self.syms
         _, self.k, self.cells, self.by_state, self.chain = shape
-        self.guard = isinstance(self.chain, tuple)
+        self.guard = isinstance(self.chain, tuple) and self.chain[0] == "g"
+        self.stump = isinstance(self.chain, tuple) and self.chain[0] == "s"
+        self.tests = [(j, v) for j, c in enumerate(self.cells) for v in list(values(c))[1:]] if self.stump else []
         self.ids, self.clauses = IDPool(), []
         self.reads = [] if self.by_state == "number" else \
             list(itertools.product(range(self.k) if self.by_state else [0], *[values(c) for c in self.cells]))
@@ -301,7 +328,8 @@ class Encoding:
                     if s:  # a symbol of the machine is first used after the one before it
                         self.clauses.append([-w, self.v("u", i - 1, s - 1)] if i else [-w])
         # the symbols the control moves by: with guards, a symbol and what the first cell reads
-        self.csyms = [(a, g) for a in syms for g in self.gvals] if self.guard else list(syms)
+        self.csyms = [(a, g) for a in syms for g in self.gvals] if self.guard else \
+            [(a, b) for a in syms for b in (0, 1)] if self.stump else list(syms)
         for a in self.csyms:
             for q in range(k):
                 self.exactly([self.v("t", a, q, r) for r in range(k)])
@@ -310,8 +338,11 @@ class Encoding:
                 for j, c in enumerate(self.cells):
                     for w in self.keys(j):
                         self.exactly([self.v("o", j, a, q, w, o) for o in self.offsets(c)])
-        if self.guard:  # a symbol that does not read the cell moves alike whatever it reads; at most G symbols read it
-            g0, gs = self.gvals[0], self.gvals[1:]
+        if self.stump:  # every symbol picks one test; a symbol whose second row is not used moves alike either way
+            for a in syms:
+                self.exactly([self.v("tc", a, i) for i in range(len(self.tests))])
+        if self.guard or self.stump:  # a symbol that does not read the cell moves alike whatever it reads; at most G do
+            g0, gs = (self.gvals[0], self.gvals[1:]) if self.guard else (0, [1])
             for a in syms:
                 gd = self.v("gd", a)
                 for g in gs:
@@ -341,6 +372,8 @@ class Encoding:
                 self.clauses.append([self.v("z", 0, j, 0)])
             elif c[0] == "L":  # where a level begins is found with the machine
                 self.exactly([self.v("z", 0, j, val) for val in range(c[1])])
+        if self.stump:
+            self.onevalue(0)
 
     def v(self, *key):
         return self.ids.id(key)
@@ -378,7 +411,7 @@ class Encoding:
                         C.append([-v("p", j, i), -v("p", j + 1, i), -v("mm", a, i, j), -v("mm", b, i, j + 1)])
         a0 = self.syms[0]
         w0 = tuple(0 for _ in self.cells) if self.guard else 0  # (a key that turning a number over or round keeps)
-        for j, c in enumerate(self.cells):
+        for j, c in enumerate(self.cells if not self.stump else []):  # (a test 'at least v' is not kept by turning)
             if c[0] == "Z" and not (j == 0 and self.by_state == "number"):  # (the number told is not turned over)
                 for o in range(-c[1], 0):
                     C.append([-v("o", j, a0, 0, w0, o)])
@@ -397,7 +430,39 @@ class Encoding:
         """The values of the first cell an offset of cell j depends on (only one key unless chained)."""
         if self.guard:
             return self.gvals
+        if self.stump:
+            return (0, 1)
         return range(self.cells[0][1]) if self.chain and j else range(1)
+
+    def outcome(self, n, a):
+        """(stump) The literal 'the test symbol a picked holds at node n', defined once per node and symbol."""
+        if ("out", n, a) in self.memo:
+            return self.memo[("out", n, a)]
+        out = self.v("out", n, a)
+        self.memo[("out", n, a)] = out
+        for i, (j, v) in enumerate(self.tests):
+            c = self.cells[j]
+            if c[0] == "Z":
+                ge = self.ge(n, j, v)
+            else:  # a level or a circle: one value at a node (at most one is true: see onevalue), 'at least v' by a variable
+                ge = self.v("geq", n, j, v)
+                if ("geq", n, j, v) not in self.memo:
+                    self.memo[("geq", n, j, v)] = True
+                    self.clauses.append([-ge] + [self.v("z", n, j, u) for u in range(v, c[1])])
+                    for u in range(v, c[1]):
+                        self.clauses.append([-self.v("z", n, j, u), ge])
+            neg = (not ge) if isinstance(ge, bool) else -ge
+            self.add([-self.v("tc", a, i), neg, out])
+            self.add([-self.v("tc", a, i), ge, -out])
+        return out
+
+    def onevalue(self, n):
+        """(stump) At most one value of every level or circle at node n: a test reads it both ways."""
+        for j, c in enumerate(self.cells):
+            if c[0] in "ML":
+                for u in range(c[1]):
+                    for w in range(u + 1, c[1]):
+                        self.clauses.append([-self.v("z", n, j, u), -self.v("z", n, j, w)])
 
     def notat(self, n, g):
         """Literals (some may be True / False) one of which holds unless the cells at node n read g."""
@@ -451,6 +516,8 @@ class Encoding:
         n0 = self.at(seq[:-1])
         a, n, dep = seq[-1], len(self.node), self.depth[seq[:-1]]
         self.node[seq], self.depth[seq], self.ndepth[n] = n, dep + 1, dep + 1
+        if self.stump:
+            self.onevalue(n)
         neg = lambda l: (not l) if isinstance(l, bool) else -l
         if isinstance(a, tuple) and a[:1] == ("?",):  # a symbol of a story the solver writes itself
             if ("fx", a[1]) not in self.memo:
@@ -463,7 +530,11 @@ class Encoding:
             x = self.v("x", n0, q)
             for a, guard in read:
                 for r in range(self.k):
-                    if self.guard:
+                    if self.stump:
+                        out = self.outcome(n0, a)
+                        self.add([-x, -self.v("t", (a, 1), q, r), self.v("x", n, r), -out] + guard)
+                        self.add([-x, -self.v("t", (a, 0), q, r), self.v("x", n, r), out] + guard)
+                    elif self.guard:
                         for g in self.gvals:
                             self.add([-x, -self.v("t", (a, g), q, r), self.v("x", n, r)] + guard + self.notat(n0, g))
                     else:
@@ -471,7 +542,8 @@ class Encoding:
             for j, c in enumerate(self.cells):
                 for w in self.keys(j):
                   for a, guard in read:
-                    key = (self.notat(n0, w) if self.guard else [-self.v("z", n0, 0, w)] if self.chain and j else []) + guard
+                    key = (self.notat(n0, w) if self.guard else ([-self.outcome(n0, a)] if w else [self.outcome(n0, a)])
+                           if self.stump else [-self.v("z", n0, 0, w)] if self.chain and j else []) + guard
                     for o in self.offsets(c):
                         off = self.v("o", j, a, q, w, o)
                         if c[0] == "Z":
@@ -597,6 +669,8 @@ class Encoding:
         m.zstart = [next(v for v in range(c[1]) if on("z", 0, j, v)) if c[0] == "L" else 0 for j, c in enumerate(self.cells)]
         if self.raw is not None:
             m.lex = {r: self.syms[next(i for i in range(len(self.syms)) if on("w", r, i))] for r in self.raw}
+        if self.stump:
+            m.test = {a: self.tests[next(i for i in range(len(self.tests)) if on("tc", a, i))] for a in self.syms}
         return m, "sat"
 
 
@@ -759,7 +833,7 @@ def side(f, jobs, workers):
 
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
-          workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0):
+          workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987)"""
@@ -814,8 +888,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         ask_from = [w for w in ask_from if w not in seen]
         t0, w = time.time(), None
         near = [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
-        if reserve and asks - asked <= reserve:  # the last questions are kept for the check
-            near = []
+        owed = len([w for w in unseen(machine, syms, data) if w not in seen]) if plan and explore else 0
+        if reserve and asks - asked <= reserve + owed:  # the last questions are kept for the check (and, with plan, for
+            near = []                                   # the reads no story taught on ends at, asked before it)
         unsettled = []
         for more in (1, 4):  # a shape on which the solver could not tell is searched again with four times the work
             for i in range(0, len(near), workers):
