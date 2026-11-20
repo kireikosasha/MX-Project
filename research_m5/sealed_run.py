@@ -29,7 +29,7 @@ def one(path, out, a):
         data.append((w, oracle(w)))
     t0 = time.time()
     m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers,
-                           shorten=a.shorten, reserve=a.reserve)
+                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards=a.guards)
     res = {"found": None if m is None else str(m), "asked": asked, "seconds": round(time.time() - t0),
            "sure": None if m is None else m.sure}
     for L in (20, 100, 500):
@@ -51,6 +51,10 @@ def main():
     ap.add_argument("--seconds", type=float, default=10)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--slack", type=float, default=8, help="a second machine is looked for among the shapes at most so many bits longer")
+    ap.add_argument("--guards", action="store_true", help="moves that read the first number (a counter tested for zero)")
+    ap.add_argument("--frugal", action="store_true", help="one question per second machine; the check up to the first wrong answer")
+    ap.add_argument("--explore", action="store_true", help="the reads no story taught on ends at are asked about")
     ap.add_argument("--reserve", type=int, default=0, help="so many of the questions are kept for the last check")
     ap.add_argument("--shorten", action="store_true", help="a long story answered wrongly is cut to where the machine first goes wrong")
     ap.add_argument("--after", default="", help="a file of results so far: the families in it are not run again")
