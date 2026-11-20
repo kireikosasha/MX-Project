@@ -23,8 +23,11 @@ class LSTM(nn.Module):
 
 
 class Transformer(nn.Module):
-    def __init__(self, nsym, nlab, width=128, layers=4, heads=4):
+    """alibi: no position vectors; each head looks back with a penalty growing with the distance (Press, Smith and
+    Lewis 2022, made for inputs longer than those taught on), and only back (causal), the asking token last."""
+    def __init__(self, nsym, nlab, width=128, layers=4, heads=4, alibi=False):
         super().__init__()
+        self.alibi, self.heads = alibi, heads
         self.emb = nn.Embedding(nsym + 2, width)  # +1 pad, +1 the token that asks
         self.ask = nsym + 1
         layer = nn.TransformerEncoderLayer(width, heads, 4 * width, dropout=0.0, batch_first=True, norm_first=True)
@@ -47,8 +50,20 @@ class Transformer(nn.Module):
         x = torch.cat([x, torch.full((B, 1), self.ask - 1, device=x.device)], 1)  # room for the asking token
         x[torch.arange(B, device=x.device), lengths] = self.ask
         pad = torch.arange(L + 1, device=x.device)[None, :] > lengths[:, None]
-        h = self.emb(x) + self.pos(L + 1)
-        h = self.body(h, src_key_padding_mask=pad)
+        if self.alibi:  # (the padding is after the asking token, which looks only back: no padding mask is needed)
+            n = L + 1
+            i = torch.arange(n, device=x.device)
+            dist = (i[:, None] - i[None, :]).float()
+            slopes = torch.tensor([2 ** (-8 * (k + 1) / self.heads) for k in range(self.heads)], device=x.device)
+            bias = -slopes[:, None, None] * dist[None]
+            bias = bias.masked_fill(dist[None] < 0, float("-inf"))
+            fast = torch.backends.mha.get_fastpath_enabled()
+            torch.backends.mha.set_fastpath_enabled(False)  # (the fast path of evaluation does not take this mask rightly)
+            h = self.body(self.emb(x), mask=bias.repeat(B, 1, 1))
+            torch.backends.mha.set_fastpath_enabled(fast)
+        else:
+            h = self.emb(x) + self.pos(L + 1)
+            h = self.body(h, src_key_padding_mask=pad)
         return self.out(h[torch.arange(B, device=x.device), lengths])
 
 
@@ -135,7 +150,7 @@ def main():
                     rng = random.Random(seed)
                     teach = make(rng, a.teach * times)
                     model = (LSTM(len(syms), len(labels), a.width) if kind == "lstm" else
-                             Transformer(len(syms), len(labels), a.width, a.layers)).to(DEVICE)
+                             Transformer(len(syms), len(labels), a.width, a.layers, alibi=kind == "alibi")).to(DEVICE)
                     opt = torch.optim.Adam(model.parameters(), lr=1e-3)
                     t0 = time.time()
                     for step in range(a.steps):
