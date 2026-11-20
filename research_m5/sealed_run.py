@@ -29,7 +29,7 @@ def one(path, out, a):
         data.append((w, oracle(w)))
     t0 = time.time()
     m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers,
-                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan)
+                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee)
     res = {"found": None if m is None else str(m), "asked": asked, "seconds": round(time.time() - t0),
            "sure": None if m is None else m.sure}
     for L in (20, 100, 500):
@@ -52,6 +52,7 @@ def main():
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--slack", type=float, default=8, help="a second machine is looked for among the shapes at most so many bits longer")
+    ap.add_argument("--committee", type=int, default=0, help="with --build: up to so many second machines, and the story that splits them most is asked")
     ap.add_argument("--plan", action="store_true", help="the questions kept for the check include those about the unseen reads")
     ap.add_argument("--build", type=int, default=0, help="the second machine is looked for with a story of at most so many symbols that the solver writes itself, not in a pool")
     ap.add_argument("--tests", action="store_true", help="with --guards: also moves by a test of one cell (reads at least a value)")

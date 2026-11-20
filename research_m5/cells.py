@@ -792,7 +792,7 @@ def fit_greedy(shape, syms, labels, data, seconds, lexicon=0, start=200, batch=1
                 aside.append(x)
 
 
-def rival(shape, syms, labels, data, machine, pool, seconds, build=0):
+def rival(shape, syms, labels, data, machine, pool, seconds, build=0, keep=False):
     """A machine of this shape that answers every story taught on rightly and some story of the pool otherwise; the
     stories on which the two part, at most three: the shortest, the longest and one between."""
     other, how = fit(shape, syms, labels, data, seconds, machine, pool, build=build)
@@ -800,7 +800,7 @@ def rival(shape, syms, labels, data, machine, pool, seconds, build=0):
         return how  # "unsat": there is no such machine; "unknown": the solver could not tell
     if build:  # the shortest story the two part on
         w = separating(machine, other, syms, 2 * build)
-        return "unsat" if w is None else [w]
+        return "unsat" if w is None else ([w], other) if keep else [w]
     differs = sorted({w for w in pool if other.run(w) != machine.run(w)}, key=lambda w: (len(w), w))
     if not differs:
         return "unsat"
@@ -833,11 +833,13 @@ def side(f, jobs, workers):
 
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
-          workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False):
+          workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
+          committee=0):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987)"""
     labels = sorted({y for _, y in data})
+    committee = committee if build else 0  # (a committee needs the machines a story is written against)
     asked, dead, fixed, tries = 0, set(), pool, {}
     log = (lambda *a: None) if quiet else (lambda *a: print(*a, flush=True))
     machine = shape = None
@@ -891,15 +893,41 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         owed = len([w for w in unseen(machine, syms, data) if w not in seen]) if plan and explore else 0
         if reserve and asks - asked <= reserve + owed:  # the last questions are kept for the check (and, with plan, for
             near = []                                   # the reads no story taught on ends at, asked before it)
-        unsettled = []
+        unsettled, crowd = [], []
         for more in (1, 4):  # a shape on which the solver could not tell is searched again with four times the work
             for i in range(0, len(near), workers):
-                got = side(rival, [(sh, syms, labels, data, machine, ask_from, seconds * more, build) for sh in near[i:i + workers]], workers)
-                hit = [(sh, x) for sh, x in zip(near[i:i + workers], got) if isinstance(x, list)]
+                got = side(rival, [(sh, syms, labels, data, machine, ask_from, seconds * more, build, bool(committee))
+                                   for sh in near[i:i + workers]], workers)
+                hit = [(sh, x) for sh, x in zip(near[i:i + workers], got) if isinstance(x, (list, tuple))]
                 unsettled += [sh for sh, x in zip(near[i:i + workers], got) if x == "unknown"]
-                if hit:
+                if committee:  # several second machines, of several shapes, the cheapest first
+                    crowd += hit
+                    if len(crowd) >= committee:
+                        break
+                elif hit:
                     sh, w = hit[0]
                     break
+            if committee and crowd:
+                # query by committee (Seung, Opper and Sompolinsky 1992): of the stories that part any two of the machines,
+                # the one on which their answers are split most evenly; a single answer then refutes the most of them
+                crowd = crowd[:committee]
+                ms = [machine] + [x[1] for _, x in crowd]
+                cands = [x[0][0] for _, x in crowd]
+                for p in range(1, len(ms)):
+                    for q in range(p + 1, len(ms)):
+                        s = separating(ms[p], ms[q], syms, 2 * build)
+                        if s is not None:
+                            cands.append(s)
+                def split(s):
+                    cnt = {}
+                    for m in ms:
+                        y = m.run(s)
+                        cnt[y] = cnt.get(y, 0) + 1
+                    return -sum(c / len(ms) * math.log2(c / len(ms)) for c in cnt.values())
+                best = max(sorted(set(cands), key=lambda s: (len(s), s)), key=split)
+                sh, w = crowd[0][0], [best]
+                log(f"  a committee of {len(ms)} machines; the story that splits them most: {' '.join(best)}")
+                break
             if w is not None or not unsettled:
                 break
             near, unsettled = unsettled, []
