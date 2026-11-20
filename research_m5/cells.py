@@ -189,6 +189,7 @@ def name(shape):
 # ---------------------------------------------------------------- the machine, as found
 class Machine:
     lex = None
+    sure = None  # True: it passed the last check; False: the questions ran out before it did; None: no check
 
     def __init__(self, shape, syms, labels, tau, dl, lam):
         self.shape, self.k, self.cells, self.syms, self.labels = shape, shape[1], shape[2], syms, labels
@@ -572,7 +573,7 @@ def side(f, jobs, workers):
 
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
-          workers=4, shorten=False):
+          workers=4, shorten=False, reserve=0):
     labels = sorted({y for _, y in data})
     asked, dead, fixed, tries = 0, set(), pool, {}
     log = (lambda *a: None) if quiet else (lambda *a: print(*a, flush=True))
@@ -608,7 +609,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                     break
         if machine is None:
             return None, asked
-        if asked >= asks:
+        if asked >= asks:  # the questions are spent and the last check was not passed: not sure
+            machine.sure = False
             return machine, asked
         # a machine of this shape, or of one at most `slack` bits longer, that answers every story taught on rightly
         # and some other story otherwise: ask that story
@@ -622,6 +624,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         ask_from = [w for w in ask_from if w not in seen]
         t0, w = time.time(), None
         near = [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
+        if reserve and asks - asked <= reserve:  # the last questions are kept for the check
+            near = []
         unsettled = []
         for more in (1, 4):  # a shape on which the solver could not tell is searched again with four times the work
             for i in range(0, len(near), workers):
@@ -665,6 +669,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         wrong = [(w, y) for w, y in told if machine.run(w) != y]
         if not wrong:
             log(f"  no other machine within {slack} bits; {len(tried)} longer stories asked, all answered rightly ({time.time() - t0:.1f} s)")
+            machine.sure = True
             return machine, asked
         log(f"  no other machine within {slack} bits; of {len(tried)} longer stories asked, {len(wrong)} answered wrongly")
         if not shorten:

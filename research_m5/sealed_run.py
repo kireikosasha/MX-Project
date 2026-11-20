@@ -29,8 +29,9 @@ def one(path, out, a):
         data.append((w, oracle(w)))
     t0 = time.time()
     m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers,
-                           shorten=a.shorten)
-    res = {"found": None if m is None else str(m), "asked": asked, "seconds": round(time.time() - t0)}
+                           shorten=a.shorten, reserve=a.reserve)
+    res = {"found": None if m is None else str(m), "asked": asked, "seconds": round(time.time() - t0),
+           "sure": None if m is None else m.sure}
     for L in (20, 100, 500):
         tr = random.Random(1000 + L)
         seqs = [[tr.choice(syms) for _ in range(L)] for _ in range(300)]
@@ -50,6 +51,7 @@ def main():
     ap.add_argument("--seconds", type=float, default=10)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--reserve", type=int, default=0, help="so many of the questions are kept for the last check")
     ap.add_argument("--shorten", action="store_true", help="a long story answered wrongly is cut to where the machine first goes wrong")
     ap.add_argument("--after", default="", help="a file of results so far: the families in it are not run again")
     a = ap.parse_args()
@@ -78,7 +80,7 @@ def main():
         if r["found"] is None:
             print(f"{d} ({digest}): nothing found; asked {r['asked']} ({r['seconds']} s)", flush=True)
         else:
-            print(f"{d} ({digest}): {r['found']}; asked {r['asked']}; length 20 / 100 / 500: "
+            print(f"{d} ({digest}): {'NOT SURE: ' if r['sure'] is False else ''}{r['found']}; asked {r['asked']}; length 20 / 100 / 500: "
                   f"{r[20]:.1f} / {r[100]:.1f} / {r[500]:.1f} % (the commonest answer: {r['most20']:.0f} / {r['most100']:.0f} / "
                   f"{r['most500']:.0f} %) ({r['seconds']} s)", flush=True)
 
