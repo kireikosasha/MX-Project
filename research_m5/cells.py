@@ -140,7 +140,10 @@ def step(c, z, o):
 
 def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
     each = lambda c: math.log2(2 * c[1] + 1) if c[0] == "Z" else math.log2(c[1]) if c[0] == "M" else math.log2(2 * c[2] + 1 + c[1])
-    if isinstance(chain, tuple) and chain[0] == "s":  # a test of one cell: G symbols have a second row of moves, taken
+    if isinstance(chain, tuple) and chain[0] == "f":  # the control is f switches (k = 2^f states): every symbol keeps,
+        f = chain[1]                                    # clears, sets or flips each; the cells move by the whole state
+        b = nsym * f * 2 + sum(nsym * k * each(c) + (math.log2(c[1]) if c[0] == "L" else 0) for c in cells)
+    elif isinstance(chain, tuple) and chain[0] == "s":  # a test of one cell: G symbols have a second row of moves, taken
         G = chain[1]                                    # when the cell the solver picks reads at least a value it picks
         one = (math.log2(k) if k > 1 else 0.0) + sum(each(c) for c in cells)
         tests = sum(len(values(c)) - 1 for c in cells)
@@ -163,7 +166,7 @@ def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
     return b + reads * math.log2(max(nlab, 2))
 
 
-def shapes(nsym, nlab, most_k=12, guards=False, numeric=False):
+def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False):
     Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
     M = [("M", m) for m in range(2, 13)]
     L = [("L", n, B) for n in range(3, 9) for B in (1, 2)]
@@ -192,6 +195,10 @@ def shapes(nsym, nlab, most_k=12, guards=False, numeric=False):
         if guards == "tests":  # (and a test of one cell, the cheaper form of the same)
             every += [(bits_of(k, cs, nsym, nlab, by, ("s", G)), k, cs, by, ("s", G)) for k, cs in cand
                       for G in range(1, nsym + 1) for by in (True, False) if by or k > 1]
+    if guards == "flags" or flags:  # a control made of switches (flip-flops, the reset part of Krohn and Rhodes):
+        cand = [(2 ** f, ()) for f in (2, 3, 4)] + [(2 ** f, (c,)) for f in (2, 3) for c in Z + L + M if c[0] != "M" or c[1] <= 4]
+        every += [(bits_of(k, cs, nsym, nlab, by, ("f", k.bit_length() - 1)), k, cs, by, ("f", k.bit_length() - 1))
+                  for k, cs in cand for by in (True, False) if by or cs]
     if numeric:  # the answers are numbers: the answer may be the first cell's number itself (a count told as it is)
         firsts = [(k, cs, ch) for _, k, cs, by, ch in every if by is True and cs and cs[0][0] in "ZL"]
         every += [(bits_of(k, cs, nsym, nlab, "number", ch), k, cs, "number", ch) for k, cs, ch in firsts]
@@ -210,7 +217,9 @@ def name(shape):
     for c in cells:
         words.append(f"a whole number (offsets -{c[1]}..{c[1]}, read clipped to -{c[2]}..{c[2]})" if c[0] == "Z"
                      else f"a circle of {c[1]}" if c[0] == "M" else f"a level of {c[1]} (steps -{c[2]}..{c[2]}, held at the ends, or set)")
-    if isinstance(chain, tuple) and chain[0] == "s":
+    if isinstance(chain, tuple) and chain[0] == "f":
+        words[0] = f"{chain[1]} switches"
+    elif isinstance(chain, tuple) and chain[0] == "s":
         words[-1] += f", {chain[1]} of the symbols moving otherwise when a number reads at least a value"
     elif isinstance(chain, tuple):
         words[-1] += f", {chain[1]} of the symbols moving by what the first number reads"
@@ -266,7 +275,7 @@ class Machine:
             for j, c in enumerate(self.cells):
                 z[j] = step(c, z[j], self.dl[a, q, j, g])
             return self.tau[(a, g), q], z
-        w = z[0] if self.chain else 0
+        w = z[0] if self.chain is True else 0
         for j, c in enumerate(self.cells):
             z[j] = step(c, z[j], self.dl[a, q, j, w if j else 0])
         return self.tau[a, q], z
@@ -361,7 +370,10 @@ class Encoding:
             for q in range(len(labels)):
                 self.clauses.append([self.v("l", (q,), q)])
         else:
-            self.symmetry()
+            if isinstance(self.chain, tuple) and self.chain[0] == "f":
+                self.switches(self.chain[1])  # (states are named by their switches: no numbering to break)
+            else:
+                self.symmetry()
         self.node = {(): 0}
         self.memo = {}  # (the symbol variables of a story the solver writes; the answer variables of a node)
         self.depth = {(): 0}
@@ -377,6 +389,19 @@ class Encoding:
 
     def v(self, *key):
         return self.ids.id(key)
+
+    def switches(self, f):
+        """The move of every (symbol, state) is the one its operation on every switch gives: keep, clear, set, flip."""
+        ops = [lambda b: b, lambda b: 0, lambda b: 1, lambda b: 1 - b]
+        for a in self.csyms:
+            for i in range(f):
+                self.exactly([self.v("op", a, i, o) for o in range(4)])
+            for q in range(self.k):
+                for r in range(self.k):
+                    for i in range(f):
+                        for o in range(4):
+                            if ops[o]((q >> i) & 1) != (r >> i) & 1:
+                                self.clauses.append([-self.v("t", a, q, r), -self.v("op", a, i, o)])
 
     def symmetry(self):
         """One machine, one numbering. States are numbered in the order a walk in breadth from state 0 meets them,
@@ -432,7 +457,7 @@ class Encoding:
             return self.gvals
         if self.stump:
             return (0, 1)
-        return range(self.cells[0][1]) if self.chain and j else range(1)
+        return range(self.cells[0][1]) if self.chain is True and j else range(1)
 
     def outcome(self, n, a):
         """(stump) The literal 'the test symbol a picked holds at node n', defined once per node and symbol."""
@@ -543,7 +568,7 @@ class Encoding:
                 for w in self.keys(j):
                   for a, guard in read:
                     key = (self.notat(n0, w) if self.guard else ([-self.outcome(n0, a)] if w else [self.outcome(n0, a)])
-                           if self.stump else [-self.v("z", n0, 0, w)] if self.chain and j else []) + guard
+                           if self.stump else [-self.v("z", n0, 0, w)] if self.chain is True and j else []) + guard
                     for o in self.offsets(c):
                         off = self.v("o", j, a, q, w, o)
                         if c[0] == "Z":
@@ -834,7 +859,7 @@ def side(f, jobs, workers):
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
-          committee=0):
+          committee=0, flags=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987)"""
@@ -848,7 +873,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         if new != labels:
             labels, dead, tries, machine = new, set(), {}, None
         numeric = guards and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (all numbers, as written)
-        every = shapes(len(syms), len(labels), most_k, guards, numeric)
+        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags)
         if machine is not None and all(machine.run(s) == y for s, y in data):
             pass  # the kept machine answered what was asked rightly: it stays
         else:
