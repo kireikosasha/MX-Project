@@ -95,7 +95,15 @@ def main():
     ap.add_argument("--width", type=int, default=128)
     ap.add_argument("--layers", type=int, default=4)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--folder", help="sealed families (folder/NN-name/family.py with ALPHABET and answer) instead of the named ones")
     a = ap.parse_args()
+    if a.folder:  # the families of a sealed pool, loaded as sealed_run.py loads them
+        import os, sealed_run
+        names = sorted(d for d in os.listdir(a.folder) if os.path.exists(os.path.join(a.folder, d, "family.py")))
+        for d in names:
+            syms, answer = sealed_run.load(os.path.join(a.folder, d, "family.py"))
+            FAMILIES[d] = (syms, (lambda f: lambda w: str(f(list(w))))(answer))
+        a.families = [f for f in a.families if f in names] or names  # (named ones of the folder, or all of it)
     torch.set_num_threads(a.threads)
     global DEVICE
     DEVICE = torch.device(a.device)
