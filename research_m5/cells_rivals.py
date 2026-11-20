@@ -58,7 +58,7 @@ def batch(stories, sid, lid, nsym):
     for i, (s, _) in enumerate(stories):
         x[i, :len(s)] = torch.tensor([sid[c] for c in s])
     lengths = torch.tensor([len(s) for s, _ in stories])
-    y = torch.tensor([lid.get(a, 0) for _, a in stories])
+    y = torch.tensor([lid.get(a, -1) for _, a in stories])  # an answer the rival has no class for is never right
     return x.to(DEVICE), lengths.to(DEVICE), y.to(DEVICE)
 
 
@@ -141,7 +141,7 @@ def main():
                     for step in range(a.steps):
                         part = rng.sample(teach, min(64, len(teach)))
                         x, l, y = batch(part, sid, lid, len(syms))
-                        loss = nn.functional.cross_entropy(model(x, l), y)
+                        loss = nn.functional.cross_entropy(model(x, l), y, ignore_index=-1)
                         opt.zero_grad(); loss.backward(); opt.step()
                     taught = accuracy(model, fresh, sid, lid, len(syms))
                     long = [accuracy(model, tests[L], sid, lid, len(syms), part=50) for L in tests]
