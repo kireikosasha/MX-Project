@@ -120,14 +120,29 @@ FAMILIES = {
 # ---------------------------------------------------------------- shapes and their length in bits
 # A cell beside the finite control is ("Z", B, C): a whole number, offsets -B..B, read clipped to -C..C; or ("M", m):
 # a number kept modulo m (a circle: days of the week, a heading), every symbol turns it by 0..m-1, read as it is.
+# Or ("L", n, B): a level 0..n-1 that begins at a value found with the machine; every symbol moves it by -B..B, held
+# at the ends ("never above boil, never below cold"), or sets it to a value; read as it is.
+SET = 100  # an operation of a level >= SET sets it to (operation - SET)
+
+
 def values(cell):
     return range(-cell[2], cell[2] + 1) if cell[0] == "Z" else range(cell[1])
+
+
+def step(c, z, o):
+    """The value of cell c after operation o from value z."""
+    if c[0] == "Z":
+        return z + o
+    if c[0] == "M":
+        return (z + o) % c[1]
+    return o - SET if o >= SET else max(0, min(c[1] - 1, z + o))
 
 
 def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
     b = nsym * k * math.log2(k) if k > 1 else 0.0
     for j, c in enumerate(cells):
-        b += nsym * k * (math.log2(2 * c[1] + 1) if c[0] == "Z" else math.log2(c[1])) * (cells[0][1] if chain and j else 1)
+        each = math.log2(2 * c[1] + 1) if c[0] == "Z" else math.log2(c[1]) if c[0] == "M" else math.log2(2 * c[2] + 1 + c[1])
+        b += nsym * k * each * (cells[0][1] if chain and j else 1) + (math.log2(c[1]) if c[0] == "L" else 0)
     reads = k if by_state else 1
     for c in cells:
         reads *= len(values(c))
@@ -137,16 +152,19 @@ def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
 def shapes(nsym, nlab, most_k=12):
     Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
     M = [("M", m) for m in range(2, 13)]
+    L = [("L", n, B) for n in range(3, 9) for B in (1, 2)]
     out = [(k, ()) for k in range(1, most_k + 1)]
-    out += [(k, (c,)) for k in range(1, 7) for c in Z + M]
+    out += [(k, (c,)) for k in range(1, 7) for c in Z + M + L]
     two = [(z, z) for z in Z] + [(z, m) for z in Z for m in M if m[1] <= 7] + \
-          [(m1, m2) for i, m1 in enumerate(M) for m2 in M[i:] if m2[1] <= 7]
+          [(m1, m2) for i, m1 in enumerate(M) for m2 in M[i:] if m2[1] <= 7] + \
+          [(l, l) for l in L if l[1] <= 6] + [(l, m) for l in L for m in M if m[1] <= 4]
     out += [(k, cs) for k in range(1, 5) for cs in two]
     # the answer is read from the state and the numbers, or (a cascade read at its last cell) from the numbers only
     every = [(bits_of(k, cs, nsym, nlab), k, cs, True, False) for k, cs in out] + \
             [(bits_of(k, cs, nsym, nlab, False), k, cs, False, False) for k, cs in out if k > 1 and cs]
     # a cascade of cells: the second number is moved by the value of a circle before it (a carry)
-    chained = [(m, x) for m in M if m[1] <= 7 for x in Z + [n for n in M if n[1] <= 7]]
+    chained = [(m, x) for m in M if m[1] <= 7 for x in Z + [n for n in M if n[1] <= 7]] + \
+              [(l, x) for l in L for x in Z]  # (a level moving a number: rain counted as snow when it is cold)
     every += [(bits_of(k, cs, nsym, nlab, by, True), k, cs, by, True) for k in range(1, 5) for cs in chained
               for by in (True, False) if by or k > 1]
     # the states are the answers themselves, and one more to begin in: a table of relations (Tarski 1941), where
@@ -163,7 +181,7 @@ def name(shape):
     words = [f"{k} states"]
     for c in cells:
         words.append(f"a whole number (offsets -{c[1]}..{c[1]}, read clipped to -{c[2]}..{c[2]})" if c[0] == "Z"
-                     else f"a circle of {c[1]}")
+                     else f"a circle of {c[1]}" if c[0] == "M" else f"a level of {c[1]} (steps -{c[2]}..{c[2]}, held at the ends, or set)")
     return " + ".join(words) + (", the second moved by the value of the first" if chain else "") + \
         ("" if by_state or not cells else ", the answer read from the numbers only")
 
@@ -177,18 +195,18 @@ class Machine:
         self.by_state, self.chain = shape[3], shape[4]
         self.start = self.k - 1 if self.by_state == "named" else 0
         self.tau, self.dl, self.lam = tau, dl, lam
+        self.zstart = [0] * len(self.cells)
 
     def run(self, seq):
         if self.lex is not None:
             if any(a not in self.lex for a in seq):
                 return None
             seq = [self.lex[a] for a in seq]
-        q, z = self.start, [0] * len(self.cells)
+        q, z = self.start, list(self.zstart)
         for a in seq:
             w = z[0] if self.chain else 0
             for j, c in enumerate(self.cells):
-                o = self.dl[a, q, j, w if j else 0]
-                z[j] = z[j] + o if c[0] == "Z" else (z[j] + o) % c[1]
+                z[j] = step(c, z[j], self.dl[a, q, j, w if j else 0])
             q = self.tau[a, q]
         r = tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(self.cells, z))
         return self.labels[self.lam[(q if self.by_state else 0,) + r]]
@@ -254,6 +272,8 @@ class Encoding:
         for j, c in enumerate(self.cells):
             if c[0] == "M":
                 self.clauses.append([self.v("z", 0, j, 0)])
+            elif c[0] == "L":  # where a level begins is found with the machine
+                self.exactly([self.v("z", 0, j, val) for val in range(c[1])])
 
     def v(self, *key):
         return self.ids.id(key)
@@ -294,7 +314,7 @@ class Encoding:
             if c[0] == "Z":
                 for o in range(-c[1], 0):
                     C.append([-v("o", j, a0, 0, 0, o)])
-            else:
+            elif c[0] == "M":
                 for o in range(1, c[1]):
                     if c[1] % o:
                         C.append([-v("o", j, a0, 0, 0, o)])
@@ -311,6 +331,8 @@ class Encoding:
 
     @staticmethod
     def offsets(c):
+        if c[0] == "L":
+            return list(range(-c[2], c[2] + 1)) + [SET + v for v in range(c[1])]
         return range(-c[1], c[1] + 1) if c[0] == "Z" else range(c[1])
 
     def span(self, c, depth):
@@ -364,7 +386,7 @@ class Encoding:
                                 self.add([-x, -off, self.ge(n0, j, b - o), neg(self.ge(n, j, b))] + key)
                         else:
                             for val in range(c[1]):
-                                self.clauses.append([-x, -off, -self.v("z", n0, j, val), self.v("z", n, j, (val + o) % c[1])] + key)
+                                self.clauses.append([-x, -off, -self.v("z", n0, j, val), self.v("z", n, j, step(c, val, o))] + key)
         for j, c in enumerate(self.cells):
             if c[0] == "Z":
                 D = c[1] * (dep + 1)
@@ -382,7 +404,7 @@ class Encoding:
             out = [-self.v("x", n, r[0])] if self.by_state else []
             for j, c in enumerate(self.cells):
                 v = r[1 + j]
-                if c[0] == "M":
+                if c[0] in "ML":
                     out.append(-self.v("z", n, j, v))
                     continue
                 conj = [neg(self.ge(n, j, -c[2] + 1))] if v == -c[2] else [self.ge(n, j, c[2])] if v == c[2] else \
@@ -440,6 +462,7 @@ class Encoding:
               for a in self.syms for q in range(self.k) for j, c in enumerate(self.cells) for w in self.keys(j)}
         lam = {r: next(y for y in range(len(self.labels)) if on("l", r, y)) for r in self.reads}
         m = Machine(self.shape, self.syms, self.labels, tau, dl, lam)
+        m.zstart = [next(v for v in range(c[1]) if on("z", 0, j, v)) if c[0] == "L" else 0 for j, c in enumerate(self.cells)]
         if self.raw is not None:
             m.lex = {r: self.syms[next(i for i in range(len(self.syms)) if on("w", r, i))] for r in self.raw}
         return m, "sat"
