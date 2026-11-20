@@ -1,0 +1,192 @@
+  01-dentist lstm        x1   seed 0: taught lengths  98.7  length 20/100/500:  88.3  90.3  90.0  (11 s)
+  01-dentist lstm        x1   seed 1: taught lengths  98.0  length 20/100/500:  88.7  90.7  86.3  (12 s)
+  01-dentist lstm        x1   seed 2: taught lengths  99.7  length 20/100/500:  93.7  93.3  92.3  (11 s)
+01-dentist lstm        x1   mean of 3: taught lengths  98.8  length 20/100/500:  90.2  91.4  89.6
+  01-dentist lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  96.0  97.3  97.7  (10 s)
+  01-dentist lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  96.0  97.7  98.7  (11 s)
+  01-dentist lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  97.3  99.3  97.7  (10 s)
+01-dentist lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  96.4  98.1  98.0
+  01-dentist transformer x1   seed 0: taught lengths  96.7  length 20/100/500:  34.0  42.3  49.7  (128 s)
+  01-dentist transformer x1   seed 1: taught lengths  96.3  length 20/100/500:  39.0  28.7  25.0  (127 s)
+  01-dentist transformer x1   seed 2: taught lengths  99.0  length 20/100/500:  39.7  48.0  50.7  (128 s)
+01-dentist transformer x1   mean of 3: taught lengths  97.3  length 20/100/500:  37.6  39.7  41.8
+  01-dentist transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  36.0  32.0  39.3  (135 s)
+  01-dentist transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  37.7  28.3  29.0  (116 s)
+  01-dentist transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  38.0  33.7  35.0  (139 s)
+01-dentist transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  37.2  31.3  34.4
+  05-ice-rink lstm        x1   seed 0: taught lengths  97.7  length 20/100/500:  25.7   0.0   0.0  (12 s)
+  05-ice-rink lstm        x1   seed 1: taught lengths  99.7  length 20/100/500:  27.7   0.0   0.0  (13 s)
+  05-ice-rink lstm        x1   seed 2: taught lengths  99.0  length 20/100/500:  21.7   0.0   0.0  (15 s)
+05-ice-rink lstm        x1   mean of 3: taught lengths  98.8  length 20/100/500:  25.0   0.0   0.0
+  05-ice-rink lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  29.7   0.0   0.0  (14 s)
+  05-ice-rink lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  26.3   0.0   0.0  (14 s)
+  05-ice-rink lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  21.7   0.0   0.0  (14 s)
+05-ice-rink lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  25.9   0.0   0.0
+  05-ice-rink transformer x1   seed 0: taught lengths  97.7  length 20/100/500:  16.3   0.0   0.0  (160 s)
+  05-ice-rink transformer x1   seed 1: taught lengths  98.3  length 20/100/500:   5.7   0.0   0.0  (133 s)
+  05-ice-rink transformer x1   seed 2: taught lengths  97.7  length 20/100/500:   7.7   0.0   0.0  (134 s)
+05-ice-rink transformer x1   mean of 3: taught lengths  97.9  length 20/100/500:   9.9   0.0   0.0
+  05-ice-rink transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  14.7   0.0   0.0  (129 s)
+  05-ice-rink transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  10.0   0.0   0.0  (142 s)
+  05-ice-rink transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  13.0   0.0   0.0  (165 s)
+05-ice-rink transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  12.6   0.0   0.0
+  09-mountain-hut lstm        x1   seed 0: taught lengths  99.3  length 20/100/500:  60.7  14.7   0.0  (15 s)
+  09-mountain-hut lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  51.0  10.7   0.0  (16 s)
+  09-mountain-hut lstm        x1   seed 2: taught lengths  98.3  length 20/100/500:  57.7  15.3   0.0  (12 s)
+09-mountain-hut lstm        x1   mean of 3: taught lengths  99.0  length 20/100/500:  56.4  13.6   0.0
+  09-mountain-hut lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  70.3  15.7   0.0  (11 s)
+  09-mountain-hut lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  65.0  14.0   0.0  (15 s)
+  09-mountain-hut lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  61.0  14.3   0.0  (14 s)
+09-mountain-hut lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  65.4  14.7   0.0
+  09-mountain-hut transformer x1   seed 0: taught lengths  99.0  length 20/100/500:  54.0  15.0   0.0  (141 s)
+  09-mountain-hut transformer x1   seed 1: taught lengths  99.0  length 20/100/500:  54.7  15.0   0.0  (150 s)
+  09-mountain-hut transformer x1   seed 2: taught lengths  98.3  length 20/100/500:  54.7  15.0   0.0  (142 s)
+09-mountain-hut transformer x1   mean of 3: taught lengths  98.8  length 20/100/500:  54.4  15.0   0.0
+  09-mountain-hut transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  56.7  15.0   0.0  (144 s)
+  09-mountain-hut transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  54.7  15.0   0.0  (138 s)
+  09-mountain-hut transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  54.7  15.0   0.0  (114 s)
+09-mountain-hut transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  55.3  15.0   0.0
+  02-harbor-crane lstm        x1   seed 0: taught lengths  99.7  length 20/100/500:  76.3  51.0  49.0  (10 s)
+  02-harbor-crane lstm        x1   seed 1: taught lengths  97.0  length 20/100/500:  75.0  51.0  49.0  (9 s)
+  02-harbor-crane lstm        x1   seed 2: taught lengths  99.7  length 20/100/500:  66.0  52.3  41.3  (12 s)
+02-harbor-crane lstm        x1   mean of 3: taught lengths  98.8  length 20/100/500:  72.4  51.4  46.4
+  02-harbor-crane lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  76.7  51.3  49.0  (11 s)
+  02-harbor-crane lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  76.3  51.0  49.0  (9 s)
+  02-harbor-crane lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  76.7  51.0  49.0  (10 s)
+02-harbor-crane lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  76.6  51.1  49.0
+  02-harbor-crane transformer x1   seed 0: taught lengths  99.7  length 20/100/500:  76.0  51.0  49.0  (126 s)
+  02-harbor-crane transformer x1   seed 1: taught lengths  97.0  length 20/100/500:  76.0  51.0  49.0  (132 s)
+  02-harbor-crane transformer x1   seed 2: taught lengths  99.7  length 20/100/500:  76.0  51.0  49.0  (136 s)
+02-harbor-crane transformer x1   mean of 3: taught lengths  98.8  length 20/100/500:  76.0  51.0  49.0
+  02-harbor-crane transformer x40  seed 0: taught lengths  98.7  length 20/100/500:  76.0  51.0  49.0  (133 s)
+  02-harbor-crane transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  76.0  51.0  49.0  (117 s)
+  02-harbor-crane transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  76.0  51.0  49.0  (142 s)
+02-harbor-crane transformer x40  mean of 3: taught lengths  99.6  length 20/100/500:  76.0  51.0  49.0
+  06-fire-station lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  94.7  92.7  94.0  (12 s)
+  06-fire-station lstm        x1   seed 1: taught lengths 100.0  length 20/100/500:  84.3  78.3  83.7  (13 s)
+  06-fire-station lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  97.7  97.0  97.3  (12 s)
+06-fire-station lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500:  92.2  89.3  91.7
+  06-fire-station lstm        x40  seed 0: taught lengths 100.0  length 20/100/500: 100.0  99.7  99.7  (15 s)
+  06-fire-station lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  97.7  94.7  96.3  (13 s)
+  06-fire-station lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  98.3  96.7  97.7  (12 s)
+06-fire-station lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  98.7  97.0  97.9
+  06-fire-station transformer x1   seed 0: taught lengths  98.0  length 20/100/500:  55.0  45.7  56.7  (152 s)
+  06-fire-station transformer x1   seed 1: taught lengths  98.0  length 20/100/500:  44.3  31.0  24.7  (138 s)
+  06-fire-station transformer x1   seed 2: taught lengths  99.0  length 20/100/500:  36.7  27.7  25.3  (136 s)
+06-fire-station transformer x1   mean of 3: taught lengths  98.3  length 20/100/500:  45.3  34.8  35.6
+  06-fire-station transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  50.3  33.3  24.7  (127 s)
+  06-fire-station transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  39.3  29.3  24.7  (135 s)
+  06-fire-station transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  41.7  28.0  25.0  (163 s)
+06-fire-station transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  43.8  30.2  24.8
+  10-school-canteen lstm        x1   seed 0: taught lengths  99.0  length 20/100/500:  94.0  92.3  96.0  (14 s)
+  10-school-canteen lstm        x1   seed 1: taught lengths  98.7  length 20/100/500:  92.0  92.0  95.3  (15 s)
+  10-school-canteen lstm        x1   seed 2: taught lengths  99.7  length 20/100/500:  90.7  91.0  94.7  (13 s)
+10-school-canteen lstm        x1   mean of 3: taught lengths  99.1  length 20/100/500:  92.2  91.8  95.3
+  10-school-canteen lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  99.7  99.7 100.0  (12 s)
+  10-school-canteen lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  99.7  99.3 100.0  (11 s)
+  10-school-canteen lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  99.7  99.7 100.0  (14 s)
+10-school-canteen lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  99.7  99.6 100.0
+  10-school-canteen transformer x1   seed 0: taught lengths  97.7  length 20/100/500:  33.0  51.7  62.0  (139 s)
+  10-school-canteen transformer x1   seed 1: taught lengths  98.0  length 20/100/500:  48.0  32.7  18.0  (151 s)
+  10-school-canteen transformer x1   seed 2: taught lengths  99.0  length 20/100/500:  41.3  45.0  48.0  (140 s)
+10-school-canteen transformer x1   mean of 3: taught lengths  98.2  length 20/100/500:  40.8  43.1  42.7
+  10-school-canteen transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  47.7  57.0  63.3  (134 s)
+  10-school-canteen transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  37.7  12.7   8.0  (136 s)
+  10-school-canteen transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  55.7  62.3  63.3  (124 s)
+10-school-canteen transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  47.0  44.0  44.9
+  03-airlock lstm        x1   seed 0: taught lengths  99.3  length 20/100/500:  65.0  46.3  50.3  (11 s)
+  03-airlock lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  63.7  49.0  48.0  (9 s)
+  03-airlock lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  62.7  47.0  49.7  (9 s)
+03-airlock lstm        x1   mean of 3: taught lengths  99.6  length 20/100/500:  63.8  47.4  49.3
+  03-airlock lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  82.3  64.0  63.3  (9 s)
+  03-airlock lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  77.3  59.7  59.7  (10 s)
+  03-airlock lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  78.3  60.3  58.3  (12 s)
+03-airlock lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  79.3  61.3  60.4
+  03-airlock transformer x1   seed 0: taught lengths  96.3  length 20/100/500:  27.3  17.0  13.7  (116 s)
+  03-airlock transformer x1   seed 1: taught lengths  96.0  length 20/100/500:  26.3  17.3  13.7  (118 s)
+  03-airlock transformer x1   seed 2: taught lengths  97.7  length 20/100/500:  26.7  20.7  21.3  (132 s)
+03-airlock transformer x1   mean of 3: taught lengths  96.7  length 20/100/500:  26.8  18.3  16.2
+  03-airlock transformer x40  seed 0: taught lengths  98.7  length 20/100/500:  23.0  17.7  14.0  (133 s)
+  03-airlock transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  30.7  18.3  19.0  (111 s)
+  03-airlock transformer x40  seed 2: taught lengths  99.7  length 20/100/500:  25.7  22.0  17.3  (128 s)
+03-airlock transformer x40  mean of 3: taught lengths  99.4  length 20/100/500:  26.4  19.3  16.8
+  07-tailor lstm        x1   seed 0: taught lengths  99.3  length 20/100/500:  35.7  35.7  35.7  (13 s)
+  07-tailor lstm        x1   seed 1: taught lengths  98.7  length 20/100/500:  33.3  34.0  36.0  (12 s)
+  07-tailor lstm        x1   seed 2: taught lengths  99.0  length 20/100/500:  35.7  34.0  35.0  (11 s)
+07-tailor lstm        x1   mean of 3: taught lengths  99.0  length 20/100/500:  34.9  34.6  35.6
+  07-tailor lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  35.0  33.0  36.7  (12 s)
+  07-tailor lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  37.3  33.7  36.3  (12 s)
+  07-tailor lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  36.3  34.0  37.0  (14 s)
+07-tailor lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  36.2  33.6  36.7
+  07-tailor transformer x1   seed 0: taught lengths  98.0  length 20/100/500:  40.7  33.0  29.0  (147 s)
+  07-tailor transformer x1   seed 1: taught lengths  97.3  length 20/100/500:  34.7  28.3  32.3  (154 s)
+  07-tailor transformer x1   seed 2: taught lengths  99.0  length 20/100/500:  38.0  28.3  29.3  (119 s)
+07-tailor transformer x1   mean of 3: taught lengths  98.1  length 20/100/500:  37.8  29.9  30.2
+  07-tailor transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  37.3  34.3  36.3  (134 s)
+  07-tailor transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  38.3  37.0  31.3  (112 s)
+  07-tailor transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  36.0  36.0  32.3  (148 s)
+07-tailor transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  37.2  35.8  33.3
+  11-ferris-wheel lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  42.7  33.7  33.7  (14 s)
+  11-ferris-wheel lstm        x1   seed 1: taught lengths  99.0  length 20/100/500:  35.3  27.7  28.3  (16 s)
+  11-ferris-wheel lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  38.0  32.7  29.7  (13 s)
+11-ferris-wheel lstm        x1   mean of 3: taught lengths  99.7  length 20/100/500:  38.7  31.3  30.6
+  11-ferris-wheel lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  48.3  39.0  38.7  (16 s)
+  11-ferris-wheel lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  48.3  38.7  38.3  (14 s)
+  11-ferris-wheel lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  47.0  38.3  36.7  (15 s)
+11-ferris-wheel lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  47.9  38.7  37.9
+  11-ferris-wheel transformer x1   seed 0: taught lengths 100.0  length 20/100/500:  26.0  25.3  26.3  (149 s)
+  11-ferris-wheel transformer x1   seed 1: taught lengths  95.0  length 20/100/500:  28.3  26.0  26.3  (136 s)
+  11-ferris-wheel transformer x1   seed 2: taught lengths  99.7  length 20/100/500:  22.3  21.7  24.7  (149 s)
+11-ferris-wheel transformer x1   mean of 3: taught lengths  98.2  length 20/100/500:  25.6  24.3  25.8
+  11-ferris-wheel transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  28.0  27.0  26.3  (144 s)
+  11-ferris-wheel transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  28.0  26.0  26.3  (131 s)
+  11-ferris-wheel transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  23.3  18.7  26.3  (136 s)
+11-ferris-wheel transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  26.4  23.9  26.3
+  04-recycling-plant lstm        x1   seed 0: taught lengths  99.0  length 20/100/500:  41.0   3.0   0.0  (9 s)
+  04-recycling-plant lstm        x1   seed 1: taught lengths  98.3  length 20/100/500:  41.3   2.3   0.3  (11 s)
+  04-recycling-plant lstm        x1   seed 2: taught lengths  98.0  length 20/100/500:  40.7   2.3   0.0  (12 s)
+04-recycling-plant lstm        x1   mean of 3: taught lengths  98.4  length 20/100/500:  41.0   2.6   0.1
+  04-recycling-plant lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  45.3   5.3   1.3  (11 s)
+  04-recycling-plant lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  44.3   6.3   4.3  (9 s)
+  04-recycling-plant lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  48.7   7.0   3.3  (10 s)
+04-recycling-plant lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  46.1   6.2   3.0
+  04-recycling-plant transformer x1   seed 0: taught lengths  99.0  length 20/100/500:  40.7   2.3   0.0  (126 s)
+  04-recycling-plant transformer x1   seed 1: taught lengths  98.0  length 20/100/500:  40.7   2.3   0.0  (124 s)
+  04-recycling-plant transformer x1   seed 2: taught lengths  98.0  length 20/100/500:  40.7   2.3   0.0  (132 s)
+04-recycling-plant transformer x1   mean of 3: taught lengths  98.3  length 20/100/500:  40.7   2.3   0.0
+  04-recycling-plant transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  40.7   2.3   0.0  (136 s)
+  04-recycling-plant transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  40.7   2.3   0.0  (113 s)
+  04-recycling-plant transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  40.7   2.3   0.0  (136 s)
+04-recycling-plant transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  40.7   2.3   0.0
+  08-pottery-kiln lstm        x1   seed 0: taught lengths  99.3  length 20/100/500:  31.7   0.0   0.0  (11 s)
+  08-pottery-kiln lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  32.7   0.3   0.0  (12 s)
+  08-pottery-kiln lstm        x1   seed 2: taught lengths  98.7  length 20/100/500:  33.0   0.7   0.0  (12 s)
+08-pottery-kiln lstm        x1   mean of 3: taught lengths  99.1  length 20/100/500:  32.4   0.3   0.0
+  08-pottery-kiln lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  32.7   0.3   0.0  (13 s)
+  08-pottery-kiln lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  33.0   0.3   0.0  (13 s)
+  08-pottery-kiln lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  33.3   0.3   0.0  (14 s)
+08-pottery-kiln lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  33.0   0.3   0.0
+  08-pottery-kiln transformer x1   seed 0: taught lengths  98.0  length 20/100/500:  31.7   0.0   0.0  (149 s)
+  08-pottery-kiln transformer x1   seed 1: taught lengths  99.3  length 20/100/500:  31.7   0.0   0.0  (151 s)
+  08-pottery-kiln transformer x1   seed 2: taught lengths  98.7  length 20/100/500:  31.7   0.0   0.0  (134 s)
+08-pottery-kiln transformer x1   mean of 3: taught lengths  98.7  length 20/100/500:  31.7   0.0   0.0
+  08-pottery-kiln transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  31.3   0.0   0.0  (123 s)
+  08-pottery-kiln transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  32.7   0.0   0.0  (130 s)
+  08-pottery-kiln transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  31.3   0.0   0.0  (149 s)
+08-pottery-kiln transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  31.8   0.0   0.0
+  12-printing-press lstm        x1   seed 0: taught lengths  99.0  length 20/100/500:  37.7  35.3  33.7  (16 s)
+  12-printing-press lstm        x1   seed 1: taught lengths 100.0  length 20/100/500:  39.3  35.7  35.7  (14 s)
+  12-printing-press lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  34.7  37.0  34.7  (15 s)
+12-printing-press lstm        x1   mean of 3: taught lengths  99.7  length 20/100/500:  37.2  36.0  34.7
+  12-printing-press lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  43.3  35.0  38.0  (16 s)
+  12-printing-press lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  44.3  35.3  37.7  (15 s)
+  12-printing-press lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  44.7  34.0  38.0  (13 s)
+12-printing-press lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  44.1  34.8  37.9
+  12-printing-press transformer x1   seed 0: taught lengths 100.0  length 20/100/500:  34.7  38.3  34.3  (138 s)
+  12-printing-press transformer x1   seed 1: taught lengths 100.0  length 20/100/500:  34.7  38.3  34.3  (143 s)
+  12-printing-press transformer x1   seed 2: taught lengths 100.0  length 20/100/500:  34.7  38.3  34.3  (146 s)
+12-printing-press transformer x1   mean of 3: taught lengths 100.0  length 20/100/500:  34.7  38.3  34.3
+  12-printing-press transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  34.7  38.3  34.3  (138 s)
+  12-printing-press transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  35.0  40.3  34.3  (127 s)
+  12-printing-press transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  37.0  39.0  34.3  (135 s)
+12-printing-press transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  35.6  39.2  34.3
