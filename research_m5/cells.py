@@ -20,7 +20,7 @@ Learning:
      the longest, one between). When there is no second machine, twelve longer stories are asked as a check (repeated
      pieces, as in the pumping lemma; plain ones; and ones on which the kept machine gives each of its answers, the
      rarest first). A wrong answer goes back to 1."""
-import argparse, itertools, math, random, sys, threading, time
+import argparse, functools, itertools, math, random, sys, threading, time
 from pysat.card import CardEnc, EncType
 from pysat.formula import IDPool
 from pysat.solvers import Solver
@@ -140,8 +140,14 @@ def step(c, z, o):
     return o - SET if o >= SET else max(0, min(c[1] - 1, z + o))
 
 
+def each(c):
+    """Bits of one offset of a cell."""
+    return math.log2(2 * c[1] + 1) if c[0] == "Z" else math.log2(c[1]) if c[0] == "M" else math.log2(2 * c[2] + 1 + c[1])
+
+
 def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
-    each = lambda c: math.log2(2 * c[1] + 1) if c[0] == "Z" else math.log2(c[1]) if c[0] == "M" else math.log2(2 * c[2] + 1 + c[1])
+    if isinstance(chain, tuple) and chain[0] == "a":  # a ceiling: every machine of the body priced at most so many bits
+        return chain[1]
     if isinstance(chain, tuple) and chain[0] == "f":  # the control is f switches (k = 2^f states): every symbol keeps,
         f = chain[1]                                    # clears, sets or flips each; the cells move by the whole state
         b = nsym * f * 2 + sum(nsym * k * each(c) + (math.log2(c[1]) if c[0] == "L" else 0) for c in cells)
@@ -175,7 +181,190 @@ def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
     return b + reads * math.log2(max(nlab, 2))
 
 
-def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, cascades=False, rules=False):
+# ---------------------------------------------------------------- shapes priced by what every move depends on (dep)
+# A body is k states and its cells; only the first cell is read. For every symbol and every part it moves (the control,
+# each cell) the machine says whether that move depends on the state, on what the first cell reads, or on both; a move
+# that depends on neither is one row (the control keeps its state or goes to one state). The answer says which parts
+# it reads. The price is the length of that description (Rissanen 1978): the rows, which symbols have which kind of
+# row, and the table of answers over the parts it reads. A shape is a body and a ceiling: every machine of the body
+# priced at most so many bits, the dependences found by the solver with the machine.
+STEP = 16  # the ceilings of a body: every so many bits
+TOP = 400  # and none above this
+MAXREAD = 3  # with two cells, at most so many symbols move one part by what the first cell reads
+
+
+def parts(k, cells):
+    """The parts a symbol moves: the control (with more than one state), and every cell."""
+    return (["c"] if k > 1 else []) + list(range(len(cells)))
+
+
+def rowcosts(k, cells, p):
+    """Bits of the moves of one (symbol, part): alike everywhere, a row by the state, a row by what the first cell
+    reads, a row by both."""
+    R0 = len(values(cells[0])) if cells else 1
+    if p == "c":
+        lk, l1 = math.log2(k), math.log2(k + 1)
+        return l1, k * lk, R0 * l1, k * R0 * lk
+    e = each(cells[p])
+    return e, k * e, R0 * e, k * R0 * e
+
+
+def gmax(n, c):
+    """Which of n symbols, at most c of them: the largest log2 C(n, x) for x up to c (so the price never falls as c
+    grows)."""
+    return max(math.log2(math.comb(n, x)) for x in range(c + 1))
+
+
+def part_price(k, cells, p, nsym, cS, cR, cW):
+    """One part, when cS symbols move it by the state, cR by the read and cW of them by both."""
+    z, S, R, W = rowcosts(k, cells, p)
+    return nsym * z + cS * (S - z) + cR * (R - z) + cW * (W - S - R + z) + gmax(nsym, cS) + gmax(nsym, cR) + gmax(nsym, cW)
+
+
+def answer_price(k, cells, nlab, A, numeric=False):
+    """The table of answers over the parts in A, and which parts those are; a number told as it is: one bit."""
+    if numeric:
+        return 1.0
+    n = (k if "c" in A else 1) * math.prod(len(values(c)) if j in A else 1 for j, c in enumerate(cells))
+    return n * math.log2(max(nlab, 2)) + len(parts(k, cells))
+
+
+def price(k, cells, nsym, nlab, counts, A, numeric=False):
+    return sum(math.log2(c[1]) for c in cells if c[0] == "L") + answer_price(k, cells, nlab, A, numeric) + \
+        sum(part_price(k, cells, p, nsym, *counts[p]) for p in parts(k, cells))
+
+
+def vectors(k, cells, nsym):
+    """The counts (by the state, by the read, by both) one part may have."""
+    most = min(nsym, MAXREAD) if len(cells) > 1 else nsym
+    return [(cS, cR, cW) for cS in (range(nsym + 1) if k > 1 else [0]) for cR in (range(most + 1) if cells else [0])
+            for cW in range(min(cS, cR) + 1)]
+
+
+def patterns(k, cells, by):
+    """The sets of parts the answer may read: a number told is its own cell; with two cells the second is read."""
+    P = parts(k, cells)
+    if by in ("number", "lastnum"):
+        return [frozenset([len(cells) - 1 if by == "lastnum" else 0])]
+    out = [frozenset(x for x, on in zip(P, bits) if on) for bits in itertools.product((0, 1), repeat=len(P))]
+    return [A for A in out if len(cells) < 2 or 1 in A]
+
+
+def useful(k, cells, counts, A):
+    """Every part matters (as Encoding.dependencies demands): the control is read by the answer or moves a cell by the
+    state; the first cell is read by the answer or read by a move of another part; the second is read by the answer."""
+    if k > 1 and "c" not in A and not any(counts[j][0] for j in range(len(cells))):
+        return False
+    if cells and 0 not in A and not any(counts[p][1] for p in parts(k, cells) if p != 0):
+        return False
+    return len(cells) < 2 or 1 in A
+
+
+@functools.lru_cache(maxsize=None)
+def lowest(k, cells, nsym, nlab, by=True):
+    """The price of the cheapest machine of the body in which every part matters (the price only grows with the
+    counts, so counts of 0 and 1 are enough to find it)."""
+    P, numeric = parts(k, cells), by in ("number", "lastnum")
+    small = [v for v in vectors(k, cells, nsym) if max(v) <= 1]
+    pp = {p: {v: part_price(k, cells, p, nsym, *v) for v in small} for p in P}
+    base = sum(math.log2(c[1]) for c in cells if c[0] == "L")
+    best = math.inf
+    for A in patterns(k, cells, by):
+        ab = base + answer_price(k, cells, nlab, A, numeric)
+        for vec in itertools.product(small, repeat=len(P)):
+            counts = dict(zip(P, vec))
+            if useful(k, cells, counts, A):
+                best = min(best, ab + sum(pp[p][v] for p, v in counts.items()))
+    return best
+
+
+@functools.lru_cache(maxsize=None)
+def highest(k, cells, nsym, nlab, by=True):
+    """The price of the dearest profile the body allows."""
+    P, numeric = parts(k, cells), by in ("number", "lastnum")
+    cS = nsym if k > 1 else 0
+    cR = (min(nsym, MAXREAD) if len(cells) > 1 else nsym) if cells else 0
+    return price(k, cells, nsym, nlab, {p: (cS, cR, min(cS, cR)) for p in P}, frozenset(P), numeric)
+
+
+@functools.lru_cache(maxsize=4096)
+def forbidden(k, cells, nsym, nlab, b, numeric=False, need=frozenset()):
+    """The price is monotone in the counts of every part and in the parts the answer reads, so the profiles priced at
+    most b are a down-set; it is cut by one clause per minimal profile above b (the minimal elements of the up-set
+    left). Returns those profiles: (the parts the answer reads, a count vector per part)."""
+    import numpy as np
+    P = parts(k, cells)
+    base = sum(math.log2(c[1]) for c in cells if c[0] == "L")
+    apats = [frozenset()] if numeric else [A for A in (frozenset(x for x, on in zip(P, bits) if on)
+                                                       for bits in itertools.product((0, 1), repeat=len(P))) if need <= A]
+    if not P:
+        return [(A, ()) for A in apats if base + answer_price(k, cells, nlab, A, numeric) > b + 1e-9]
+    vs = vectors(k, cells, nsym)
+    idx = {v: i for i, v in enumerate(vs)}
+    along = lambda i: [-1 if j == i else 1 for j in range(len(P))]
+    pp = [np.array([part_price(k, cells, p, nsym, *v) for v in vs]) for p in P]
+    tot = sum(np.reshape(pp[i], along(i)) for i in range(len(P)))
+    down = [np.array([idx.get(tuple(x - (i == d) for i, x in enumerate(v)), -1) for v in vs]) for d in range(3)]
+    bad = {A: base + answer_price(k, cells, nlab, A, numeric) + tot > b + 1e-9 for A in apats}
+    out = []
+    for A in apats:
+        m = bad[A].copy()
+        for i in range(len(P)):  # every profile one step lower (and still a profile) is allowed
+            for n in down:
+                m &= ~(np.take(bad[A], np.where(n >= 0, n, 0), axis=i) & np.reshape(n >= 0, along(i)))
+        for x in A - need:  # and so is the answer reading one part less
+            m &= ~bad[A - {x}]
+        out += [(A, tuple(vs[i] for i in ix)) for ix in zip(*np.nonzero(m))]
+    return out
+
+
+def bodies(most_k=12, numeric=False):
+    """No cell (up to most_k states); one cell (up to 6 states); two cells (up to 2 states), the first a small one read
+    by the moves, the second read by the answer; a number told as it is."""
+    Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
+    M = [("M", m) for m in range(2, 13)]
+    L = [("L", n, B) for n in range(3, 9) for B in (1, 2)]
+    first = [("Z", 1, 1)] + [("L", n, 1) for n in range(3, 9)] + [("M", m) for m in range(2, 5)]
+    second = [("Z", 1, 1), ("Z", 2, 1)] + [("M", m) for m in range(2, 8)] + [("M", 12)] + [("L", n, 1) for n in range(3, 7)]
+    out = [(k, (), True) for k in range(1, most_k + 1)]
+    out += [(k, (c,), True) for k in range(1, 7) for c in Z + M + L]
+    out += [(k, (c0, c1), True) for k in (1, 2) for c0 in first for c1 in second]
+    if numeric:
+        out += [(k, (c,), "number") for k in range(1, 7) for c in Z + L]
+        out += [(k, (c0, c1), "lastnum") for k in (1, 2) for c0 in first for c1 in second if c1[0] in "ZL"]
+    return out
+
+
+def ceiling(sh):
+    return isinstance(sh[4], tuple) and sh[4][0] == "a"
+
+
+def ceilings(nsym, nlab, most_k=12, numeric=False, flags=False):
+    """Every body at the ceilings from its cheapest machine up to its dearest (at most TOP bits), every STEP bits; and
+    the switches and the named form as in shapes(). In the order of the ceilings, the cheapest bodies first."""
+    every = []
+    for k, cs, by in bodies(most_k, numeric):
+        lo, hi = lowest(k, cs, nsym, nlab, by), highest(k, cs, nsym, nlab, by)
+        b = STEP * max(1, math.ceil(lo / STEP))
+        while b <= TOP and b < hi + STEP:
+            every.append((b, k, cs, by, ("a", b)))
+            b += STEP
+    if flags:
+        Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
+        M = [("M", m) for m in range(2, 13)]
+        L = [("L", n, B) for n in range(3, 9) for B in (1, 2)]
+        cand = [(2 ** f, ()) for f in (2, 3, 4)] + [(2 ** f, (c,)) for f in (2, 3) for c in Z + L + M if c[0] != "M" or c[1] <= 4]
+        every += [(bits_of(k, cs, nsym, nlab, by, ("f", k.bit_length() - 1)), k, cs, by, ("f", k.bit_length() - 1))
+                  for k, cs in cand for by in (True, False) if by or cs]
+    k = nlab + 1
+    every.append((nsym * k * math.log2(k), k, (), "named", False))
+    first = lambda s: lowest(s[1], s[2], nsym, nlab, s[3]) if ceiling(s) else s[0]
+    return sorted(every, key=lambda s: (s[0], first(s), s[1], s[2], str(s[3]), str(s[4])))
+
+
+def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, cascades=False, rules=False, dep=False):
+    if dep:  # the bodies at their ceilings take the place of every other shape but the switches and the named form
+        return ceilings(nsym, nlab, most_k, numeric, flags or guards == "flags")
     Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
     M = [("M", m) for m in range(2, 13)]
     L = [("L", n, B) for n in range(3, 9) for B in (1, 2)]
@@ -240,6 +429,9 @@ def name(shape):
                      else f"a circle of {c[1]}" if c[0] == "M" else f"a level of {c[1]} (steps -{c[2]}..{c[2]}, held at the ends, or set)")
     if isinstance(chain, tuple) and chain[0] == "f":
         words[0] = f"{chain[1]} switches"
+    elif isinstance(chain, tuple) and chain[0] == "a":
+        words[-1] += f", every move by the state{' or what the first number reads' if cells else ''} only where it " \
+                     f"must (at most {chain[1]:.0f} bits)"
     elif isinstance(chain, tuple) and chain[0] == "s":
         words[-1] += f", {chain[1]} of the symbols moving otherwise when a number reads at least a value"
     elif isinstance(chain, tuple) and chain[0] == "e":
@@ -257,11 +449,13 @@ def name(shape):
 class Machine:
     lex = None
     sure = None  # True: it passed the last check; False: the questions ran out before it did; None: no check
+    bits = None  # (a ceiling shape) the price of the machine itself: what its moves and its answer really depend on
 
     def __init__(self, shape, syms, labels, tau, dl, lam):
         self.shape, self.k, self.cells, self.syms, self.labels = shape, shape[1], shape[2], syms, labels
         self.by_state, self.chain = shape[3], shape[4]
-        self.guard = isinstance(self.chain, tuple) and self.chain[0] in ("g", "e")
+        self.guard = isinstance(self.chain, tuple) and self.chain[0] in ("g", "e", "a")
+        self.dep = isinstance(self.chain, tuple) and self.chain[0] == "a"  # (only the first cell is read)
         self.stump = isinstance(self.chain, tuple) and self.chain[0] == "s"
         self.test = {}  # (stump) symbol -> (cell, value): the second row when the cell reads at least the value
         self.start = self.k - 1 if self.by_state == "named" else 0
@@ -298,7 +492,8 @@ class Machine:
                 z[i] = step(c, z[i], self.dl[a, q, i, b])
             return self.tau[(a, b), q], z
         if self.guard:  # the cells are read (clipped) before the move, and the move depends on what they read
-            g = tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(self.cells, z))
+            read = self.cells[:1] if self.dep else self.cells  # (a ceiling shape reads its first cell only)
+            g = tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(read, z))
             for j, c in enumerate(self.cells):
                 z[j] = step(c, z[j], self.dl[a, q, j, g])
             return self.tau[(a, g), q], z
@@ -308,7 +503,7 @@ class Machine:
         return self.tau[a, q], z
 
     def __str__(self):
-        return name(self.shape)
+        return name(self.shape) + (f"; {self.bits:.1f} bits" if self.bits is not None else "")
 
     def table(self):
         lines = []
@@ -321,12 +516,42 @@ class Machine:
             return "\n".join(f"    {a:12s} read {g}: states " + " ".join(f"{q}>{self.tau[(a, g), q]}" for q in range(self.k)) +
                              "   numbers by state " + " ".join("(" + ",".join(str(self.dl[a, q, j, g]) for j in range(len(self.cells))) + ")"
                                                            for q in range(self.k))
-                             for a in self.syms for g in itertools.product(*[values(c) for c in self.cells]))
+                             for a in self.syms for g in (([(v,) for v in values(self.cells[0])] if self.cells else [()])
+                                                          if self.dep else itertools.product(*[values(c) for c in self.cells])))
         for a in self.syms:
             moves = " ".join(f"{q}>{self.tau[a, q]}" for q in range(self.k))
             offs = " ".join("(" + ",".join(str(self.dl[a, q, j, 0]) for j in range(len(self.cells))) + ")" for q in range(self.k))
             lines.append(f"    {a:12s} states {moves}" + (f"   numbers by state {offs}" if self.cells else ""))
         return "\n".join(lines)
+
+
+def profile(m):
+    """(A machine of a ceiling shape) its exact price: per part, how many symbols move it by the state, by what the
+    first cell reads, and by both; and the parts its answer really reads. Returns the price, the counts, the parts."""
+    k, cs, nsym, nlab = m.k, m.cells, len(m.syms), len(m.labels)
+    G = [(v,) for v in values(cs[0])] if cs else [()]
+    P = parts(k, cs)
+    counts = {}
+    for p in P:
+        cS = cR = cW = 0
+        for a in m.syms:
+            if p == "c":  # not by the state: in every read the control keeps its state, or goes to one state
+                rows = {g: tuple(m.tau[(a, g), q] for q in range(k)) for g in G}
+                byS = any(not (all(r[q] == q for q in range(k)) or len(set(r)) == 1) for r in rows.values())
+                byR = len(set(rows.values())) > 1
+            else:
+                rows = {(q, g): m.dl[a, q, p, g] for q in range(k) for g in G}
+                byS = any(len({rows[q, g] for q in range(k)}) > 1 for g in G)
+                byR = any(len({rows[q, g] for g in G}) > 1 for q in range(k))
+            cS, cR, cW = cS + byS, cR + byR, cW + (byS and byR)
+        counts[p] = (cS, cR, cW)
+    numeric = m.by_state in ("number", "lastnum")
+    A = set()
+    for p in ([] if numeric else P):
+        i, first = (0, 0) if p == "c" else (1 + p, values(cs[p])[0])
+        if any(m.lam[r] != m.lam[r[:i] + (first,) + r[i + 1:]] for r in m.lam):
+            A.add(p)
+    return price(k, cs, nsym, nlab, counts, A, numeric), counts, A
 
 
 # ---------------------------------------------------------------- the solver: plain SAT (Heule and Verwer 2010)
@@ -342,14 +567,16 @@ class Encoding:
             self.raw, self.syms = list(syms), [f"<{i}>" for i in range(lexicon)]
             syms = self.syms
         _, self.k, self.cells, self.by_state, self.chain = shape
-        self.guard = isinstance(self.chain, tuple) and self.chain[0] in ("g", "e")
+        self.dep = isinstance(self.chain, tuple) and self.chain[0] == "a"  # (a ceiling: see dependencies)
+        self.guard = isinstance(self.chain, tuple) and self.chain[0] in ("g", "e", "a")
         self.stump = isinstance(self.chain, tuple) and self.chain[0] == "s"
         self.tests = [(j, v) for j, c in enumerate(self.cells) for v in list(values(c))[1:]] if self.stump else []
         self.ids, self.clauses = IDPool(), []
         self.nc = len(self.cells) - 1 if self.by_state == "lastnum" else 0  # (the cell whose number is the answer)
         self.reads = [] if self.by_state in ("number", "lastnum") else \
             list(itertools.product(range(self.k) if self.by_state else [0], *[values(c) for c in self.cells]))
-        self.gvals = list(itertools.product(*[values(c) for c in self.cells])) if self.guard else []
+        self.gvals = ([(v,) for v in values(self.cells[0])] if self.cells else [()]) if self.dep else \
+            list(itertools.product(*[values(c) for c in self.cells])) if self.guard else []
         k = self.k
         if self.raw is not None:
             m = len(self.syms)
@@ -395,6 +622,8 @@ class Encoding:
             if self.chain[1] < len(exs):
                 self.clauses += CardEnc.atmost(lits=exs, bound=self.chain[1], vpool=self.ids,
                                                encoding=EncType.seqcounter).clauses
+        elif self.dep:
+            self.dependencies()
         elif self.guard or self.stump:  # a symbol that does not read the cell moves alike whatever it reads; at most G do
             g0, gs = (self.gvals[0], self.gvals[1:]) if self.guard else (0, [1])
             for a in syms:
@@ -437,7 +666,7 @@ class Encoding:
                 self.clauses.append([self.v("z", 0, j, 0)])
             elif c[0] == "L":  # where a level begins is found with the machine
                 self.exactly([self.v("z", 0, j, val) for val in range(c[1])])
-        if self.stump:
+        if self.stump or self.dep:
             self.onevalue(0)
 
     def v(self, *key):
@@ -505,6 +734,8 @@ class Encoding:
                         C.append([-v("p", j, i), -v("p", j + 1, i), -v("mm", a, i, j), -v("mm", b, i, j + 1)])
         a0 = self.syms[0]
         w0 = tuple(0 for _ in self.cells) if self.guard else 0  # (a key that turning a number over or round keeps)
+        if self.dep:
+            w0 = (0,) if self.cells else ()  # (a ceiling shape reads its first cell only)
         for j, c in enumerate(self.cells if not self.stump else []):  # (a test 'at least v' is not kept by turning)
             if c[0] == "Z" and not (j == self.nc and self.by_state in ("number", "lastnum")):  # (the number told is not turned over)
                 for o in range(-c[1], 0):
@@ -551,12 +782,102 @@ class Encoding:
         return out
 
     def onevalue(self, n):
-        """(stump) At most one value of every level or circle at node n: a test reads it both ways."""
+        """(stump, ceiling) At most one value of every level or circle at node n: a test reads it both ways."""
         for j, c in enumerate(self.cells):
             if c[0] in "ML":
                 for u in range(c[1]):
                     for w in range(u + 1, c[1]):
                         self.clauses.append([-self.v("z", n, j, u), -self.v("z", n, j, w)])
+
+    @staticmethod
+    def selfread(c, g, u, up):
+        """(ceiling) The whole number read is the first cell, read g before the move; its clause from 'at least u'
+        (up) or from 'below u' (not up) is needed only where the read leaves u open. A read inside -C..C is the value
+        itself (only u = g, or u = g + 1, are needed); C is any value from C up, -C any value from -C down. The chain of
+        the order encoding at the next node implies the rest."""
+        if -c[2] < g < c[2]:
+            return u == (g if up else g + 1)
+        if g == c[2]:
+            return u >= (c[2] if up else c[2] + 1)
+        return u <= (-c[2] if up else -c[2] + 1)
+
+    def dependencies(self):
+        """(ceiling) Per symbol a and part p: dS, its move of p depends on the state; dR, on what the first cell reads;
+        dW, on both. Without dS the rows of p are alike in every state (the control keeps its state or goes to one
+        state); without dR they are alike for every read. Per part dA: the answer reads it. Per (part, kind) a unary
+        counter of the indicators (the sequential counter, Sinz 2005), and the price of the counts kept at most the
+        ceiling by one clause per minimal profile above it (forbidden)."""
+        k, cs, syms, V, C = self.k, self.cells, self.syms, self.v, self.clauses
+        nsym, nlab, b = len(syms), len(self.labels), self.chain[1]
+        P, G = parts(k, cs), self.gvals
+        g0 = G[0]
+        ind = {}
+        for a in syms:
+            for p in P:
+                S = V("dS", a, p) if k > 1 else None
+                R = V("dR", a, p) if cs else None
+                W = V("dW", a, p) if k > 1 and cs else None
+                if W is not None:
+                    C.extend([[-W, S], [-W, R], [-S, -R, W]])
+                ind[a, p] = (S, R, W)
+                for g in G:
+                    if p == "c":
+                        K = V("keep", a, g)
+                        for q in range(k):
+                            C.append([S, -K, V("t", (a, g), q, q)])
+                            for r in range(k):
+                                if q:
+                                    C.append([S, K, -V("t", (a, g), q, r), V("t", (a, g), 0, r)])
+                                if R is not None and g != g0:
+                                    C.append([R, -V("t", (a, g), q, r), V("t", (a, g0), q, r)])
+                        continue
+                    for q in range(k):
+                        for o in self.offsets(cs[p]):
+                            if S is not None and q:
+                                C.append([S, -V("o", p, a, q, g, o), V("o", p, a, 0, g, o)])
+                            if R is not None and g != g0:
+                                C.append([R, -V("o", p, a, q, g, o), V("o", p, a, q, g0, o)])
+        numeric = self.by_state in ("number", "lastnum")
+        A = {p: V("dA", p) for p in P}
+        if numeric:  # a number told as it is reads its own cell and nothing else
+            C.extend([[A[p]] if p == self.nc else [-A[p]] for p in P])
+        for r in self.reads:  # without dA[p] the answer is alike for every value of p
+            for p in P:
+                i, first = (0, 0) if p == "c" else (1 + p, values(cs[p])[0])
+                if r[i] != first:
+                    r0 = r[:i] + (first,) + r[i + 1:]
+                    for y in range(nlab):
+                        C.append([A[p], -V("l", r, y), V("l", r0, y)])
+        # every part matters (else the machine is one of a smaller body): the control is read by the answer or moves
+        # a cell; the first cell is read by the answer or by a move of another part; a second cell is read by the answer
+        if k > 1:
+            C.append([A["c"]] + [ind[a, j][0] for a in syms for j in range(len(cs))])
+        if cs:
+            C.append([A[0]] + [ind[a, p][1] for a in syms for p in P if p != 0])
+        if len(cs) == 2:
+            C.append([A[1]])
+        cnt = {}
+        for p in P:
+            for kind in range(3):
+                lits = [ind[a, p][kind] for a in syms if ind[a, p][kind] is not None]
+                prev = {}
+                for i, x in enumerate(lits):  # cur[j]: at least j of the first i + 1 indicators hold
+                    cur = {j: V("cnt", p, kind, i, j) for j in range(1, i + 2)}
+                    for j, u in cur.items():
+                        if j in prev:
+                            C.append([-prev[j], u])
+                        C.append([-x, u] if j == 1 else [-x, -prev[j - 1], u])
+                    prev = cur
+                cnt[p, kind] = prev
+                if kind == 1 and len(cs) > 1 and MAXREAD + 1 in prev:
+                    C.append([-prev[MAXREAD + 1]])
+        need = frozenset([1]) if len(cs) > 1 and not numeric else frozenset()  # (a second cell is always read)
+        for Aset, vec in forbidden(k, cs, nsym, nlab, b, numeric, need):
+            cl = [-A[p] for p in Aset] + [-cnt[p, kind][v[kind]] for p, v in zip(P, vec) for kind in range(3) if v[kind]]
+            if not cl:  # (the ceiling is below every machine of the body)
+                cl = [V("over")]
+                C.append([-V("over")])
+            C.append(cl)
 
     def notat(self, n, g):
         """Literals (some may be True / False) one of which holds unless the cells at node n read g."""
@@ -610,7 +931,7 @@ class Encoding:
         n0 = self.at(seq[:-1])
         a, n, dep = seq[-1], len(self.node), self.depth[seq[:-1]]
         self.node[seq], self.depth[seq], self.ndepth[n] = n, dep + 1, dep + 1
-        if self.stump:
+        if self.stump or self.dep:
             self.onevalue(n)
         neg = lambda l: (not l) if isinstance(l, bool) else -l
         if isinstance(a, tuple) and a[:1] == ("?",):  # a symbol of a story the solver writes itself
@@ -638,15 +959,20 @@ class Encoding:
                   for a, guard in read:
                     key = (self.notat(n0, w) if self.guard else ([-self.outcome(n0, a)] if w else [self.outcome(n0, a)])
                            if self.stump else [-self.v("z", n0, 0, w)] if self.chain is True and j else []) + guard
+                    own = self.dep and j == 0  # (the read cell's own move: only what its read leaves open)
                     for o in self.offsets(c):
                         off = self.v("o", j, a, q, w, o)
                         if c[0] == "Z":
                             D = c[1] * (dep + 1)
                             for b in range(-D + 1, D + 1):
-                                self.add([-x, -off, neg(self.ge(n0, j, b - o)), self.ge(n, j, b)] + key)
-                                self.add([-x, -off, self.ge(n0, j, b - o), neg(self.ge(n, j, b))] + key)
+                                if not own or self.selfread(c, w[0], b - o, True):
+                                    self.add([-x, -off, neg(self.ge(n0, j, b - o)), self.ge(n, j, b)] + key)
+                                if not own or self.selfread(c, w[0], b - o, False):
+                                    self.add([-x, -off, self.ge(n0, j, b - o), neg(self.ge(n, j, b))] + key)
                         else:
                             for val in range(c[1]):
+                                if own and w != (val,):  # (at most one value at a node: the read is the value)
+                                    continue
                                 self.add([-x, -off, -self.v("z", n0, j, val), self.v("z", n, j, step(c, val, o))] + key)
         for j, c in enumerate(self.cells):
             if c[0] == "Z":
@@ -766,6 +1092,9 @@ class Encoding:
             m.lex = {r: self.syms[next(i for i in range(len(self.syms)) if on("w", r, i))] for r in self.raw}
         if self.stump:
             m.test = {a: self.tests[next(i for i in range(len(self.tests)) if on("tc", a, i))] for a in self.syms}
+        if self.dep:  # priced by what its tables really depend on: never above the ceiling
+            m.bits = profile(m)[0]
+            assert m.bits <= self.chain[1] + 1e-6, (self.shape, m.bits)
         return m, "sat"
 
 
@@ -929,13 +1258,17 @@ def side(f, jobs, workers):
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
-          committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False):
+          committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
-    (the counterexample of an equivalence query, Angluin 1987)"""
+    (the counterexample of an equivalence query, Angluin 1987).
+    dep: the bodies at their ceilings (see ceilings) in place of the other shapes; the kept machine is priced by itself,
+    and the second machine is looked for in every body whose cheapest machine is at most slack bits above it."""
     labels = sorted({y for _, y in data})
     committee = committee if build else 0  # (a committee needs the machines a story is written against)
     asked, dead, fixed, tries = 0, set(), pool, {}
+    under = {}  # (dep) body -> the highest ceiling proved empty: every lower ceiling of the body is empty too
+    gone = lambda sh: sh[1:] in dead or (ceiling(sh) and sh[0] <= under.get(sh[1:4], -1))
     log = (lambda *a: None) if quiet else (lambda *a: print(*a, flush=True))
     machine = shape = last = None
     late_ = lambda: deadline is not None and time.time() > deadline  # (past the time given: the last machine is told)
@@ -944,16 +1277,17 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         if new != labels:  # a shape proved impossible stays so: a machine with more answers that explains more
             if not labels:  # stories gives, with each new answer sent to an old one, one that explains these (with no
                 dead, tries = set(), {}  # old answer, nothing was proved)
+                under.clear()
             labels, machine = new, None
-        numeric = guards and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (all numbers, as written)
-        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades, rules)
+        numeric = (guards or dep) and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (as written)
+        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades, rules, dep)
         if machine is not None and all(machine.run(s) == y for s, y in data):
             pass  # the kept machine answered what was asked rightly: it stays
         else:
             machine = shape = None
             t0 = time.time()
             for cap in (2, 5):  # a shape the solver gave up on comes back with twice the work; if nothing at all is
-                live = [sh for sh in every if sh[1:] not in dead and tries.get(sh[1:], 0) <= cap]   # found, up to 32 times
+                live = [sh for sh in every if not gone(sh) and tries.get(sh[1:], 0) <= cap]   # found, up to 32 times
                 for i in range(0, len(live), workers):  # the shapes in order of their length, several at once
                     if late_():
                         break
@@ -965,11 +1299,14 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                             break
                         if how == "unsat":  # only a proved 'no' is final
                             dead.add(sh[1:])
+                            if ceiling(sh):
+                                under[sh[1:4]] = max(sh[0], under.get(sh[1:4], -1))
                         else:
                             tries[sh[1:]] = tries.get(sh[1:], 0) + 1
                             log(f"  {name(sh)}: the solver gave up after {int(seconds * 2 ** (tries[sh[1:]] - 1) * CONFLICTS)} conflicts")
                     if machine:
-                        log(f"  kept {machine} ({shape[0]:.0f} bits, {time.time() - t0:.1f} s); {len(data)} stories, {asked} asked")
+                        log(f"  kept {machine} ({(shape[0] if machine.bits is None else machine.bits):.0f} bits, "
+                            f"{time.time() - t0:.1f} s); {len(data)} stories, {asked} asked")
                         break
                 if machine or late_():
                     break
@@ -992,7 +1329,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             ask_from = rng.sample(fixed, min(150, len(fixed)))
         ask_from = [w for w in ask_from if w not in seen]
         t0, w, doubt = time.time(), None, False
-        near = [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
+        near = window(every, shape, machine, slack, gone, len(syms), len(labels)) if dep else \
+            [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
         owed = len([w for w in unseen(machine, syms, data) if w not in seen]) if plan and explore else 0
         late = bool(reserve) and asks - asked <= reserve + owed  # the last questions are kept for the check (and, with
         if late:                                                 # plan, for the reads no story taught on ends at, asked
@@ -1093,7 +1431,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 # kept for the check): it is looked for now, on them and the check, and nothing more is asked; if there
                 # is one, or the solver cannot tell, the machine kept is not sure
                 more = data + told
-                near = [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
+                near = window(every, shape, machine, slack, gone, len(syms), len(labels)) if dep else \
+                    [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
                 for i in range(0, len(near), workers):
                     if late_():
                         doubt = True
@@ -1132,6 +1471,19 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             have = {x for x, _ in data}  # wrongly, and every beginning asked while halving it
             more = [(x, y) for x, y in told if x not in have] + [(x, y) for x, y in known.items() if x not in have]
             data = data + list(dict(more).items())
+
+
+def window(every, shape, machine, slack, gone, nsym, nlab):
+    """(dep) Where a second machine is looked for: every live body whose cheapest machine is at most slack bits above
+    the kept machine's own price, at that ceiling (a ceiling holds every cheaper machine of its body), and the other
+    shapes as without dep; the cheapest first."""
+    top = (shape[0] if machine.bits is None else machine.bits) + slack
+    out = [sh for sh in every if not ceiling(sh) and top - slack <= sh[0] <= top and not gone(sh)]
+    for k, cs, by in dict.fromkeys(sh[1:4] for sh in every if ceiling(sh)):
+        sh = (top, k, cs, by, ("a", top))
+        if lowest(k, cs, nsym, nlab, by) <= top and not gone(sh):
+            out.append(sh)
+    return sorted(out, key=lambda s: (lowest(s[1], s[2], nsym, nlab, s[3]) if ceiling(s) else s[0], s[1], s[2], str(s[3])))
 
 
 def unseen(machine, syms, data, most=12, depth=12):
