@@ -913,7 +913,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     while True:
         new = sorted(set(labels) | {y for _, y in data})
         if new != labels:  # a shape proved impossible stays so: a machine with more answers that explains more
-            labels, machine = new, None  # stories gives, with each new answer sent to an old one, one that explains these
+            if not labels:  # stories gives, with each new answer sent to an old one, one that explains these (with no
+                dead, tries = set(), {}  # old answer, nothing was proved)
+            labels, machine = new, None
         numeric = guards and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (all numbers, as written)
         every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades)
         if machine is not None and all(machine.run(s) == y for s, y in data):
