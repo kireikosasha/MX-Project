@@ -929,7 +929,7 @@ def side(f, jobs, workers):
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
-          committee=0, flags=False, cascades=False, rules=False, deadline=None):
+          committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987)"""
@@ -1128,6 +1128,10 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                     lo = mid
             data = data + [(w[:hi], known[w[:hi]])]
             log(f"  of a story of {len(w)} the machine goes wrong at its first {hi}")
+        if keep:  # no answer paid for is thrown away: the check stories answered rightly, the long story answered
+            have = {x for x, _ in data}  # wrongly, and every beginning asked while halving it
+            more = [(x, y) for x, y in told if x not in have] + [(x, y) for x, y in known.items() if x not in have]
+            data = data + list(dict(more).items())
 
 
 def unseen(machine, syms, data, most=12, depth=12):

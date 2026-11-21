@@ -29,7 +29,7 @@ def one(path, out, a):
         data.append((w, oracle(w)))
     t0 = time.time()
     m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers,
-                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules,
+                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep,
                            deadline=time.time() + a.minutes * 60 - 180 if a.deadline else None)
     res = {"found": None if m is None else str(m), "asked": asked, "seconds": round(time.time() - t0),
            "sure": None if m is None else m.sure}
@@ -53,6 +53,7 @@ def main():
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--slack", type=float, default=8, help="a second machine is looked for among the shapes at most so many bits longer")
+    ap.add_argument("--keep", action="store_true", help="no answer paid for is thrown away (the check stories, the halving's beginnings)")
     ap.add_argument("--rules", action="store_true", help="moves that read the numbers priced by the rule: a move by default and a few exceptions")
     ap.add_argument("--deadline", action="store_true", help="three minutes before the limit the learner stops and tells its last machine, not sure")
     ap.add_argument("--cascades", action="store_true", help="a level or circle driving a second one by its value, the answer read from the second")
