@@ -151,6 +151,11 @@ def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
         tests = sum(len(values(c)) - 1 for c in cells)
         b = nsym * k * one + G * (k * one + math.log2(tests)) + math.log2(math.comb(nsym, G)) + \
             sum(math.log2(c[1]) for c in cells if c[0] == "L")
+    elif isinstance(chain, tuple) and chain[0] == "e":  # a move by default for every (symbol, state), and E exceptions:
+        E, R = chain[1], math.prod(len(values(c)) for c in cells)  # a (symbol, state, read) and the move it makes there
+        one = (math.log2(k) if k > 1 else 0.0) + sum(each(c) for c in cells)
+        b = nsym * k * one + math.log2(math.comb(nsym * k * R, E)) + E * one + \
+            sum(math.log2(c[1]) for c in cells if c[0] == "L")
     elif isinstance(chain, tuple):  # guarded: G symbols move by the read of the first cell, the others as without it
         G, R = chain[1], math.prod(len(values(c)) for c in cells)
         one = (math.log2(k) if k > 1 else 0.0) + sum(each(c) for c in cells)
@@ -170,7 +175,7 @@ def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
     return b + reads * math.log2(max(nlab, 2))
 
 
-def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, cascades=False):
+def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, cascades=False, rules=False):
     Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
     M = [("M", m) for m in range(2, 13)]
     L = [("L", n, B) for n in range(3, 9) for B in (1, 2)]
@@ -194,8 +199,12 @@ def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, casc
         G2 = [(c0, c1) for c0 in G1 for c1 in G1 + [z for z in Z if z[1] == 2]]
         cand = [(k, (c,)) for k in range(1, 7) for c in G1 + [z for z in Z if z[1] == 2]] + \
                [(k, cs) for k in range(1, 4) for cs in G2]
-        every += [(bits_of(k, cs, nsym, nlab, by, ("g", G)), k, cs, by, ("g", G)) for k, cs in cand
-                  for G in range(1, nsym + 1) for by in (True, False) if by or k > 1]
+        if rules:  # (priced by the rule, not the table: a move by default, and the few places it is otherwise)
+            every += [(bits_of(k, cs, nsym, nlab, by, ("e", E)), k, cs, by, ("e", E)) for k, cs in cand
+                      for E in range(1, 9) for by in (True, False) if by or k > 1]
+        else:
+            every += [(bits_of(k, cs, nsym, nlab, by, ("g", G)), k, cs, by, ("g", G)) for k, cs in cand
+                      for G in range(1, nsym + 1) for by in (True, False) if by or k > 1]
         if guards == "tests":  # (and a test of one cell, the cheaper form of the same)
             every += [(bits_of(k, cs, nsym, nlab, by, ("s", G)), k, cs, by, ("s", G)) for k, cs in cand
                       for G in range(1, nsym + 1) for by in (True, False) if by or k > 1]
@@ -233,6 +242,8 @@ def name(shape):
         words[0] = f"{chain[1]} switches"
     elif isinstance(chain, tuple) and chain[0] == "s":
         words[-1] += f", {chain[1]} of the symbols moving otherwise when a number reads at least a value"
+    elif isinstance(chain, tuple) and chain[0] == "e":
+        words[-1] += f", moving alike whatever the numbers read but in {chain[1]} places"
     elif isinstance(chain, tuple):
         words[-1] += f", {chain[1]} of the symbols moving by what the first number reads"
     return " + ".join(words) + (", the second moved by the value of the first" if chain is True else "") + \
@@ -250,7 +261,7 @@ class Machine:
     def __init__(self, shape, syms, labels, tau, dl, lam):
         self.shape, self.k, self.cells, self.syms, self.labels = shape, shape[1], shape[2], syms, labels
         self.by_state, self.chain = shape[3], shape[4]
-        self.guard = isinstance(self.chain, tuple) and self.chain[0] == "g"
+        self.guard = isinstance(self.chain, tuple) and self.chain[0] in ("g", "e")
         self.stump = isinstance(self.chain, tuple) and self.chain[0] == "s"
         self.test = {}  # (stump) symbol -> (cell, value): the second row when the cell reads at least the value
         self.start = self.k - 1 if self.by_state == "named" else 0
@@ -331,7 +342,7 @@ class Encoding:
             self.raw, self.syms = list(syms), [f"<{i}>" for i in range(lexicon)]
             syms = self.syms
         _, self.k, self.cells, self.by_state, self.chain = shape
-        self.guard = isinstance(self.chain, tuple) and self.chain[0] == "g"
+        self.guard = isinstance(self.chain, tuple) and self.chain[0] in ("g", "e")
         self.stump = isinstance(self.chain, tuple) and self.chain[0] == "s"
         self.tests = [(j, v) for j, c in enumerate(self.cells) for v in list(values(c))[1:]] if self.stump else []
         self.ids, self.clauses = IDPool(), []
@@ -367,7 +378,24 @@ class Encoding:
         if self.stump:  # every symbol picks one test; a symbol whose second row is not used moves alike either way
             for a in syms:
                 self.exactly([self.v("tc", a, i) for i in range(len(self.tests))])
-        if self.guard or self.stump:  # a symbol that does not read the cell moves alike whatever it reads; at most G do
+        if self.guard and self.chain[0] == "e":  # a move by default for every (symbol, state); at most E (symbol, state,
+            for a in syms:                        # read) move otherwise (the frame by default: Reiter 1980)
+                for q in range(k):
+                    self.exactly([self.v("dt", a, q, r) for r in range(k)])
+                    for j, c in enumerate(self.cells):
+                        self.exactly([self.v("do", a, q, j, o) for o in self.offsets(c)])
+                    for g in self.gvals:
+                        x = self.v("ex", a, q, g)
+                        for r in range(k):
+                            self.clauses.append([x, -self.v("t", (a, g), q, r), self.v("dt", a, q, r)])
+                        for j, c in enumerate(self.cells):
+                            for o in self.offsets(c):
+                                self.clauses.append([x, -self.v("o", j, a, q, g, o), self.v("do", a, q, j, o)])
+            exs = [self.v("ex", a, q, g) for a in syms for q in range(k) for g in self.gvals]
+            if self.chain[1] < len(exs):
+                self.clauses += CardEnc.atmost(lits=exs, bound=self.chain[1], vpool=self.ids,
+                                               encoding=EncType.seqcounter).clauses
+        elif self.guard or self.stump:  # a symbol that does not read the cell moves alike whatever it reads; at most G do
             g0, gs = (self.gvals[0], self.gvals[1:]) if self.guard else (0, [1])
             for a in syms:
                 gd = self.v("gd", a)
@@ -901,7 +929,7 @@ def side(f, jobs, workers):
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
-          committee=0, flags=False, cascades=False):
+          committee=0, flags=False, cascades=False, rules=False, deadline=None):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987)"""
@@ -909,7 +937,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     committee = committee if build else 0  # (a committee needs the machines a story is written against)
     asked, dead, fixed, tries = 0, set(), pool, {}
     log = (lambda *a: None) if quiet else (lambda *a: print(*a, flush=True))
-    machine = shape = None
+    machine = shape = last = None
+    late_ = lambda: deadline is not None and time.time() > deadline  # (past the time given: the last machine is told)
     while True:
         new = sorted(set(labels) | {y for _, y in data})
         if new != labels:  # a shape proved impossible stays so: a machine with more answers that explains more
@@ -917,7 +946,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 dead, tries = set(), {}  # old answer, nothing was proved)
             labels, machine = new, None
         numeric = guards and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (all numbers, as written)
-        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades)
+        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades, rules)
         if machine is not None and all(machine.run(s) == y for s, y in data):
             pass  # the kept machine answered what was asked rightly: it stays
         else:
@@ -926,6 +955,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             for cap in (2, 5):  # a shape the solver gave up on comes back with twice the work; if nothing at all is
                 live = [sh for sh in every if sh[1:] not in dead and tries.get(sh[1:], 0) <= cap]   # found, up to 32 times
                 for i in range(0, len(live), workers):  # the shapes in order of their length, several at once
+                    if late_():
+                        break
                     part = live[i:i + workers]
                     got = side(fit, [(sh, syms, labels, data, seconds * 2 ** tries.get(sh[1:], 0)) for sh in part], workers)
                     for sh, (m, how) in zip(part, got):
@@ -940,10 +971,13 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                     if machine:
                         log(f"  kept {machine} ({shape[0]:.0f} bits, {time.time() - t0:.1f} s); {len(data)} stories, {asked} asked")
                         break
-                if machine:
+                if machine or late_():
                     break
-        if machine is None:
-            return None, asked
+        if machine is None:  # nothing explains every story (or the time is up): the last machine kept, if any, not sure
+            if last is not None:
+                last.sure = False
+            return last, asked
+        last = machine
         if asked >= asks:  # the questions are spent and the last check was not passed: not sure
             machine.sure = False
             return machine, asked
@@ -966,6 +1000,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         unsettled, crowd = [], []
         for more in (1, 4):  # a shape on which the solver could not tell is searched again with four times the work
             for i in range(0, len(near), workers):
+                if late_():
+                    doubt = True
+                    break
                 got = side(rival, [(sh, syms, labels, data, machine, ask_from, seconds * more, build, bool(committee))
                                    for sh in near[i:i + workers]], workers)
                 hit = [(sh, x) for sh, x in zip(near[i:i + workers], got) if isinstance(x, (list, tuple))]
@@ -1058,6 +1095,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 more = data + told
                 near = [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
                 for i in range(0, len(near), workers):
+                    if late_():
+                        doubt = True
+                        break
                     got = side(rival, [(sh, syms, labels, more, machine, ask_from, seconds, build, False)
                                        for sh in near[i:i + workers]], workers)
                     if any(isinstance(x, (list, tuple)) or x == "unknown" for x in got):
