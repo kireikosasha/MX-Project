@@ -961,8 +961,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         near = [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
         owed = len([w for w in unseen(machine, syms, data) if w not in seen]) if plan and explore else 0
         late = bool(reserve) and asks - asked <= reserve + owed  # the last questions are kept for the check (and, with
-        # plan, for the reads no story taught on ends at, asked before it): a second machine is still looked for, but
-        # not asked about; if there is one, the machine kept is not sure, whatever the check says
+        if late:                                                 # plan, for the reads no story taught on ends at, asked
+            near = []                                            # before it); the second machine is looked for after it
         unsettled, crowd = [], []
         for more in (1, 4):  # a shape on which the solver could not tell is searched again with four times the work
             for i in range(0, len(near), workers):
@@ -1004,11 +1004,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         if w is None and unsettled:
             log(f"  of {len(unsettled)} shapes the solver could not tell whether a second machine is there")
             doubt = DOUBT
-        if w is not None and late:
-            log(f"  {name(sh)} answers otherwise, but the questions left are kept for the check: not sure")
-            doubt, w = True, None
-        elif w is not None:
-            doubt = False
+        if w is not None:
             told = [(x, oracle(list(x))) for x in w[:1 if frugal else max(1, asks - asked)]]
             asked += len(told)
             wrong = sum(machine.run(x) != y for x, y in told)
@@ -1056,6 +1052,17 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         asked += len(told)
         wrong = [(w, y) for w, y in told if machine.run(w) != y]
         if not wrong:
+            if late and len(told) >= full:  # the second machine was not looked for on these stories (the questions were
+                # kept for the check): it is looked for now, on them and the check, and nothing more is asked; if there
+                # is one, or the solver cannot tell, the machine kept is not sure
+                more = data + told
+                near = [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
+                for i in range(0, len(near), workers):
+                    got = side(rival, [(sh, syms, labels, more, machine, ask_from, seconds, build, False)
+                                       for sh in near[i:i + workers]], workers)
+                    if any(isinstance(x, (list, tuple)) or x == "unknown" for x in got):
+                        doubt = True
+                        break
             log(f"  {'a second machine is not ruled out' if doubt else f'no other machine within {slack} bits'}; "
                 f"{len(told)} longer stories asked, all answered rightly ({time.time() - t0:.1f} s)")
             machine.sure = len(told) >= full and not doubt  # a check cut short by the limit of questions is not passed
