@@ -31,20 +31,23 @@ public class MathML {
     }
 
     public int[] smoothIdentity(List<? extends Number> rotations) {
-        double oldYawResult = (double) rotations.get(0);
-        double yawChangeFirst = Math.abs((double) rotations.get(0) - (double) rotations.get(1));
+        if (rotations == null || rotations.size() < 2) {
+            return new int[]{0, 0, 0, 0};
+        }
+        double oldYawResult = rotations.get(0).doubleValue();
+        double yawChangeFirst = Math.abs(rotations.get(0).doubleValue() - rotations.get(1).doubleValue());
         int machineKnownMovement = 0,
                         constantRotations = 0,
                         robotizedAmount = 0, aggressiveAim = 0;
         for (Number rotation : rotations) {
-            double yawChange = Math.abs((double)rotation - oldYawResult);
+            double yawChange = Math.abs(rotation.doubleValue() - oldYawResult);
             double robotized = Math.abs(yawChange - yawChangeFirst);
 
             if (robotized < 2 && yawChange > 2.5) robotizedAmount += 1;
             if (robotized < 0.99 && yawChange > 4) machineKnownMovement++;
             if (robotized < 0.02 && yawChange > 3) constantRotations++;
             if (robotized < 2 && yawChange > 3) aggressiveAim++;
-            oldYawResult = (double) rotation;
+            oldYawResult = rotation.doubleValue();
         }
         return new int[]{robotizedAmount, machineKnownMovement, constantRotations, aggressiveAim};
     }

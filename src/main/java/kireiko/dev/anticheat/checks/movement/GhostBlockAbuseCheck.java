@@ -5,13 +5,14 @@ import kireiko.dev.anticheat.api.PacketCheckHandler;
 import kireiko.dev.anticheat.api.data.ConfigLabel;
 import kireiko.dev.anticheat.api.events.MoveEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
-import kireiko.dev.anticheat.core.AsyncScheduler;
+import kireiko.dev.anticheat.core.MainThread;
 import kireiko.dev.anticheat.managers.CheckManager;
+import kireiko.dev.anticheat.utils.BlockSnapshot;
 import kireiko.dev.anticheat.utils.ConfigCache;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.World;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -47,79 +48,75 @@ public class GhostBlockAbuseCheck implements PacketCheckHandler {
 
     @Override
     public void event(Object o) {
-        if (o instanceof MoveEvent) {
-            if (!ConfigCache.PREVENT_GHOST_BLOCK_ABUSE || profile.isIgnoreFirstTick()) return;
-            MoveEvent event = (MoveEvent) o;
-            final Location to = event.getTo();
-            final Location from = event.getFrom();
-            final int buffer = ((Number) localCfg.get("buffer")).intValue();
-            AsyncScheduler.run(() -> {
-                final boolean onGround = event.getProfile().isGround();
-                if (onGround) {
-                    final boolean flag = !(isOnSolidGround(to) || isOnSolidGround(from));
-                    if (flag) {
-                        this.flags++;
-                        profile.debug("&7GhostBlock flags: " + this.flags + "/" + buffer);
-                        if (this.flags < buffer) {
-                            final Location l = to.clone();
-                            l.setWorld(profile.getPlayer().getWorld());
-                            this.buffLoc = l;
-                        } else {
-                            if (this.buffLoc.getWorld().equals(profile.getPlayer().getWorld())
-                            ) {
-                                if (this.buffLoc.getY() <= to.getY() + 1.0) {
-                                    Bukkit.getScheduler().runTask(MX.getInstance(), () -> {
-                                        this.profile.getPlayer().teleport(buffLoc);
-                                    });
-                                }
-                                this.flags = 1;
-                            } else {
-                                this.profile.debug("&7GhostBlock setback invalid world: "
-                                                + this.buffLoc.getWorld().getName()
-                                                + " " + profile.getPlayer().getWorld().getName());
-                                this.flags = 0;
-                            }
-                        }
-                    } else this.flags = 0;
+        if (!(o instanceof MoveEvent)) return;
+        if (!ConfigCache.PREVENT_GHOST_BLOCK_ABUSE || profile.isIgnoreFirstTick()) return;
+        final MoveEvent event = (MoveEvent) o;
+        final Location to = event.getTo().clone();
+        final Location from = event.getFrom().clone();
+        final boolean onGround = event.getProfile().isGround();
+        final int buffer = Math.max(2, ((Number) localCfg.get("buffer")).intValue());
+        MainThread.run(() -> {
+            if (!onGround || !profile.getPlayer().isOnline()) return;
+            final boolean flag = !(isOnSolidGround(to) || isOnSolidGround(from));
+            if (flag) {
+                this.flags++;
+                profile.debug("&7GhostBlock flags: " + this.flags + "/" + buffer);
+                if (this.buffLoc == null) {
+                    this.buffLoc = from.clone();
+                    this.buffLoc.setWorld(profile.getPlayer().getWorld());
                 }
-            });
-        }
-    }
-    private boolean isOnSolidGround(final Location location) {
-        double x = location.getX(),
-                        y = location.getY() - 0.1,
-                        z = location.getZ();
-
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                for (int dz = -1; dz <= 1; dz++) {
-                    Block block = getBlockAsync(
-                                    new Location(
-                                                    this.profile.getPlayer().getWorld(),
-                                                    x + (dx * 0.3),
-                                                    y + (dy * 0.5),
-                                                    z + (dz * 0.3)
-                                    )
-                    );
-                    if (block == null) return true;
-                    Material material = block.getType();
-                    if (!material.toString().contains("AIR") || material.isSolid()
-                                    || ignore(material.toString().toLowerCase())) {
-                        return true;
+                if (this.flags < buffer) {
+                    final Location l = to.clone();
+                    l.setWorld(profile.getPlayer().getWorld());
+                    this.buffLoc = l;
+                } else {
+                    if (this.buffLoc.getWorld().equals(profile.getPlayer().getWorld())
+                    ) {
+                        if (this.buffLoc.getY() <= to.getY() + 1.0) {
+                            final Location setback = this.buffLoc.clone();
+                            Bukkit.getScheduler().runTask(MX.getInstance(), () -> {
+                                this.profile.getPlayer().teleport(setback);
+                            });
+                        }
+                        this.flags = 1;
+                    } else {
+                        this.profile.debug("&7GhostBlock setback invalid world: "
+                                        + this.buffLoc.getWorld().getName()
+                                        + " " + profile.getPlayer().getWorld().getName());
+                        this.flags = 0;
+                        this.buffLoc = null;
                     }
                 }
-            }
-        }
-        return false;
+            } else this.flags = 0;
+        });
     }
 
-    public Block getBlockAsync(final Location location) {
-        if (location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4)) {
-            return location.getWorld().getBlockAt(location);
-        } else {
-            return null;
-        }
+    private boolean isOnSolidGround(final Location location) {
+        final World world = location.getWorld();
+        if (world == null) return true;
+        final Material center = world.getBlockAt(
+                location.getBlockX(),
+                (int) Math.floor(location.getY() - 0.1),
+                location.getBlockZ()
+        ).getType();
+        if (isSolid(center)) return true;
+        return BlockSnapshot.capture(
+                world,
+                location.getX(),
+                location.getY() - 0.1,
+                location.getZ(),
+                0.3,
+                0.5,
+                0.3
+        ).anyMatch(this::isSolid);
     }
+
+    private boolean isSolid(final Material material) {
+        if (material == null) return false;
+        final String name = material.toString().toLowerCase();
+        return !name.contains("air") || material.isSolid() || ignore(name);
+    }
+
     private static boolean ignore(String block) {
         return block.matches(".*(snow|step|frame|table|slab|stair|ladder|vine|waterlily|wall|carpet|fence|rod|bed|skull|pot|hopper|door|piston|lily).*");
     }

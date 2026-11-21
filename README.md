@@ -7,7 +7,7 @@
 
 > **Advanced entropy analysis powered by local Recurrent Neural Networks (RNN)**.
 
-MX is a free, open-source, **Zero-Dependency** Machine Learning anticheat for Minecraft (1.8 - 1.21). 
+MX is a free, open-source, **Zero-Dependency** Machine Learning anticheat for Minecraft (1.8 - 26.3). 
 Powered by powerful heuristic algorithms combined with machine learning on a self-written RNN (Millennium 5) basis.
 
 ---

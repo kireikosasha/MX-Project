@@ -7,19 +7,18 @@ import kireiko.dev.anticheat.api.events.UseEntityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.managers.CheckManager;
 import kireiko.dev.millennium.math.Statistics;
-import kireiko.dev.millennium.ml.data.reasoning.MathML;
+import kireiko.dev.millennium.types.ConcurrentEvictingList;
 import kireiko.dev.millennium.vectors.Pair;
 import kireiko.dev.millennium.vectors.Vec2;
 import kireiko.dev.millennium.vectors.Vec2f;
 import kireiko.dev.millennium.vectors.Vec2i;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class AimComplexCheck implements PacketCheckHandler {
     private final List<Float> buffer;
     private final PlayerProfile profile;
-    private final List<Vec2i> /*rotations,*/ rotations2;
+    private final List<Vec2i> rotations2;
     private final List<Vec2> kireikoGeneric;
     private final List<Vec2f> rawRotations;
     private long lastAttack;
@@ -29,11 +28,11 @@ public final class AimComplexCheck implements PacketCheckHandler {
     public AimComplexCheck(PlayerProfile profile) {
         this.profile = profile;
         /*this.rotations = Collections.synchronizedList(new CopyOnWriteArrayList<>());*/
-        this.rotations2 = Collections.synchronizedList(new CopyOnWriteArrayList<>());
-        this.rawRotations = new CopyOnWriteArrayList<>();
-        this.kireikoGeneric = new CopyOnWriteArrayList<>();
+        this.rotations2 = new ConcurrentEvictingList<>(16);
+        this.rawRotations = new ConcurrentEvictingList<>(16);
+        this.kireikoGeneric = new ConcurrentEvictingList<>(16);
         this.lastAttack = 0L;
-        this.buffer = new CopyOnWriteArrayList<>();
+        this.buffer = new ConcurrentEvictingList<>(16);
         this.oldShannonYaw = 0;
         this.oldShannonPitch = 0;
         for (int i = 0; i < 16; i++) this.buffer.add(0.0f);
