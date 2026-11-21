@@ -110,6 +110,8 @@ def main():
     ap.add_argument("--width", type=int, default=128)
     ap.add_argument("--layers", type=int, default=4)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--watch", action="store_true", help="the watcher's protocol: the answer of every beginning of a story "
+                    "taught on is taught too, and (as the learner's 40 questions) 40 more stories of length 8-32 per --teach")
     ap.add_argument("--folder", help="sealed families (folder/NN-name/family.py with ALPHABET and answer) instead of the named ones")
     a = ap.parse_args()
     if a.folder:  # the families of a sealed pool, loaded as sealed_run.py loads them
@@ -149,6 +151,10 @@ def main():
                     torch.manual_seed(seed)
                     rng = random.Random(seed)
                     teach = make(rng, a.teach * times)
+                    if a.watch and name not in DEEPMIND:  # (every beginning, and stories as long as the learner asks)
+                        teach += stories(syms, oracle, rng, 40 * times, 8, 32)
+                        teach = list({tuple(w[:i]): (list(w[:i]), oracle(list(w[:i]))) for w, _ in teach
+                                      for i in range(1, len(w) + 1)}.values())
                     model = (LSTM(len(syms), len(labels), a.width) if kind == "lstm" else
                              Transformer(len(syms), len(labels), a.width, a.layers, alibi=kind == "alibi")).to(DEVICE)
                     opt = torch.optim.Adam(model.parameters(), lr=1e-3)

@@ -1261,12 +1261,22 @@ def side(f, jobs, workers):
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
-          committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False):
+          committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
     dep: the bodies at their ceilings (see ceilings) in place of the other shapes; the kept machine is priced by itself,
     and the second machine is looked for in every body whose cheapest machine is at most slack bits above it."""
+    heard = {}
+    if watch:  # the answer is seen after every symbol, as a display is read while the keys are pressed: a story asked
+        ask = oracle  # (one question) tells the answers of all its beginnings; so do the stories taught on
+        def oracle(w):
+            for i in range(1, len(w) + 1):
+                if tuple(w[:i]) not in heard:
+                    heard[tuple(w[:i])] = ask(list(w[:i]))
+            return heard[tuple(w)]
+        for w, y in data:
+            oracle(list(w))
     labels = sorted({y for _, y in data})
     committee = committee if build else 0  # (a committee needs the machines a story is written against)
     asked, dead, fixed, tries = 0, set(), pool, {}
@@ -1276,6 +1286,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     machine = shape = last = None
     late_ = lambda: deadline is not None and time.time() > deadline  # (past the time given: the last machine is told)
     while True:
+        if watch:  # (every beginning seen so far is a story taught on)
+            have = {x for x, _ in data}
+            data = data + sorted((x, y) for x, y in heard.items() if x not in have)
         new = sorted(set(labels) | {y for _, y in data})
         if new != labels:  # a shape proved impossible stays so: a machine with more answers that explains more
             if not labels:  # stories gives, with each new answer sent to an old one, one that explains these (with no
@@ -1423,12 +1436,15 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             told = []
             for w in tried:
                 told.append((w, oracle(list(w))))
-                if machine.run(w) != told[-1][1]:
+                if machine.run(w) != told[-1][1] or \
+                        (watch and any(machine.run(w[:i]) != heard[tuple(w[:i])] for i in range(1, len(w)))):
                     break
         else:
             told = [(w, oracle(list(w))) for w in tried]
         asked += len(told)
         wrong = [(w, y) for w, y in told if machine.run(w) != y]
+        if watch and not wrong:  # (watched: a beginning answered wrongly is a story answered wrongly)
+            wrong = sorted(((x, y) for x, y in heard.items() if machine.run(x) != y), key=lambda t: len(t[0]))[:2]
         if not wrong:
             if late and len(told) >= full:  # the second machine was not looked for on these stories (the questions were
                 # kept for the check): it is looked for now, on them and the check, and nothing more is asked; if there
@@ -1456,6 +1472,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         # a long story answered wrongly is not put into the stories taught on as it is (every formula after would
         # carry it): the beginning where the machine first goes wrong is found by halving (Rivest and Schapire 1993)
         known = dict(data)
+        known.update(heard)  # (watched: the beginnings are seen already, halving asks nothing)
         for w, y in sorted(wrong, key=lambda x: len(x[0]))[:2]:
             lo, hi = 0, len(w)
             known[w] = y
