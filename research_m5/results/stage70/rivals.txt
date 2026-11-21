@@ -1,0 +1,288 @@
+  01-mine-shaft lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (11 s)
+  01-mine-shaft lstm        x1   seed 1: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (10 s)
+  01-mine-shaft lstm        x1   seed 2: taught lengths  99.7  length 20/100/500:  71.3   6.7   0.0  (9 s)
+01-mine-shaft lstm        x1   mean of 3: taught lengths  99.9  length 20/100/500:  72.2   6.7   0.0
+  01-mine-shaft lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  72.0   8.7   2.3  (10 s)
+  01-mine-shaft lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  71.0   8.0   1.7  (10 s)
+  01-mine-shaft lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  71.7   6.7   0.0  (10 s)
+01-mine-shaft lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  71.6   7.8   1.3
+  01-mine-shaft transformer x1   seed 0: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (110 s)
+  01-mine-shaft transformer x1   seed 1: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (119 s)
+  01-mine-shaft transformer x1   seed 2: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (116 s)
+01-mine-shaft transformer x1   mean of 3: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0
+  01-mine-shaft transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  71.7   7.0   0.0  (112 s)
+  01-mine-shaft transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (111 s)
+  01-mine-shaft transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (128 s)
+01-mine-shaft transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  72.3   6.8   0.0
+  01-mine-shaft alibi       x1   seed 0: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (153 s)
+  01-mine-shaft alibi       x1   seed 1: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (120 s)
+  01-mine-shaft alibi       x1   seed 2: taught lengths  99.7  length 20/100/500:  72.7   6.7   0.0  (177 s)
+01-mine-shaft alibi       x1   mean of 3: taught lengths  99.9  length 20/100/500:  72.7   6.7   0.0
+  01-mine-shaft alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (127 s)
+  01-mine-shaft alibi       x40  seed 1: taught lengths 100.0  length 20/100/500:  72.7   6.7   0.0  (104 s)
+  01-mine-shaft alibi       x40  seed 2: taught lengths 100.0  length 20/100/500:  74.3   6.7   0.0  (136 s)
+01-mine-shaft alibi       x40  mean of 3: taught lengths 100.0  length 20/100/500:  73.2   6.7   0.0
+  05-vending-machine lstm        x1   seed 0: taught lengths  98.0  length 20/100/500:  29.3   0.3   0.0  (11 s)
+  05-vending-machine lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  44.0   0.7   0.0  (12 s)
+  05-vending-machine lstm        x1   seed 2: taught lengths  99.3  length 20/100/500:  44.3   1.3   0.0  (11 s)
+05-vending-machine lstm        x1   mean of 3: taught lengths  98.9  length 20/100/500:  39.2   0.8   0.0
+  05-vending-machine lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  41.7   0.3   0.0  (10 s)
+  05-vending-machine lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  44.7   0.7   0.0  (10 s)
+  05-vending-machine lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  49.7   0.7   0.0  (10 s)
+05-vending-machine lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  45.3   0.6   0.0
+  05-vending-machine transformer x1   seed 0: taught lengths  99.3  length 20/100/500:  29.7   0.3   0.0  (134 s)
+  05-vending-machine transformer x1   seed 1: taught lengths  99.0  length 20/100/500:  27.0   0.3   0.0  (182 s)
+  05-vending-machine transformer x1   seed 2: taught lengths 100.0  length 20/100/500:  28.7   0.3   0.0  (120 s)
+05-vending-machine transformer x1   mean of 3: taught lengths  99.4  length 20/100/500:  28.4   0.3   0.0
+  05-vending-machine transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  31.7   0.3   0.0  (126 s)
+  05-vending-machine transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  34.7   0.3   0.0  (104 s)
+  05-vending-machine transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  28.3   0.3   0.0  (109 s)
+05-vending-machine transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  31.6   0.3   0.0
+  05-vending-machine alibi       x1   seed 0: taught lengths  97.3  length 20/100/500:  42.3   0.3   0.0  (99 s)
+  05-vending-machine alibi       x1   seed 1: taught lengths  98.7  length 20/100/500:  30.3   0.3   0.0  (104 s)
+  05-vending-machine alibi       x1   seed 2: taught lengths  99.3  length 20/100/500:  47.3   0.7   0.0  (90 s)
+05-vending-machine alibi       x1   mean of 3: taught lengths  98.4  length 20/100/500:  40.0   0.4   0.0
+  05-vending-machine alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  38.7   0.3   0.0  (109 s)
+  05-vending-machine alibi       x40  seed 1: taught lengths 100.0  length 20/100/500:  35.7   0.3   0.0  (116 s)
+  05-vending-machine alibi       x40  seed 2: taught lengths 100.0  length 20/100/500:  45.3   0.3   0.0  (101 s)
+05-vending-machine alibi       x40  mean of 3: taught lengths 100.0  length 20/100/500:  39.9   0.3   0.0
+  09-archive lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  54.0  49.7  43.3  (22 s)
+  09-archive lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  54.3  47.7  44.0  (24 s)
+  09-archive lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  53.0  47.7  43.3  (21 s)
+09-archive lstm        x1   mean of 3: taught lengths  99.8  length 20/100/500:  53.8  48.3  43.6
+  09-archive lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  60.7  57.0  53.0  (29 s)
+  09-archive lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  62.3  57.7  52.7  (37 s)
+  09-archive lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  66.3  59.3  53.7  (29 s)
+09-archive lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  63.1  58.0  53.1
+  09-archive transformer x1   seed 0: taught lengths  98.7  length 20/100/500:  28.7  25.0  25.0  (336 s)
+  09-archive transformer x1   seed 1: taught lengths  99.7  length 20/100/500:  30.7  24.7  25.7  (499 s)
+  09-archive transformer x1   seed 2: taught lengths  98.3  length 20/100/500:  30.7  28.0  25.7  (433 s)
+09-archive transformer x1   mean of 3: taught lengths  98.9  length 20/100/500:  30.0  25.9  25.4
+  09-archive transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  31.0  23.7  26.0  (378 s)
+  09-archive transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  29.0  22.0  21.0  (363 s)
+  09-archive transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  32.7  22.3  23.0  (184 s)
+09-archive transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  30.9  22.7  23.3
+  09-archive alibi       x1   seed 0: taught lengths  98.3  length 20/100/500:  36.0  21.7  19.7  (85 s)
+  09-archive alibi       x1   seed 1: taught lengths  99.0  length 20/100/500:  40.7  29.3  34.0  (81 s)
+  09-archive alibi       x1   seed 2: taught lengths  98.7  length 20/100/500:  35.7  20.7  20.0  (86 s)
+09-archive alibi       x1   mean of 3: taught lengths  98.7  length 20/100/500:  37.4  23.9  24.6
+  09-archive alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  31.7  22.0  21.3  (88 s)
+  09-archive alibi       x40  seed 1: taught lengths 100.0  length 20/100/500:  40.7  21.7  21.0  (99 s)
+  09-archive alibi       x40  seed 2: taught lengths  99.3  length 20/100/500:  45.0  34.3  34.3  (94 s)
+09-archive alibi       x40  mean of 3: taught lengths  99.8  length 20/100/500:  39.1  26.0  25.6
+  02-orchard lstm        x1   seed 0: taught lengths  98.7  length 20/100/500:  52.3   4.3   0.0  (11 s)
+  02-orchard lstm        x1   seed 1: taught lengths  99.0  length 20/100/500:  45.0   1.3   0.0  (10 s)
+  02-orchard lstm        x1   seed 2: taught lengths  98.3  length 20/100/500:  43.3   1.7   0.0  (10 s)
+02-orchard lstm        x1   mean of 3: taught lengths  98.7  length 20/100/500:  46.9   2.4   0.0
+  02-orchard lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  58.0   4.3   0.0  (10 s)
+  02-orchard lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  47.7   2.0   0.0  (9 s)
+  02-orchard lstm        x40  seed 2: taught lengths  99.7  length 20/100/500:  53.7   3.0   0.0  (9 s)
+02-orchard lstm        x40  mean of 3: taught lengths  99.9  length 20/100/500:  53.1   3.1   0.0
+  02-orchard transformer x1   seed 0: taught lengths  99.0  length 20/100/500:  40.3   0.7   0.0  (105 s)
+  02-orchard transformer x1   seed 1: taught lengths  97.3  length 20/100/500:  39.7   0.7   0.0  (107 s)
+  02-orchard transformer x1   seed 2: taught lengths  97.7  length 20/100/500:  39.7   0.7   0.0  (108 s)
+02-orchard transformer x1   mean of 3: taught lengths  98.0  length 20/100/500:  39.9   0.7   0.0
+  02-orchard transformer x40  seed 0: taught lengths  98.3  length 20/100/500:  44.3   0.7   0.0  (113 s)
+  02-orchard transformer x40  seed 1: taught lengths  98.7  length 20/100/500:  39.7   3.7   0.0  (112 s)
+  02-orchard transformer x40  seed 2: taught lengths  99.3  length 20/100/500:  46.0   0.7   0.0  (102 s)
+02-orchard transformer x40  mean of 3: taught lengths  98.8  length 20/100/500:  43.3   1.7   0.0
+  02-orchard alibi       x1   seed 0: taught lengths  99.3  length 20/100/500:  46.7   0.7   0.0  (135 s)
+  02-orchard alibi       x1   seed 1: taught lengths  98.7  length 20/100/500:  43.0   0.7   0.0  (128 s)
+  02-orchard alibi       x1   seed 2: taught lengths  98.3  length 20/100/500:  40.3   0.7   0.0  (134 s)
+02-orchard alibi       x1   mean of 3: taught lengths  98.8  length 20/100/500:  43.3   0.7   0.0
+  02-orchard alibi       x40  seed 0: taught lengths  99.0  length 20/100/500:  54.0   3.0   0.0  (162 s)
+  02-orchard alibi       x40  seed 1: taught lengths  99.3  length 20/100/500:  49.7   1.3   0.0  (103 s)
+  02-orchard alibi       x40  seed 2: taught lengths  98.3  length 20/100/500:  50.7   1.3   0.0  (101 s)
+02-orchard alibi       x40  mean of 3: taught lengths  98.9  length 20/100/500:  51.4   1.9   0.0
+  06-fishing-boat lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  93.7  93.0  92.7  (15 s)
+  06-fishing-boat lstm        x1   seed 1: taught lengths  99.0  length 20/100/500:  90.0  90.3  90.0  (13 s)
+  06-fishing-boat lstm        x1   seed 2: taught lengths  99.0  length 20/100/500:  91.0  89.0  88.7  (14 s)
+06-fishing-boat lstm        x1   mean of 3: taught lengths  99.3  length 20/100/500:  91.6  90.8  90.4
+  06-fishing-boat lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  95.0  94.0  93.7  (15 s)
+  06-fishing-boat lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  95.3  95.0  93.7  (12 s)
+  06-fishing-boat lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  95.3  95.0  94.0  (14 s)
+06-fishing-boat lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  95.2  94.7  93.8
+  06-fishing-boat transformer x1   seed 0: taught lengths 100.0  length 20/100/500:  50.7  74.7  76.0  (118 s)
+  06-fishing-boat transformer x1   seed 1: taught lengths  99.3  length 20/100/500:  78.3  76.0  76.0  (132 s)
+  06-fishing-boat transformer x1   seed 2: taught lengths  99.0  length 20/100/500:  71.3  75.7  76.0  (180 s)
+06-fishing-boat transformer x1   mean of 3: taught lengths  99.4  length 20/100/500:  66.8  75.4  76.0
+  06-fishing-boat transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  59.7  69.7  76.0  (122 s)
+  06-fishing-boat transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  75.3  70.7  37.7  (119 s)
+  06-fishing-boat transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  69.0  75.3  76.0  (109 s)
+06-fishing-boat transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  68.0  71.9  63.2
+  06-fishing-boat alibi       x1   seed 0: taught lengths 100.0  length 20/100/500:  83.0  76.0  76.0  (94 s)
+  06-fishing-boat alibi       x1   seed 1: taught lengths 100.0  length 20/100/500:  83.7  76.0  76.0  (100 s)
+  06-fishing-boat alibi       x1   seed 2: taught lengths  99.0  length 20/100/500:  80.0  76.3  76.0  (98 s)
+06-fishing-boat alibi       x1   mean of 3: taught lengths  99.7  length 20/100/500:  82.2  76.1  76.0
+  06-fishing-boat alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  83.7  76.0  76.0  (473 s)
+  06-fishing-boat alibi       x40  seed 1: taught lengths 100.0  length 20/100/500:  83.7  76.0  76.0  (276 s)
+  06-fishing-boat alibi       x40  seed 2: taught lengths 100.0  length 20/100/500:  83.7  76.0  76.0  (330 s)
+06-fishing-boat alibi       x40  mean of 3: taught lengths 100.0  length 20/100/500:  83.7  76.0  76.0
+  10-circus lstm        x1   seed 0: taught lengths  98.7  length 20/100/500:  83.0  80.3  83.3  (72 s)
+  10-circus lstm        x1   seed 1: taught lengths  98.7  length 20/100/500:  78.0  75.0  78.0  (60 s)
+  10-circus lstm        x1   seed 2: taught lengths  99.3  length 20/100/500:  90.7  89.3  89.7  (56 s)
+10-circus lstm        x1   mean of 3: taught lengths  98.9  length 20/100/500:  83.9  81.6  83.7
+  10-circus lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  93.3  93.7  92.7  (60 s)
+  10-circus lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  97.3  98.0  94.7  (56 s)
+  10-circus lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  95.7  96.3  94.0  (59 s)
+10-circus lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  95.4  96.0  93.8
+  10-circus transformer x1   seed 0: taught lengths  98.3  length 20/100/500:  13.7  14.0  13.0  (435 s)
+  10-circus transformer x1   seed 1: taught lengths  97.7  length 20/100/500:  23.7  13.7  16.3  (392 s)
+  10-circus transformer x1   seed 2: taught lengths  98.0  length 20/100/500:  21.3  18.3  17.3  (330 s)
+10-circus transformer x1   mean of 3: taught lengths  98.0  length 20/100/500:  19.6  15.3  15.6
+  10-circus transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  20.7  10.3   8.3  (178 s)
+  10-circus transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  28.3  19.3  17.0  (89 s)
+  10-circus transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  19.7  13.3  14.0  (93 s)
+10-circus transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  22.9  14.3  13.1
+  10-circus alibi       x1   seed 0: taught lengths  97.3  length 20/100/500:  47.7  44.0  49.3  (80 s)
+  10-circus alibi       x1   seed 1: taught lengths  98.0  length 20/100/500:  53.7  49.3  51.0  (83 s)
+  10-circus alibi       x1   seed 2: taught lengths  99.0  length 20/100/500:  46.7  38.0  32.0  (96 s)
+10-circus alibi       x1   mean of 3: taught lengths  98.1  length 20/100/500:  49.3  43.8  44.1
+  10-circus alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  52.7  46.7  43.3  (89 s)
+  10-circus alibi       x40  seed 1: taught lengths 100.0  length 20/100/500:  59.3  50.3  53.7  (89 s)
+  10-circus alibi       x40  seed 2: taught lengths 100.0  length 20/100/500:  49.3  40.7  48.7  (85 s)
+10-circus alibi       x40  mean of 3: taught lengths 100.0  length 20/100/500:  53.8  45.9  48.6
+  03-bookbinder lstm        x1   seed 0: taught lengths  99.3  length 20/100/500:  24.3  21.3  26.3  (11 s)
+  03-bookbinder lstm        x1   seed 1: taught lengths 100.0  length 20/100/500:  26.3  21.3  26.3  (10 s)
+  03-bookbinder lstm        x1   seed 2: taught lengths  99.7  length 20/100/500:  23.0  20.0  24.7  (10 s)
+03-bookbinder lstm        x1   mean of 3: taught lengths  99.7  length 20/100/500:  24.6  20.9  25.8
+  03-bookbinder lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  30.3  22.7  29.0  (9 s)
+  03-bookbinder lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  28.0  23.7  27.3  (8 s)
+  03-bookbinder lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  25.3  20.3  25.7  (9 s)
+03-bookbinder lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  27.9  22.2  27.3
+  03-bookbinder transformer x1   seed 0: taught lengths  98.0  length 20/100/500:  22.7  20.0  24.7  (107 s)
+  03-bookbinder transformer x1   seed 1: taught lengths  99.3  length 20/100/500:  22.7  20.0  24.7  (111 s)
+  03-bookbinder transformer x1   seed 2: taught lengths  99.3  length 20/100/500:  22.7  20.0  24.7  (115 s)
+03-bookbinder transformer x1   mean of 3: taught lengths  98.9  length 20/100/500:  22.7  20.0  24.7
+  03-bookbinder transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  23.0  20.0  24.7  (112 s)
+  03-bookbinder transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  26.0  20.0  24.7  (112 s)
+  03-bookbinder transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  24.0  20.0  24.7  (125 s)
+03-bookbinder transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  24.3  20.0  24.7
+  03-bookbinder alibi       x1   seed 0: taught lengths  98.0  length 20/100/500:  22.7  20.0  24.7  (155 s)
+  03-bookbinder alibi       x1   seed 1: taught lengths  99.3  length 20/100/500:  22.7  20.0  24.7  (108 s)
+  03-bookbinder alibi       x1   seed 2: taught lengths  99.3  length 20/100/500:  24.3  20.0  24.7  (153 s)
+03-bookbinder alibi       x1   mean of 3: taught lengths  98.9  length 20/100/500:  23.2  20.0  24.7
+  03-bookbinder alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  35.7  20.0  23.3  (151 s)
+  03-bookbinder alibi       x40  seed 1: taught lengths 100.0  length 20/100/500:  32.0  19.7  24.3  (104 s)
+  03-bookbinder alibi       x40  seed 2: taught lengths 100.0  length 20/100/500:  31.0  20.0  24.7  (127 s)
+03-bookbinder alibi       x40  mean of 3: taught lengths 100.0  length 20/100/500:  32.9  19.9  24.1
+  07-tea-house lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  64.3  65.3  69.7  (14 s)
+  07-tea-house lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  67.0  65.7  73.7  (13 s)
+  07-tea-house lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  45.7  44.3  41.7  (10 s)
+07-tea-house lstm        x1   mean of 3: taught lengths  99.8  length 20/100/500:  59.0  58.4  61.7
+  07-tea-house lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  65.3  59.7  60.3  (12 s)
+  07-tea-house lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  68.3  60.7  65.7  (10 s)
+  07-tea-house lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  67.3  65.3  68.0  (10 s)
+07-tea-house lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  67.0  61.9  64.7
+  07-tea-house transformer x1   seed 0: taught lengths  99.7  length 20/100/500:  61.3  67.3  76.0  (109 s)
+  07-tea-house transformer x1   seed 1: taught lengths  99.3  length 20/100/500:  54.0  67.3  76.0  (156 s)
+  07-tea-house transformer x1   seed 2: taught lengths 100.0  length 20/100/500:  57.0  67.0  76.3  (155 s)
+07-tea-house transformer x1   mean of 3: taught lengths  99.7  length 20/100/500:  57.4  67.2  76.1
+  07-tea-house transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  62.7  67.3  76.0  (119 s)
+  07-tea-house transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  60.7  68.3  76.0  (101 s)
+  07-tea-house transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  50.0  62.7  74.3  (104 s)
+07-tea-house transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  57.8  66.1  75.4
+  07-tea-house alibi       x1   seed 0: taught lengths 100.0  length 20/100/500:  39.3  28.7  24.3  (92 s)
+  07-tea-house alibi       x1   seed 1: taught lengths 100.0  length 20/100/500:  68.0  67.7  76.3  (100 s)
+  07-tea-house alibi       x1   seed 2: taught lengths 100.0  length 20/100/500:  35.3  25.0  17.7  (106 s)
+07-tea-house alibi       x1   mean of 3: taught lengths 100.0  length 20/100/500:  47.6  40.4  39.4
+  07-tea-house alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  68.0  73.0  59.7  (88 s)
+  07-tea-house alibi       x40  seed 1: taught lengths 100.0  length 20/100/500:  51.3  34.7  29.3  (117 s)
+  07-tea-house alibi       x40  seed 2: taught lengths 100.0  length 20/100/500:  62.0  39.3  30.3  (102 s)
+07-tea-house alibi       x40  mean of 3: taught lengths 100.0  length 20/100/500:  60.4  49.0  39.8
+  11-beach-patrol lstm        x1   seed 0: taught lengths  99.3  length 20/100/500:  74.0  71.0  73.3  (11 s)
+  11-beach-patrol lstm        x1   seed 1: taught lengths  98.7  length 20/100/500:  70.7  68.3  72.0  (9 s)
+  11-beach-patrol lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  75.3  71.0  76.0  (10 s)
+11-beach-patrol lstm        x1   mean of 3: taught lengths  99.3  length 20/100/500:  73.3  70.1  73.8
+  11-beach-patrol lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  80.7  82.7  82.7  (11 s)
+  11-beach-patrol lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  84.3  85.7  83.3  (11 s)
+  11-beach-patrol lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  84.0  83.3  83.3  (10 s)
+11-beach-patrol lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  83.0  83.9  83.1
+  11-beach-patrol transformer x1   seed 0: taught lengths  96.0  length 20/100/500:  36.3  34.0  14.0  (269 s)
+  11-beach-patrol transformer x1   seed 1: taught lengths  95.3  length 20/100/500:  42.3  49.7  44.0  (317 s)
+  11-beach-patrol transformer x1   seed 2: taught lengths  95.0  length 20/100/500:  22.3  25.7  42.0  (531 s)
+11-beach-patrol transformer x1   mean of 3: taught lengths  95.4  length 20/100/500:  33.7  36.4  33.3
+  11-beach-patrol transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  26.7  26.3  23.0  (432 s)
+  11-beach-patrol transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  33.0  11.7   6.3  (418 s)
+  11-beach-patrol transformer x40  seed 2: taught lengths  99.7  length 20/100/500:  34.7  43.0  38.0  (272 s)
+11-beach-patrol transformer x40  mean of 3: taught lengths  99.9  length 20/100/500:  31.4  27.0  22.4
+  11-beach-patrol alibi       x1   seed 0: taught lengths  98.3  length 20/100/500:  44.7  47.3  41.3  (150 s)
+  11-beach-patrol alibi       x1   seed 1: taught lengths  94.3  length 20/100/500:  54.3  51.0  45.7  (88 s)
+  11-beach-patrol alibi       x1   seed 2: taught lengths  97.0  length 20/100/500:  51.3  50.3  45.3  (81 s)
+11-beach-patrol alibi       x1   mean of 3: taught lengths  96.6  length 20/100/500:  50.1  49.6  44.1
+  11-beach-patrol alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  54.0  50.3  44.3  (87 s)
+  11-beach-patrol alibi       x40  seed 1: taught lengths  99.7  length 20/100/500:  54.7  52.0  44.7  (87 s)
+  11-beach-patrol alibi       x40  seed 2: taught lengths  99.7  length 20/100/500:  53.0  50.3  44.0  (100 s)
+11-beach-patrol alibi       x40  mean of 3: taught lengths  99.8  length 20/100/500:  53.9  50.9  44.3
+  04-water-tower lstm        x1   seed 0: taught lengths  99.7  length 20/100/500:  54.3  53.3  52.7  (10 s)
+  04-water-tower lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  70.3  71.7  67.7  (10 s)
+  04-water-tower lstm        x1   seed 2: taught lengths  97.7  length 20/100/500:  52.7  56.0  51.7  (10 s)
+04-water-tower lstm        x1   mean of 3: taught lengths  98.9  length 20/100/500:  59.1  60.3  57.3
+  04-water-tower lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  78.7  81.0  70.3  (10 s)
+  04-water-tower lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  83.7  85.3  78.0  (9 s)
+  04-water-tower lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  81.3  81.0  72.0  (9 s)
+04-water-tower lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  81.2  82.4  73.4
+  04-water-tower transformer x1   seed 0: taught lengths  96.7  length 20/100/500:  20.0  10.0  12.3  (110 s)
+  04-water-tower transformer x1   seed 1: taught lengths  94.7  length 20/100/500:  12.7   8.0   4.3  (119 s)
+  04-water-tower transformer x1   seed 2: taught lengths  94.3  length 20/100/500:  14.0   8.3  12.7  (119 s)
+04-water-tower transformer x1   mean of 3: taught lengths  95.2  length 20/100/500:  15.6   8.8   9.8
+  04-water-tower transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  15.0  12.0  10.3  (110 s)
+  04-water-tower transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  18.0  10.3   6.7  (112 s)
+  04-water-tower transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  16.0   9.7  12.0  (136 s)
+04-water-tower transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  16.3  10.7   9.7
+  04-water-tower alibi       x1   seed 0: taught lengths  97.3  length 20/100/500:  27.0  30.0  30.7  (143 s)
+  04-water-tower alibi       x1   seed 1: taught lengths  93.7  length 20/100/500:  30.0  29.7  27.3  (112 s)
+  04-water-tower alibi       x1   seed 2: taught lengths  92.0  length 20/100/500:  26.3  29.7  28.7  (171 s)
+04-water-tower alibi       x1   mean of 3: taught lengths  94.3  length 20/100/500:  27.8  29.8  28.9
+  04-water-tower alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  29.7  29.3  29.7  (140 s)
+  04-water-tower alibi       x40  seed 1: taught lengths 100.0  length 20/100/500:  29.3  33.0  32.7  (110 s)
+  04-water-tower alibi       x40  seed 2: taught lengths 100.0  length 20/100/500:  25.0  26.0  27.7  (136 s)
+04-water-tower alibi       x40  mean of 3: taught lengths 100.0  length 20/100/500:  28.0  29.4  30.0
+  08-carousel lstm        x1   seed 0: taught lengths  98.3  length 20/100/500:  34.0  12.0   8.3  (9 s)
+  08-carousel lstm        x1   seed 1: taught lengths  99.7  length 20/100/500:  36.3  12.0   8.3  (9 s)
+  08-carousel lstm        x1   seed 2: taught lengths  99.3  length 20/100/500:  43.3  17.3  14.0  (9 s)
+08-carousel lstm        x1   mean of 3: taught lengths  99.1  length 20/100/500:  37.9  13.8  10.2
+  08-carousel lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  61.3  25.3  20.0  (12 s)
+  08-carousel lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  60.3  23.7  20.0  (10 s)
+  08-carousel lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  59.7  23.0  16.3  (12 s)
+08-carousel lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  60.4  24.0  18.8
+  08-carousel transformer x1   seed 0: taught lengths  97.7  length 20/100/500:  28.0  11.0   5.3  (127 s)
+  08-carousel transformer x1   seed 1: taught lengths  99.0  length 20/100/500:  28.0  16.0  12.3  (170 s)
+  08-carousel transformer x1   seed 2: taught lengths  98.3  length 20/100/500:  20.7   8.0   2.7  (141 s)
+08-carousel transformer x1   mean of 3: taught lengths  98.3  length 20/100/500:  25.6  11.7   6.8
+  08-carousel transformer x40  seed 0: taught lengths  99.7  length 20/100/500:  30.7  21.0  18.3  (124 s)
+  08-carousel transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  19.7   5.3  10.7  (107 s)
+  08-carousel transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  20.3   5.0   2.7  (109 s)
+08-carousel transformer x40  mean of 3: taught lengths  99.9  length 20/100/500:  23.6  10.4  10.6
+  08-carousel alibi       x1   seed 0: taught lengths  97.7  length 20/100/500:  27.0  12.3   9.0  (102 s)
+  08-carousel alibi       x1   seed 1: taught lengths  98.3  length 20/100/500:  19.7   4.3   2.7  (104 s)
+  08-carousel alibi       x1   seed 2: taught lengths  99.3  length 20/100/500:  35.7  15.7  12.3  (96 s)
+08-carousel alibi       x1   mean of 3: taught lengths  98.4  length 20/100/500:  27.4  10.8   8.0
+  08-carousel alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  49.7  33.3  32.3  (102 s)
+  08-carousel alibi       x40  seed 1: taught lengths 100.0  length 20/100/500:  45.0  23.7  33.3  (118 s)
+  08-carousel alibi       x40  seed 2: taught lengths 100.0  length 20/100/500:  41.3  16.0  12.3  (105 s)
+08-carousel alibi       x40  mean of 3: taught lengths 100.0  length 20/100/500:  45.3  24.3  26.0
+  12-weaving-loom lstm        x1   seed 0: taught lengths  99.0  length 20/100/500:  21.3  16.3  15.0  (23 s)
+  12-weaving-loom lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  15.0  13.3  13.7  (26 s)
+  12-weaving-loom lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  13.3  16.7  18.0  (19 s)
+12-weaving-loom lstm        x1   mean of 3: taught lengths  99.4  length 20/100/500:  16.6  15.4  15.6
+  12-weaving-loom lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  20.3  17.3  16.3  (28 s)
+  12-weaving-loom lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  17.7  16.7  17.7  (38 s)
+  12-weaving-loom lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  22.3  16.7  15.0  (27 s)
+12-weaving-loom lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  20.1  16.9  16.3
+  12-weaving-loom transformer x1   seed 0: taught lengths 100.0  length 20/100/500:  14.0  16.0  18.7  (337 s)
+  12-weaving-loom transformer x1   seed 1: taught lengths 100.0  length 20/100/500:  13.7  14.0  16.0  (514 s)
+  12-weaving-loom transformer x1   seed 2: taught lengths  99.3  length 20/100/500:  20.0  12.3  16.0  (444 s)
+12-weaving-loom transformer x1   mean of 3: taught lengths  99.8  length 20/100/500:  15.9  14.1  16.9
+  12-weaving-loom transformer x40  seed 0: taught lengths 100.0  length 20/100/500:  15.7  16.0  20.3  (418 s)
+  12-weaving-loom transformer x40  seed 1: taught lengths 100.0  length 20/100/500:  14.7  15.3  16.0  (322 s)
+  12-weaving-loom transformer x40  seed 2: taught lengths 100.0  length 20/100/500:  19.0  17.3  14.7  (173 s)
+12-weaving-loom transformer x40  mean of 3: taught lengths 100.0  length 20/100/500:  16.4  16.2  17.0
+  12-weaving-loom alibi       x1   seed 0: taught lengths  99.3  length 20/100/500:  20.0  14.7  16.7  (90 s)
+  12-weaving-loom alibi       x1   seed 1: taught lengths 100.0  length 20/100/500:  16.7  14.0  16.0  (85 s)
+  12-weaving-loom alibi       x1   seed 2: taught lengths  99.3  length 20/100/500:  19.0  15.7  16.0  (83 s)
+12-weaving-loom alibi       x1   mean of 3: taught lengths  99.6  length 20/100/500:  18.6  14.8  16.2
+  12-weaving-loom alibi       x40  seed 0: taught lengths 100.0  length 20/100/500:  12.7  15.3  16.0  (84 s)
+  12-weaving-loom alibi       x40  seed 1: taught lengths 100.0  length 20/100/500:  15.0  14.3  15.7  (101 s)
+  12-weaving-loom alibi       x40  seed 2: taught lengths  98.7  length 20/100/500:  15.0  14.3  16.7  (90 s)
+12-weaving-loom alibi       x40  mean of 3: taught lengths  99.6  length 20/100/500:  14.2  14.7  16.1
