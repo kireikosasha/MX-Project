@@ -123,6 +123,8 @@ FAMILIES = {
 # Or ("L", n, B): a level 0..n-1 that begins at a value found with the machine; every symbol moves it by -B..B, held
 # at the ends ("never above boil, never below cold"), or sets it to a value; read as it is.
 SET = 100  # an operation of a level >= SET sets it to (operation - SET)
+MIRROR = True  # a level turned end for end is the same machine: only one of the two is searched
+DOUBT = True  # a shape on which the solver could not tell whether a second machine is there leaves the machine unsure
 
 
 def values(cell):
@@ -158,15 +160,17 @@ def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
         b = nsym * k * math.log2(k) if k > 1 else 0.0
         for j, c in enumerate(cells):
             b += nsym * k * each(c) * (cells[0][1] if chain and j else 1) + (math.log2(c[1]) if c[0] == "L" else 0)
-    if by_state == "number":  # the answer is the first number itself: no table of answers
+    if by_state in ("number", "lastnum"):  # the answer is the first (or the last) number itself: no table of answers
         return b + 1
+    if by_state == "last":  # the answer is read from the last cell alone: a table over its values
+        return b + len(values(cells[-1])) * math.log2(max(nlab, 2))
     reads = k if by_state else 1
     for c in cells:
         reads *= len(values(c))
     return b + reads * math.log2(max(nlab, 2))
 
 
-def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False):
+def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, cascades=False):
     Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
     M = [("M", m) for m in range(2, 13)]
     L = [("L", n, B) for n in range(3, 9) for B in (1, 2)]
@@ -202,6 +206,14 @@ def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False):
     if numeric:  # the answers are numbers: the answer may be the first cell's number itself (a count told as it is)
         firsts = [(k, cs, ch) for _, k, cs, by, ch in every if by is True and cs and cs[0][0] in "ZL"]
         every += [(bits_of(k, cs, nsym, nlab, "number", ch), k, cs, "number", ch) for k, cs, ch in firsts]
+    if cascades:  # a cascade (Krohn and Rhodes 1965): a level or a circle drives a second one by its value, and the
+        # answer is read from the second alone (the part one watches), or is its number
+        lv, ci = [("L", n, 1) for n in range(3, 7)], [("M", m) for m in range(2, 7)]
+        every += [(bits_of(k, cs, nsym, nlab, "last", True), k, cs, "last", True) for k in (1, 2)
+                  for cs in itertools.product(lv + ci, lv + ci)]
+        if numeric:
+            every += [(bits_of(k, cs, nsym, nlab, "lastnum", True), k, cs, "lastnum", True) for k in (1, 2)
+                      for cs in itertools.product(lv + ci, lv + [("Z", 1, 1)])]
     # the states are the answers themselves, and one more to begin in: a table of relations (Tarski 1941), where
     # "what is X to Z" follows from "what is X to Y" and the next link
     k = nlab + 1
@@ -225,7 +237,9 @@ def name(shape):
         words[-1] += f", {chain[1]} of the symbols moving by what the first number reads"
     return " + ".join(words) + (", the second moved by the value of the first" if chain is True else "") + \
         ("" if by_state or not cells else ", the answer read from the numbers only") + \
-        (", the answer is the first number itself" if by_state == "number" else "")
+        (", the answer is the first number itself" if by_state == "number" else "") + \
+        (", the answer read from the last number only" if by_state == "last" else "") + \
+        (", the answer is the last number itself" if by_state == "lastnum" else "")
 
 
 # ---------------------------------------------------------------- the machine, as found
@@ -257,6 +271,8 @@ class Machine:
         """The answer read at a state and values of the cells."""
         if self.by_state == "number":
             return str(z[0])
+        if self.by_state == "lastnum":
+            return str(z[-1])
         r = tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(self.cells, z))
         return self.labels[self.lam[(q if self.by_state else 0,) + r]]
 
@@ -319,7 +335,8 @@ class Encoding:
         self.stump = isinstance(self.chain, tuple) and self.chain[0] == "s"
         self.tests = [(j, v) for j, c in enumerate(self.cells) for v in list(values(c))[1:]] if self.stump else []
         self.ids, self.clauses = IDPool(), []
-        self.reads = [] if self.by_state == "number" else \
+        self.nc = len(self.cells) - 1 if self.by_state == "lastnum" else 0  # (the cell whose number is the answer)
+        self.reads = [] if self.by_state in ("number", "lastnum") else \
             list(itertools.product(range(self.k) if self.by_state else [0], *[values(c) for c in self.cells]))
         self.gvals = list(itertools.product(*[values(c) for c in self.cells])) if self.guard else []
         k = self.k
@@ -366,6 +383,12 @@ class Encoding:
                                                encoding=EncType.seqcounter).clauses
         for r in self.reads:
             self.exactly([self.v("l", r, y) for y in range(len(labels))])
+        if self.by_state == "last":  # read from the last cell alone: reads that agree there give one answer
+            for r in self.reads:
+                r0 = (0,) + tuple(values(c)[0] for c in self.cells[:-1]) + (r[-1],)
+                if r != r0:
+                    for y in range(len(labels)):
+                        self.clauses += [[-self.v("l", r, y), self.v("l", r0, y)], [self.v("l", r, y), -self.v("l", r0, y)]]
         if self.by_state == "named":  # the states are told apart by their names: nothing to break
             for q in range(len(labels)):
                 self.clauses.append([self.v("l", (q,), q)])
@@ -374,6 +397,8 @@ class Encoding:
                 self.switches(self.chain[1])  # (states are named by their switches: no numbering to break)
             else:
                 self.symmetry()
+        if MIRROR:
+            self.mirror()
         self.node = {(): 0}
         self.memo = {}  # (the symbol variables of a story the solver writes; the answer variables of a node)
         self.depth = {(): 0}
@@ -402,6 +427,22 @@ class Encoding:
                         for o in range(4):
                             if ops[o]((q >> i) & 1) != (r >> i) & 1:
                                 self.clauses.append([-self.v("t", a, q, r), -self.v("op", a, i, o)])
+        a0 = self.csyms[0]  # the switches may be numbered in any order: the first symbol's operations do not go down
+        for i in range(f - 1 if MIRROR else 0):
+            for o1 in range(4):
+                for o2 in range(o1):
+                    self.clauses.append([-self.v("op", a0, i, o1), -self.v("op", a0, i + 1, o2)])
+
+    def mirror(self):
+        """A level may be turned end for end (v -> n-1-v, a step o -> -o, 'set v' -> 'set n-1-v'): it begins in its
+        lower half. Not where the number is the answer itself, nor with a test 'reads at least v'."""
+        if self.stump:
+            return
+        for j, c in enumerate(self.cells):
+            if c[0] == "L" and not (j == self.nc and self.by_state in ("number", "lastnum")):
+                for val in range(c[1]):
+                    if val > c[1] - 1 - val:
+                        self.clauses.append([-self.v("z", 0, j, val)])
 
     def symmetry(self):
         """One machine, one numbering. States are numbered in the order a walk in breadth from state 0 meets them,
@@ -437,7 +478,7 @@ class Encoding:
         a0 = self.syms[0]
         w0 = tuple(0 for _ in self.cells) if self.guard else 0  # (a key that turning a number over or round keeps)
         for j, c in enumerate(self.cells if not self.stump else []):  # (a test 'at least v' is not kept by turning)
-            if c[0] == "Z" and not (j == 0 and self.by_state == "number"):  # (the number told is not turned over)
+            if c[0] == "Z" and not (j == self.nc and self.by_state in ("number", "lastnum")):  # (the number told is not turned over)
                 for o in range(-c[1], 0):
                     C.append([-v("o", j, a0, 0, w0, o)])
             elif c[0] == "M":
@@ -614,22 +655,23 @@ class Encoding:
 
     def isnot(self, n, v):
         """Literals one of which holds unless the first cell at node n is v (True / False where depth decides)."""
-        c = self.cells[0]
+        j = self.nc
+        c = self.cells[j]
         if c[0] == "L":
-            return [-self.v("z", n, 0, v)] if 0 <= v < c[1] else [True]
+            return [-self.v("z", n, j, v)] if 0 <= v < c[1] else [True]
         neg = lambda l: (not l) if isinstance(l, bool) else -l
-        return [neg(self.ge(n, 0, v)), self.ge(n, 0, v + 1)]
+        return [neg(self.ge(n, j, v)), self.ge(n, j, v + 1)]
 
     def says(self, seq, y, excused=None):
         """The story is answered y; or, given a literal, it may be excused."""
-        if self.by_state == "number":  # the first number is the answer: it is y
+        if self.by_state in ("number", "lastnum"):  # the first (last) number is the answer: it is y
             n = self.at(tuple(seq))
             ex = [excused] if excused else []
-            c, v = self.cells[0], int(self.labels[y])
+            c, v = self.cells[self.nc], int(self.labels[y])
             if c[0] == "L" and 0 <= v < c[1]:  # a level: its value is v and no other (only the true value is implied)
                 for u in range(c[1]):
                     if u != v:
-                        self.clauses.append([-self.v("z", n, 0, u)] + ex)
+                        self.clauses.append([-self.v("z", n, self.nc, u)] + ex)
             for l in self.isnot(n, v):  # every literal of 'it is not y' is false
                 if l is True:  # the number cannot be y here
                     self.clauses += [ex + [self.v("false")], [-self.v("false")]]
@@ -643,7 +685,7 @@ class Encoding:
 
     def differs(self, seq, y):
         """A literal true only if the story is not answered y."""
-        if self.by_state == "number":
+        if self.by_state in ("number", "lastnum"):
             n = self.at(tuple(seq))
             d = self.v("differs", n, y)
             self.add([-d] + self.isnot(n, int(y)))
@@ -859,7 +901,7 @@ def side(f, jobs, workers):
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
-          committee=0, flags=False):
+          committee=0, flags=False, cascades=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987)"""
@@ -870,10 +912,10 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     machine = shape = None
     while True:
         new = sorted(set(labels) | {y for _, y in data})
-        if new != labels:
-            labels, dead, tries, machine = new, set(), {}, None
+        if new != labels:  # a shape proved impossible stays so: a machine with more answers that explains more
+            labels, machine = new, None  # stories gives, with each new answer sent to an old one, one that explains these
         numeric = guards and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (all numbers, as written)
-        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags)
+        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades)
         if machine is not None and all(machine.run(s) == y for s, y in data):
             pass  # the kept machine answered what was asked rightly: it stays
         else:
@@ -913,11 +955,12 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         else:
             ask_from = rng.sample(fixed, min(150, len(fixed)))
         ask_from = [w for w in ask_from if w not in seen]
-        t0, w = time.time(), None
+        t0, w, doubt = time.time(), None, False
         near = [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
         owed = len([w for w in unseen(machine, syms, data) if w not in seen]) if plan and explore else 0
-        if reserve and asks - asked <= reserve + owed:  # the last questions are kept for the check (and, with plan, for
-            near = []                                   # the reads no story taught on ends at, asked before it)
+        late = bool(reserve) and asks - asked <= reserve + owed  # the last questions are kept for the check (and, with
+        # plan, for the reads no story taught on ends at, asked before it): a second machine is still looked for, but
+        # not asked about; if there is one, the machine kept is not sure, whatever the check says
         unsettled, crowd = [], []
         for more in (1, 4):  # a shape on which the solver could not tell is searched again with four times the work
             for i in range(0, len(near), workers):
@@ -958,7 +1001,12 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             near, unsettled = unsettled, []
         if w is None and unsettled:
             log(f"  of {len(unsettled)} shapes the solver could not tell whether a second machine is there")
-        if w is not None:
+            doubt = DOUBT
+        if w is not None and late:
+            log(f"  {name(sh)} answers otherwise, but the questions left are kept for the check: not sure")
+            doubt, w = True, None
+        elif w is not None:
+            doubt = False
             told = [(x, oracle(list(x))) for x in w[:1 if frugal else max(1, asks - asked)]]
             asked += len(told)
             wrong = sum(machine.run(x) != y for x, y in told)
@@ -1006,8 +1054,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         asked += len(told)
         wrong = [(w, y) for w, y in told if machine.run(w) != y]
         if not wrong:
-            log(f"  no other machine within {slack} bits; {len(told)} longer stories asked, all answered rightly ({time.time() - t0:.1f} s)")
-            machine.sure = len(told) >= full  # a check cut short by the limit of questions is not passed
+            log(f"  {'a second machine is not ruled out' if doubt else f'no other machine within {slack} bits'}; "
+                f"{len(told)} longer stories asked, all answered rightly ({time.time() - t0:.1f} s)")
+            machine.sure = len(told) >= full and not doubt  # a check cut short by the limit of questions is not passed
             return machine, asked
         log(f"  no other machine within {slack} bits; of {len(told)} longer stories asked, {len(wrong)} answered wrongly")
         if not shorten:
@@ -1046,8 +1095,9 @@ def unseen(machine, syms, data, most=12, depth=12):
 
     def read(conf):
         q, z = conf
-        return (q if machine.by_state else 0,) + tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v
-                                                       for c, v in zip(machine.cells, z))
+        r = (q if machine.by_state else 0,) + tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v
+                                                    for c, v in zip(machine.cells, z))
+        return (0, r[-1]) if machine.by_state == "last" else r
     seen = {read(at(s)) for s, _ in data}
     found, frontier, visited = [], [((), at(()))], {at(())}
     for _ in range(depth):
