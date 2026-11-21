@@ -7,7 +7,9 @@ and resets): a finite control (k states, a table of moves), and beside it at mos
 depend on the state of the control (a heading and a position), and the second cell's offset may depend on the value of
 the first circle (a carry: the day of the week and the weeks gone by). The answer is a table from what is seen at the
 end: the state and the cells, or the cells only. One more form: the states are the answers themselves (a table of
-relations, Tarski 1941).
+relations, Tarski 1941). With dep, a shape is a body (the states and the cells) and a ceiling of its price: which moves
+depend on the state, or on what the first cell reads, and which parts the answer reads, is found with the machine and
+priced by the rule (see ceilings).
 
 Learning:
   1. Shapes are tried in the order of their length in bits; for each, a SAT solver looks for a machine that answers
@@ -191,6 +193,7 @@ def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
 STEP = 16  # the ceilings of a body: every so many bits
 TOP = 400  # and none above this
 MAXREAD = 3  # with two cells, at most so many symbols move one part by what the first cell reads
+PAIRK = 2  # with two cells, at most so many states
 
 
 def parts(k, cells):
@@ -287,7 +290,7 @@ def highest(k, cells, nsym, nlab, by=True):
     return price(k, cells, nsym, nlab, {p: (cS, cR, min(cS, cR)) for p in P}, frozenset(P), numeric)
 
 
-@functools.lru_cache(maxsize=4096)
+@functools.lru_cache(maxsize=256)  # (one fit asks for the same ceiling in every round)
 def forbidden(k, cells, nsym, nlab, b, numeric=False, need=frozenset()):
     """The price is monotone in the counts of every part and in the parts the answer reads, so the profiles priced at
     most b are a down-set; it is cut by one clause per minimal profile above b (the minimal elements of the up-set
@@ -319,8 +322,8 @@ def forbidden(k, cells, nsym, nlab, b, numeric=False, need=frozenset()):
 
 
 def bodies(most_k=12, numeric=False):
-    """No cell (up to most_k states); one cell (up to 6 states); two cells (up to 2 states), the first a small one read
-    by the moves, the second read by the answer; a number told as it is."""
+    """No cell (up to most_k states); one cell (up to 6 states); two cells (up to PAIRK states), the first a small one
+    read by the moves, the second read by the answer; a number told as it is."""
     Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
     M = [("M", m) for m in range(2, 13)]
     L = [("L", n, B) for n in range(3, 9) for B in (1, 2)]
@@ -328,10 +331,10 @@ def bodies(most_k=12, numeric=False):
     second = [("Z", 1, 1), ("Z", 2, 1)] + [("M", m) for m in range(2, 8)] + [("M", 12)] + [("L", n, 1) for n in range(3, 7)]
     out = [(k, (), True) for k in range(1, most_k + 1)]
     out += [(k, (c,), True) for k in range(1, 7) for c in Z + M + L]
-    out += [(k, (c0, c1), True) for k in (1, 2) for c0 in first for c1 in second]
+    out += [(k, (c0, c1), True) for k in range(1, PAIRK + 1) for c0 in first for c1 in second]
     if numeric:
         out += [(k, (c,), "number") for k in range(1, 7) for c in Z + L]
-        out += [(k, (c0, c1), "lastnum") for k in (1, 2) for c0 in first for c1 in second if c1[0] in "ZL"]
+        out += [(k, (c0, c1), "lastnum") for k in range(1, PAIRK + 1) for c0 in first for c1 in second if c1[0] in "ZL"]
     return out
 
 
@@ -1477,8 +1480,9 @@ def window(every, shape, machine, slack, gone, nsym, nlab):
     """(dep) Where a second machine is looked for: every live body whose cheapest machine is at most slack bits above
     the kept machine's own price, at that ceiling (a ceiling holds every cheaper machine of its body), and the other
     shapes as without dep; the cheapest first."""
-    top = (shape[0] if machine.bits is None else machine.bits) + slack
-    out = [sh for sh in every if not ceiling(sh) and top - slack <= sh[0] <= top and not gone(sh)]
+    lo = shape[0] if machine.bits is None else machine.bits  # (not top - slack: that may come back a bit above lo)
+    top = lo + slack
+    out = [sh for sh in every if not ceiling(sh) and lo <= sh[0] <= top and not gone(sh)]
     for k, cs, by in dict.fromkeys(sh[1:4] for sh in every if ceiling(sh)):
         sh = (top, k, cs, by, ("a", top))
         if lowest(k, cs, nsym, nlab, by) <= top and not gone(sh):
