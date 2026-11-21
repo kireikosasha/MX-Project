@@ -7,7 +7,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import kireiko.dev.anticheat.MX;
 import kireiko.dev.anticheat.api.data.PlayerContainer;
-import kireiko.dev.anticheat.api.events.EntityActionEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 
 import java.util.Collections;

@@ -9,7 +9,6 @@ import kireiko.dev.anticheat.api.events.UseEntityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.utils.ConfigCache;
 import kireiko.dev.anticheat.utils.cache.EntityCache;
-import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -23,7 +22,6 @@ public final class UseEntityListener extends PacketAdapter {
         super(MX.getInstance(), ListenerPriority.HIGHEST, Collections.singletonList(PacketType.Play.Client.USE_ENTITY), ListenerOptions.ASYNC);
     }
 
-    @SneakyThrows
     @Override
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
@@ -56,7 +54,7 @@ public final class UseEntityListener extends PacketAdapter {
                     });
                 }
                 profile.debug("UseEntity packet blocked");
-                MX.blockedPerMinuteCount++;
+                MX.blockedPerMinuteCount.incrementAndGet();
             }
         }
         UseEntityEvent e = new UseEntityEvent(entity, attack, entityId, false);
@@ -64,7 +62,7 @@ public final class UseEntityListener extends PacketAdapter {
         if (e.isCancelled()) {
             event.setCancelled(true);
             profile.debug("UseEntity packet blocked after checking");
-            MX.blockedPerMinuteCount++;
+            MX.blockedPerMinuteCount.incrementAndGet();
         }
     }
 }

@@ -15,7 +15,7 @@ import kireiko.dev.anticheat.services.FunThingsService;
 import kireiko.dev.anticheat.services.SimulationFlagService;
 import kireiko.dev.anticheat.utils.ConfigCache;
 import kireiko.dev.millennium.ml.ClientML;
-import kireiko.dev.millennium.types.EvictingList;
+import kireiko.dev.millennium.types.ConcurrentEvictingList;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -24,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MX extends JavaPlugin {
 
@@ -32,10 +33,10 @@ public class MX extends JavaPlugin {
             name = "MX",
             permissionHead = "mx.",
             permission = permissionHead + "admin";
-    public static int bannedPerMinuteCount = 0;
-    public static List<Integer> bannedPerMinuteList = new EvictingList<>(60);
-    public static int blockedPerMinuteCount = 0;
-    public static List<Integer> blockedPerMinuteList = new EvictingList<>(60);
+    public static final AtomicInteger bannedPerMinuteCount = new AtomicInteger();
+    public static List<Integer> bannedPerMinuteList = new ConcurrentEvictingList<>(60);
+    public static final AtomicInteger blockedPerMinuteCount = new AtomicInteger();
+    public static List<Integer> blockedPerMinuteList = new ConcurrentEvictingList<>(60);
     @Getter
     private static MX instance;
 
@@ -83,15 +84,12 @@ public class MX extends JavaPlugin {
         AnimatedPunishService.init();
         FunThingsService.init();
         SimulationFlagService.init();
-        //CrasherShieldNewListener.watchdog();
 
         // reset vl
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
             float r = ConfigCache.VL_RESET;
-            bannedPerMinuteList.add(bannedPerMinuteCount);
-            bannedPerMinuteCount = 0;
-            blockedPerMinuteList.add(blockedPerMinuteCount);
-            blockedPerMinuteCount = 0;
+            bannedPerMinuteList.add(bannedPerMinuteCount.getAndSet(0));
+            blockedPerMinuteList.add(blockedPerMinuteCount.getAndSet(0));
             for (PlayerProfile profile : PlayerContainer.getUuidPlayerProfileMap().values()) {
                 profile.fade(r);
                 profile.setFlagCount(0);
@@ -100,7 +98,6 @@ public class MX extends JavaPlugin {
     }
 
     private void loadListeners() {
-        //Bukkit.getPluginManager().registerEvents(new GhostBlockTest(), this);
         Bukkit.getPluginManager().registerEvents(new InteractSpellListener(), this);
         Bukkit.getPluginManager().registerEvents(new JoinQuitListener(), this);
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();

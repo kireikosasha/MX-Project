@@ -39,9 +39,9 @@ public final class CinematicComponent {
         if (this.yawSamples.size() >= 20 && this.pitchSamples.size() >= 20) {
             Set<Double> shannonYaw = new HashSet<>(), shannonPitch = new HashSet<>();
             List<Double> stackYaw = new ArrayList<>(), stackPitch = new ArrayList<>();
-            for (Double yawSample : this.yawSamples) {
-                stackYaw.add(yawSample);
-                stackPitch.add(yawSample);
+            for (int i = 0; i < this.yawSamples.size(); i++) {
+                stackYaw.add(this.yawSamples.get(i));
+                stackPitch.add(this.pitchSamples.get(i));
                 if (stackYaw.size() >= 10 && stackPitch.size() >= 10) {
                     shannonYaw.add(Statistics.getShannonEntropy(stackYaw));
                     shannonPitch.add(Statistics.getShannonEntropy(stackPitch));
