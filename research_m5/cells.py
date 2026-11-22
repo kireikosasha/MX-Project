@@ -126,6 +126,11 @@ FAMILIES = {
 # at the ends ("never above boil, never below cold"), or sets it to a value; read as it is.
 SET = 100  # an operation of a level >= SET sets it to (operation - SET)
 MIRROR = True  # a level turned end for end is the same machine: only one of the two is searched
+INCREMENTAL = True  # fit keeps one encoding and one solver while it adds stories
+ENGINE = "glucose4"  # the solver (any of pysat's that takes a limit of conflicts)
+PART = 40  # fit begins with so many of the stories, and adds those its machine answers wrongly
+WORK = [0]  # the conflicts spent so far, in this process (what the patience of a learner is counted in)
+DEPTHS = (4, 7)  # (warm) a second machine is looked for on stories of at most so many symbols first, then of `build`
 DOUBT = True  # a shape on which the solver could not tell whether a second machine is there leaves the machine unsure
 
 
@@ -575,6 +580,8 @@ class Encoding:
         self.stump = isinstance(self.chain, tuple) and self.chain[0] == "s"
         self.tests = [(j, v) for j, c in enumerate(self.cells) for v in list(values(c))[1:]] if self.stump else []
         self.ids, self.clauses = IDPool(), []
+        self.sent = 0  # (the clauses already given to a live solver)
+        self.warm = False  # (kept from one search to the next: see Warm)
         self.nc = len(self.cells) - 1 if self.by_state == "lastnum" else 0  # (the cell whose number is the answer)
         self.reads = [] if self.by_state in ("number", "lastnum") else \
             list(itertools.product(range(self.k) if self.by_state else [0], *[values(c) for c in self.cells]))
@@ -1045,14 +1052,18 @@ class Encoding:
         if self.by_state in ("number", "lastnum"):
             n = self.at(tuple(seq))
             d = self.v("differs", n, y)
-            self.add([-d] + self.isnot(n, int(y)))
+            if not self.warm or ("dif", n, y) not in self.memo:  # (kept: said once)
+                self.memo[("dif", n, y)] = True
+                self.add([-d] + self.isnot(n, int(y)))
             return d
         if y in self.labels:
             n = self.at(tuple(seq))
             if ("ans", n) not in self.memo:
                 self.memo[("ans", n)] = self.free(seq)
             return -self.memo[("ans", n)][self.labels.index(y)]
-        self.clauses.append([self.v("true")])
+        if not self.warm or "true" not in self.memo:
+            self.memo["true"] = True
+            self.clauses.append([self.v("true")])
         return self.v("true")
 
     def free(self, seq):
@@ -1069,16 +1080,32 @@ class Encoding:
                 self.clauses.append(ls + [-self.v("l", r, y), ans[y]])
         return ans
 
-    def solve(self, seconds):
+    def solve(self, seconds, live=None, assume=()):
         """The solver's limit is a number of conflicts (CONFLICTS a second of the old limit), not time: the same work on
-        any machine, so the same result. A wall clock far beyond it only guards against a hang."""
-        with Solver(name="glucose4", bootstrap_with=self.clauses) as s:
+        any machine, so the same result. A wall clock far beyond it only guards against a hang.
+        live: a solver kept between calls (INCREMENTAL): only the clauses added since the last call are given to it, and
+        what it learned stays (Een and Sorensson 2003). assume: literals held true for this call only."""
+        if live is None:
+            with Solver(name=ENGINE, bootstrap_with=self.clauses) as s:
+                return self.solved(s, seconds, 0)
+        live.append_formula(self.clauses[self.sent:])
+        self.sent = len(self.clauses)
+        if self.warm:  # (the solver has them: the list is not kept twice)
+            self.clauses, self.sent = [], 0
+        return self.solved(live, seconds, live.accum_stats().get("conflicts", 0), assume)
+
+    def solved(self, s, seconds, before, assume=()):
+        if True:
             s.conf_budget(max(1000, int(seconds * CONFLICTS)))
-            timer = threading.Timer(20 * seconds + 60, s.interrupt)
-            timer.start()
-            ok = s.solve_limited(expect_interrupt=True)
-            timer.cancel()
-            self.used = s.accum_stats().get("conflicts", 0)
+            timer = threading.Timer(20 * seconds + 60, s.interrupt) if ENGINE.startswith("glucose") else None
+            if timer:
+                timer.start()
+            ok = s.solve_limited(assumptions=list(assume), expect_interrupt=True)
+            if timer:
+                timer.cancel()
+                s.clear_interrupt()
+            self.used = s.accum_stats().get("conflicts", 0) - before
+            WORK[0] += self.used
             if ok is None:
                 return None, "unknown"
             if not ok:
@@ -1127,11 +1154,81 @@ def story_differs(e, other, syms, D):
     e.clauses.append(some)
 
 
+def block(e, other, syms, upto, D):
+    """(warm) What story_differs says, for a solver kept between searches. Its clauses hold only under a literal (the
+    solver is asked with it assumed), so the block of a machine no longer kept is switched off by one clause; and it is
+    written depth by depth as asked: 'they part after t symbols' has a literal for every t, and a search on short
+    stories assumes the later ones false (most second machines part from the first on a short story). The run of the
+    machine looked for along the story the solver writes is the same for every other machine: it is written once.
+    Returns the literal and the list of the literals of the depths."""
+    b = e.block
+    if b is None or b["other"] is not other:
+        if b is not None:
+            e.clauses.append([-b["act"]])
+        act = e.v("act", e.blocks)
+        e.blocks += 1
+        c0 = (other.start, tuple(other.zstart))
+        b = e.block = {"other": other, "act": act, "layer": {c0}, "t": 0, "d": [e.v("d", act, t) for t in range(1, D + 1)]}
+        e.clauses.append([-act, e.v("y", act, 0, c0)])
+        e.clauses.append([-act] + b["d"])
+    act = b["act"]
+    chain = tuple(("?", t) for t in range(1, D + 1))
+    while b["t"] < upto:
+        t = b["t"] + 1
+        nxt = set()
+        for c in b["layer"]:
+            for s in syms:
+                q2, z2 = other.move(c[0], list(c[1]), s)
+                c2 = (q2, tuple(z2))
+                nxt.add(c2)
+                e.clauses.append([-e.v("y", act, t - 1, c), -e.v("f", t, s), e.v("y", act, t, c2)])
+        b["layer"], b["t"] = nxt, t
+        e.at(chain[:t])
+        for c in nxt:
+            e.add([-b["d"][t - 1], -e.v("y", act, t, c), e.differs(chain[:t], other.out(c[0], list(c[1])))])
+    return act, b["d"]
+
+
+class Warm:
+    """The encodings and the solvers of the shapes, kept from one search to the next. The stories of a learner only
+    grow, so what a solver learned of a shape stays true (Een and Sorensson 2003): a search the solver gave up on goes
+    on from where it stopped, a new story is a few clauses more, and a second machine is looked for under an assumed
+    literal, in the same solver."""
+    MOST = 120  # so many shapes at most (the one used longest ago goes first)
+
+    def __init__(self):
+        self.kept, self.dead = {}, set()
+
+    def of(self, shape, syms, labels):
+        key = shape[1:]
+        if key in self.kept:
+            self.kept[key] = self.kept.pop(key)
+        else:
+            e = Encoding(shape, syms, labels)
+            e.warm, e.block, e.blocks, e.said, e.saidset = True, None, 0, [], set()
+            self.kept[key] = (e, Solver(name=ENGINE))
+            while len(self.kept) > self.MOST:
+                self.drop(next(iter(self.kept)))
+        return self.kept[key]
+
+    def drop(self, key):
+        if key in self.kept:
+            self.kept.pop(key)[1].delete()
+
+    def clear(self):
+        for key in list(self.kept):
+            self.drop(key)
+        self.dead = set()
+
+    def __del__(self):
+        self.clear()
+
+
 def separating(m1, m2, syms, D):
     """The shortest story (of at most D symbols) on which two machines answer otherwise; a walk in breadth over the
     pairs of their configurations."""
     start = ((m1.start, tuple(m1.zstart)), (m2.start, tuple(m2.zstart)))
-    frontier, seen = [((), start)], {start}
+    frontier, seen = [((), start)], set()  # (the pair begun in is not seen yet: no story has ended at it)
     for _ in range(D):
         nxt = []
         for w, (c1, c2) in frontier:
@@ -1149,7 +1246,8 @@ def separating(m1, m2, syms, D):
     return None
 
 
-def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lexicon=0, weights=None, most=None, build=0):
+def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lexicon=0, weights=None, most=None, build=0,
+        warm=None):
     """A machine of this shape that answers every story of data rightly (and, given another machine and a pool of
     stories, answers some story of the pool otherwise than it). Solved first on a part of the stories; the stories the
     machine found answers wrongly are added and it is solved again (a 'no' on a part is a 'no' on all).
@@ -1159,8 +1257,68 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
     rng = random.Random(len(data))
     if most is None:  # stories the machine may answer otherwise than the set (its errors, or the set's)
         most = int(excuse * (sum(weights.get(s, 1) for s, _ in data) if weights else len(data)))
-    part = list(data) if most else rng.sample(data, min(40, len(data)))
+    part = list(data) if most else rng.sample(data, min(PART, len(data)))
     left = seconds  # (in seconds of the old limit, spent by the conflicts each solving used)
+    if warm is not None and not most and not lexicon and (other is None or build):
+        e, live = warm.of(shape, syms, labels)
+        def say(stories):
+            for seq, y in stories:
+                e.says(seq, lab[y])
+            e.said += stories
+            e.saidset.update(stories)
+        if not e.said:
+            say(part)
+        how = "unsat"
+        for upto in ([None] if other is None else [d for d in DEPTHS if d < build] + [build]):
+            assume = []
+            if other is not None:
+                act, ds = block(e, other, syms, upto, build)
+                assume = [act] + [-d for d in ds[upto:]]
+            while True:
+                m, how = e.solve(max(0.05, left), live, assume)
+                left -= e.used / CONFLICTS
+                if m is None:
+                    break
+                wrong = [(s, y) for s, y in data if m.run(s) != y]
+                if not wrong:
+                    return m, "sat"
+                new = [x for x in wrong if x not in e.saidset]
+                if left <= 0 or not new:
+                    return None, "unknown"
+                say(rng.sample(new, min(20, len(new))))
+            if how != "unsat":
+                return None, how
+        if other is not None:  # no second machine: is it that the shape explains the stories no more?
+            live.conf_budget(200)
+            if live.solve_limited(expect_interrupt=True) is False:
+                warm.dead.add(shape[1:])
+        if shape[1:] in warm.dead or other is None:
+            warm.drop(shape[1:])
+        return None, "unsat"
+    if INCREMENTAL and not most:  # one encoding and one solver; each round adds only the stories added to the part
+        e = Encoding(shape, syms, labels, lexicon)
+        if other is not None and build:  # the solver writes the story the two machines part on
+            story_differs(e, other, syms, build)
+        elif other is not None:
+            e.clauses.append([e.differs(w, other.run(w)) for w in pool])
+        said = 0
+        with Solver(name=ENGINE) as live:
+            while True:
+                for seq, y in part[said:]:
+                    e.says(seq, lab[y])
+                said = len(part)
+                m, how = e.solve(max(0.05, left), live)
+                left -= e.used / CONFLICTS
+                if m is None:
+                    return None, how
+                wrong = [(s, y) for s, y in data if m.run(s) != y]
+                if not wrong:
+                    return m, "sat"
+                if left <= 0:
+                    return None, "unknown"
+                if all(x in part for x in wrong):
+                    return None, "unknown"
+                part += rng.sample(wrong, min(20, len(wrong)))
     while True:
         e = Encoding(shape, syms, labels, lexicon)
         if most:
@@ -1219,10 +1377,10 @@ def fit_greedy(shape, syms, labels, data, seconds, lexicon=0, start=200, batch=1
                 aside.append(x)
 
 
-def rival(shape, syms, labels, data, machine, pool, seconds, build=0, keep=False):
+def rival(shape, syms, labels, data, machine, pool, seconds, build=0, keep=False, warm=None):
     """A machine of this shape that answers every story taught on rightly and some story of the pool otherwise; the
     stories on which the two part, at most three: the shortest, the longest and one between."""
-    other, how = fit(shape, syms, labels, data, seconds, machine, pool, build=build)
+    other, how = fit(shape, syms, labels, data, seconds, machine, pool, build=build, warm=warm)
     if other is None:
         return how  # "unsat": there is no such machine; "unknown": the solver could not tell
     if build:  # the shortest story the two part on
@@ -1261,12 +1419,21 @@ def side(f, jobs, workers):
 
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
-          committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False):
+          committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
+          warm=False, patience=0):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
     dep: the bodies at their ceilings (see ceilings) in place of the other shapes; the kept machine is priced by itself,
-    and the second machine is looked for in every body whose cheapest machine is at most slack bits above it."""
+    and the second machine is looked for in every body whose cheapest machine is at most slack bits above it.
+    warm: the solvers of the shapes are kept from one search to the next (see Warm); one process only.
+    With build, a shape proved to hold no second machine for the kept machine is not searched again while that machine
+    is kept (more stories leave it so); and when the kept machine is refuted by a story of at most build symbols, every
+    such shape is proved empty (a machine of it that explained the stories would have parted from the kept one there).
+    patience (seconds of the solver's limit; one process only): when the search for a second machine has taken so long
+    without one, one story of the check is asked meanwhile, and the search goes on."""
+    settled, settled_for, hurried = set(), None, 0
+    W = Warm() if warm and workers <= 1 else None
     heard = {}
     if watch:  # the answer is seen after every symbol, as a display is read while the keys are pressed: a story asked
         ask = oracle  # (one question) tells the answers of all its beginnings; so do the stories taught on
@@ -1294,21 +1461,34 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             if not labels:  # stories gives, with each new answer sent to an old one, one that explains these (with no
                 dead, tries = set(), {}  # old answer, nothing was proved)
                 under.clear()
+            if W:  # (an encoding is of its answers: begun again; what was proved stays in dead)
+                W.clear()
             labels, machine = new, None
         numeric = (guards or dep) and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (as written)
         every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades, rules, dep)
         if machine is not None and all(machine.run(s) == y for s, y in data):
             pass  # the kept machine answered what was asked rightly: it stays
         else:
+            if machine is not None and settled_for is machine and settled and \
+                    any(len(s) <= build and machine.run(s) != y for s, y in data):
+                log(f"  {len(settled - dead)} shapes held no second machine: they are empty now")
+                dead |= settled
+                if W:
+                    for key in settled:
+                        W.drop(key)
+            again = shape if W and shape is not None and shape in every and not gone(shape) else None
             machine = shape = None
             t0 = time.time()
             for cap in (2, 5):  # a shape the solver gave up on comes back with twice the work; if nothing at all is
                 live = [sh for sh in every if not gone(sh) and tries.get(sh[1:], 0) <= cap]   # found, up to 32 times
+                if again is not None and cap == 2:  # (warm) the shape of the machine just refuted first: every cheaper
+                    live = [again] + [sh for sh in live if sh != again]  # one is empty or was given up on
                 for i in range(0, len(live), workers):  # the shapes in order of their length, several at once
                     if late_():
                         break
                     part = live[i:i + workers]
-                    got = side(fit, [(sh, syms, labels, data, seconds * 2 ** tries.get(sh[1:], 0)) for sh in part], workers)
+                    got = side(fit, [(sh, syms, labels, data, seconds * 2 ** tries.get(sh[1:], 0), None, (), 0.0, 0, None,
+                                      None, 0, W) for sh in part], workers)
                     for sh, (m, how) in zip(part, got):
                         if m:
                             machine, shape = m, sh
@@ -1351,15 +1531,25 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         late = bool(reserve) and asks - asked <= reserve + owed  # the last questions are kept for the check (and, with
         if late:                                                 # plan, for the reads no story taught on ends at, asked
             near = []                                            # before it); the second machine is looked for after it
-        unsettled, crowd = [], []
+        if settled_for is not machine:
+            settled, settled_for, hurried = set(), machine, 0
+        near = [sh for sh in near if sh[1:] not in settled]
+        unsettled, crowd, hurry, work0 = [], [], False, WORK[0]
         for more in (1, 4):  # a shape on which the solver could not tell is searched again with four times the work
             for i in range(0, len(near), workers):
                 if late_():
                     doubt = True
                     break
-                got = side(rival, [(sh, syms, labels, data, machine, ask_from, seconds * more, build, bool(committee))
+                if patience and workers <= 1 and WORK[0] - work0 > patience * CONFLICTS:
+                    hurry = True
+                    break
+                got = side(rival, [(sh, syms, labels, data, machine, ask_from, seconds * more, build, bool(committee), W)
                                    for sh in near[i:i + workers]], workers)
+                if W and W.dead:
+                    dead |= W.dead
                 hit = [(sh, x) for sh, x in zip(near[i:i + workers], got) if isinstance(x, (list, tuple))]
+                if build and not committee:
+                    settled |= {sh[1:] for sh, x in zip(near[i:i + workers], got) if x == "unsat"}
                 unsettled += [sh for sh, x in zip(near[i:i + workers], got) if x == "unknown"]
                 if committee:  # several second machines, of several shapes, the cheapest first
                     crowd += hit
@@ -1389,10 +1579,10 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 sh, w = crowd[0][0], [best]
                 log(f"  a committee of {len(ms)} machines; the story that splits them most: {' '.join(best)}")
                 break
-            if w is not None or not unsettled:
+            if w is not None or not unsettled or hurry:
                 break
             near, unsettled = unsettled, []
-        if w is None and unsettled:
+        if w is None and unsettled and not hurry:
             log(f"  of {len(unsettled)} shapes the solver could not tell whether a second machine is there")
             doubt = DOUBT
         if w is not None:
@@ -1427,12 +1617,15 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             by.setdefault(machine.run(x), []).append(x)
         tried += [by[y][0] for y in sorted(by, key=lambda y: len(by[y]))[:6]]
         full = len(tried)
+        if hurry:  # (the search for a second machine is long: one story of the check meanwhile, each time another)
+            tried = (tried[15:] + tried[12:15] + tried[:12])[hurried % full:][:1]
+            hurried += 1
         tried = tried[:asks - asked]  # never more than the questions allowed
         if not tried:
             machine.sure = False
             return machine, asked
-        if frugal:  # the stories that cover the answers first, then the pumped, then the plain; up to the first wrong
-            tried = tried[15:] + tried[12:15] + tried[:12]
+        if frugal and not hurry:  # the stories that cover the answers first, then the pumped, then the plain; up to the
+            tried = tried[15:] + tried[12:15] + tried[:12]  # first wrong
             told = []
             for w in tried:
                 told.append((w, oracle(list(w))))
@@ -1445,6 +1638,10 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         wrong = [(w, y) for w, y in told if machine.run(w) != y]
         if watch and not wrong:  # (watched: a beginning answered wrongly is a story answered wrongly)
             wrong = sorted(((x, y) for x, y in heard.items() if machine.run(x) != y), key=lambda t: len(t[0]))[:2]
+        if not wrong and hurry:
+            log(f"  the search for a second machine is long: a story of the check asked meanwhile, answered rightly")
+            data = data + [x for x in told if x[0] not in seen]
+            continue
         if not wrong:
             if late and len(told) >= full:  # the second machine was not looked for on these stories (the questions were
                 # kept for the check): it is looked for now, on them and the check, and nothing more is asked; if there
@@ -1452,11 +1649,12 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 more = data + told
                 near = window(every, shape, machine, slack, gone, len(syms), len(labels)) if dep else \
                     [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
+                near = [sh for sh in near if sh[1:] not in settled]  # (no second machine there: more stories leave it so)
                 for i in range(0, len(near), workers):
                     if late_():
                         doubt = True
                         break
-                    got = side(rival, [(sh, syms, labels, more, machine, ask_from, seconds, build, False)
+                    got = side(rival, [(sh, syms, labels, more, machine, ask_from, seconds, build, False, W)
                                        for sh in near[i:i + workers]], workers)
                     if any(isinstance(x, (list, tuple)) or x == "unknown" for x in got):
                         doubt = True

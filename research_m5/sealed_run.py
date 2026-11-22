@@ -29,7 +29,7 @@ def one(path, out, a):
         data.append((w, oracle(w)))
     t0 = time.time()
     m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers,
-                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep,
+                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience,
                            deadline=time.time() + a.minutes * 60 - 180 if a.deadline else None)
     res = {"found": None if m is None else str(m), "asked": asked, "seconds": round(time.time() - t0),
            "sure": None if m is None else m.sure}
@@ -53,6 +53,10 @@ def main():
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--slack", type=float, default=8, help="a second machine is looked for among the shapes at most so many bits longer")
+    ap.add_argument("--warm", action="store_true", help="the solver of every shape is kept from one search to the next (what it learned stays; a second machine is looked for under an assumed literal, on short stories first); one worker")
+    ap.add_argument("--patience", type=float, default=0, help="when the search for a second machine has taken so many seconds of the solver's limit without one, one story of the check is asked meanwhile")
+    ap.add_argument("--part", type=int, default=0, help="a search begins with so many of the stories (40 if not given) and adds those its machine answers wrongly; a large number: all of them at once")
+    ap.add_argument("--engine", default="", help="the solver (of pysat's; glucose4 if not given)")
     ap.add_argument("--dep", action="store_true", help="every body at ceilings of its price, each move priced by what it depends on (the state, the read of the first cell)")
     ap.add_argument("--watch", action="store_true", help="the answer is seen after every symbol (of the stories taught on and of every story asked; a story asked is still one question)")
     ap.add_argument("--keep", action="store_true", help="no answer paid for is thrown away (the check stories, the halving's beginnings)")
@@ -71,6 +75,10 @@ def main():
     ap.add_argument("--shorten", action="store_true", help="a long story answered wrongly is cut to where the machine first goes wrong")
     ap.add_argument("--after", default="", help="a file of results so far: the families in it are not run again")
     a = ap.parse_args()
+    if a.engine:
+        cells.ENGINE = a.engine
+    if a.part:
+        cells.PART = a.part
     names = sorted(d for d in os.listdir(a.folder) if os.path.exists(os.path.join(a.folder, d, "family.py")))
     print(f"{len(names)} sealed families in {a.folder}", flush=True)
     done = set()
