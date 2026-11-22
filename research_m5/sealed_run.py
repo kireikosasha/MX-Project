@@ -29,7 +29,7 @@ def one(path, out, a):
         data.append((w, oracle(w)))
     t0 = time.time()
     m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers,
-                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience, tier=a.tier, tour_=a.tour, anchor=a.anchor, far=a.far, deep=a.deep,
+                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience, tier=a.tier, tour_=a.tour, anchor=a.anchor, far=a.far, deep=a.deep, mealy=a.mealy,
                            deadline=time.time() + a.minutes * 60 - 180 if a.deadline else None)
     if a.save:  # (the machine itself, for a check that needs more than its answers: external/mealy_dot.py --same)
         import pickle
@@ -67,6 +67,7 @@ def main():
     ap.add_argument("--deep", type=int, default=0, help="with --warm and --build: the last search for a second machine writes stories of up to so many symbols")
     ap.add_argument("--zlong", type=int, default=0, help="with --warm: a shape with a whole number is first told only the stories of at most so many symbols; a longer one when its machine answers it wrongly")
     ap.add_argument("--save", default="", help="a folder to write the machines found into (NN-name.pkl)")
+    ap.add_argument("--mealy", action="store_true", help="also machines whose answer is of the last move: read from the state before the last symbol and that symbol")
     ap.add_argument("--engine", default="", help="the solver (of pysat's; glucose4 if not given)")
     ap.add_argument("--dep", action="store_true", help="every body at ceilings of its price, each move priced by what it depends on (the state, the read of the first cell)")
     ap.add_argument("--watch", action="store_true", help="the answer is seen after every symbol (of the stories taught on and of every story asked; a story asked is still one question)")

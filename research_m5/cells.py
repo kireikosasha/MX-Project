@@ -191,6 +191,8 @@ def bits_of(k, cells, nsym, nlab, by_state=True, chain=False):
     reads = k if by_state else 1
     for c in cells:
         reads *= len(values(c))
+    if by_state == "mealy":  # the answer is of the move: a table over what is read and the symbol
+        reads *= nsym
     return b + reads * math.log2(max(nlab, 2))
 
 
@@ -385,7 +387,7 @@ def rank(shape):
 
 
 def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, cascades=False, rules=False, dep=False,
-           tier=0, anchor=0):
+           tier=0, anchor=0, mealy=False):
     """tier (bits): the price of a shape is its length and so many bits for every step of its rank: the plain shapes are
     searched far ahead of the others, which come in only when no plain machine near their length explains the stories
     (with rules, the moves priced by the rule are then a third tier, beside the tables, not in their place).
@@ -394,17 +396,17 @@ def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, casc
     fewest hidden values first. Their table is long, but it is read off the answers, not searched for: a watcher of a
     display learns its states from the display, and looks for a hidden memory only where the same key at the same
     display does two things."""
-    key = (nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor)
+    key = (nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor, mealy)
     if key not in SHAPES:
         SHAPES.clear()  # (one list is kept: a learner asks for the same one again and again)
-        SHAPES[key] = shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor)
+        SHAPES[key] = shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor, mealy)
     return SHAPES[key]
 
 
 SHAPES = {}
 
 
-def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor=0):
+def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor=0, mealy=False):
     if dep:  # the bodies at their ceilings take the place of every other shape but the switches and the named form
         return ceilings(nsym, nlab, most_k, numeric, flags or guards == "flags")
     Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
@@ -456,6 +458,11 @@ def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, ti
                       for cs in itertools.product(lv + ci, lv + [("Z", 1, 1)])]
     # the states are the answers themselves, and one more to begin in: a table of relations (Tarski 1941), where
     # "what is X to Z" follows from "what is X to Y" and the next link
+    if mealy:  # the answer is of the last move, not of the place arrived at (Mealy 1955): what a device replies to a
+        # request depends on the request. A plain control, or one with a level or a circle
+        small = [("L", n, 1) for n in range(3, 7)] + [("M", m) for m in range(2, 7)]
+        every += [(bits_of(k, (), nsym, nlab, "mealy"), k, (), "mealy", False) for k in range(1, most_k + 1)]
+        every += [(bits_of(k, (c,), nsym, nlab, "mealy"), k, (c,), "mealy", False) for k in range(1, 5) for c in small]
     k = nlab + 1
     if anchor and not numeric:  # (numbers are counted, not named) the answers alone; then with a hidden cell that a
         # few symbols read, the shorter table first; then
@@ -494,6 +501,9 @@ def name(shape):
         words[-1] += f", {chain[1]} of the symbols moving by what the first number reads"
     if by_state == "named":
         return " + ".join(words)
+    if by_state == "mealy":
+        return " + ".join(words) + ", the answer read from the state" + (" and the number" if cells else "") + \
+            " before the last symbol and that symbol"
     return " + ".join(words) + (", the second moved by the value of the first" if chain is True else "") + \
         ("" if by_state or not cells else ", the answer read from the numbers only") + \
         (", the answer is the first number itself" if by_state == "number" else "") + \
@@ -516,7 +526,8 @@ class Machine:
         self.test = {}  # (stump) symbol -> (cell, value): the second row when the cell reads at least the value
         self.start = self.k - 1 if self.by_state == "named" else 0
         self.tau, self.dl, self.lam = tau, dl, lam
-        self.zstart = [0] * len(self.cells)
+        self.mealy = self.by_state == "mealy"  # (the answer of the last move is kept as one more value after the cells)
+        self.zstart = [0] * (len(self.cells) + self.mealy)
 
     def run(self, seq):
         if self.lex is not None:
@@ -534,11 +545,21 @@ class Machine:
             return str(z[0])
         if self.by_state == "lastnum":
             return str(z[-1])
+        if self.mealy:
+            return self.labels[z[-1]]
         r = tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(self.cells, z))
         return self.labels[self.lam[(q if self.by_state else 0,) + r]]
 
     def move(self, q, z, a):
         """One symbol: the next state and values of the cells."""
+        if self.mealy:  # (and the answer of this move: read before it, from the state, the cells and the symbol)
+            z = list(z[:len(self.cells)])
+            r = (q,) + tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(self.cells, z)) + (a,)
+            q2, z2 = self.moved(q, z, a)
+            return q2, z2 + [self.lam[r]]
+        return self.moved(q, z, a)
+
+    def moved(self, q, z, a):
         z = list(z)
         if self.stump:  # one cell is read (clipped) before the move and compared with a value
             j, v = self.test[a]
@@ -633,7 +654,9 @@ class Encoding:
         self.tot = self.model = None  # (see inertia)
         self.nc = len(self.cells) - 1 if self.by_state == "lastnum" else 0  # (the cell whose number is the answer)
         self.reads = [] if self.by_state in ("number", "lastnum") else \
-            list(itertools.product(range(self.k) if self.by_state else [0], *[values(c) for c in self.cells]))
+            list(itertools.product(range(self.k) if self.by_state else [0], *[values(c) for c in self.cells])) \
+            if self.by_state != "mealy" else \
+            list(itertools.product(range(self.k), *[values(c) for c in self.cells], syms))
         self.gvals = ([(v,) for v in values(self.cells[0])] if self.cells else [()]) if self.dep else \
             list(itertools.product(*[values(c) for c in self.cells])) if self.guard else []
         k = self.k
@@ -1085,8 +1108,16 @@ class Encoding:
         n = self.at(tuple(seq))
         neg = lambda l: (not l) if isinstance(l, bool) else -l
         lits = {}
+        end, last = n, None
+        if self.by_state == "mealy":  # (read at the node before the last symbol, and by that symbol)
+            last, n = seq[-1], self.at(tuple(seq[:-1]))
         for r in self.reads:
+            if last is not None and not (isinstance(last, tuple) and last[:1] == ("?",)) and r[-1] != last:
+                lits[r] = None
+                continue
             out = [-self.v("x", n, r[0])] if self.by_state else []
+            if last is not None and isinstance(last, tuple) and last[:1] == ("?",):  # (a symbol the solver writes)
+                out.append(-self.v("f", last[1], r[-1]))
             for j, c in enumerate(self.cells):
                 v = r[1 + j]
                 if c[0] in "ML":
@@ -1103,7 +1134,7 @@ class Encoding:
                 if out is None:
                     break
             lits[r] = out
-        return n, lits
+        return end, lits
 
     def isnot(self, n, v):
         """Literals one of which holds unless the first cell at node n is v (True / False where depth decides)."""
@@ -1209,6 +1240,8 @@ class Encoding:
         lam = {r: next(y for y in range(len(self.labels)) if on("l", r, y)) for r in self.reads}
         m = Machine(self.shape, self.syms, self.labels, tau, dl, lam)
         m.zstart = [next(v for v in range(c[1]) if on("z", 0, j, v)) if c[0] == "L" else 0 for j, c in enumerate(self.cells)]
+        if m.mealy:
+            m.zstart.append(0)
         if self.raw is not None:
             m.lex = {r: self.syms[next(i for i in range(len(self.syms)) if on("w", r, i))] for r in self.raw}
         if self.stump:
@@ -1567,7 +1600,7 @@ def side(f, jobs, workers):
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
           committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
-          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0):
+          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0, mealy=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
@@ -1636,7 +1669,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 W.clear()
             labels, machine = new, None
         numeric = (guards or dep) and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (as written)
-        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor)
+        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor,
+                       mealy)
         if machine is not None and all(machine.run(s) == y for s, y in data):
             pass  # the kept machine answered what was asked rightly: it stays
         else:
@@ -1774,7 +1808,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             continue
         if fixed is not None:  # nothing longer can be asked
             return machine, asked
-        if explore:  # first the reads the machine can reach that no story taught on ends at: their answers are free
+        if explore and not machine.mealy:  # first the reads the machine can reach that no story taught on ends at: their answers are free
             free = [w for w in unseen(machine, syms, data) if w not in seen][:max(0, asks - asked)]  # (out of the reserve too)
             if free and tour_:  # one story to the first of them and on through the moves not made; then the rest anew
                 x = tour(machine, syms, heard, free[0], max(tour_, len(free[0])), rng=rng)
