@@ -61,6 +61,7 @@ def main():
     ap.add_argument("--anchor", type=float, default=0, help="the machines whose states are the answers, each with a few hidden values, are tried right after the shapes at most so many bits long")
     ap.add_argument("--far", type=int, default=0, help="with --watch: eight of the twelve plain stories of the check are of up to so many symbols (a long story heard is checked, not put into the formulas)")
     ap.add_argument("--deep", type=int, default=0, help="with --warm and --build: the last search for a second machine writes stories of up to so many symbols")
+    ap.add_argument("--zlong", type=int, default=0, help="with --warm: a shape with a whole number is first told only the stories of at most so many symbols; a longer one when its machine answers it wrongly")
     ap.add_argument("--engine", default="", help="the solver (of pysat's; glucose4 if not given)")
     ap.add_argument("--dep", action="store_true", help="every body at ceilings of its price, each move priced by what it depends on (the state, the read of the first cell)")
     ap.add_argument("--watch", action="store_true", help="the answer is seen after every symbol (of the stories taught on and of every story asked; a story asked is still one question)")
@@ -84,6 +85,8 @@ def main():
         cells.ENGINE = a.engine
     if a.part:
         cells.PART = a.part
+    if a.zlong:
+        cells.ZLONG = a.zlong
     names = sorted(d for d in os.listdir(a.folder) if os.path.exists(os.path.join(a.folder, d, "family.py")))
     print(f"{len(names)} sealed families in {a.folder}", flush=True)
     done = set()

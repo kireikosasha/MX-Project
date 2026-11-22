@@ -128,6 +128,9 @@ SET = 100  # an operation of a level >= SET sets it to (operation - SET)
 MIRROR = True  # a level turned end for end is the same machine: only one of the two is searched
 INCREMENTAL = True  # fit keeps one encoding and one solver while it adds stories
 ENGINE = "glucose4"  # the solver (any of pysat's that takes a limit of conflicts)
+ZLONG = 0  # (warm) a shape with a whole number is first told only the stories of at most so many symbols (0: all):
+# the formula of a whole number grows with the square of a story's length; a longer story is told when the machine
+# found answers it wrongly, the shortest first
 LONG = 32  # (far) a story heard that is longer is not put into the formulas: the machine is only checked on it
 INERT = True  # (anchor) of the machines that explain the stories, the one where something happens in the fewest places
 HIDDEN = 4  # (anchor) the answers as states, each with at most so many hidden values
@@ -1398,8 +1401,9 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
                 e.says(seq, lab[y])
             e.said += stories
             e.saidset.update(stories)
+        heavy = ZLONG and any(c[0] == "Z" for c in shape[2])
         if not e.said:
-            say(part)
+            say([x for x in part if len(x[0]) <= ZLONG] if heavy else part)
         how = "unsat"
         for upto in ([None] if other is None else [d for d in DEPTHS if d < build] + [build]):
             assume = []
@@ -1428,7 +1432,7 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
                 new = [x for x in wrong if x not in e.saidset]
                 if left <= 0 or not new:
                     return None, "unknown"
-                say(rng.sample(new, min(20, len(new))))
+                say(sorted(new, key=lambda x: (len(x[0]), x[0]))[:5] if heavy else rng.sample(new, min(20, len(new))))
             if how != "unsat":
                 return None, how
         if other is not None:  # no second machine: is it that the shape explains the stories no more?
