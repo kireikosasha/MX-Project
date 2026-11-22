@@ -133,7 +133,7 @@ INERT = True  # (anchor) of the machines that explain the stories, the one where
 HIDDEN = 4  # (anchor) the answers as states, each with at most so many hidden values
 PART = 40  # fit begins with so many of the stories, and adds those its machine answers wrongly
 WORK = [0]  # the conflicts spent so far, in this process (what the patience of a learner is counted in)
-DEPTHS = (4, 7)  # (warm) a second machine is looked for on stories of at most so many symbols first, then of `build`
+DEPTHS = (4, 7, 12)  # (warm) a second machine is looked for on stories of at most so many symbols first, then of `build`
 DOUBT = True  # a shape on which the solver could not tell whether a second machine is there leaves the machine unsure
 
 
@@ -1250,7 +1250,7 @@ def block(e, other, syms, upto, D):
     machine looked for along the story the solver writes is the same for every other machine: it is written once.
     Returns the literal and the list of the literals of the depths."""
     b = e.block
-    if b is None or b["other"] is not other:
+    if b is None or b["other"] is not other or len(b["d"]) != D:
         if b is not None:
             e.clauses.append([-b["act"]])
         act = e.v("act", e.blocks)
@@ -1350,6 +1350,10 @@ def settle(m, data):
             for j in range(len(m.cells)):
                 m.dl[a, q, j, g if m.guard else 0] = 0
     return m
+
+
+def W_ok(warm, workers):
+    return bool(warm) and workers <= 1
 
 
 def separating(m1, m2, syms, D):
@@ -1559,7 +1563,7 @@ def side(f, jobs, workers):
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
           committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
-          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0):
+          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
@@ -1577,9 +1581,12 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     after every symbol, a long story costs one question and checks the machine as far as it will be used; a check on
     stories of a dozen symbols passes machines that go wrong later. A story heard that is longer than LONG is not put
     into the formulas (they would grow with its length): the machine found is checked on it, and only the shortest
-    beginning it answers wrongly is taught on."""
+    beginning it answers wrongly is taught on.
+    deep (warm, with build): the last search for a second machine, the one 'sure' rests on, writes stories of up to so
+    many symbols, not build: two machines may agree on every story of a dozen symbols and part later."""
     tour_ = tour_ if watch else 0
     far = far if watch else 0
+    deep = deep if W_ok(warm, workers) and build else 0
     def missed():  # (far) the shortest long story heard that the machine answers wrongly, if any, as a list
         have = {x for x, _ in data}
         return sorted(((x, y) for x, y in heard.items() if len(x) > LONG and x not in have and machine.run(x) != y),
@@ -1829,12 +1836,13 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 more = [x for x in data + told if x[1] in labels  # (a number answered rightly may be a new answer)
                         and (not far or len(x[0]) <= LONG)]
                 near = window(every, shape, machine, slack, gone, len(syms), len(labels)) if dep else around()
-                near = [sh for sh in near if sh[1:] not in settled]  # (no second machine there: more stories leave it so)
+                if not deep:  # (no second machine there: more stories leave it so; with deep, none on a short story)
+                    near = [sh for sh in near if sh[1:] not in settled]
                 for i in range(0, len(near), workers):
                     if late_():
                         doubt = True
                         break
-                    got = side(rival, [(sh, syms, labels, more, machine, ask_from, seconds, build, False, W)
+                    got = side(rival, [(sh, syms, labels, more, machine, ask_from, seconds, max(build, deep), False, W)
                                        for sh in near[i:i + workers]], workers)
                     if any(isinstance(x, (list, tuple)) or x == "unknown" for x in got):
                         doubt = True
