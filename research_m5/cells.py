@@ -461,8 +461,11 @@ def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, ti
     if mealy:  # the answer is of the last move, not of the place arrived at (Mealy 1955): what a device replies to a
         # request depends on the request. A plain control, or one with a level or a circle
         small = [("L", n, 1) for n in range(3, 7)] + [("M", m) for m in range(2, 7)]
-        every += [(bits_of(k, (), nsym, nlab, "mealy"), k, (), "mealy", False) for k in range(1, most_k + 1)]
-        every += [(bits_of(k, (c,), nsym, nlab, "mealy"), k, (c,), "mealy", False) for k in range(1, 5) for c in small]
+        of = [(bits_of(k, (), nsym, nlab, "mealy"), k, (), "mealy", False) for k in range(1, most_k + 1)] + \
+             [(bits_of(k, (c,), nsym, nlab, "mealy"), k, (c,), "mealy", False) for k in range(1, 5) for c in small]
+        # (with anchor they come with the machines whose states are the answers, the shorter table first: their
+        # states are not given by the answers, but every move is told apart by its own answer, and the search is quick)
+        every += [(anchor + 1 + 1e-4 * sh[0],) + sh[1:] for sh in of] if anchor and not numeric else of
     k = nlab + 1
     if anchor and not numeric:  # (numbers are counted, not named) the answers alone; then with a hidden cell that a
         # few symbols read, the shorter table first; then
@@ -516,6 +519,7 @@ class Machine:
     lex = None
     sure = None  # True: it passed the last check; False: the questions ran out before it did; None: no check
     bits = None  # (a ceiling shape) the price of the machine itself: what its moves and its answer really depend on
+    mealy = False  # the answer is of the last move (see shapes)
 
     def __init__(self, shape, syms, labels, tau, dl, lam):
         self.shape, self.k, self.cells, self.syms, self.labels = shape, shape[1], shape[2], syms, labels
@@ -1631,7 +1635,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     # where a second machine is looked for: the shapes at most slack bits longer; of the shapes with the answers as
     # states, only the kept machine's own (one with more hidden values always holds another machine)
     around = lambda: [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead
-                      and (not anchor or sh[3] != "named" or sh == shape)]
+                      and (not anchor or sh[3] not in ("named", "mealy") or sh == shape)]
     bad = lambda x: machine.run(x) != heard[tuple(x)] if not watch else \
         any(machine.run(x[:i]) != heard[tuple(x[:i])] for i in range(1, len(x) + 1))
     settled, settled_for, hurried = set(), None, 0
