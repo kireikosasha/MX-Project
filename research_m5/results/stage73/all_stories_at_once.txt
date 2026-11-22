@@ -1,0 +1,31 @@
+The first search of a family (the stories taught on, with the answer after every symbol): a part of 40 stories with the wrongly answered added, against all the stories said at once. 3 seconds of the solver's limit a shape.
+
+  found 2 switches + a level of 4 (steps -2..2, held at the ends, or set) (117 bits) as shape 958
+02-subway-turnstile part 40 glucose4: {'unsat': 748, 'unknown': 210, 'sat': 1} in 293 s, 19318614 conflicts; 138 stories
+
+  found 2 switches + a level of 4 (steps -1..1, held at the ends, or set) (111 bits) as shape 885
+02-subway-turnstile part 100000 glucose4: {'unsat': 849, 'unknown': 36, 'sat': 1} in 113 s, 5860175 conflicts; 138 stories
+   two cells                    unsat     395 shapes   2628457 conflicts   42.6 s
+   two cells                    unknown    32 shapes   1976801 conflicts   30.7 s
+   two cells, guarded           unsat     104 shapes    239040 conflicts   12.4 s
+   one cell                     unsat     157 shapes    496096 conflicts   10.0 s
+   one cell, guarded            unsat     149 shapes    156958 conflicts   10.0 s
+   one cell                     unknown     4 shapes    241532 conflicts    4.6 s
+   one cell, switches           unsat      34 shapes    114253 conflicts    2.5 s
+   one cell, switches           sat         1 shapes      5772 conflicts    0.1 s
+   no cell, switches            unsat       3 shapes       936 conflicts    0.1 s
+   no cell                      unsat       7 shapes       330 conflicts    0.0 s
+   the ten longest:
+       60287   1.4 s unknown 3 states + a circle of 12, the answer read from the numbers only
+       60377   1.4 s unknown 4 states + a circle of 9, the answer read from the numbers only
+       69411   1.3 s unknown 3 states + a whole number (offsets -2..2, read clipped to -1..1) + a circle of 4, the answer read from the num
+       72895   1.3 s unsat   2 states + a circle of 3 + a circle of 4, the second moved by the value of the first, the answer read from the
+       60123   1.2 s unknown 2 states + a circle of 2 + a circle of 7, the second moved by the value of the first, the answer read from the
+       60116   1.1 s unknown 2 states + a circle of 2 + a circle of 6, the second moved by the value of the first, the answer read from the
+       63141   1.1 s unknown 3 states + a whole number (offsets -1..1, read clipped to -1..1) + a circle of 4, the answer read from the num
+       74070   1.1 s unknown 2 states + a circle of 3 + a circle of 6, the answer read from the numbers only
+       60008   1.1 s unknown 3 states + a whole number (offsets -2..2, read clipped to -2..2) + a circle of 3, the answer read from the num
+       70162   1.1 s unsat   3 states + a circle of 3 + a circle of 3, the answer read from the numbers only
+
+  found 4 states + a level of 6 (steps -1..1, held at the ends, or set), the answer read from the numbers only (99 bits) as shape 839
+08-tram-depot part 100000 glucose4: {'unsat': 796, 'unknown': 43, 'sat': 1} in 129 s, 7132620 conflicts; 138 stories

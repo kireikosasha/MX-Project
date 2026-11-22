@@ -1,0 +1,33 @@
+Where the work of a watched run goes (420 s a family; fit with one live solver inside a call, before the changes of this stage).
+'first': the search for a machine that explains the stories; 'second': the search for a second machine (a story of at most 12 symbols written by the solver).
+
+07-tea-house watch total 421 s, asked 22, sure False
+  first   unknown  calls  200  conflicts  16654438 (69.9 %)  seconds  293.9 (69.8 % of all), in the solver  287.2
+  first   unsat    calls  575  conflicts   6586764 (27.7 %)  seconds  115.7 (27.5 % of all), in the solver   97.5
+  second  unsat    calls  231  conflicts    510308 ( 2.1 %)  seconds    8.7 ( 2.1 % of all), in the solver    3.9
+  second  sat      calls   19  conflicts     48884 ( 0.2 %)  seconds    1.9 ( 0.4 % of all), in the solver    0.4
+  first   sat      calls    9  conflicts     12406 ( 0.1 %)  seconds    0.2 ( 0.1 % of all), in the solver    0.1
+  outside fit: 0.3 s
+07-tea-house plain total 129 s, asked 40, sure False
+  first   unsat    calls  489  conflicts   3972632 (57.7 %)  seconds   76.7 (59.7 % of all), in the solver   55.7
+  first   unknown  calls   36  conflicts   2391054 (34.8 %)  seconds   39.2 (30.5 % of all), in the solver   38.0
+  second  unsat    calls  255  conflicts    409446 ( 6.0 %)  seconds    8.0 ( 6.2 % of all), in the solver    3.0
+  first   sat      calls   12  conflicts     67345 ( 1.0 %)  seconds    2.8 ( 2.2 % of all), in the solver    1.4
+  second  sat      calls   19  conflicts     38907 ( 0.6 %)  seconds    1.5 ( 1.2 % of all), in the solver    0.3
+  outside fit: 0.4 s
+02-subway-turnstile watch total 422 s, asked 1, sure False
+  first   unknown  calls  132  conflicts  10106499 (38.9 %)  seconds  166.9 (39.6 % of all), in the solver  164.9
+  first   unsat    calls  809  conflicts   7744183 (29.8 %)  seconds  121.1 (28.7 % of all), in the solver  109.5
+  second  unknown  calls  102  conflicts   6237483 (24.0 %)  seconds   95.2 (22.6 % of all), in the solver   90.1
+  second  unsat    calls  115  conflicts   1757548 ( 6.8 %)  seconds   36.3 ( 8.6 % of all), in the solver   25.9
+  second  sat      calls    1  conflicts     84737 ( 0.3 %)  seconds    1.4 ( 0.3 % of all), in the solver    1.4
+  first   sat      calls    1  conflicts     51606 ( 0.2 %)  seconds    0.7 ( 0.2 % of all), in the solver    0.7
+  outside fit: 0.1 s
+12-clock-tower watch total 420 s, asked 14, sure False
+  second  unsat    calls 1565  conflicts   6631861 (30.5 %)  seconds  156.2 (37.2 % of all), in the solver   72.7
+  first   unknown  calls  153  conflicts   9299348 (42.7 %)  seconds  138.7 (33.0 % of all), in the solver  134.9
+  first   unsat    calls 1418  conflicts   4669445 (21.5 %)  seconds  109.6 (26.1 % of all), in the solver   61.0
+  second  unknown  calls   16  conflicts    980933 ( 4.5 %)  seconds   13.0 ( 3.1 % of all), in the solver   12.5
+  second  sat      calls   11  conflicts    160068 ( 0.7 %)  seconds    2.0 ( 0.5 % of all), in the solver    1.8
+  first   sat      calls    8  conflicts     17670 ( 0.1 %)  seconds    0.2 ( 0.1 % of all), in the solver    0.1
+  outside fit: 0.3 s

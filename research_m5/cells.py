@@ -23,7 +23,7 @@ Learning:
      pieces, as in the pumping lemma; plain ones; and ones on which the kept machine gives each of its answers, the
      rarest first). A wrong answer goes back to 1."""
 import argparse, functools, itertools, math, random, sys, threading, time
-from pysat.card import CardEnc, EncType
+from pysat.card import CardEnc, EncType, ITotalizer
 from pysat.formula import IDPool
 from pysat.solvers import Solver
 
@@ -128,6 +128,8 @@ SET = 100  # an operation of a level >= SET sets it to (operation - SET)
 MIRROR = True  # a level turned end for end is the same machine: only one of the two is searched
 INCREMENTAL = True  # fit keeps one encoding and one solver while it adds stories
 ENGINE = "glucose4"  # the solver (any of pysat's that takes a limit of conflicts)
+INERT = True  # (anchor) of the machines that explain the stories, the one where something happens in the fewest places
+HIDDEN = 4  # (anchor) the answers as states, each with at most so many hidden values
 PART = 40  # fit begins with so many of the stories, and adds those its machine answers wrongly
 WORK = [0]  # the conflicts spent so far, in this process (what the patience of a learner is counted in)
 DEPTHS = (4, 7)  # (warm) a second machine is looked for on stories of at most so many symbols first, then of `build`
@@ -379,21 +381,26 @@ def rank(shape):
 
 
 def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, cascades=False, rules=False, dep=False,
-           tier=0):
+           tier=0, anchor=0):
     """tier (bits): the price of a shape is its length and so many bits for every step of its rank: the plain shapes are
     searched far ahead of the others, which come in only when no plain machine near their length explains the stories
-    (with rules, the moves priced by the rule are then a third tier, beside the tables, not in their place)."""
-    key = (nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier)
+    (with rules, the moves priced by the rule are then a third tier, beside the tables, not in their place).
+    anchor (bits): the machines whose states are what is seen, the answers, each with a few hidden values (1, 2, ...
+    HIDDEN) for what is not seen, are all given this one price: they come right after the shapes at most so long, the
+    fewest hidden values first. Their table is long, but it is read off the answers, not searched for: a watcher of a
+    display learns its states from the display, and looks for a hidden memory only where the same key at the same
+    display does two things."""
+    key = (nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor)
     if key not in SHAPES:
         SHAPES.clear()  # (one list is kept: a learner asks for the same one again and again)
-        SHAPES[key] = shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier)
+        SHAPES[key] = shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor)
     return SHAPES[key]
 
 
 SHAPES = {}
 
 
-def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier):
+def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor=0):
     if dep:  # the bodies at their ceilings take the place of every other shape but the switches and the named form
         return ceilings(nsym, nlab, most_k, numeric, flags or guards == "flags")
     Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
@@ -446,7 +453,15 @@ def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, ti
     # the states are the answers themselves, and one more to begin in: a table of relations (Tarski 1941), where
     # "what is X to Z" follows from "what is X to Y" and the next link
     k = nlab + 1
-    every.append((nsym * k * math.log2(k), k, (), "named", False))
+    if anchor and not numeric:  # (numbers are counted, not named) the answers alone; then with a hidden cell that a
+        # few symbols read, the shorter table first; then
+        every.append((anchor, k, (), "named", ("h", 1)))  # with hidden values that have no order
+        hid = [("L", n, 1) for n in range(3, 7)] + [("M", m) for m in range(2, 5)] + [("L", n, 2) for n in range(3, 6)]
+        every += [(anchor + 1 + 1e-4 * bits_of(k, (c,), nsym, nlab, True, ("g", G)), k, (c,), "named", ("g", G))
+                  for c in hid for G in range(1, min(nsym, 3) + 1)]
+        every += [(anchor + 2 + 0.01 * h, nlab * h + 1, (), "named", ("h", h)) for h in range(2, HIDDEN + 1)]
+    else:
+        every.append((nsym * k * math.log2(k), k, (), "named", False))
     if tier:
         every = [(sh[0] + tier * rank(sh),) + sh[1:] for sh in every]
     return sorted(every, key=lambda s: (s[0], s[1], s[2], str(s[3]), str(s[4])))  # (the old order where the old shapes tie)
@@ -454,9 +469,11 @@ def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, ti
 
 def name(shape):
     _, k, cells, by_state, chain = shape
-    if by_state == "named":
+    if by_state == "named" and isinstance(chain, tuple) and chain[0] == "h" and chain[1] > 1:
+        return f"the answers as states, each with {chain[1]} hidden values ({k - 1} states), and one to begin in"
+    if by_state == "named" and not cells:
         return f"{k - 1} states named by the answers and one to begin in"
-    words = [f"{k} states"]
+    words = [f"{k - 1} states named by the answers and one to begin in" if by_state == "named" else f"{k} states"]
     for c in cells:
         words.append(f"a whole number (offsets -{c[1]}..{c[1]}, read clipped to -{c[2]}..{c[2]})" if c[0] == "Z"
                      else f"a circle of {c[1]}" if c[0] == "M" else f"a level of {c[1]} (steps -{c[2]}..{c[2]}, held at the ends, or set)")
@@ -471,6 +488,8 @@ def name(shape):
         words[-1] += f", moving alike whatever the numbers read but in {chain[1]} places"
     elif isinstance(chain, tuple):
         words[-1] += f", {chain[1]} of the symbols moving by what the first number reads"
+    if by_state == "named":
+        return " + ".join(words)
     return " + ".join(words) + (", the second moved by the value of the first" if chain is True else "") + \
         ("" if by_state or not cells else ", the answer read from the numbers only") + \
         (", the answer is the first number itself" if by_state == "number" else "") + \
@@ -607,6 +626,7 @@ class Encoding:
         self.ids, self.clauses = IDPool(), []
         self.sent = 0  # (the clauses already given to a live solver)
         self.warm = False  # (kept from one search to the next: see Warm)
+        self.tot = self.model = None  # (see inertia)
         self.nc = len(self.cells) - 1 if self.by_state == "lastnum" else 0  # (the cell whose number is the answer)
         self.reads = [] if self.by_state in ("number", "lastnum") else \
             list(itertools.product(range(self.k) if self.by_state else [0], *[values(c) for c in self.cells]))
@@ -681,9 +701,12 @@ class Encoding:
                 if r != r0:
                     for y in range(len(labels)):
                         self.clauses += [[-self.v("l", r, y), self.v("l", r0, y)], [self.v("l", r, y), -self.v("l", r0, y)]]
+        self.hidden = self.chain[1] if self.by_state == "named" and isinstance(self.chain, tuple) and self.chain[0] == "h" else 1
+        self.first = set()  # (named, with hidden values: the answers a story said has ended at)
         if self.by_state == "named":  # the states are told apart by their names: nothing to break
-            for q in range(len(labels)):
-                self.clauses.append([self.v("l", (q,), q)])
+            for r in self.reads:  # (with hidden values: state q is answer q // hidden, hidden value q % hidden)
+                if r[0] < self.k - 1:
+                    self.clauses.append([self.v("l", r, r[0] // self.hidden)])
         else:
             if isinstance(self.chain, tuple) and self.chain[0] == "f":
                 self.switches(self.chain[1])  # (states are named by their switches: no numbering to break)
@@ -706,6 +729,42 @@ class Encoding:
 
     def v(self, *key):
         return self.ids.id(key)
+
+    def inertia(self):
+        """(the answers as states) A counter over what a rule told by a person would have to say: where a symbol changes
+        the state (at a state and, for a symbol that reads the cell, at what it reads); how a symbol moves the hidden
+        cell (one move for all the states, if it is not 'leave it'); and at which states it moves it otherwise. 'Otherwise
+        nothing happens' is not said (the frame by default: McCarthy and Hayes 1969). Of the machines that explain the
+        stories, the one that needs the least said is kept."""
+        if self.tot is None:
+            lits = []
+            def counted(lit, a, g, *key):  # (a symbol that does not read the cell moves alike at every read: once)
+                if not self.guard or g == self.gvals[0]:
+                    return lit
+                more = self.v("more", a, g, *key)
+                self.clauses.append([-lit, -self.v("gd", a), more])
+                return more
+            for a in self.syms:
+                for g in (self.gvals if self.guard else [0]):
+                    for j, c in enumerate(self.cells):
+                        self.exactly([self.v("dflt", j, a, g, o) for o in self.offsets(c)])
+                        lits.append(counted(-self.v("dflt", j, a, g, 0), a, g, "d", j))
+                    for q in range(self.k - 1):
+                        lits.append(counted(-self.v("t", (a, g) if self.guard else a, q, q), a, g, "t", q))
+                        for j, c in enumerate(self.cells):
+                            other = self.v("other", j, a, q, g)
+                            for o in self.offsets(c):
+                                self.clauses.append([-self.v("o", j, a, q, g, o), self.v("dflt", j, a, g, o), other])
+                            lits.append(counted(other, a, g, "o", j, q))
+            self.count = lits
+            self.tot = ITotalizer(lits=lits, ubound=min(len(lits), 120), top_id=self.ids.top)
+            self.ids.occupy(self.ids.top + 1, self.tot.top_id)
+            self.clauses += self.tot.cnf.clauses
+        return self.tot
+
+    def happens(self):
+        """In how many places of the table something happens, in the last machine found."""
+        return sum((l in self.model) if l > 0 else (-l not in self.model) for l in self.count)
 
     def switches(self, f):
         """The move of every (symbol, state) is the one its operation on every switch gives: keep, clear, set, flip."""
@@ -1067,10 +1126,13 @@ class Encoding:
                 elif l is not False:
                     self.clauses.append([-l] + ex)
             return
-        _, lits = self.read(seq)
+        n, lits = self.read(seq)
         for r, ls in lits.items():
             if ls is not None:
                 self.clauses.append(ls + [self.v("l", r, y)] + ([excused] if excused else []))
+        if self.hidden > 1 and not excused and y not in self.first:  # the hidden values of an answer may be numbered
+            self.first.add(y)                                        # in any order: the first story said that ends at
+            self.clauses.append([self.v("x", n, y * self.hidden)])   # an answer is at its hidden value 0
 
     def differs(self, seq, y):
         """A literal true only if the story is not answered y."""
@@ -1135,7 +1197,7 @@ class Encoding:
                 return None, "unknown"
             if not ok:
                 return None, "unsat"
-            model = set(l for l in s.get_model() if l > 0)
+            model = self.model = set(l for l in s.get_model() if l > 0)
         on = lambda *key: self.ids.obj2id.get(key) in model
         tau = {(a, q): next(r for r in range(self.k) if on("t", a, q, r)) for a in self.csyms for q in range(self.k)}
         dl = {(a, q, j, w): next(o for o in self.offsets(c) if on("o", j, a, q, w, o))
@@ -1249,6 +1311,33 @@ class Warm:
         self.clear()
 
 
+def settle(m, data):
+    """(the answers as states) A move no story taught on has made leaves the state as it is: most keys do nothing at
+    most displays. The machine explains the stories as before; what it was free to say elsewhere is said the plain way."""
+    made = set()
+    read = lambda z: tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(m.cells, z))
+    reads = {}  # the symbols that move by what the cell reads (the others move alike at every read: one place each)
+    if m.guard:
+        gs = sorted({key[0][1] for key in m.tau})
+        for a in m.syms:
+            reads[a] = any(m.tau[(a, g), q] != m.tau[(a, gs[0]), q] or
+                           any(m.dl[a, q, j, g] != m.dl[a, q, j, gs[0]] for j in range(len(m.cells)))
+                           for g in gs for q in range(m.k))
+    for s, _ in data:
+        q, z = m.start, list(m.zstart)
+        for a in s:
+            made.add((a, q, read(z) if reads.get(a) else ()))
+            q, z = m.move(q, z, a)
+    for key in list(m.tau):  # (a symbol, or a symbol and what the cell reads; the state)
+        a, g = key[0] if m.guard else (key[0], ())
+        q = key[1]
+        if (a, q, g if reads.get(a) else ()) not in made and q != m.start:
+            m.tau[key] = q
+            for j in range(len(m.cells)):
+                m.dl[a, q, j, g if m.guard else 0] = 0
+    return m
+
+
 def separating(m1, m2, syms, D):
     """The shortest story (of at most D symbols) on which two machines answer otherwise; a walk in breadth over the
     pairs of their configurations."""
@@ -1305,6 +1394,17 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
                 if m is None:
                     break
                 wrong = [(s, y) for s, y in data if m.run(s) != y]
+                if not wrong and other is None and INERT and e.by_state == "named" and isinstance(e.chain, tuple):
+                    tot = e.inertia()  # the machine where something happens in the fewest places
+                    while left > 0:
+                        b = min(e.happens(), len(tot.rhs)) - 1
+                        if b < 0:
+                            break
+                        m2, _ = e.solve(max(0.05, left), live, [-tot.rhs[b]])
+                        left -= e.used / CONFLICTS
+                        if m2 is None or any(m2.run(s) != y for s, y in data):
+                            break
+                        m = m2
                 if not wrong:
                     return m, "sat"
                 new = [x for x in wrong if x not in e.saidset]
@@ -1445,7 +1545,7 @@ def side(f, jobs, workers):
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
           committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
-          warm=False, patience=0, tier=0, tour_=0):
+          warm=False, patience=0, tier=0, tour_=0, anchor=0):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
@@ -1460,6 +1560,10 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     tour_ (watched): a story asked goes on, up to so many symbols, through the moves of the kept machine that no story
     heard has made (see tour): the story that parts two machines, the story to a read not seen, the story asked meanwhile."""
     tour_ = tour_ if watch else 0
+    # where a second machine is looked for: the shapes at most slack bits longer; of the shapes with the answers as
+    # states, only the kept machine's own (one with more hidden values always holds another machine)
+    around = lambda: [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead
+                      and (not anchor or sh[3] != "named" or sh == shape)]
     bad = lambda x: machine.run(x) != heard[tuple(x)] if not watch else \
         any(machine.run(x[:i]) != heard[tuple(x[:i])] for i in range(1, len(x) + 1))
     settled, settled_for, hurried = set(), None, 0
@@ -1495,7 +1599,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 W.clear()
             labels, machine = new, None
         numeric = (guards or dep) and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (as written)
-        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades, rules, dep, tier)
+        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor)
         if machine is not None and all(machine.run(s) == y for s, y in data):
             pass  # the kept machine answered what was asked rightly: it stays
         else:
@@ -1522,6 +1626,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                     for sh, (m, how) in zip(part, got):
                         if m:
                             machine, shape = m, sh
+                            if anchor and sh[3] == "named":
+                                settle(machine, data)
                             break
                         if how == "unsat":  # only a proved 'no' is final
                             dead.add(sh[1:])
@@ -1555,8 +1661,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             ask_from = rng.sample(fixed, min(150, len(fixed)))
         ask_from = [w for w in ask_from if w not in seen]
         t0, w, doubt = time.time(), None, False
-        near = window(every, shape, machine, slack, gone, len(syms), len(labels)) if dep else \
-            [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
+        near = window(every, shape, machine, slack, gone, len(syms), len(labels)) if dep else around()
         owed = len([w for w in unseen(machine, syms, data) if w not in seen]) if plan and explore else 0
         late = bool(reserve) and asks - asked <= reserve + owed  # the last questions are kept for the check (and, with
         if late:                                                 # plan, for the reads no story taught on ends at, asked
@@ -1618,7 +1723,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         if w is not None:
             w = w[:1 if frugal else max(1, asks - asked)]
             if tour_:
-                w = [tour(machine, syms, heard, x, max(tour_, len(x))) for x in w]
+                w = [tour(machine, syms, heard, x, max(tour_, len(x)), rng=rng) for x in w]
             told = [(x, oracle(list(x))) for x in w]
             asked += len(told)
             wrong = sum(bad(x) for x, y in told) if watch else sum(machine.run(x) != y for x, y in told)
@@ -1631,7 +1736,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         if explore:  # first the reads the machine can reach that no story taught on ends at: their answers are free
             free = [w for w in unseen(machine, syms, data) if w not in seen][:max(0, asks - asked)]  # (out of the reserve too)
             if free and tour_:  # one story to the first of them and on through the moves not made; then the rest anew
-                x = tour(machine, syms, heard, free[0], max(tour_, len(free[0])))
+                x = tour(machine, syms, heard, free[0], max(tour_, len(free[0])), rng=rng)
                 told = [(x, oracle(list(x)))]
                 asked += 1
                 log(f"  {len(free)} reads no story taught on ends at: asked {' '.join(x)} = {told[0][1]}; "
@@ -1691,8 +1796,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 # kept for the check): it is looked for now, on them and the check, and nothing more is asked; if there
                 # is one, or the solver cannot tell, the machine kept is not sure
                 more = data + told
-                near = window(every, shape, machine, slack, gone, len(syms), len(labels)) if dep else \
-                    [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead]
+                near = window(every, shape, machine, slack, gone, len(syms), len(labels)) if dep else around()
                 near = [sh for sh in near if sh[1:] not in settled]  # (no second machine there: more stories leave it so)
                 for i in range(0, len(near), workers):
                     if late_():
@@ -1788,10 +1892,11 @@ def unseen(machine, syms, data, most=12, depth=12):
     return found
 
 
-def tour(machine, syms, stories, start=(), most=24, depth=6):
+def tour(machine, syms, stories, start=(), most=24, depth=6, rng=None):
     """(watched) A story that goes on from `start` through the moves of the machine that no story heard has made yet, the
     nearest first (a move: what the machine sees, its state and what its cells read, and a symbol). The answer is seen
-    after every symbol, so one question checks every move on the way (a transition tour: Naito and Tsunoyama 1981)."""
+    after every symbol, so one question checks every move on the way (a transition tour: Naito and Tsunoyama 1981).
+    rng: when no such move is near, the story goes on by chance up to its length (a story of the check, for nothing)."""
     def view(q, z):
         return (q,) + tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(machine.cells, z))
     done = set()
@@ -1823,8 +1928,10 @@ def tour(machine, syms, stories, start=(), most=24, depth=6):
             if path or not nxt:
                 break
             frontier = nxt[:2000]
-        if path is None:
+        if path is None and rng is None:
             break
+        if path is None:
+            path = (rng.choice(syms),)
         for a in path[:most - len(story)]:
             done.add((view(q, z), a))
             q, z = machine.move(q, z, a)

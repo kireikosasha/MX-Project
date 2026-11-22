@@ -1,0 +1,29 @@
+Thirty formulas the solver gave up on (60-240 thousand conflicts) and thirty it settled, taken from watched runs of three families; every solver with a limit of 400 000 conflicts.
+(was, now): how many, conflicts, seconds
+
+TOTAL glucose4 ('sat', 'sat') 15 instances 139886 conflicts 1 s
+TOTAL glucose4 ('unknown', 'sat') 2 instances 417321 conflicts 9 s
+TOTAL glucose4 ('unknown', 'unknown') 2 instances 802232 conflicts 27 s
+TOTAL glucose4 ('unknown', 'unsat') 26 instances 2915382 conflicts 54 s
+TOTAL glucose4 ('unsat', 'unsat') 15 instances 129057 conflicts 1 s
+TOTAL cadical153 ('sat', 'sat') 15 instances 114939 conflicts 2 s
+TOTAL cadical153 ('unknown', 'sat') 2 instances 125154 conflicts 2 s
+TOTAL cadical153 ('unknown', 'unknown') 1 instances 400000 conflicts 13 s
+TOTAL cadical153 ('unknown', 'unsat') 27 instances 2126664 conflicts 39 s
+TOTAL cadical153 ('unsat', 'unsat') 15 instances 125490 conflicts 2 s
+TOTAL cadical195 ('sat', 'sat') 15 instances 100270 conflicts 1 s
+TOTAL cadical195 ('unknown', 'sat') 2 instances 147851 conflicts 3 s
+TOTAL cadical195 ('unknown', 'unknown') 1 instances 400000 conflicts 13 s
+TOTAL cadical195 ('unknown', 'unsat') 27 instances 1926005 conflicts 37 s
+TOTAL cadical195 ('unsat', 'unsat') 15 instances 112734 conflicts 2 s
+TOTAL maplechrono ('sat', 'sat') 15 instances 911346 conflicts 24 s
+TOTAL maplechrono ('unknown', 'sat') 2 instances 312954 conflicts 11 s
+TOTAL maplechrono ('unknown', 'unknown') 1 instances 400000 conflicts 20 s
+TOTAL maplechrono ('unknown', 'unsat') 27 instances 3526176 conflicts 119 s
+TOTAL maplechrono ('unsat', 'unsat') 15 instances 800244 conflicts 21 s
+
+The first search of the subway turnstile (all the stories said at once), glucose4 and cadical195:
+  found 2 switches + a level of 4 (steps -1..1, held at the ends, or set) (111 bits) as shape 885
+02-subway-turnstile part 100000 glucose4: {'unsat': 849, 'unknown': 36, 'sat': 1} in 113 s, 5860175 conflicts; 138 stories
+  found 2 switches + a level of 4 (steps -1..1, held at the ends, or set) (111 bits) as shape 885
+02-subway-turnstile part 100000 cadical195: {'unsat': 858, 'unknown': 27, 'sat': 1} in 124 s, 4724571 conflicts; 138 stories
