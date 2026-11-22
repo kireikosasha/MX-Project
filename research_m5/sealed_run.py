@@ -69,6 +69,7 @@ def main():
     ap.add_argument("--save", default="", help="a folder to write the machines found into (NN-name.pkl)")
     ap.add_argument("--mealy", action="store_true", help="also machines whose answer is of the last move: read from the state before the last symbol and that symbol")
     ap.add_argument("--reach", action="store_true", help="with --watch: the plain stories of the check begin at the places of the kept machine, the least visited first")
+    ap.add_argument("--room", type=int, default=0, help="megabytes a process may hold before the kept solvers used longest ago go (2500 if not given)")
     ap.add_argument("--engine", default="", help="the solver (of pysat's; glucose4 if not given)")
     ap.add_argument("--dep", action="store_true", help="every body at ceilings of its price, each move priced by what it depends on (the state, the read of the first cell)")
     ap.add_argument("--watch", action="store_true", help="the answer is seen after every symbol (of the stories taught on and of every story asked; a story asked is still one question)")
@@ -94,6 +95,8 @@ def main():
         cells.PART = a.part
     if a.zlong:
         cells.ZLONG = a.zlong
+    if a.room:
+        cells.Warm.ROOM = a.room
     names = sorted(d for d in os.listdir(a.folder) if os.path.exists(os.path.join(a.folder, d, "family.py")))
     print(f"{len(names)} sealed families in {a.folder}", flush=True)
     done = set()

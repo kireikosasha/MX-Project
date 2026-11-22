@@ -1,0 +1,25 @@
+The same models with --mealy (the answer of the last move), 40 questions; after the run of the stage, not blind. Stopped after 21 of the 23 (the two TCP servers left were out of reach).
+
+01-cyble-416045-02                     100.0 % at length 100,   29 s,  31 asked, sure     | the model exactly | 3 states, the answer read from the state before the last symbol and that symbol
+02-bluetooth-model                     100.0 % at length 100,   42 s,  32 asked, sure     | the model exactly | 3 states, the answer read from the state before the last symbol and that symbol
+03-bluetooth-reduced                   100.0 % at length 100,   33 s,  28 asked, sure     | the model exactly | 3 states, the answer read from the state before the last symbol and that symbol
+04-cc2652r1                            100.0 % at length 100,   29 s,  23 asked, sure     | the model exactly | 2 states + a circle of 2, the answer read from the state and the number before the last symbol and that symbol
+05-cc2650                               99.7 % at length 100,   31 s,  40 asked, not sure | not the model: they part on a story of 4 inputs | 5 states, the answer read from the state before the last symbol and that symbol
+06-nrf52832                            100.0 % at length 100,    9 s,  40 asked, not sure | not the model: they part on a story of 4 inputs | 2 states + a level of 3 (steps -1..1, held at the ends, or set), the answer read from the state and the number before the last symbol and that symbol
+07-cc2640r2-no-pairing-req             100.0 % at length 100,   28 s,  40 asked, not sure | not the model: they part on a story of 4 inputs | 6 states, the answer read from the state before the last symbol and that symbol
+08-cc2640r2-no-feature-req              74.0 % at length 100, 1633 s,  40 asked, not sure | not the model: they part on a story of 3 inputs | the answers as states, each with 4 hidden values (44 states), and one to begin in
+09-cyw43455                             78.3 % at length 100, 1623 s,   8 asked, not sure | not the model: they part on a story of 3 inputs | 12 states, the answer read from the state before the last symbol and that symbol
+10-mitls-0-1-3-server-regular          100.0 % at length 100,   44 s,  35 asked, not sure | not the model: they part on a story of 3 inputs | 5 states, the answer read from the state before the last symbol and that symbol
+11-openssl-1-0-2-server-regular        100.0 % at length 100,   15 s,  40 asked, not sure | not the model: they part on a story of 3 inputs | 6 states, the answer read from the state before the last symbol and that symbol
+12-nss-3-17-4-server-regular           100.0 % at length 100,   54 s,  26 asked, sure     | not the model: they part on a story of 4 inputs | 5 states, the answer read from the state before the last symbol and that symbol
+13-jsse-1-8-0-25-server-regular        100.0 % at length 100,    9 s,  36 asked, not sure | not the model: they part on a story of 4 inputs | 5 states, the answer read from the state before the last symbol and that symbol
+14-rsa-bsafe-c-4-0-4-server-regular    100.0 % at length 100,   59 s,  35 asked, not sure | not the model: they part on a story of 3 inputs | 6 states, the answer read from the state before the last symbol and that symbol
+15-vernemq-two-client-will-retain       43.3 % at length 100,  416 s,  40 asked, not sure | not the model: they part on a story of 3 inputs | the answers as states, each with 2 hidden values (36 states), and one to begin in
+17-activemq-two-client-will-retain      31.7 % at length 100,  482 s,  40 asked, not sure | not the model: they part on a story of 3 inputs | the answers as states, each with 3 hidden values (63 states), and one to begin in
+18-emqtt-two-client-will-retain         31.7 % at length 100,  514 s,  40 asked, not sure | not the model: they part on a story of 3 inputs | the answers as states, each with 3 hidden values (63 states), and one to begin in
+19-mosquitto-two-client-will-retain     32.7 % at length 100, 1004 s,  40 asked, not sure | not the model: they part on a story of 3 inputs | the answers as states, each with 2 hidden values (42 states), and one to begin in
+21-tcp-server-windows-trans            100.0 % at length 100,   20 s,  40 asked, not sure | not the model: they part on a story of 3 inputs | 5 states, the answer read from the state before the last symbol and that symbol
+22-tcp-server-bsd-trans                 75.7 % at length 100,  571 s,  40 asked, not sure | not the model: they part on a story of 3 inputs | the answers as states, each with 4 hidden values (44 states), and one to begin in
+23-tcp-server-ubuntu-trans             100.0 % at length 100,   13 s,  40 asked, not sure | not the model: they part on a story of 3 inputs | 6 states, the answer read from the state before the last symbol and that symbol
+
+21 models; exactly the model: 4; sure and not the model: 1

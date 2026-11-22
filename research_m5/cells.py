@@ -1326,6 +1326,7 @@ class Warm:
     literal, in the same solver."""
     MOST = 120  # so many shapes at most (the one used longest ago goes first)
     ROOM = 2500  # megabytes: when the process holds more, the half of the shapes used longest ago goes
+    # (sealed_run.py --room)
 
     def __init__(self):
         self.kept, self.dead, self.mark = {}, set(), 0
@@ -1348,10 +1349,11 @@ class Warm:
             self.kept[key] = (e, Solver(name=ENGINE))
             while len(self.kept) > self.MOST:
                 self.drop(next(iter(self.kept)))
-            if len(self.kept) > 8 and self.held() > max(self.ROOM, 1.15 * self.mark):  # (built again when asked for)
-                for old in list(self.kept)[:len(self.kept) // 2]:
+        if len(self.kept) > 2 and self.held() > max(self.ROOM, 1.15 * self.mark):  # (built again when asked for)
+            for old in list(self.kept)[:max(1, len(self.kept) // 2)]:
+                if old != key:
                     self.drop(old)
-                self.mark = self.held()
+            self.mark = self.held()
         return self.kept[key]
 
     def drop(self, key):
