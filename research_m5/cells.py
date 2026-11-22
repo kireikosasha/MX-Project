@@ -1283,9 +1283,18 @@ class Warm:
     on from where it stopped, a new story is a few clauses more, and a second machine is looked for under an assumed
     literal, in the same solver."""
     MOST = 120  # so many shapes at most (the one used longest ago goes first)
+    ROOM = 2500  # megabytes: when the process holds more, the half of the shapes used longest ago goes
 
     def __init__(self):
-        self.kept, self.dead = {}, set()
+        self.kept, self.dead, self.mark = {}, set(), 0
+
+    @staticmethod
+    def held():
+        try:
+            with open("/proc/self/statm") as f:
+                return int(f.read().split()[1]) * 4096 / 1e6
+        except (OSError, ValueError, IndexError):
+            return 0
 
     def of(self, shape, syms, labels):
         key = shape[1:]
@@ -1297,6 +1306,10 @@ class Warm:
             self.kept[key] = (e, Solver(name=ENGINE))
             while len(self.kept) > self.MOST:
                 self.drop(next(iter(self.kept)))
+            if len(self.kept) > 8 and self.held() > max(self.ROOM, 1.15 * self.mark):  # (built again when asked for)
+                for old in list(self.kept)[:len(self.kept) // 2]:
+                    self.drop(old)
+                self.mark = self.held()
         return self.kept[key]
 
     def drop(self, key):
