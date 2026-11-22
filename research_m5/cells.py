@@ -128,6 +128,7 @@ SET = 100  # an operation of a level >= SET sets it to (operation - SET)
 MIRROR = True  # a level turned end for end is the same machine: only one of the two is searched
 INCREMENTAL = True  # fit keeps one encoding and one solver while it adds stories
 ENGINE = "glucose4"  # the solver (any of pysat's that takes a limit of conflicts)
+LONG = 32  # (far) a story heard that is longer is not put into the formulas: the machine is only checked on it
 INERT = True  # (anchor) of the machines that explain the stories, the one where something happens in the fewest places
 HIDDEN = 4  # (anchor) the answers as states, each with at most so many hidden values
 PART = 40  # fit begins with so many of the stories, and adds those its machine answers wrongly
@@ -1545,7 +1546,7 @@ def side(f, jobs, workers):
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
           committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
-          warm=False, patience=0, tier=0, tour_=0, anchor=0):
+          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
@@ -1558,8 +1559,18 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     patience (seconds of the solver's limit; one process only): when the search for a second machine has taken so long
     without one, one story of the check is asked meanwhile, and the search goes on.
     tour_ (watched): a story asked goes on, up to so many symbols, through the moves of the kept machine that no story
-    heard has made (see tour): the story that parts two machines, the story to a read not seen, the story asked meanwhile."""
+    heard has made (see tour): the story that parts two machines, the story to a read not seen, the story asked meanwhile.
+    far (watched): eight of the twelve plain stories of the check are of up to so many symbols (the others as before). Seen
+    after every symbol, a long story costs one question and checks the machine as far as it will be used; a check on
+    stories of a dozen symbols passes machines that go wrong later. A story heard that is longer than LONG is not put
+    into the formulas (they would grow with its length): the machine found is checked on it, and only the shortest
+    beginning it answers wrongly is taught on."""
     tour_ = tour_ if watch else 0
+    far = far if watch else 0
+    def missed():  # (far) the shortest long story heard that the machine answers wrongly, if any, as a list
+        have = {x for x, _ in data}
+        return sorted(((x, y) for x, y in heard.items() if len(x) > LONG and x not in have and machine.run(x) != y),
+                      key=lambda t: (len(t[0]), t[0]))[:1]
     # where a second machine is looked for: the shapes at most slack bits longer; of the shapes with the answers as
     # states, only the kept machine's own (one with more hidden values always holds another machine)
     around = lambda: [sh for sh in every if shape[0] <= sh[0] <= shape[0] + slack and sh[1:] not in dead
@@ -1589,7 +1600,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     while True:
         if watch:  # (every beginning seen so far is a story taught on)
             have = {x for x, _ in data}
-            data = data + sorted((x, y) for x, y in heard.items() if x not in have)
+            data = data + sorted((x, y) for x, y in heard.items() if x not in have and (not far or len(x) <= LONG))
+            if far and machine is not None:
+                data = data + missed()
         new = sorted(set(labels) | {y for _, y in data})
         if new != labels:  # a shape proved impossible stays so: a machine with more answers that explains more
             if not labels:  # stories gives, with each new answer sent to an old one, one that explains these (with no
@@ -1642,6 +1655,10 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                         break
                 if machine or late_():
                     break
+        if far and machine is not None and missed() and not late_():  # (it explains the stories taught on, not a long
+            data = data + missed()                                    # one heard: that one is taught on, and again)
+            machine = None
+            continue
         if machine is None:  # nothing explains every story (or the time is up): the last machine kept, if any, not sure
             if last is not None:
                 last.sure = False
@@ -1752,7 +1769,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 if wrong:
                     continue
         # the check by trying: a few longer stories, pumped and plain
-        tried = [tuple(rng.choice(syms) for _ in range(rng.randint(3 * longest, 6 * longest))) for _ in range(12)] + \
+        tried = [tuple(rng.choice(syms) for _ in range(rng.randint(far // 2, far) if far and i % 3 else
+                                                       rng.randint(3 * longest, 6 * longest))) for i in range(12)] + \
             pumped(syms, rng, 4 * longest, 8 * longest, 3)
         # and stories on which the kept machine gives every answer it can give, the rarest first: where an answer is
         # rare among long stories, plain trying would almost never ask about it
@@ -1795,7 +1813,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             if late and len(told) >= full:  # the second machine was not looked for on these stories (the questions were
                 # kept for the check): it is looked for now, on them and the check, and nothing more is asked; if there
                 # is one, or the solver cannot tell, the machine kept is not sure
-                more = data + told
+                more = [x for x in data + told if x[1] in labels  # (a number answered rightly may be a new answer)
+                        and (not far or len(x[0]) <= LONG)]
                 near = window(every, shape, machine, slack, gone, len(syms), len(labels)) if dep else around()
                 near = [sh for sh in near if sh[1:] not in settled]  # (no second machine there: more stories leave it so)
                 for i in range(0, len(near), workers):
@@ -1836,6 +1855,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         if keep:  # no answer paid for is thrown away: the check stories answered rightly, the long story answered
             have = {x for x, _ in data}  # wrongly, and every beginning asked while halving it
             more = [(x, y) for x, y in told if x not in have] + [(x, y) for x, y in known.items() if x not in have]
+            if far:
+                more = [t for t in more if len(t[0]) <= LONG]
             data = data + list(dict(more).items())
 
 

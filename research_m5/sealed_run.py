@@ -29,7 +29,7 @@ def one(path, out, a):
         data.append((w, oracle(w)))
     t0 = time.time()
     m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers,
-                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience, tier=a.tier, tour_=a.tour, anchor=a.anchor,
+                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience, tier=a.tier, tour_=a.tour, anchor=a.anchor, far=a.far,
                            deadline=time.time() + a.minutes * 60 - 180 if a.deadline else None)
     res = {"found": None if m is None else str(m), "asked": asked, "seconds": round(time.time() - t0),
            "sure": None if m is None else m.sure}
@@ -59,6 +59,7 @@ def main():
     ap.add_argument("--tier", type=float, default=0, help="so many bits are added to the price of a shape for a second cell that moves apart from the first (and twice as many for moves priced by the rule, which --rules then adds beside the tables)")
     ap.add_argument("--tour", type=int, default=0, help="with --watch: a story asked goes on, up to so many symbols, through the moves of the kept machine that no story heard has made")
     ap.add_argument("--anchor", type=float, default=0, help="the machines whose states are the answers, each with a few hidden values, are tried right after the shapes at most so many bits long")
+    ap.add_argument("--far", type=int, default=0, help="with --watch: eight of the twelve plain stories of the check are of up to so many symbols (a long story heard is checked, not put into the formulas)")
     ap.add_argument("--engine", default="", help="the solver (of pysat's; glucose4 if not given)")
     ap.add_argument("--dep", action="store_true", help="every body at ceilings of its price, each move priced by what it depends on (the state, the read of the first cell)")
     ap.add_argument("--watch", action="store_true", help="the answer is seen after every symbol (of the stories taught on and of every story asked; a story asked is still one question)")
