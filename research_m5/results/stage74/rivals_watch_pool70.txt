@@ -1,0 +1,22 @@
+Pool 70 under the watcher's protocol: per cent right at length 100 (300 stories of each length to test on).
+The learner: 300 stories of 1-4 symbols and at most 40 questions, the answer seen after every symbol.
+The nets: every beginning of the stories taught on is an example, and 40 more stories of 8-32 symbols per 300;
+x1: 300 stories, x40: 12 000. LSTM: the mean of three seeds; transformer and ALiBi (4 layers, width 128): one seed, x40 only
+(a seed takes twelve minutes on a processor here; the full set is for the graphics card, colab/sealed.ipynb).
+
+family                  LSTM x1  LSTM x40  transf. x40  ALiBi x40  the learner
+01-mine-shaft              39.9      55.8         53.3       47.7     21.7     
+02-orchard                  5.8      32.9          2.0        9.0      6.7     
+03-bookbinder              23.3      62.3         28.3       30.7     98.7     
+04-water-tower             93.2     100.0         12.3       84.3    100.0 sure
+05-vending-machine          1.7      10.1          0.3        5.3     62.3     
+06-fishing-boat            98.7     100.0         73.7       97.0    100.0 sure
+07-tea-house               66.3      76.8         50.7       81.3     50.3     
+08-carousel                35.6      46.2         24.0       42.0     13.3     
+09-archive                 67.9      86.4         24.7       66.3     56.0     
+10-circus                  99.7     100.0         32.3       95.0    100.0 sure
+11-beach-patrol            90.2     100.0         45.7       80.3    100.0 sure
+12-weaving-loom            20.6      99.7         14.3       14.7    100.0     
+
+95 % or more: lstm x1: 2 of 12, lstm x40: 5 of 12, transformer x40: 0 of 12, alibi x40: 2 of 12; the learner: 6 of 12
+the best net of the four on each family: 5 of 12
