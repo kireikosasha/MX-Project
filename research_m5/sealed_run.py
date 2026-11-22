@@ -29,7 +29,7 @@ def one(path, out, a):
         data.append((w, oracle(w)))
     t0 = time.time()
     m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers,
-                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience,
+                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience, tier=a.tier, tour_=a.tour,
                            deadline=time.time() + a.minutes * 60 - 180 if a.deadline else None)
     res = {"found": None if m is None else str(m), "asked": asked, "seconds": round(time.time() - t0),
            "sure": None if m is None else m.sure}
@@ -56,6 +56,8 @@ def main():
     ap.add_argument("--warm", action="store_true", help="the solver of every shape is kept from one search to the next (what it learned stays; a second machine is looked for under an assumed literal, on short stories first); one worker")
     ap.add_argument("--patience", type=float, default=0, help="when the search for a second machine has taken so many seconds of the solver's limit without one, one story of the check is asked meanwhile")
     ap.add_argument("--part", type=int, default=0, help="a search begins with so many of the stories (40 if not given) and adds those its machine answers wrongly; a large number: all of them at once")
+    ap.add_argument("--tier", type=float, default=0, help="so many bits are added to the price of a shape for a second cell that moves apart from the first (and twice as many for moves priced by the rule, which --rules then adds beside the tables)")
+    ap.add_argument("--tour", type=int, default=0, help="with --watch: a story asked goes on, up to so many symbols, through the moves of the kept machine that no story heard has made")
     ap.add_argument("--engine", default="", help="the solver (of pysat's; glucose4 if not given)")
     ap.add_argument("--dep", action="store_true", help="every body at ceilings of its price, each move priced by what it depends on (the state, the read of the first cell)")
     ap.add_argument("--watch", action="store_true", help="the answer is seen after every symbol (of the stories taught on and of every story asked; a story asked is still one question)")

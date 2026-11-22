@@ -370,7 +370,30 @@ def ceilings(nsym, nlab, most_k=12, numeric=False, flags=False):
     return sorted(every, key=lambda s: (s[0], first(s), s[1], s[2], str(s[3]), str(s[4])))
 
 
-def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, cascades=False, rules=False, dep=False):
+def rank(shape):
+    """How many memories beyond the plain machine a shape has (see tier): a second cell that moves apart from the first
+    (two cells in a cascade, the second moved by the first, are one mechanism); moves priced by the rule."""
+    _, k, cells, by, chain = shape
+    return (1 if len(cells) == 2 and chain is not True else 0) + \
+        (2 if isinstance(chain, tuple) and chain[0] in ("e", "a") else 0)
+
+
+def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, cascades=False, rules=False, dep=False,
+           tier=0):
+    """tier (bits): the price of a shape is its length and so many bits for every step of its rank: the plain shapes are
+    searched far ahead of the others, which come in only when no plain machine near their length explains the stories
+    (with rules, the moves priced by the rule are then a third tier, beside the tables, not in their place)."""
+    key = (nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier)
+    if key not in SHAPES:
+        SHAPES.clear()  # (one list is kept: a learner asks for the same one again and again)
+        SHAPES[key] = shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier)
+    return SHAPES[key]
+
+
+SHAPES = {}
+
+
+def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier):
     if dep:  # the bodies at their ceilings take the place of every other shape but the switches and the named form
         return ceilings(nsym, nlab, most_k, numeric, flags or guards == "flags")
     Z = [("Z", B, C) for B in (1, 2) for C in (1, 2)]
@@ -399,7 +422,7 @@ def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, casc
         if rules:  # (priced by the rule, not the table: a move by default, and the few places it is otherwise)
             every += [(bits_of(k, cs, nsym, nlab, by, ("e", E)), k, cs, by, ("e", E)) for k, cs in cand
                       for E in range(1, 9) for by in (True, False) if by or k > 1]
-        else:
+        if tier or not rules:
             every += [(bits_of(k, cs, nsym, nlab, by, ("g", G)), k, cs, by, ("g", G)) for k, cs in cand
                       for G in range(1, nsym + 1) for by in (True, False) if by or k > 1]
         if guards == "tests":  # (and a test of one cell, the cheaper form of the same)
@@ -424,6 +447,8 @@ def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, casc
     # "what is X to Z" follows from "what is X to Y" and the next link
     k = nlab + 1
     every.append((nsym * k * math.log2(k), k, (), "named", False))
+    if tier:
+        every = [(sh[0] + tier * rank(sh),) + sh[1:] for sh in every]
     return sorted(every, key=lambda s: (s[0], s[1], s[2], str(s[3]), str(s[4])))  # (the old order where the old shapes tie)
 
 
@@ -1420,7 +1445,7 @@ def side(f, jobs, workers):
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
           committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
-          warm=False, patience=0):
+          warm=False, patience=0, tier=0, tour_=0):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
@@ -1431,7 +1456,12 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     is kept (more stories leave it so); and when the kept machine is refuted by a story of at most build symbols, every
     such shape is proved empty (a machine of it that explained the stories would have parted from the kept one there).
     patience (seconds of the solver's limit; one process only): when the search for a second machine has taken so long
-    without one, one story of the check is asked meanwhile, and the search goes on."""
+    without one, one story of the check is asked meanwhile, and the search goes on.
+    tour_ (watched): a story asked goes on, up to so many symbols, through the moves of the kept machine that no story
+    heard has made (see tour): the story that parts two machines, the story to a read not seen, the story asked meanwhile."""
+    tour_ = tour_ if watch else 0
+    bad = lambda x: machine.run(x) != heard[tuple(x)] if not watch else \
+        any(machine.run(x[:i]) != heard[tuple(x[:i])] for i in range(1, len(x) + 1))
     settled, settled_for, hurried = set(), None, 0
     W = Warm() if warm and workers <= 1 else None
     heard = {}
@@ -1465,7 +1495,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 W.clear()
             labels, machine = new, None
         numeric = (guards or dep) and all(y.lstrip("-").isdigit() and str(int(y)) == y for y in labels)  # (as written)
-        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades, rules, dep)
+        every = shapes(len(syms), len(labels), most_k, guards, numeric, flags, cascades, rules, dep, tier)
         if machine is not None and all(machine.run(s) == y for s, y in data):
             pass  # the kept machine answered what was asked rightly: it stays
         else:
@@ -1586,9 +1616,12 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             log(f"  of {len(unsettled)} shapes the solver could not tell whether a second machine is there")
             doubt = DOUBT
         if w is not None:
-            told = [(x, oracle(list(x))) for x in w[:1 if frugal else max(1, asks - asked)]]
+            w = w[:1 if frugal else max(1, asks - asked)]
+            if tour_:
+                w = [tour(machine, syms, heard, x, max(tour_, len(x))) for x in w]
+            told = [(x, oracle(list(x))) for x in w]
             asked += len(told)
-            wrong = sum(machine.run(x) != y for x, y in told)
+            wrong = sum(bad(x) for x, y in told) if watch else sum(machine.run(x) != y for x, y in told)
             log(f"  {name(sh)} answers otherwise on {len(w)} stories ({time.time() - t0:.1f} s): asked "
                 f"{' | '.join(' '.join(x) + ' = ' + str(y) for x, y in told)}; the kept machine was wrong on {wrong}")
             data = data + told
@@ -1597,6 +1630,14 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             return machine, asked
         if explore:  # first the reads the machine can reach that no story taught on ends at: their answers are free
             free = [w for w in unseen(machine, syms, data) if w not in seen][:max(0, asks - asked)]  # (out of the reserve too)
+            if free and tour_:  # one story to the first of them and on through the moves not made; then the rest anew
+                x = tour(machine, syms, heard, free[0], max(tour_, len(free[0])))
+                told = [(x, oracle(list(x)))]
+                asked += 1
+                log(f"  {len(free)} reads no story taught on ends at: asked {' '.join(x)} = {told[0][1]}; "
+                    f"the kept machine was {'wrong' if bad(x) else 'right'}")
+                data = data + told
+                continue
             if free:
                 told = [(w, oracle(list(w))) for w in free]
                 asked += len(told)
@@ -1620,6 +1661,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         if hurry:  # (the search for a second machine is long: one story of the check meanwhile, each time another)
             tried = (tried[15:] + tried[12:15] + tried[:12])[hurried % full:][:1]
             hurried += 1
+            x = tour(machine, syms, heard, (), tour_) if tour_ else ()
+            if len(x) >= 2 and x not in heard:  # (first the moves of the machine no story has made)
+                tried = [x]
         tried = tried[:asks - asked]  # never more than the questions allowed
         if not tried:
             machine.sure = False
@@ -1742,6 +1786,50 @@ def unseen(machine, syms, data, most=12, depth=12):
                 nxt.append((s2, c2))
         frontier = nxt[:5000]
     return found
+
+
+def tour(machine, syms, stories, start=(), most=24, depth=6):
+    """(watched) A story that goes on from `start` through the moves of the machine that no story heard has made yet, the
+    nearest first (a move: what the machine sees, its state and what its cells read, and a symbol). The answer is seen
+    after every symbol, so one question checks every move on the way (a transition tour: Naito and Tsunoyama 1981)."""
+    def view(q, z):
+        return (q,) + tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(machine.cells, z))
+    done = set()
+    for s in stories:
+        q, z = machine.start, list(machine.zstart)
+        for a in s:
+            done.add((view(q, z), a))
+            q, z = machine.move(q, z, a)
+    story = list(start)
+    q, z = machine.start, list(machine.zstart)
+    for a in story:
+        done.add((view(q, z), a))
+        q, z = machine.move(q, z, a)
+    while len(story) < most:
+        frontier, met, path = [((), q, tuple(z))], {(q, tuple(z))}, None
+        for _ in range(depth):
+            nxt = []
+            for p, q1, z1 in frontier:
+                for a in syms:
+                    if (view(q1, z1), a) not in done:
+                        path = p + (a,)
+                        break
+                    q2, z2 = machine.move(q1, list(z1), a)
+                    if (q2, tuple(z2)) not in met:
+                        met.add((q2, tuple(z2)))
+                        nxt.append((p + (a,), q2, tuple(z2)))
+                if path:
+                    break
+            if path or not nxt:
+                break
+            frontier = nxt[:2000]
+        if path is None:
+            break
+        for a in path[:most - len(story)]:
+            done.add((view(q, z), a))
+            q, z = machine.move(q, z, a)
+            story.append(a)
+    return tuple(story)
 
 
 def clutrr_chains(path):
