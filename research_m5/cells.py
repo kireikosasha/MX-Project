@@ -133,6 +133,7 @@ ZLONG = 0  # (warm) a shape with a whole number is first told only the stories o
 # found answers it wrongly, the shortest first
 LONG = 32  # (far) a story heard that is longer is not put into the formulas: the machine is only checked on it
 INERT = True  # (anchor) of the machines that explain the stories, the one where something happens in the fewest places
+MEALY_K = 20  # (mealy) a plain control of at most so many states
 HIDDEN = 4  # (anchor) the answers as states, each with at most so many hidden values
 PART = 40  # fit begins with so many of the stories, and adds those its machine answers wrongly
 WORK = [0]  # the conflicts spent so far, in this process (what the patience of a learner is counted in)
@@ -461,7 +462,7 @@ def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, ti
     if mealy:  # the answer is of the last move, not of the place arrived at (Mealy 1955): what a device replies to a
         # request depends on the request. A plain control, or one with a level or a circle
         small = [("L", n, 1) for n in range(3, 7)] + [("M", m) for m in range(2, 7)]
-        of = [(bits_of(k, (), nsym, nlab, "mealy"), k, (), "mealy", False) for k in range(1, most_k + 1)] + \
+        of = [(bits_of(k, (), nsym, nlab, "mealy"), k, (), "mealy", False) for k in range(1, MEALY_K + 1)] + \
              [(bits_of(k, (c,), nsym, nlab, "mealy"), k, (c,), "mealy", False) for k in range(1, 5) for c in small]
         # (with anchor they come with the machines whose states are the answers, the shorter table first: their
         # states are not given by the answers, but every move is told apart by its own answer, and the search is quick)
@@ -469,7 +470,8 @@ def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, ti
     k = nlab + 1
     if anchor and not numeric:  # (numbers are counted, not named) the answers alone; then with a hidden cell that a
         # few symbols read, the shorter table first; then
-        every.append((anchor, k, (), "named", ("h", 1)))  # with hidden values that have no order
+        every.append((anchor + (1 + 1e-4 * nsym * k * math.log2(k) if mealy else 0), k, (), "named", ("h", 1)))  # with hidden
+        # values that have no order (with mealy, the answers alone come in their place by the length of their table)
         hid = [("L", n, 1) for n in range(3, 7)] + [("M", m) for m in range(2, 5)] + [("L", n, 2) for n in range(3, 6)]
         every += [(anchor + 1 + 1e-4 * bits_of(k, (c,), nsym, nlab, True, ("g", G)), k, (c,), "named", ("g", G))
                   for c in hid for G in range(1, min(nsym, 3) + 1)]
@@ -1604,7 +1606,7 @@ def side(f, jobs, workers):
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
           committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
-          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0, mealy=False):
+          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0, mealy=False, reach=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
@@ -1623,6 +1625,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     stories of a dozen symbols passes machines that go wrong later. A story heard that is longer than LONG is not put
     into the formulas (they would grow with its length): the machine found is checked on it, and only the shortest
     beginning it answers wrongly is taught on.
+    reach (watched): the plain stories of the check begin at the places of the kept machine (see reaches).
     deep (warm, with build): the last search for a second machine, the one 'sure' rests on, writes stories of up to so
     many symbols, not build: two machines may agree on every story of a dozen symbols and part later."""
     tour_ = tour_ if watch else 0
@@ -1831,8 +1834,12 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                 if wrong:
                     continue
         # the check by trying: a few longer stories, pumped and plain
-        tried = [tuple(rng.choice(syms) for _ in range(rng.randint(far // 2, far) if far and i % 3 else
-                                                       rng.randint(3 * longest, 6 * longest))) for i in range(12)] + \
+        begun = reaches(machine, syms, heard) if reach and watch else [()]  # (the plain stories begin at the places
+        begun = begun or [()]                                             # of the machine, the least visited first)
+        tried = [begun[i % len(begun)] +
+                 tuple(rng.choice(syms) for _ in range(max(4, (rng.randint(far // 2, far) if far and i % 3 else
+                                                              rng.randint(3 * longest, 6 * longest)) -
+                                                       len(begun[i % len(begun)])))) for i in range(12)] + \
             pumped(syms, rng, 4 * longest, 8 * longest, 3)
         # and stories on which the kept machine gives every answer it can give, the rarest first: where an answer is
         # rare among long stories, plain trying would almost never ask about it
@@ -1974,6 +1981,37 @@ def unseen(machine, syms, data, most=12, depth=12):
                 nxt.append((s2, c2))
         frontier = nxt[:5000]
     return found
+
+
+def reaches(machine, syms, stories, most=64, depth=8):
+    """The shortest story to every place the machine can be in (its state and what its cells read), those where the
+    fewest stories heard have ended first. A check that begins at every place of the machine tests each of them; a
+    story begun at random soon sits where most stories end (a closed connection, an alarm that stays on)."""
+    def view(q, z):
+        return (q,) + tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(machine.cells, z))
+    ends = {}
+    for s in stories:
+        q, z = machine.start, list(machine.zstart)
+        for a in s:
+            q, z = machine.move(q, z, a)
+        ends[view(q, z)] = ends.get(view(q, z), 0) + 1
+    c0 = (machine.start, tuple(machine.zstart))
+    to, frontier, met = {}, [((), c0)], {c0}
+    for _ in range(depth):
+        nxt = []
+        for p, (q, z) in frontier:
+            for a in syms:
+                q2, z2 = machine.move(q, list(z), a)
+                c2 = (q2, tuple(z2))
+                if c2 in met:
+                    continue
+                met.add(c2)
+                to.setdefault(view(q2, z2), p + (a,))
+                nxt.append((p + (a,), c2))
+        frontier = nxt[:2000]
+        if len(to) >= most:
+            break
+    return [p for v, p in sorted(to.items(), key=lambda t: (ends.get(t[0], 0), len(t[1]), t[1]))][:most]
 
 
 def tour(machine, syms, stories, start=(), most=24, depth=6, rng=None):
