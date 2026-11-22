@@ -1,0 +1,78 @@
+"""TLS/NSS_3.17.4_server_regular.dot: a Mealy machine learned by others from a real implementation (AALpy, DotModels, MIT licence).
+8 states, 8 inputs. The answer to a story of inputs is the output to the last of them."""
+
+ALPHABET = ['ApplicationData', 'ApplicationDataEmpty', 'ChangeCipherSpec', 'ClientHelloRSA', 'ClientKeyExchange', 'EmptyCertificate', 'Finished', 'HeartbeatRequest']
+START = '7'
+TRANS = {
+    ('0', 'ApplicationData'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('0', 'ApplicationDataEmpty'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('0', 'ChangeCipherSpec'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('0', 'ClientHelloRSA'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('0', 'ClientKeyExchange'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('0', 'EmptyCertificate'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('0', 'Finished'): ('4', 'ChangeCipherSpec & Finished'),
+    ('0', 'HeartbeatRequest'): ('5', 'ConnectionClosed'),
+    ('1', 'ApplicationData'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('1', 'ApplicationDataEmpty'): ('5', 'Empty'),
+    ('1', 'ChangeCipherSpec'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('1', 'ClientHelloRSA'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('1', 'ClientKeyExchange'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('1', 'EmptyCertificate'): ('2', 'Empty'),
+    ('1', 'Finished'): ('5', 'ConnectionClosed'),
+    ('1', 'HeartbeatRequest'): ('5', 'ConnectionClosed'),
+    ('2', 'ApplicationData'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('2', 'ApplicationDataEmpty'): ('5', 'Empty'),
+    ('2', 'ChangeCipherSpec'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('2', 'ClientHelloRSA'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('2', 'ClientKeyExchange'): ('3', 'Empty'),
+    ('2', 'EmptyCertificate'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('2', 'Finished'): ('5', 'ConnectionClosed'),
+    ('2', 'HeartbeatRequest'): ('5', 'ConnectionClosed'),
+    ('3', 'ApplicationData'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('3', 'ApplicationDataEmpty'): ('5', 'Empty'),
+    ('3', 'ChangeCipherSpec'): ('0', 'Empty'),
+    ('3', 'ClientHelloRSA'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('3', 'ClientKeyExchange'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('3', 'EmptyCertificate'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('3', 'Finished'): ('5', 'ConnectionClosed'),
+    ('3', 'HeartbeatRequest'): ('5', 'ConnectionClosed'),
+    ('4', 'ApplicationData'): ('5', 'ApplicationData & Alert Warning (Close notify) & ConnectionClosed'),
+    ('4', 'ApplicationDataEmpty'): ('4', 'Empty'),
+    ('4', 'ChangeCipherSpec'): ('5', 'Alert Fatal (Unexpected message)Alert Warning (Close notify) & ConnectionClosed'),
+    ('4', 'ClientHelloRSA'): ('5', 'Alert Fatal (Handshake failure)Alert Warning (No renegotiation)Alert Warning (Close notify) & ConnectionClosed'),
+    ('4', 'ClientKeyExchange'): ('5', 'Alert Fatal (Unexpected message)Alert Warning (Close notify) & ConnectionClosed'),
+    ('4', 'EmptyCertificate'): ('5', 'Alert Fatal (Unexpected message)Alert Warning (Close notify) & ConnectionClosed'),
+    ('4', 'Finished'): ('5', 'Alert Fatal (Unexpected message)Alert Warning (Close notify) & ConnectionClosed'),
+    ('4', 'HeartbeatRequest'): ('5', 'Alert Warning (Close notify) & ConnectionClosed'),
+    ('5', 'ApplicationData'): ('5', 'ConnectionClosed'),
+    ('5', 'ApplicationDataEmpty'): ('5', 'ConnectionClosed'),
+    ('5', 'ChangeCipherSpec'): ('5', 'ConnectionClosed'),
+    ('5', 'ClientHelloRSA'): ('5', 'ConnectionClosed'),
+    ('5', 'ClientKeyExchange'): ('5', 'ConnectionClosed'),
+    ('5', 'EmptyCertificate'): ('5', 'ConnectionClosed'),
+    ('5', 'Finished'): ('5', 'ConnectionClosed'),
+    ('5', 'HeartbeatRequest'): ('5', 'ConnectionClosed'),
+    ('6', 'ApplicationData'): ('6', 'Empty'),
+    ('6', 'ApplicationDataEmpty'): ('6', 'Empty'),
+    ('6', 'ChangeCipherSpec'): ('6', 'Empty'),
+    ('6', 'ClientHelloRSA'): ('6', 'Empty'),
+    ('6', 'ClientKeyExchange'): ('6', 'Empty'),
+    ('6', 'EmptyCertificate'): ('6', 'Empty'),
+    ('6', 'Finished'): ('6', 'Empty'),
+    ('6', 'HeartbeatRequest'): ('6', 'Empty'),
+    ('7', 'ApplicationData'): ('6', 'Empty'),
+    ('7', 'ApplicationDataEmpty'): ('6', 'Empty'),
+    ('7', 'ChangeCipherSpec'): ('6', 'Empty'),
+    ('7', 'ClientHelloRSA'): ('1', 'ServerHello Certificate & CertificateRequest & ServerHelloDone'),
+    ('7', 'ClientKeyExchange'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('7', 'EmptyCertificate'): ('5', 'Alert Fatal (Unexpected message) & ConnectionClosed'),
+    ('7', 'Finished'): ('5', 'ConnectionClosed'),
+    ('7', 'HeartbeatRequest'): ('6', 'Empty'),
+}
+
+
+def answer(seq):
+    q, out = START, ""
+    for a in seq:
+        q, out = TRANS[q, a]
+    return out
