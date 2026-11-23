@@ -1,0 +1,13 @@
+01-toymealy-asandbsbotheven                       4 states 2 inputs | 100.0 % at length 100,   55 s,  22 asked, sure     | the model exactly | 1 states + a circle of 2 + a circle of 2
+02-toymealy-coffeemealymachine                    3 states 3 inputs | 100.0 % at length 100,  161 s,  38 asked, not sure | the model exactly | 3 states + a level of 4 (steps -1..1, held at the ends, or set), the answer read from the numbers only
+03-toymealy-cacm                                  3 states 2 inputs | 100.0 % at length 100,    9 s,  24 asked, sure     | the model exactly | 1 states + a level of 4 (steps -2..2, held at the ends, or set)
+04-toymealy-lee-yannakakis-distinguishable        6 states 2 inputs | 100.0 % at length 100,  637 s,  36 asked, not sure | the model exactly | 6 states, the answer read from the state before the last symbol and that symbol
+05-toymealy-lee-yannakakis-non-distinguishable    3 states 2 inputs | 100.0 % at length 100,   43 s,  23 asked, sure     | the model exactly | 2 states + a circle of 2, 1 of the symbols moving by what the first number reads, the answer read from the numbers only
+06-toymealy-naiks                                 4 states 2 inputs | 100.0 % at length 100,  241 s,  29 asked, sure     | the model exactly | 4 states, the answer read from the state before the last symbol and that symbol
+07-toymealy-turnstile                             2 states 2 inputs | 100.0 % at length 100,   18 s,  23 asked, sure     | the model exactly | 1 states + a level of 3 (steps -1..1, held at the ends, or set)
+08-toymoore-mooremodel                            9 states 2 inputs | 100.0 % at length 100,  150 s,  28 asked, sure     | the model exactly | 1 states + a level of 3 (steps -1..1, held at the ends, or set) + a level of 3 (steps -1..1, held at the ends, or set)
+09-toydfa-toydfa                                  2 states 2 inputs | 100.0 % at length 100,   67 s,  27 asked, sure     | the model exactly | 1 states + a circle of 2
+10-toydfa-toydfa2                                 4 states 2 inputs | 100.0 % at length 100,   45 s,  22 asked, sure     | the model exactly | 1 states + a circle of 2 + a circle of 2
+11-moore-register2                                4 states 3 inputs | 100.0 % at length 100,   26 s,  22 asked, sure     | the model exactly | 1 states + a circle of 2 + a circle of 2, the second moved by the value of the first, the answer read from the last number only
+12-moore-register3                                8 states 3 inputs | 100.0 % at length 100,  180 s,  27 asked, sure     | the model exactly | 4 states + a circle of 2, the answer read from the numbers only
+exactly the model: 12 of 12
