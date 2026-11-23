@@ -29,13 +29,13 @@ ACTS = [("add", 1), ("add", -1), ("set", 0), ("set", "top"), ("add", 2), ("add",
 GROW = 150  # so many of the parts that tell the most of a symbol are given one more slot, or made to wait on a guard
 READS = ["zero", "full", "top", "ge2", "ge3"]
 KINDS = [("counter", 0)] + [("level", n) for n in range(2, 8)] + [("circle", n) for n in range(2, 8)] + [("circle", 12)]
-FIRSTS = 16  # with so many of the parts that tell the most of a symbol alone, a second part is looked for
-GUARDS = 16  # so many plain parts, the ones that settle the most steps of a symbol by themselves, are tried as guards
+FIRSTS = 8  # with so many of the parts that tell the most of a symbol alone, a second part is looked for
+GUARDS = 12  # so many plain parts, the ones that settle the most steps of a symbol by themselves, are tried as guards
 GIVERS = 40  # so many plain counters that some slot empties are tried as what another part takes at that slot
 BIG = 120  # (a counter is kept below this: values are held in a byte)
 OTHERS = 3  # so many other explanations of a symbol, the next cheapest, are kept as rivals of the one told
-SURE = 8  # the machine is sure when no rival is left and it answered the last so many stories asked, long ones
-LONG = (50, 100)  # the last stories asked are of so many symbols
+SURE = 10  # the machine is sure when no rival is left and it answered the last so many stories asked, long ones
+LONG = (60, 120)  # the last stories asked are of so many symbols
 
 
 class Heard:
@@ -100,8 +100,9 @@ def acts_of(kind, n):
     for act in ACTS:
         if kind == "counter" and act == ("set", "top"):
             continue
-        if kind == "circle" and (act[0] == "set" and act[1] == "top" or act[0] == "add" and abs(act[1]) > 1 and n <= 3):
-            continue
+        if kind == "circle" and (act == ("set", "top") and n > 2 or act == ("add", -1) and n == 2 or
+                                 act[0] == "add" and abs(act[1]) > 1 and n <= 3):
+            continue  # (a circle of two is a switch: turned over, or set either way)
         if kind == "level" and act[0] == "add" and abs(act[1]) >= n:
             continue
         out.append(act)
@@ -536,6 +537,8 @@ def explain(V, log=print, before=None, late=lambda: False):
         if len(set(y.tolist())) <= 1:
             found[a] = (0.0, False, [])
             continue
+        if late():
+            break
         T0 = Told(base, steps, par, y, V.summed)
         best, cands = [None], []
 
@@ -574,8 +577,14 @@ def explain(V, log=print, before=None, late=lambda: False):
             for use_ctx, (c, extra, tel, T3) in kept.items():  # tells the rest
                 firsts = tel[:FIRSTS] + [s for s in plains[use_ctx][:GUARDS] if s not in tel[:FIRSTS]]
                 for imp, pr, T, i, how in firsts:
+                    if late():
+                        break
                     c2 = c * 16 + T.feat(i, how)
-                    two = exact(c2, T0.tellers(c2) + T3.tellers(c2))
+                    tel2 = ranked(T0.tellers(c2) + T3.tellers(c2))
+                    two = exact(c2, tel2)
+                    if not two:  # (beside the first, other parts tell the most: they too are given a third slot)
+                        ts3 = grown([s[2].pool.ts[s[3]] for s in tel2[:GROW // 3] if len(s[2].pool.ts[s[3]][3]) < 3], V)
+                        two = exact(c2, Told(pool_of(ts3, V, W), steps, par, y, V.summed).tellers(c2)) if ts3 else None
                     if two:
                         better((pr + two[0] + extra + 1, use_ctx, [(T.pool.ts[i], how), two[1:]]))
         if best[0] is None:  # a part some move of which waits on what a plain part reads (a guard)
@@ -777,11 +786,11 @@ def explained(H, log=print, before=None, late=lambda: False):
     return kept
 
 
-def story(syms, rng, n):
+def story(syms, rng, n, again=0.3):
     """A story of n symbols in which a symbol is often repeated: tops and bottoms are reached."""
     w, last = [], None
     for _ in range(n):
-        last = last if last is not None and rng.random() < 0.3 else rng.choice(syms)
+        last = last if last is not None and rng.random() < again else rng.choice(syms)
         w.append(last)
     return w
 
@@ -822,7 +831,8 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
         if w is None:
             if whole and row >= SURE:
                 break
-            w, why = story(syms, rng, rng.randint(*LONG) if whole else 24), "a check"
+            # (every other long story with no symbol repeated on purpose: as the machine will be used)
+            w, why = story(syms, rng, rng.randint(*LONG) if whole else 24, 0.3 if row % 2 else 0.0), "a check"
         elif len(w) < 24:  # (seen after every symbol, a longer story costs the same: it goes on)
             w = w + story(syms, rng, 24 - len(w))
         asked += 1

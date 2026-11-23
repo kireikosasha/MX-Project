@@ -28,7 +28,7 @@ def one(path, out, a):
         w = tuple(rng.choice(syms) for _ in range(rng.randint(1, a.longest)))
         data.append((w, oracle(w)))
     t0 = time.time()
-    begin, known, spent, taken = None, [], 0, None
+    begin, known, spent, taken, H, later = None, [], 0, None, None, set()
     if a.parts and a.watch:  # first the rule as a few small parts (parts.py); if it is not sure of one, the machine as a
         import parts            # table (cells.py), with the questions left and the stories already heard
         try:
@@ -37,24 +37,40 @@ def one(path, out, a):
             parts = None
         if parts is not None:
             m, spent, H, whole = parts.learn(syms, oracle, data, rng, a.asks, quiet=True, give_up=a.asks // 2,
-                                             deadline=time.time() + a.minutes * 60 * 0.3)
+                                             deadline=time.time() + a.minutes * 60 * 0.2)
             if m.sure:
                 taken = m
             else:
                 known = [w for w in H.index if w and not any(len(v) > len(w) and v[:len(w)] == w for v in H.index)]
+    plain = oracle
+    if taken is None and H is not None:  # (what the second learner asks is kept: see below)
+        oracle = lambda w: (later.add(tuple(w)), plain(w))[1]
     if taken is None and a.sum and a.watch and all(y.lstrip("-").isdigit() and str(int(y)) == y for _, y in data):
         begin = int(oracle([]))  # (the display before any symbol)
         shown, oracle = oracle, cells.added(oracle)
         data = [(w, oracle(w)) for w, _ in data]
+    reserve = a.reserve * (a.asks - spent) // a.asks  # (of the questions left, the same share is kept for the last check)
     m, asked = (taken, 0) if taken is not None else \
         cells.learn(syms, oracle, data, rng, a.asks - spent, a.seconds, a.longest, quiet=True, workers=a.workers, known=known,
-                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience, tier=a.tier, tour_=a.tour, anchor=a.anchor, far=a.far, deep=a.deep, mealy=a.mealy, reach=a.reach, pairs=a.pairs, rare=a.rare,
+                           shorten=a.shorten, reserve=reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience, tier=a.tier, tour_=a.tour, anchor=a.anchor, far=a.far, deep=a.deep, mealy=a.mealy or begin is not None, reach=a.reach, pairs=a.pairs, rare=a.rare,
                            deadline=t0 + a.minutes * 60 - 180 if a.deadline else None)
     asked += spent
-    if begin is not None:
-        oracle = shown
-        if m is not None:
-            m = cells.Summed(m, begin)
+    oracle = plain
+    if begin is not None and m is not None:
+        m = cells.Summed(m, begin)
+    if taken is None and H is not None and (m is None or not m.sure) and time.time() < t0 + a.minutes * 60 - 120:
+        # neither learner is sure: the rule as parts is looked for once more, on everything heard by the two; of the
+        # two machines, each explaining all that was heard, the one with the shorter description is told (not sure)
+        for w in sorted(later, key=len):
+            if w:
+                H.add(list(w), [oracle(list(w[:i])) for i in range(1, len(w) + 1)])
+        mp, whole = parts.explained(H, lambda *x: None, None, lambda: time.time() > t0 + a.minutes * 60 - 60)
+        if whole and (m is None or mp.bits < cells.described(m)):
+            m = mp
+            m.sure = False
+    if a.save and m is not None and hasattr(m, "table"):  # (the rule in words)
+        os.makedirs(a.save, exist_ok=True)
+        open(os.path.join(a.save, os.path.basename(os.path.dirname(path)) + ".txt"), "w").write(str(m) + "\n" + m.table() + "\n")
     if a.save:  # (the machine itself, for a check that needs more than its answers: external/mealy_dot.py --same)
         import pickle
         os.makedirs(a.save, exist_ok=True)
@@ -97,7 +113,7 @@ def main():
     ap.add_argument("--alike", action="store_true", help="with --mealy: of the machines that explain the stories, the one where the fewest moves with the same answer lead to different places")
     ap.add_argument("--rare", action="store_true", help="with --watch: before a second machine is looked for, every symbol is tried after every beginning that ends in an answer barely seen (at most half the questions); with --pairs, first the pairs whose first move leads to the place the fewest stories heard have been in")
     ap.add_argument("--parts", action="store_true", help="with --watch: first the rule is looked for as a few small parts (parts.py: counters, levels and circles moved by a few events), with at most half the questions unless it comes to answer them; the machine as a table is looked for only if that one is not sure")
-    ap.add_argument("--sum", action="store_true", help="with --watch, when every answer is a whole number: the machine is looked for that answers what each symbol adds to the number shown, and the number is told as the sum")
+    ap.add_argument("--sum", action="store_true", help="with --watch, when every answer is a whole number: the machine is looked for that answers what each symbol adds to the number shown (the answer of the last move, as with --mealy), and the number is told as the sum")
     ap.add_argument("--pairs", action="store_true", help="with --watch: stories are asked through the pairs of moves of the kept machine that no story has made, and a machine is sure only when none is left")
     ap.add_argument("--engine", default="", help="the solver (of pysat's; glucose4 if not given)")
     ap.add_argument("--dep", action="store_true", help="every body at ceilings of its price, each move priced by what it depends on (the state, the read of the first cell)")
