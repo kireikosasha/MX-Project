@@ -9,6 +9,8 @@ finds it:
   - it is moved by at most three events: a symbol, or a symbol together with what the display was seen to do at it (the
     number went up by one; the label changed). One of its moves may be made only when another part reads something
     (a guard); or one of its moves may add all that another part holds (what is on the bench goes to the shelf);
+  - a row of flags, one for each value of a circle or level (a seat for every place the wheel can stop at): an event
+    raises, lowers or turns over the flag where that part points, and the flag where it points is what is read;
   - what the display does at a symbol is a table over what is seen before the symbol (the label; whether the number is
     zero) and what one or two parts read (zero or not, at the top or not, the value itself; or how one part stands to
     another: below it, level with it, above it); or the number shown goes up, or down, by what a part holds;
@@ -33,6 +35,9 @@ FIRSTS = 8  # with so many of the parts that tell the most of a symbol alone, a 
 GUARDS = 12  # so many plain parts, the ones that settle the most steps of a symbol by themselves, are tried as guards
 GIVERS = 40  # so many plain counters that some slot empties are tried as what another part takes at that slot
 BIG = 120  # (a counter is kept below this: values are held in a byte)
+ROWS = 7  # a row of flags is one flag for each value of a circle or level of at most so many values
+FLAG_ACTS = [("flag", 1), ("flag", 0), ("flag", -1)]  # raise, lower, turn over the flag where the address points
+SWITCHES = 8  # so many plain parts of two values are tried as what turns the way an address moves
 OTHERS = 3  # so many other explanations of a symbol, the next cheapest, are kept as rivals of the one told
 SURE = 10  # the machine is sure when no rival is left and it answered the last so many stories asked, long ones
 LONG = (60, 120)  # the last stories asked are of so many symbols
@@ -213,7 +218,7 @@ def price(t, W):
     kind, n, reject, touched, chosen, guard = t
     return math.log2(3) + (0 if kind == "counter" else math.log2(7)) + (1 if reject else 0) + \
         len(touched) * (math.log2(W) + math.log2(len(ACTS))) + \
-        (0 if guard is None else 2 if guard[1] == "gives" else 2 + len(touched))
+        (0 if guard is None else 2 if guard[1] in ("gives", "address") else 2 + len(touched))
 
 
 def run_all(ts, V, g=None, gv=None):
@@ -275,6 +280,8 @@ def reading_at(vals, parts, j, how):
     part k (0 below it, 1 level with it, 2 above it)."""
     if isinstance(how, tuple):
         return (vals[j] > vals[how[1]]) - (vals[j] < vals[how[1]]) + 1
+    if how == "here":  # (a row of flags: the flag where its address points)
+        return (int(vals[j]) >> int(vals[parts.index(parts[j][5][0])])) & 1
     return int(read_of(vals[j], parts[j], how))
 
 
@@ -441,6 +448,101 @@ def cheap(t):
     return len(t[3]) <= 2 and all(a[0] == "set" or abs(a[1]) == 1 for a in t[4]) and t[5] is None
 
 
+def addresses(V, base):
+    """What a row of flags may be addressed by: the plain circles and levels of 3 to ROWS values; and such a circle
+    moved one way or the other by what a plain part of two values reads (a direction turned by a symbol). Returns the
+    parts and their values at every beginning."""
+    W, S = len(V.slots), len(V.H.syms)
+    order = sorted(range(len(base.ts)), key=lambda i: price(base.ts[i], W))
+    # (moved by symbols alone, not by what the display did at them: where a wheel stands is not seen on the display)
+    plain = [i for i in order if base.ts[i][0] in ("circle", "level") and 3 <= base.ts[i][1] <= ROWS and cheap(base.ts[i])
+             and all(sl < S for sl in base.ts[i][3])]
+    out = [(base.ts[i], base.values()[i].astype(np.int16)) for i in plain]
+    switches = [i for i in order if base.ts[i][1] == 2 and cheap(base.ts[i]) and all(sl < S for sl in base.ts[i][3])][:SWITCHES]
+    one = [base.ts[i] for i in plain if base.ts[i][0] == "circle" and len(base.ts[i][3]) == 1 and abs(base.ts[i][4][0][1]) == 1
+           and base.ts[i][4][0][0] == "add"]
+    for gi in switches:
+        gt = base.ts[gi]
+        g = np.asarray(read_of(base.values()[gi].astype(np.int16), gt, "zero"))
+        ts = []
+        for kind, n, _, (s0,), ((_, x),), _ in one:
+            for b in (0, 1):  # (+x while the switch reads b, -x while it reads the other)
+                order2 = sorted([(W * (1 + b) + s0, ("add", x)), (W * (2 - b) + s0, ("add", -x))])
+                ts.append((kind, n, False, tuple(p for p, _ in order2), tuple(a for _, a in order2), (gt, "zero")))
+        ts = list(dict.fromkeys(ts))
+        if ts:
+            vals = run_all(ts, V, g)
+            out += [(t, v.astype(np.int16)) for t, v in zip(ts, vals)]
+    seen, kept = set(), []
+    for t, v in out:  # (the same values: one address, the cheapest)
+        if v.tobytes() not in seen:
+            seen.add(v.tobytes())
+            kept.append((t, v))
+    return kept
+
+
+def row_forms(V):
+    """The rows of a small description: one or two symbols, each raising, lowering or turning over the flag."""
+    out = []
+    for r in (1, 2):
+        for touched in itertools.combinations(range(len(V.H.syms)), r):
+            if clash(touched, V):
+                continue
+            for chosen in itertools.product(FLAG_ACTS, repeat=r):
+                if r == 2 and chosen[0] == chosen[1] and V.slots[touched[0]][0] == V.slots[touched[1]][0]:
+                    continue
+                if any(a == ("flag", 1) or a == ("flag", -1) for a in chosen):
+                    out.append((touched, chosen))
+    return out
+
+
+def run_rows(rows, V, addr):
+    """The flags (a bit for every value of the address) of many rows at every beginning heard; addr: for every row,
+    the values of its address at every beginning (the address is read before the symbol, as every reading is)."""
+    W, par = len(V.slots), V.par
+    C = len(rows)
+    act = np.zeros((C, W + 1), np.int8)  # (0 nothing, 1 raise, 2 lower, 3 turn over; the last column: no slot)
+    for i, (touched, chosen) in enumerate(rows):
+        for sl, (_, x) in zip(touched, chosen):
+            act[i, sl] = 1 if x == 1 else 2 if x == 0 else 3
+    out = np.zeros((C, len(par)), np.int32)
+    for i in range(1, len(par)):
+        v = out[:, par[i]]
+        bit = np.left_shift(1, addr[:, par[i]].astype(np.int32))
+        a = act[:, V.sslot[i]] if V.sslot[i] >= 0 else np.zeros(C, np.int8)
+        if V.eslot[i] >= 0:
+            a = np.where(act[:, V.eslot[i]] > 0, act[:, V.eslot[i]], a)
+        out[:, i] = np.where(a == 1, v | bit, np.where(a == 2, v & ~bit, np.where(a == 3, v ^ bit, v)))
+    return out
+
+
+def flag_rows(V, adds, steps, c, y, late=lambda: False, most=1 + 3, chunk=20000):
+    """The rows of flags (with their addresses) that, read where the address points, make y a function with c:
+    [(price, part, "here")], the cheapest first."""
+    W, par = len(V.slots), V.par
+    forms_ = row_forms(V)
+    nlab = math.log2(max(2, len(set(y.tolist()))))
+    found = []
+    pairs = [(k, f) for k in range(len(adds)) for f in range(len(forms_))]
+    for lo in range(0, len(pairs), chunk):
+        if late():
+            break
+        part = pairs[lo:lo + chunk]
+        addr = np.stack([adds[k][1] for k, _ in part])
+        flags = run_rows([forms_[f] for _, f in part], V, addr)
+        F = ((flags[:, par[steps]] >> addr[:, par[steps]]) & 1).astype(np.int8)
+        left, _ = untold(F, c, y)
+        for j in np.nonzero(left == 0)[0]:
+            k, f = part[j]
+            at = adds[k][0]
+            touched, chosen = forms_[f]
+            t = ("row", at[1], False, touched, chosen, (at, "address"))
+            pr = price(t, W) + price(at, W) + (price(at[5][0], W) if at[5] is not None else 0) + \
+                len(np.unique(c * 16 + F[j])) * nlab + 0.5
+            found.append((pr, t, "here"))
+    return sorted(found, key=lambda x: x[0])[:most]
+
+
 class Parts:
     """The machine: the parts, and for every symbol which of them are read (and how) with the table of what the display
     does."""
@@ -458,6 +560,13 @@ class Parts:
         base = [a] + ([self.slot[a, seen]] if (a, seen) in self.slot else [])
         out = []
         for j, (v, (kind, n, reject, touched, chosen, guard)) in enumerate(zip(vals, self.parts)):
+            if kind == "row":  # (the flag where the address points, as it was before this symbol)
+                acts = [chosen[touched.index(sl)] for sl in base if sl in touched]
+                if acts:
+                    bit, x = 1 << int(vals[self.guard[j]]), acts[-1][1]
+                    v = v | bit if x == 1 else v & ~bit if x == 0 else v ^ bit
+                out.append(v)
+                continue
             hit = list(base)
             if guard is not None and guard[1] != "gives":
                 b = W * (1 + int(read_of(vals[self.guard[j]], guard[0], guard[1])))
@@ -521,6 +630,8 @@ class Parts:
         """In words: part j read in the way `how` gives v."""
         if isinstance(how, tuple):
             return f"part {j} is {('below', 'level with', 'above')[v]} part {how[1]}"
+        if how == "here":
+            return f"the flag of part {j} where part {self.guard[j]} points is {'up' if v else 'down'}"
         if how == "zero":
             return f"part {j} is {'above zero' if v else 'zero'}"
         if how == "top":
@@ -540,14 +651,19 @@ class Parts:
             return words + ("no part" if all(not ctxs for ctxs, _, _, _ in self.rules) else
                             f"no part (the display by what it shows and the symbol); {self.bits:.0f} bits")
         return words + f"{len(self.parts)} part{'s' if len(self.parts) != 1 else ''}: " + \
-            "; ".join(f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}" +
-                      ("" if t[5] is None else " that takes what another holds" if t[5][1] == "gives" else " under a guard")
+            "; ".join((f"a row of {t[1]} flags" if t[0] == "row" else f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}") +
+                      ("" if t[5] is None or t[0] == "row" else " that takes what another holds" if t[5][1] == "gives" else " under a guard")
                       for t in self.parts) + f"; {self.bits:.0f} bits"
 
     def table(self):
         """The rule in words: the parts and what moves them; then, for every symbol, what the display does."""
         H, W, lines = self.H, len(self.slots), []
         for j, (kind, n, reject, touched, chosen, guard) in enumerate(self.parts):
+            if kind == "row":
+                lines.append(f"    part {j}, a row of {n} flags, one for each value of part {self.guard[j]}. " +
+                             "; ".join(self.said(sl) + ": " + ("raise", "lower")[1 - x] if x in (0, 1) else self.said(sl) + ": turn over"
+                                       for sl, (_, x) in zip(touched, chosen)) + f" the flag where part {self.guard[j]} points")
+                continue
             moves = "; ".join(self.said(s) + ("" if s < W else ", only while " + self.reads(self.guard[j], guard[1], s // W - 1)) +
                               (f": {'%+d' % x}" if what == "add" else f": plus all that part {self.guard[j]} holds" if what == "take"
                                else f": to {n - 1 if x == 'top' else x}")
@@ -578,8 +694,8 @@ def explain(V, log=print, before=None, late=lambda: False):
     t0 = time.time()
     base = pool_of(templates(V), V, W)
     log(f"  {len(base.ts)} parts of one or two slots, different on the {N} beginnings heard ({time.time() - t0:.1f} s)")
-    found, others = {}, {}  # symbol -> (price, with what is seen, [(part, reading)]); and the next cheapest ones
-    was = [] if before is None else [(t[5][0][:5], t[5][1]) for t in before.parts if t[5] is not None and t[5][1] != "gives"]
+    found, others, adds = {}, {}, None  # symbol -> (price, with what is seen, [(part, reading)]); the next cheapest ones
+    was = [] if before is None else [(t[5][0][:5], t[5][1]) for t in before.parts if t[5] is not None and t[5][1] not in ("gives", "address")]
     for a in range(len(H.syms)):
         steps = np.nonzero(sym == a)[0]
         y = eff[steps]
@@ -685,6 +801,16 @@ def explain(V, log=print, before=None, late=lambda: False):
                     one = exact(c, Tv.tellers(c))
                     if one:
                         better((one[0] + extra, use_ctx, [one[1:]]))
+        # a row of flags, read where its address points: also when what was found is longer than the shortest row can
+        # be (a row and its address, each of one slot, and a table of two rows): the found one may be a long way round
+        least = 2 * (math.log2(3) + math.log2(7) + math.log2(W) + math.log2(len(ACTS))) + 2 + 2 * math.log2(max(2, len(set(y.tolist()))))
+        if (best[0] is None or best[0][0] > least) and not late():
+            if adds is None:
+                adds = addresses(V, base)
+                log(f"  {len(adds)} addresses for rows of flags ({time.time() - t0:.1f} s)")
+            for use_ctx, (c, extra, tel, T3) in kept.items():
+                for pr, t, how in flag_rows(V, adds, steps, c, y, late):
+                    better((pr + extra, use_ctx, [(t, how)]))
         if best[0] is not None:
             found[a] = best[0]
             rest = sorted((c for c in cands if c[1:] != best[0][1:]), key=lambda c: c[0])
@@ -720,6 +846,8 @@ def machine(V, found):
             vals[j] = run_all([t], V)[0]
         elif t[5][1] == "gives":
             vals[j] = run_all([t], V, None, vals[chosen.index(t[5][0])])[0]
+        elif t[5][1] == "address":
+            vals[j] = run_rows([(t[3], t[4])], V, vals[chosen.index(t[5][0])][None, :].astype(np.int32))[0]
         else:
             vals[j] = run_all([t], V, np.asarray(read_of(vals[chosen.index(t[5][0])].astype(np.int16), t[5][0], t[5][1])))[0]
     rules, ok = [], True

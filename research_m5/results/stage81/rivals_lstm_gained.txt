@@ -1,0 +1,52 @@
+LSTM under the watcher's protocol (cells_rivals.py --watch --kinds lstm, 3 seeds, 3000 steps) on the six open families
+first taken at stage 81 (all six by the joined learner: 100 % at lengths 20, 100 and 500, five of them sure).
+x1: the same 300 stories; x40: 12 000. A family counts as taken at 95 % and more at length 100.
+
+  53-06-train-station lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  75.0  31.3  14.7  (32 s)
+  53-06-train-station lstm        x1   seed 1: taught lengths 100.0  length 20/100/500:  78.3  29.3  13.0  (30 s)
+  53-06-train-station lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  73.0  30.3  12.3  (31 s)
+53-06-train-station lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500:  75.4  30.3  13.3
+  53-06-train-station lstm        x40  seed 0: taught lengths  86.3  length 20/100/500:  93.0  45.0  18.3  (34 s)
+  53-06-train-station lstm        x40  seed 1: taught lengths  91.3  length 20/100/500:  99.0  68.0  27.7  (33 s)
+  53-06-train-station lstm        x40  seed 2: taught lengths  91.3  length 20/100/500:  99.3  67.0  29.0  (32 s)
+53-06-train-station lstm        x40  mean of 3: taught lengths  89.7  length 20/100/500:  97.1  60.0  25.0
+  58-01-bakery lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  44.3   0.3   0.0  (34 s)
+  58-01-bakery lstm        x1   seed 1: taught lengths  99.7  length 20/100/500:  40.7   0.3   0.0  (33 s)
+  58-01-bakery lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  43.0   0.0   0.0  (33 s)
+58-01-bakery lstm        x1   mean of 3: taught lengths  99.9  length 20/100/500:  42.7   0.2   0.0
+  58-01-bakery lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  96.7   1.3   0.0  (32 s)
+  58-01-bakery lstm        x40  seed 1: taught lengths 100.0  length 20/100/500:  95.7   3.7   0.0  (35 s)
+  58-01-bakery lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  96.0   0.7   0.0  (33 s)
+58-01-bakery lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500:  96.1   1.9   0.0
+  60-09-mountain-hut lstm        x1   seed 0: taught lengths  99.7  length 20/100/500:  65.3  17.3   0.0  (32 s)
+  60-09-mountain-hut lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  68.7  14.7   0.0  (32 s)
+  60-09-mountain-hut lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  74.7  19.7   0.0  (31 s)
+60-09-mountain-hut lstm        x1   mean of 3: taught lengths  99.7  length 20/100/500:  69.6  17.2   0.0
+  60-09-mountain-hut lstm        x40  seed 0: taught lengths  94.7  length 20/100/500:  94.0  26.7   0.0  (31 s)
+  60-09-mountain-hut lstm        x40  seed 1: taught lengths  94.7  length 20/100/500:  94.7  28.3   0.0  (33 s)
+  60-09-mountain-hut lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  93.3  25.0   0.0  (32 s)
+60-09-mountain-hut lstm        x40  mean of 3: taught lengths  96.4  length 20/100/500:  94.0  26.7   0.0
+  66-07-gas-station lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  54.0   0.3   0.0  (32 s)
+  66-07-gas-station lstm        x1   seed 1: taught lengths 100.0  length 20/100/500:  44.0   0.7   0.0  (31 s)
+  66-07-gas-station lstm        x1   seed 2: taught lengths 100.0  length 20/100/500:  49.0   0.3   0.0  (32 s)
+66-07-gas-station lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500:  49.0   0.4   0.0
+  66-07-gas-station lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  95.0   2.3   0.0  (29 s)
+  66-07-gas-station lstm        x40  seed 1: taught lengths  95.0  length 20/100/500:  91.3   3.3   0.0  (30 s)
+  66-07-gas-station lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  95.7   2.0   0.0  (31 s)
+66-07-gas-station lstm        x40  mean of 3: taught lengths  98.3  length 20/100/500:  94.0   2.6   0.0
+  66-12-clock-tower lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  40.7   6.7   7.3  (29 s)
+  66-12-clock-tower lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  52.3   4.0  10.7  (31 s)
+  66-12-clock-tower lstm        x1   seed 2: taught lengths  99.3  length 20/100/500:  37.7   9.7  10.3  (30 s)
+66-12-clock-tower lstm        x1   mean of 3: taught lengths  99.6  length 20/100/500:  43.6   6.8   9.4
+  66-12-clock-tower lstm        x40  seed 0: taught lengths  99.7  length 20/100/500:  98.0  26.7   4.7  (30 s)
+  66-12-clock-tower lstm        x40  seed 1: taught lengths  99.3  length 20/100/500:  97.3  32.3  11.7  (31 s)
+  66-12-clock-tower lstm        x40  seed 2: taught lengths  98.3  length 20/100/500:  97.0  21.3   6.0  (33 s)
+66-12-clock-tower lstm        x40  mean of 3: taught lengths  99.1  length 20/100/500:  97.4  26.8   7.4
+  70-02-orchard lstm        x1   seed 0: taught lengths 100.0  length 20/100/500:  52.0   4.3   0.0  (32 s)
+  70-02-orchard lstm        x1   seed 1: taught lengths  99.3  length 20/100/500:  52.7   5.3   0.0  (29 s)
+  70-02-orchard lstm        x1   seed 2: taught lengths  99.3  length 20/100/500:  57.3   7.7   0.0  (30 s)
+70-02-orchard lstm        x1   mean of 3: taught lengths  99.6  length 20/100/500:  54.0   5.8   0.0
+  70-02-orchard lstm        x40  seed 0: taught lengths 100.0  length 20/100/500:  99.0  29.0   0.0  (30 s)
+  70-02-orchard lstm        x40  seed 1: taught lengths  95.0  length 20/100/500:  99.7  38.7   0.0  (31 s)
+  70-02-orchard lstm        x40  seed 2: taught lengths 100.0  length 20/100/500:  98.3  31.0   0.0  (30 s)
+70-02-orchard lstm        x40  mean of 3: taught lengths  98.3  length 20/100/500:  99.0  32.9   0.0
