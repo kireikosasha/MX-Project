@@ -611,6 +611,37 @@ class Machine:
         return "\n".join(lines)
 
 
+class Summed:
+    """A number shown, told as a sum: the machine inside answers what the last symbol added to the number (the answers
+    of a watcher of the display, seen as changes), and the number is where it began and everything added since. The
+    count itself is then no part of the machine: only what decides the additions is."""
+
+    def __init__(self, machine, begin):
+        self.machine, self.begin = machine, begin
+
+    sure = property(lambda self: self.machine.sure)
+
+    def run(self, seq):
+        m = self.machine
+        if m.lex is not None:
+            if any(a not in m.lex for a in seq):
+                return None
+            seq = [m.lex[a] for a in seq]
+        q, z, n = m.start, list(m.zstart), self.begin
+        for a in seq:
+            q, z = m.move(q, z, a)
+            n += int(m.out(q, z))
+        return str(n)
+
+    def __str__(self):
+        return f"a number that begins at {self.begin}, every symbol adding to it what this machine answers: {self.machine}"
+
+
+def added(oracle):
+    """The answers of a number shown, as what the last symbol added to it ('+1', '+0', '-2': names, not numbers)."""
+    return lambda w: "%+d" % (int(oracle(list(w))) - int(oracle(list(w[:-1]))))
+
+
 def profile(m):
     """(A machine of a ceiling shape) its exact price: per part, how many symbols move it by the state, by what the
     first cell reads, and by both; and the parts its answer really reads. Returns the price, the counts, the parts."""
@@ -1635,7 +1666,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
           committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
           warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0, mealy=False, reach=False, pairs=False,
-          rare=False):
+          rare=False, known=()):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
@@ -1663,7 +1694,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     of moves not made, first the ones whose first move leads to the place the fewest stories heard have been in (see
     untrodden).
     deep (warm, with build): the last search for a second machine, the one 'sure' rests on, writes stories of up to so
-    many symbols, not build: two machines may agree on every story of a dozen symbols and part later."""
+    many symbols, not build: two machines may agree on every story of a dozen symbols and part later.
+    known (watched): stories already asked and paid for by another learner; they are heard again for nothing."""
     tour_ = tour_ if watch else 0
     far = far if watch else 0
     deep = deep if W_ok(warm, workers) and build else 0
@@ -1688,6 +1720,8 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
                     heard[tuple(w[:i])] = ask(list(w[:i]))
             return heard[tuple(w)]
         for w, y in data:
+            oracle(list(w))
+        for w in known:
             oracle(list(w))
     labels = sorted({y for _, y in data})
     committee = committee if build else 0  # (a committee needs the machines a story is written against)
