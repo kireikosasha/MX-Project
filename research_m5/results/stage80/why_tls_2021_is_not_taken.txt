@@ -1,0 +1,28 @@
+Why none of the 30 models of TLS-Janssen2021 was found in stages 77 and 78 (measured after those runs, on models seen).
+
+The models. All 30 have one state every move stays in (a closed connection), and nearly every move of every other
+state falls into it: of the 55 to 99 moves from the other states, 4 to 16 do not (the handshake), and the deepest
+state is 4 to 6 moves from the start. A story begun at random is in the closed state after one or two symbols.
+
+The questions (tls-1.1-openssl-1.0.2, 10 states, 11 inputs; the code and the flags of stage 78, 200 questions):
+  179 questions asked before the check; all of them stories written against a second machine
+   39 of them made a move not heard before, counted up to the move that closes the connection
+  140 of them (78 %) closed the connection by a move already heard, and went on inside the closed state
+  of the 99 moves from the 9 other states (one way to each state), 25 were known from the 300 stories taught on
+  and 67 at the end; two states were never reached.
+A second machine is free to differ inside the closed state (after some moves there, something else), there are
+endlessly many of them, and every one costs a question.
+
+What was tried (flags --rare --alike; two models seen, tls-1.1-mbedtls-1.2.1 of 6 states and the one above):
+  the pairs of moves ordered by how seldom the place they lead to was visited: no effect, the pairs come after the
+    second machines, and the questions are spent by then
+  the places of the kept machine seen fewer than 22 times, before any second machine: 64 and 158 questions on the
+    places of machines that were wrong; 5 states found of 10, and 5 of 6
+  every symbol after a beginning that ends in an answer seen fewer than 22 times (no machine needed): the handshake
+    of the 6-state model is walked in 31 questions; then the questions go to the moves that close the connection
+    with a rare answer (an alert), one after another
+  one beginning for a parent and an answer, a second only after all the first: 6 and 10 states, the right numbers,
+    but a machine with a cell is kept that is wrong inside the closed state
+  and, for the plain tables, of the machines that explain the stories the one where the fewest moves with one
+    answer lead apart, the plain tables before those with a cell: both models are found exactly, 195 questions each,
+    34 and 33 seconds.

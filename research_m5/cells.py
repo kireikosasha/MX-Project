@@ -133,6 +133,7 @@ ZLONG = 0  # (warm) a shape with a whole number is first told only the stories o
 # found answers it wrongly, the shortest first
 LONG = 32  # (far) a story heard that is longer is not put into the formulas: the machine is only checked on it
 INERT = True  # (anchor) of the machines that explain the stories, the one where something happens in the fewest places
+ALIKE = False  # (mealy) of the machines that explain the stories, the one where the fewest moves with one answer lead apart
 MEALY_K = 20  # (mealy) a plain control of at most so many states
 HIDDEN = 4  # (anchor) the answers as states, each with at most so many hidden values
 PART = 40  # fit begins with so many of the stories, and adds those its machine answers wrongly
@@ -397,7 +398,7 @@ def shapes(nsym, nlab, most_k=12, guards=False, numeric=False, flags=False, casc
     fewest hidden values first. Their table is long, but it is read off the answers, not searched for: a watcher of a
     display learns its states from the display, and looks for a hidden memory only where the same key at the same
     display does two things."""
-    key = (nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor, mealy)
+    key = (nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor, mealy, ALIKE)
     if key not in SHAPES:
         SHAPES.clear()  # (one list is kept: a learner asks for the same one again and again)
         SHAPES[key] = shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, tier, anchor, mealy)
@@ -466,7 +467,9 @@ def shapes_(nsym, nlab, most_k, guards, numeric, flags, cascades, rules, dep, ti
              [(bits_of(k, (c,), nsym, nlab, "mealy"), k, (c,), "mealy", False) for k in range(1, 5) for c in small]
         # (with anchor they come with the machines whose states are the answers, the shorter table first: their
         # states are not given by the answers, but every move is told apart by its own answer, and the search is quick)
-        every += [(anchor + 1 + 1e-4 * sh[0],) + sh[1:] for sh in of] if anchor and not numeric else of
+        # (with ALIKE the plain tables come before those with a cell: the same answer is taken for the same place)
+        every += [(anchor + 1 + 1e-4 * sh[0] + (0.5 if ALIKE and sh[2] else 0),) + sh[1:] for sh in of] \
+            if anchor and not numeric else of
     k = nlab + 1
     if anchor and not numeric:  # (numbers are counted, not named) the answers alone; then with a hidden cell that a
         # few symbols read, the shorter table first; then
@@ -789,6 +792,28 @@ class Encoding:
                             for o in self.offsets(c):
                                 self.clauses.append([-self.v("o", j, a, q, g, o), self.v("dflt", j, a, g, o), other])
                             lits.append(counted(other, a, g, "o", j, q))
+            self.count = lits
+            self.tot = ITotalizer(lits=lits, ubound=min(len(lits), 120), top_id=self.ids.top)
+            self.ids.occupy(self.ids.top + 1, self.tot.top_id)
+            self.clauses += self.tot.cnf.clauses
+        return self.tot
+
+    def alike(self):
+        """(the answer of the last move, no cells) A counter over the moves that do not lead where the moves with the same
+        answer lead: every answer has one place its moves lead to by default, and a move that leads elsewhere is
+        counted. Of the machines that explain the stories, the one with the fewest such moves is kept: the same reply is
+        taken for the same place until a story shows two places (a closed connection is one place, however it came to
+        be closed). It is the watcher's 'the state is what is seen' for a machine whose answers are of its moves."""
+        if self.tot is None:
+            lits = []
+            for y in range(len(self.labels)):
+                self.exactly([self.v("to", y, d) for d in range(self.k)])
+            for q in range(self.k):
+                for a in self.syms:
+                    lits.append(self.v("else", q, a))
+                    for y in range(len(self.labels)):
+                        for d in range(self.k):
+                            self.clauses.append([-self.v("l", (q, a), y), -self.v("t", a, q, d), self.v("to", y, d), lits[-1]])
             self.count = lits
             self.tot = ITotalizer(lits=lits, ubound=min(len(lits), 120), top_id=self.ids.top)
             self.ids.occupy(self.ids.top + 1, self.tot.top_id)
@@ -1457,8 +1482,9 @@ def fit(shape, syms, labels, data, seconds, other=None, pool=(), excuse=0.0, lex
                 if m is None:
                     break
                 wrong = [(s, y) for s, y in data if m.run(s) != y]
-                if not wrong and other is None and INERT and e.by_state == "named" and isinstance(e.chain, tuple):
-                    tot = e.inertia()  # the machine where something happens in the fewest places
+                same = ALIKE and e.by_state == "mealy" and not e.cells
+                if not wrong and other is None and (same or INERT and e.by_state == "named" and isinstance(e.chain, tuple)):
+                    tot = e.alike() if same else e.inertia()  # the machine where something happens in the fewest places
                     while left > 0:
                         b = min(e.happens(), len(tot.rhs)) - 1
                         if b < 0:
@@ -1608,7 +1634,8 @@ def side(f, jobs, workers):
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
           committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
-          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0, mealy=False, reach=False, pairs=False):
+          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0, mealy=False, reach=False, pairs=False,
+          rare=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
@@ -1631,6 +1658,10 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     pairs (watched): before the check, while questions beyond the reserve are left, stories are asked through the pairs
     of moves of the kept machine that no story heard has made (see untrodden); and a machine is 'sure' only when none
     is left.
+    rare (watched): before a second machine is looked for, every symbol is tried after every beginning that ends in an
+    answer barely seen (at most half the questions; not when the answers are numbers); and of the pairs
+    of moves not made, first the ones whose first move leads to the place the fewest stories heard have been in (see
+    untrodden).
     deep (warm, with build): the last search for a second machine, the one 'sure' rests on, writes stories of up to so
     many symbols, not build: two machines may agree on every story of a dozen symbols and part later."""
     tour_ = tour_ if watch else 0
@@ -1660,7 +1691,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             oracle(list(w))
     labels = sorted({y for _, y in data})
     committee = committee if build else 0  # (a committee needs the machines a story is written against)
-    asked, dead, fixed, tries = 0, set(), pool, {}
+    asked, dead, fixed, tries, novel = 0, set(), pool, {}, 0
     under = {}  # (dep) body -> the highest ceiling proved empty: every lower ceiling of the body is empty too
     gone = lambda sh: sh[1:] in dead or (ceiling(sh) and sh[0] <= under.get(sh[1:4], -1))
     log = (lambda *a: None) if quiet else (lambda *a: print(*a, flush=True))
@@ -1737,6 +1768,33 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         if asked >= asks:  # the questions are spent and the last check was not passed: not sure
             machine.sure = False
             return machine, asked
+        if rare and watch and fixed is None and not numeric and asks - asked > reserve and novel < asks // 2 \
+                and not late_():
+            # before any second machine is looked for: what has barely been seen is looked at first. An answer seen
+            # at the end of fewer beginnings than twice the symbols there are is new; after a beginning that ends in a
+            # new answer every symbol is tried, the rarest answer and the shortest beginning first. No machine is
+            # needed for it: where nearly every move falls into one place and stays (a closed connection), the kept
+            # machine is wrong about the few other places for a long time, and a story chosen by chance or by a second
+            # machine falls into that place too. At most half the questions go here (numbers are not new in this
+            # sense: they are counted)
+            seen_y, gone_on, whole = {}, {}, {}
+            for x, y in heard.items():
+                seen_y[y] = seen_y.get(y, 0) + 1
+                gone_on[x[:-1]] = gone_on.get(x[:-1], 0) + 1  # (how many symbols have been tried after a beginning)
+            for x, y in heard.items():  # (the moves from one beginning that give one answer lead to one place until
+                if gone_on.get(x, 0) == len(syms):  # shown otherwise: one of them is gone on from with every symbol
+                    whole[x[:-1], y] = whole.get((x[:-1], y), 0) + 1  # before a second is begun)
+            new_x = [(whole.get((x[:-1], y), 0), seen_y[y], -gone_on.get(x, 0), len(x), x + (b,))
+                     for x, y in heard.items() if seen_y[y] < 2 * len(syms) and len(x) < 24
+                     and whole.get((x[:-1], y), 0) < 2  # (and a second, lest the first was not like the others)
+                     for b in syms if x + (b,) not in heard]
+            if new_x:
+                x = min(new_x)[4]
+                oracle(list(x))
+                asked, novel = asked + 1, novel + 1
+                log(f"  after an answer barely seen: asked {' '.join(x)} = {heard[x]}; "
+                    f"the kept machine was {'wrong' if bad(x) else 'right'}")
+                continue
         # a machine of this shape, or of one at most `slack` bits longer, that answers every story taught on rightly
         # and some other story otherwise: ask that story
         seen = {s for s, _ in data}
@@ -1821,7 +1879,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         if fixed is not None:  # nothing longer can be asked
             return machine, asked
         if pairs and watch and not late:  # (the pairs of moves not made yet, while there are questions for them)
-            x = untrodden(machine, syms, heard, max(tour_, 24))
+            x = untrodden(machine, syms, heard, max(tour_, 24), rare=rare)
             if x is not None and x not in heard:
                 told = [(x, oracle(list(x)))]
                 asked += 1
@@ -2031,16 +2089,19 @@ def reaches(machine, syms, stories, most=64, depth=8):
     return [p for v, p in sorted(to.items(), key=lambda t: (ends.get(t[0], 0), len(t[1]), t[1]))][:most]
 
 
-def untrodden(machine, syms, stories, most=24, depth=8):
+def untrodden(machine, syms, stories, most=24, depth=8, rare=False):
     """(watched) A story through pairs of moves, one after the other, that no story heard has made: from a place of the
     machine (its state and what its cells read), a symbol and then another. A machine one state short of the true one
     sends some move to the wrong place, and it shows in the answer to the very next symbol there: a machine whose every
     pair of moves has been heard is not such a machine, unless the next answer does not tell the places apart (the
     test for a hidden state more: Chow 1978, Vasilevskii 1973, with the answer after every symbol as the suffix).
-    Returns the story, or None when every pair within reach has been heard."""
+    Returns the story, or None when every pair within reach has been heard.
+    rare: of the pairs not made, first the one whose first move leads to the place where the fewest stories heard
+    have been (then the nearest). Where most moves fall into one place and stay (a closed connection), the pairs
+    through it are most of the pairs and tell the least: the places seldom seen are where a state more can hide."""
     def view(q, z):
         return (q,) + tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(machine.cells, z))
-    done = set()
+    done, been = set(), {}
     for s in stories:
         q, z = machine.start, list(machine.zstart)
         v0 = a0 = None
@@ -2050,18 +2111,23 @@ def untrodden(machine, syms, stories, most=24, depth=8):
                 done.add((v0, a0, a))
             v0, a0 = v, a
             q, z = machine.move(q, z, a)
+        been[view(q, z)] = been.get(view(q, z), 0) + 1
     story, q, z = [], machine.start, list(machine.zstart)
     while len(story) + 2 <= most:
-        frontier, met, path = [((), q, tuple(z))], {(q, tuple(z))}, None
+        frontier, met, path, best = [((), q, tuple(z))], {(q, tuple(z))}, None, None
         for _ in range(depth):
             nxt = []
             for p, q1, z1 in frontier:
                 for a in syms:
                     lack = [b for b in syms if (view(q1, z1), a, b) not in done]
-                    if lack:
+                    q2, z2 = machine.move(q1, list(z1), a)
+                    if lack and rare:
+                        key = (been.get(view(q2, z2), 0), len(p))
+                        if best is None or key < best[0]:
+                            best = (key, p + (a, lack[0]))
+                    elif lack:
                         path = p + (a, lack[0])
                         break
-                    q2, z2 = machine.move(q1, list(z1), a)
                     if (q2, tuple(z2)) not in met:
                         met.add((q2, tuple(z2)))
                         nxt.append((p + (a,), q2, tuple(z2)))
@@ -2070,6 +2136,8 @@ def untrodden(machine, syms, stories, most=24, depth=8):
             if path or not nxt:
                 break
             frontier = nxt[:2000]
+        if rare and best is not None:
+            path = best[1]
         if path is None:
             break
         v0 = a0 = None

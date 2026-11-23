@@ -29,7 +29,7 @@ def one(path, out, a):
         data.append((w, oracle(w)))
     t0 = time.time()
     m, asked = cells.learn(syms, oracle, data, rng, a.asks, a.seconds, a.longest, quiet=True, workers=a.workers,
-                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience, tier=a.tier, tour_=a.tour, anchor=a.anchor, far=a.far, deep=a.deep, mealy=a.mealy, reach=a.reach, pairs=a.pairs,
+                           shorten=a.shorten, reserve=a.reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience, tier=a.tier, tour_=a.tour, anchor=a.anchor, far=a.far, deep=a.deep, mealy=a.mealy, reach=a.reach, pairs=a.pairs, rare=a.rare,
                            deadline=time.time() + a.minutes * 60 - 180 if a.deadline else None)
     if a.save:  # (the machine itself, for a check that needs more than its answers: external/mealy_dot.py --same)
         import pickle
@@ -70,6 +70,8 @@ def main():
     ap.add_argument("--mealy", action="store_true", help="also machines whose answer is of the last move: read from the state before the last symbol and that symbol")
     ap.add_argument("--reach", action="store_true", help="with --watch: the plain stories of the check begin at the places of the kept machine, the least visited first")
     ap.add_argument("--room", type=int, default=0, help="megabytes a process may hold before the kept solvers used longest ago go (2500 if not given)")
+    ap.add_argument("--alike", action="store_true", help="with --mealy: of the machines that explain the stories, the one where the fewest moves with the same answer lead to different places")
+    ap.add_argument("--rare", action="store_true", help="with --watch: before a second machine is looked for, every symbol is tried after every beginning that ends in an answer barely seen (at most half the questions); with --pairs, first the pairs whose first move leads to the place the fewest stories heard have been in")
     ap.add_argument("--pairs", action="store_true", help="with --watch: stories are asked through the pairs of moves of the kept machine that no story has made, and a machine is sure only when none is left")
     ap.add_argument("--engine", default="", help="the solver (of pysat's; glucose4 if not given)")
     ap.add_argument("--dep", action="store_true", help="every body at ceilings of its price, each move priced by what it depends on (the state, the read of the first cell)")
@@ -94,6 +96,8 @@ def main():
         cells.ENGINE = a.engine
     if a.part:
         cells.PART = a.part
+    if a.alike:
+        cells.ALIKE = True
     if a.zlong:
         cells.ZLONG = a.zlong
     if a.room:

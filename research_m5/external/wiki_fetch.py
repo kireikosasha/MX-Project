@@ -3,7 +3,7 @@
 
     python external/wiki_fetch.py RAW_FOLDER OUT_FOLDER
 
-(with --beyond after them: the second set, see select; with --toys: the third, see select_toys) fetches the overview and the .dot models of every benchmark (as text; nothing of it is run), selects by the rule named
+(with --beyond after them: the second set, see select; with --toys: the third, see select_toys; with --larger: the fourth, of 11 to 13 states) fetches the overview and the .dot models of every benchmark (as text; nothing of it is run), selects by the rule named
 before any run (README, stage 77) and writes OUT_FOLDER/NN-name/family.py. The models themselves are not kept in this
 repository; wiki_selected.txt lists the files selected, their sizes and the hashes of the files as fetched.
 
@@ -84,8 +84,9 @@ def select_toys(raw):
     return chosen
 
 
-def select(raw, beyond=False):
-    """beyond: the models the rule left out only by its cap of twelve a benchmark (stage 78)."""
+def select(raw, beyond=False, least=2, most=10):
+    """beyond: the models the rule left out only by its cap of twelve a benchmark (stage 78).
+    least, most: the states a model may have (--larger: 11 to 13, the models the rule left out only by their size)."""
     ran = set()
     for d in glob.glob(os.path.join(HERE, "protocols", "*", "family.py")):
         spec = importlib.util.spec_from_file_location("family", d)
@@ -105,7 +106,7 @@ def select(raw, beyond=False):
             if not trans or not inputs:
                 continue
             states = len(mealy_dot.reached(start, inputs, trans))
-            if not 2 <= states <= 10 or len(inputs) > 12 or frozenset(trans.items()) in ran:
+            if not least <= states <= most or len(inputs) > 12 or frozenset(trans.items()) in ran:
                 continue
             ok.append((b, os.path.basename(f), states, len(inputs)))
         chosen += ok[12:] if beyond else ok[:12]
@@ -116,12 +117,13 @@ if __name__ == "__main__":
     raw, out = sys.argv[1], sys.argv[2]
     beyond = len(sys.argv) > 3 and sys.argv[3] == "--beyond"
     toys = len(sys.argv) > 3 and sys.argv[3] == "--toys"
+    larger = len(sys.argv) > 3 and sys.argv[3] == "--larger"
     if toys:
         fetch_toys(raw)
     else:
         fetch(raw)
     lines = []
-    for n, (b, f, states, inputs) in enumerate(select_toys(raw) if toys else select(raw, beyond), 1):
+    for n, (b, f, states, inputs) in enumerate(select_toys(raw) if toys else select(raw, least=11, most=13) if larger else select(raw, beyond), 1):
         path = os.path.join(raw, b, f)
         ins, start, trans = mealy_dot.read(path, toys)
         short = re.sub(r"^Benchmark", "", b).split("-")[0].lower()
