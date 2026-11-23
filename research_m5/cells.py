@@ -1608,7 +1608,7 @@ def side(f, jobs, workers):
 def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, most_k=12, slack=8, pool=None,
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
           committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
-          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0, mealy=False, reach=False):
+          warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0, mealy=False, reach=False, pairs=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
@@ -1628,6 +1628,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     into the formulas (they would grow with its length): the machine found is checked on it, and only the shortest
     beginning it answers wrongly is taught on.
     reach (watched): the plain stories of the check begin at the places of the kept machine (see reaches).
+    pairs (watched): before the check, while questions beyond the reserve are left, stories are asked through the pairs
+    of moves of the kept machine that no story heard has made (see untrodden); and a machine is 'sure' only when none
+    is left.
     deep (warm, with build): the last search for a second machine, the one 'sure' rests on, writes stories of up to so
     many symbols, not build: two machines may agree on every story of a dozen symbols and part later."""
     tour_ = tour_ if watch else 0
@@ -1817,6 +1820,15 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             continue
         if fixed is not None:  # nothing longer can be asked
             return machine, asked
+        if pairs and watch and not late:  # (the pairs of moves not made yet, while there are questions for them)
+            x = untrodden(machine, syms, heard, max(tour_, 24))
+            if x is not None and x not in heard:
+                told = [(x, oracle(list(x)))]
+                asked += 1
+                log(f"  pairs of moves no story has made: asked {' '.join(x)} = {told[0][1]}; "
+                    f"the kept machine was {'wrong' if bad(x) else 'right'}")
+                data = data + told
+                continue
         if explore and not machine.mealy:  # first the reads the machine can reach that no story taught on ends at: their answers are free
             free = [w for w in unseen(machine, syms, data) if w not in seen][:max(0, asks - asked)]  # (out of the reserve too)
             if free and tour_:  # one story to the first of them and on through the moves not made; then the rest anew
@@ -1901,6 +1913,9 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             log(f"  {'a second machine is not ruled out' if doubt else f'no other machine within {slack} bits'}; "
                 f"{len(told)} longer stories asked, all answered rightly ({time.time() - t0:.1f} s)")
             machine.sure = len(told) >= full and not doubt  # a check cut short by the limit of questions is not passed
+            if pairs and watch and machine.sure and untrodden(machine, syms, heard, 24) is not None:
+                log("  pairs of moves are left that no story has made: not sure")
+                machine.sure = False
             return machine, asked
         log(f"  no other machine within {slack} bits; of {len(told)} longer stories asked, {len(wrong)} answered wrongly")
         if not shorten:
@@ -2014,6 +2029,59 @@ def reaches(machine, syms, stories, most=64, depth=8):
         if len(to) >= most:
             break
     return [p for v, p in sorted(to.items(), key=lambda t: (ends.get(t[0], 0), len(t[1]), t[1]))][:most]
+
+
+def untrodden(machine, syms, stories, most=24, depth=8):
+    """(watched) A story through pairs of moves, one after the other, that no story heard has made: from a place of the
+    machine (its state and what its cells read), a symbol and then another. A machine one state short of the true one
+    sends some move to the wrong place, and it shows in the answer to the very next symbol there: a machine whose every
+    pair of moves has been heard is not such a machine, unless the next answer does not tell the places apart (the
+    test for a hidden state more: Chow 1978, Vasilevskii 1973, with the answer after every symbol as the suffix).
+    Returns the story, or None when every pair within reach has been heard."""
+    def view(q, z):
+        return (q,) + tuple(max(-c[2], min(c[2], v)) if c[0] == "Z" else v for c, v in zip(machine.cells, z))
+    done = set()
+    for s in stories:
+        q, z = machine.start, list(machine.zstart)
+        v0 = a0 = None
+        for a in s:
+            v = view(q, z)
+            if v0 is not None:
+                done.add((v0, a0, a))
+            v0, a0 = v, a
+            q, z = machine.move(q, z, a)
+    story, q, z = [], machine.start, list(machine.zstart)
+    while len(story) + 2 <= most:
+        frontier, met, path = [((), q, tuple(z))], {(q, tuple(z))}, None
+        for _ in range(depth):
+            nxt = []
+            for p, q1, z1 in frontier:
+                for a in syms:
+                    lack = [b for b in syms if (view(q1, z1), a, b) not in done]
+                    if lack:
+                        path = p + (a, lack[0])
+                        break
+                    q2, z2 = machine.move(q1, list(z1), a)
+                    if (q2, tuple(z2)) not in met:
+                        met.add((q2, tuple(z2)))
+                        nxt.append((p + (a,), q2, tuple(z2)))
+                if path:
+                    break
+            if path or not nxt:
+                break
+            frontier = nxt[:2000]
+        if path is None:
+            break
+        v0 = a0 = None
+        for a in path[:most - len(story)]:
+            v = view(q, z)
+            if v0 is not None:
+                done.add((v0, a0, a))
+            v0, a0 = v, a
+            q, z = machine.move(q, z, a)
+            story.append(a)
+        # (the last move of the piece is paired with the first of the next: gone on from here)
+    return tuple(story) if story else None
 
 
 def tour(machine, syms, stories, start=(), most=24, depth=6, rng=None):
