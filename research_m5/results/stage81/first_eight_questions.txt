@@ -1,0 +1,82 @@
+The first eight questions of parts.py alone on each of the 72 open families (python parts.py FAMILY --asks 8 --quiet;
+the code just before the early giving-up rule was added, which it was read off this table).
++ the machine kept answered the story asked rightly; - it was refuted and the parts were looked for again;
+? and some symbol was then left unexplained. The last column: whether parts.py alone, with twenty questions and
+more, came to a machine that is sure and exact (an earlier run of the same day; '?': that run ran out of time).
+
+53-01-kitchen                ----++++                 sure and exact
+53-02-ferry                  ----+-?-  gives up at 8  no
+53-03-card-table             -+++++++                 sure and exact
+53-04-elevator               --++-+-+                 sure and exact
+53-05-garden                 -----+--  gives up at 5  no
+53-06-train-station          --++++-+                 no
+53-07-library                -+------  gives up at 8  no
+53-08-beehive                ---+-+++                 sure and exact
+53-09-orchestra              --------  gives up at 5  no
+53-10-hospital-ward          --+-++++                 sure and exact
+53-11-chess-club             ---+++++                 sure and exact
+53-12-weather-station        ----+++-                 no
+58-01-bakery                 --+--+-+                 sure and exact
+58-02-parking-garage         --------  gives up at 5  no
+58-03-lighthouse             ---+++++                 sure and exact
+58-04-post-office            ------++  gives up at 5  sure and exact
+58-05-aquarium               +-++-+++                 sure and exact
+58-06-ski-lift               -+++++++                 sure and exact
+58-07-bus-route              ----++++                 sure and exact
+58-08-laundromat             -+---+--                 no
+58-09-theater-box-office     ---+-+++                 sure and exact
+58-10-barn                   ++++++++                 sure and exact
+58-11-museum-guard           -+--++++                 sure and exact
+58-12-bicycle-shop           --------  gives up at 5  no
+60-01-dentist                --------  gives up at 5  no
+60-02-harbor-crane           -----+-+  gives up at 5  no
+60-03-airlock                +---++++                 sure and exact
+60-04-recycling-plant        -----+++  gives up at 5  no
+60-05-ice-rink               -+-+++++                 sure and exact
+60-06-fire-station           ++++++++                 sure and exact
+60-07-tailor                 -++++++-                 sure and exact
+60-08-pottery-kiln           -+-+++++                 sure and exact
+60-09-mountain-hut           ---+-+++                 sure and exact
+60-10-school-canteen         -------+  gives up at 5  no
+60-11-ferris-wheel           --------  gives up at 5  no
+60-12-printing-press         -+++++-+                 no
+64-01-vineyard               +-------  gives up at 8  no
+64-02-subway-turnstile       -++-+--+                 sure and exact
+64-03-radio-station          -----???  gives up at 5  no
+64-04-bank-vault             -+-+++++                 sure and exact
+64-05-campsite               ---+++++                 sure and exact
+64-06-car-wash               ----+-++                 no
+64-07-greenhouse             ---++---                 no
+64-08-toll-bridge            -------+  gives up at 5  no
+64-09-blacksmith             ----+-++                 sure and exact
+64-10-observatory            --++++++                 sure and exact
+64-11-bowling-alley          --------  gives up at 5  no
+64-12-pharmacy               --+-++-+                 no
+66-01-brewery                +-------  gives up at 8  no
+66-02-sawmill                -------+  gives up at 5  no
+66-03-canal-lock             +-++++++                 sure and exact
+66-04-hotel-reception        -+++++++                 sure and exact
+66-05-zoo-feeding            ---+-+--                 sure and exact
+66-06-cinema-projector       -+++++++                 sure and exact
+66-07-gas-station            --++++++                 sure and exact
+66-08-tram-depot             -----+--  gives up at 5  no
+66-09-flower-shop            --+-+--+                 no
+66-10-dairy-farm             +-+-++-+                 no
+66-11-concert-hall           ++++++++                 sure and exact
+66-12-clock-tower            +-++----                 sure and exact
+70-01-mine-shaft             --------  gives up at 5  no
+70-02-orchard                ++++-+++                 no
+70-03-bookbinder             -+-+++--                 no
+70-04-water-tower            ----++++                 sure and exact
+70-05-vending-machine        -+---+++                 no
+70-06-fishing-boat           -+++++--                 no
+70-07-tea-house              -+----++                 no
+70-08-carousel               ---+----  gives up at 8  ?
+70-09-archive                ---+----  gives up at 8  ?
+70-10-circus                 --++++++                 sure and exact
+70-11-beach-patrol           +-------  gives up at 8  sure and exact
+70-12-weaving-loom           -----+--  gives up at 5  ?
+
+the first five all refuted: 17 families, of them sure and exact later: 1 (58-04-post-office)
+seven of the first eight refuted (and not the first five): 7 families, of them sure and exact later: 1 (70-11-beach-patrol)
+sure and exact later, of all: 36

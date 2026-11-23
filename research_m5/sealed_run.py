@@ -28,7 +28,7 @@ def one(path, out, a):
         w = tuple(rng.choice(syms) for _ in range(rng.randint(1, a.longest)))
         data.append((w, oracle(w)))
     t0 = time.time()
-    begin, known, spent, taken, H, later = None, [], 0, None, None, set()
+    begin, known, spent, taken, H, later, first, whole = None, [], 0, None, None, set(), None, False
     if a.parts and a.watch:  # first the rule as a few small parts (parts.py); if it is not sure of one, the machine as a
         import parts            # table (cells.py), with the questions left and the stories already heard
         try:
@@ -41,6 +41,7 @@ def one(path, out, a):
             if m.sure:
                 taken = m
             else:
+                first = m  # (the machine of parts it stopped with: see below)
                 known = [w for w in H.index if w and not any(len(v) > len(w) and v[:len(w)] == w for v in H.index)]
     plain = oracle
     if taken is None and H is not None:  # (what the second learner asks is kept: see below)
@@ -58,16 +59,27 @@ def one(path, out, a):
     oracle = plain
     if begin is not None and m is not None:
         m = cells.Summed(m, begin)
-    if taken is None and H is not None and (m is None or not m.sure) and time.time() < t0 + a.minutes * 60 - 120:
-        # neither learner is sure: the rule as parts is looked for once more, on everything heard by the two; of the
-        # two machines, each explaining all that was heard, the one with the shorter description is told (not sure)
-        for w in sorted(later, key=len):
-            if w:
+    if taken is None and H is not None and (m is None or not m.sure):
+        # neither learner is sure. The machine of parts was kept before the second learner asked anything: if it answers
+        # every story the second learner went on to ask (five at least), it has passed a check it was not fitted to, and
+        # it is told, its tables read off all that is heard now (not sure). If the second learner found nothing at all,
+        # the parts are looked for once more on everything heard.
+        fresh = [w for w in later if w and w not in H.index]  # (what parts.py had not heard)
+        asked_later = [w for w in sorted(fresh, key=len) if not any(len(v) > len(w) and v[:len(w)] == w for v in fresh)]
+        stood = whole and len(asked_later) >= 5 and all(first.run(list(w[:i])) == oracle(list(w[:i]))
+                                                        for w in asked_later for i in range(1, len(w) + 1))
+        if stood or m is None:
+            for w in asked_later:
                 H.add(list(w), [oracle(list(w[:i])) for i in range(1, len(w) + 1)])
-        mp, whole = parts.explained(H, lambda *x: None, None, lambda: time.time() > t0 + a.minutes * 60 - 60)
-        if whole and (m is None or mp.bits < cells.described(m)):
-            m = mp
-            m.sure = False
+            V = parts.View(H, first.summed)
+            if stood and V.slots == first.V.slots:
+                m, _ = parts.machine(V, first.found)
+            elif time.time() < t0 + a.minutes * 60 - 120:
+                mp, whole2 = parts.explained(H, lambda *x: None, None, lambda: time.time() > t0 + a.minutes * 60 - 60)
+                if whole2:
+                    m = mp
+            if m is not None:
+                m.sure = False
     if a.save and m is not None and hasattr(m, "table"):  # (the rule in words)
         os.makedirs(a.save, exist_ok=True)
         open(os.path.join(a.save, os.path.basename(os.path.dirname(path)) + ".txt"), "w").write(str(m) + "\n" + m.table() + "\n")

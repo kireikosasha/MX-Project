@@ -637,12 +637,6 @@ class Summed:
         return f"a number that begins at {self.begin}, every symbol adding to it what this machine answers: {self.machine}"
 
 
-def described(m):
-    """The length of a machine's description, in bits (for a number told as a sum, of the machine inside)."""
-    m = m.machine if isinstance(m, Summed) else m
-    return m.bits if m.bits is not None else bits_of(m.k, m.cells, len(m.syms), len(m.labels), m.by_state, m.chain)
-
-
 def added(oracle):
     """The answers of a number shown, as what the last symbol added to it ('+1', '+0', '-2': names, not numbers)."""
     return lambda w: "%+d" % (int(oracle(list(w))) - int(oracle(list(w[:-1]))))
