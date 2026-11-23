@@ -778,6 +778,118 @@ class Parts:
                       ("" if t[5] is None or t[0] == "row" else " that takes what another holds" if t[5][1] == "gives" else " under a guard")
                       for t in self.parts) + f"; {self.bits:.0f} bits"
 
+    def code(self):
+        """The rule as a program: ALPHABET and answer(seq), which runs as the machine does (the parts are p0, p1, ...;
+        every reading is taken before the symbol moves anything)."""
+        H, W, S = self.H, len(self.slots), len(self.H.syms)
+        q = repr
+        begin = int(H.begin) if self.summed else H.begin
+        kinds = {}  # (line, kind) -> the symbol that brings it
+        for j, t in enumerate(self.parts):
+            if t[0] == "line":
+                for sl, (what, k) in zip(t[3], t[4]):
+                    if what in ("push", "move"):
+                        kinds[j, k] = H.syms[self.slots[sl % W][0]]
+        lines = [f"ALPHABET = {q(list(H.syms))}", "", "", "def answer(seq):",
+                 f"    shown = {q(begin)}  # what the display shows"]
+        for j, t in enumerate(self.parts):
+            kind, n = t[0], t[1]
+            what = {"counter": "a counter, not below zero", "level": f"a level from 0 to {n - 1}", "circle": f"a circle of {n}",
+                    "row": f"a row of {n} flags, one for each value of p{self.guard[j]}", "line": f"a line of at most {n}, first come first served"}[kind]
+            lines.append(f"    p{j} = {'[]' if kind == 'line' else '0'}  # {what}")
+        def read(j, how):
+            t = self.parts[j]
+            if isinstance(how, tuple):
+                return f"(p{j} > p{how[1]}) - (p{j} < p{how[1]}) + 1"
+            if how == "here":
+                return f"(p{j} >> p{self.guard[j]}) & 1"
+            if how in ("front", "back"):
+                ks = {name: k for (jj, k), name in kinds.items() if jj == j}
+                at = "0" if how == "front" else "-1"
+                return f"({q(ks)}[p{j}[{at}]] if p{j} else 0)"
+            if how == "len":
+                return f"len(p{j})"
+            if how in ("count1", "count2"):
+                return f"p{j}.count({q(kinds.get((j, int(how[-1])), ''))})"
+            if how == "zero":
+                return f"int(p{j} >= 1)"
+            if how in ("full", "value+", "value-"):
+                return f"p{j}"
+            if how == "top":
+                return f"int(p{j} == {t[1] - 1})"
+            return f"int(p{j} >= {how[2]})"
+        lines.append("    for tok in seq:")
+        for a, (ctxs, specs, table, default) in enumerate(self.rules):
+            lines.append(f"        {'if' if a == 0 else 'elif'} tok == {q(H.syms[a])}:")
+            ctx = ("min(max(shown, 0), 2)" if self.summed else "shown") if ctxs else "0"
+            if specs and valued(specs[0][1]):
+                lines.append(f"            effect = {'' if specs[0][1] == 'value+' else '-'}{read(*specs[0])}")
+            elif not specs and not ctxs:
+                lines.append(f"            effect = {q(default if self.summed else (None if default < 0 else self.names[default]))}")
+            else:
+                key = "(" + ", ".join([ctx] + [read(j, how) for j, how in specs]) + ",)"
+                tab = {(k if not ctxs or self.summed else (self.names[k[0]],) + k[1:]) if ctxs else (0,) + k[1:]:
+                       (v if self.summed else None if v < 0 else self.names[v]) for k, v in table.items()}
+                common = max(set(tab.values()), key=lambda v: (list(tab.values()).count(v), str(v)))
+                rare = {k: v for k, v in tab.items() if v != common}
+                dflt = q(default if self.summed else (None if default < 0 else self.names[default]))
+                lines.append(f"            effect = {q(rare)}.get({key}, {q(common)})" if len(rare) < len(tab) else
+                             f"            effect = {q(tab)}.get({key}, {dflt})")
+            if self.summed:
+                lines.append("            new = shown + effect")
+                lines.append("            seen = effect")
+            else:
+                lines.append("            new = shown if effect is None else effect")
+                lines.append("            seen = int(new != shown)")
+            # the moves of the parts at this symbol, from the values before it
+            for j, (kind, n, reject, touched, chosen, guard) in enumerate(self.parts):
+                mine = [(sl, act) for sl, act in zip(touched, chosen) if self.slots[sl % W][0] == a]
+                if not mine:
+                    continue
+                conds = []
+                for sl, act in mine:
+                    e, b = self.slots[sl % W][1], sl // W - 1
+                    c = [] if e is None else [f"seen == {q(e) if self.summed else int(e)}"]
+                    if b >= 0 and kind not in ("row", "line"):
+                        c.append(f"{read(self.guard[j], guard[1])} == {b}")
+                    conds.append((" and ".join(c), act))
+                if kind == "row":
+                    for c, (_, x) in conds:
+                        op = {1: "|", 0: "& ~", -1: "^"}[x]
+                        lines.append(f"            {'if ' + c + ': ' if c else ''}n{j} = p{j} {op} (1 << p{self.guard[j]})")
+                    continue
+                if kind == "line":
+                    for c, (what, k) in conds:
+                        nm = q(kinds.get((j, k), ""))
+                        expr = {"push": f"p{j} + [{nm}] if len(p{j}) < {n} else p{j}", "move": f"[x for x in p{j} if x != {nm}] + [{nm}]",
+                                "drop": f"[x for x in p{j} if x != {nm}]", "popf": f"p{j}[1:]", "popb": f"p{j}[:-1]", "clear": "[]"}[what]
+                        lines.append(f"            {'if ' + c + ': ' if c else ''}n{j} = {expr}")
+                    continue
+                top = "10 ** 9" if kind == "counter" else str(n - 1)
+                if len(conds) == 1 and not conds[0][0] and conds[0][1][0] in ("add", "set"):  # (one plain move: said plainly)
+                    what, x = conds[0][1]
+                    w = f"p{j} + {x}" if x >= 0 or what != "add" else f"p{j} - {-x}"
+                    lines.append(f"            n{j} = " + (str(n - 1 if x == "top" else x) if what == "set" else
+                                 f"({w}) % {n}" if kind == "circle" else
+                                 f"{w} if 0 <= {w} <= {top} else p{j}" if reject else
+                                 f"max(0, {w})" if kind == "counter" and x < 0 else f"{w}" if kind == "counter" else
+                                 f"min({top}, {w})" if x > 0 else f"max(0, {w})"))
+                    continue
+                lines.append(f"            d{j}, s{j} = 0, None")
+                for c, (what, x) in conds:
+                    st = f"s{j} = {n - 1 if x == 'top' else x}" if what == "set" else \
+                        f"d{j} += {x} * p{self.guard[j]}" if what == "take" else f"d{j} += {x}"
+                    lines.append(f"            {'if ' + c + ': ' if c else ''}{st}")
+                step = f"(p{j} + d{j}) % {n}" if kind == "circle" else \
+                    (f"p{j} + d{j} if 0 <= p{j} + d{j} <= {top} else p{j}" if reject else f"max(0, min({top}, p{j} + d{j}))")
+                lines.append(f"            n{j} = s{j} if s{j} is not None else {step}")
+            moved = [j for j, t in enumerate(self.parts) if any(self.slots[sl % W][0] == a for sl in t[3])]
+            for j in moved:
+                lines.append(f"            p{j} = n{j}")
+            lines.append("            shown = new")
+        lines.append("    return str(shown)")
+        return "\n".join(lines) + "\n"
+
     def table(self):
         """The rule in words: the parts and what moves them; then, for every symbol, what the display does."""
         H, W, lines = self.H, len(self.slots), []
@@ -1217,6 +1329,7 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--give-up", type=int, default=None, help="stop when a symbol is not explained, or after so many questions without a run of right answers")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--code", action="store_true", help="print the rule found as a program (and check it against the machine)")
     a = ap.parse_args()
     spec = importlib.util.spec_from_file_location("family", a.family)
     mod = importlib.util.module_from_spec(spec)
@@ -1229,6 +1342,14 @@ def main():
     m, asked, H, whole = learn(syms, oracle, data, rng, a.asks, a.quiet, None, a.give_up)
     print(m.table())
     print(f"{'' if m.sure else 'NOT SURE: '}{m}; asked {asked}; {time.time() - t0:.0f} s; every symbol explained: {whole}")
+    if a.code:  # (the rule as a program, checked against the machine on stories of every length)
+        src = m.code()
+        print(src)
+        mine = {}
+        exec(src, mine)
+        tr = random.Random(7)
+        same = all(mine["answer"](w) == m.run(w) for w in ([tr.choice(syms) for _ in range(tr.randint(0, 200))] for _ in range(300)))
+        print("the program answers as the machine:", same)
     # (the questions in order: + answered rightly, - wrongly, ? and some symbol was then left unexplained; the bits kept)
     print("trace:", " ".join(("+" if ok else "?" if ok is None else "-") + f"{bits:.0f}" for _, ok, bits in H.trace[1:]))
     for L in (20, 100, 500):

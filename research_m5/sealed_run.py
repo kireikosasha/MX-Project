@@ -90,6 +90,8 @@ def one(path, out, a):
     if a.save and m is not None and hasattr(m, "table"):  # (the rule in words)
         os.makedirs(a.save, exist_ok=True)
         open(os.path.join(a.save, os.path.basename(os.path.dirname(path)) + ".txt"), "w").write(str(m) + "\n" + m.table() + "\n")
+        if hasattr(m, "code"):  # (and as a program: ALPHABET and answer(seq), as family.py is written)
+            open(os.path.join(a.save, os.path.basename(os.path.dirname(path)) + ".rule.py"), "w").write(m.code())
     if a.save:  # (the machine itself, for a check that needs more than its answers: external/mealy_dot.py --same)
         import pickle
         os.makedirs(a.save, exist_ok=True)
