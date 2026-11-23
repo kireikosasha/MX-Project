@@ -10,8 +10,8 @@ finds it:
     number went up by one; the label changed). One of its moves may be made only when another part reads something
     (a guard); or one of its moves may add all that another part holds (what is on the bench goes to the shelf);
   - what the display does at a symbol is a table over what is seen before the symbol (the label; whether the number is
-    zero) and what one or two parts read (zero or not, at the top or not, the value itself); or the number shown goes
-    up, or down, by what a part holds;
+    zero) and what one or two parts read (zero or not, at the top or not, the value itself; or how one part stands to
+    another: below it, level with it, above it); or the number shown goes up, or down, by what a part holds;
   - nothing is searched for by a solver. Every part of a small description is tried, run over every story heard, and
     kept if it makes the display a function of what is read; of the explanations found, the shortest is told;
   - a number shown is taken as a sum: what is explained is what each symbol adds to it. (When that explains nothing, the
@@ -36,6 +36,7 @@ BIG = 120  # (a counter is kept below this: values are held in a byte)
 OTHERS = 3  # so many other explanations of a symbol, the next cheapest, are kept as rivals of the one told
 SURE = 10  # the machine is sure when no rival is left and it answered the last so many stories asked, long ones
 LONG = (60, 120)  # the last stories asked are of so many symbols
+EARLY = (5, 8)  # (give_up) the learner gives up when its first 5 questions, or 7 of its first 8, all refuted its machine
 
 
 class Heard:
@@ -265,6 +266,18 @@ def read_of(v, t, how):
     return (v >= int(how[2])) * 1
 
 
+def valued(how):
+    return isinstance(how, str) and how.startswith("value")
+
+
+def reading_at(vals, parts, j, how):
+    """What is read at the values of the parts: part j read in the way `how`; or, for ("cmp", k), how part j stands to
+    part k (0 below it, 1 level with it, 2 above it)."""
+    if isinstance(how, tuple):
+        return (vals[j] > vals[how[1]]) - (vals[j] < vals[how[1]]) + 1
+    return int(read_of(vals[j], parts[j], how))
+
+
 def reading(Vs, sizes, counters, how):
     """What is read of many parts, and for which of them the reading is of this kind."""
     if how == "zero":
@@ -391,9 +404,25 @@ class Told:
         return found
 
 
+def compared(T, vf, first, c):
+    """The parts of a pool that, by how they stand to a given part (below it, level with it, above it), make y a
+    function with c: tellers as of Told.tellers, each with its reading at the steps. Counters and levels only."""
+    idx = np.nonzero(np.array([t[0] != "circle" for t in T.pool.ts]))[0]
+    if not len(idx):
+        return []
+    idx = idx[np.argsort(T.pool.costs[idx], kind="stable")]
+    D = (np.sign(T.Vs[idx].astype(np.int16) - vf[None, :].astype(np.int16)) + 1).astype(np.int8)
+    mix = np.random.RandomState(1).randint(1, 2 ** 40, size=D.shape[1]).astype(np.int64)
+    _, keep = np.unique(D.astype(np.int64) @ mix, return_index=True)
+    keep.sort()
+    left, _ = untold(np.ascontiguousarray(D[keep]), c, T.y)
+    return [(0.0, float(T.pool.costs[idx[k]]) + 0.5, T, int(idx[k]), ("cmp", first), D[k].astype(np.int64))
+            for k, l in zip(keep, left) if l == 0]
+
+
 def exacts(c, tellers, most=1):
     """Of the tellers that with c make y a function, the cheapest ones, table and all: [(price, part, reading)]."""
-    ex = [(s[1] + (1 if s[4].startswith("value") else s[2].rows(c * 16 + s[2].feat(s[3], s[4]))), n)
+    ex = [(s[1] + (1 if valued(s[4]) else s[2].rows(c * 16 + (s[5] if len(s) > 5 else s[2].feat(s[3], s[4])))), n)
           for n, s in enumerate(tellers) if s[0] == 0]
     return [(pr, tellers[n][2].pool.ts[tellers[n][3]], tellers[n][4]) for pr, n in sorted(ex)[:most]]
 
@@ -459,9 +488,9 @@ class Parts:
         vals, shown = state
         ctxs, specs, table, default = self.rules[a]
         ctx = (max(0, min(shown, 2)) if self.summed else shown) if ctxs else 0
-        key = (ctx,) + tuple(int(read_of(vals[j], self.parts[j], how)) for j, how in specs)
+        key = (ctx,) + tuple(reading_at(vals, self.parts, j, how) for j, how in specs)
         lacks = False
-        if specs and specs[0][1].startswith("value"):  # (the number goes up or down by what the part holds)
+        if specs and valued(specs[0][1]):  # (the number goes up or down by what the part holds)
             eff = key[1] if specs[0][1] == "value+" else -key[1]
         elif key in table:
             eff = table[key]
@@ -490,6 +519,8 @@ class Parts:
 
     def reads(self, j, how, v):
         """In words: part j read in the way `how` gives v."""
+        if isinstance(how, tuple):
+            return f"part {j} is {('below', 'level with', 'above')[v]} part {how[1]}"
         if how == "zero":
             return f"part {j} is {'above zero' if v else 'zero'}"
         if how == "top":
@@ -526,7 +557,7 @@ class Parts:
         for a, (ctxs, specs, table, default) in enumerate(self.rules):
             if not specs and not ctxs:
                 lines.append(f"    {H.syms[a]}: {'the display stays' if (default == 0 if self.summed else default < 0) else 'always ' + self.effect(default)}")
-            elif specs[:1] and specs[0][1].startswith("value"):
+            elif specs[:1] and valued(specs[0][1]):
                 lines.append(f"    {H.syms[a]}: the number goes {'up' if specs[0][1] == 'value+' else 'down'} by what part {specs[0][0]} holds")
             else:  # (the commonest thing the display does, and the readings at which it does another)
                 common = max(set(table.values()), key=lambda v: (sum(x == v for x in table.values()), v == (0 if self.summed else -1)))
@@ -605,6 +636,10 @@ def explain(V, log=print, before=None, late=lambda: False):
                         two = exact(c2, Told(pool_of(ts3, V, W), steps, par, y, V.summed).tellers(c2)) if ts3 else None
                     if two:
                         better((pr + two[0] + extra + 1, use_ctx, [(T.pool.ts[i], how), two[1:]]))
+                    elif T.pool.ts[i][0] != "circle":  # or a part that, by how it stands to the first (below it, level
+                        for Tx in (T0, T3):             # with it, above it), tells it all: more of these than of those
+                            for pr2, t2, how2 in exacts(c, compared(Tx, T.Vs[i], T.pool.ts[i], c), 1):
+                                better((pr + pr2 + extra + 1, use_ctx, [(t2, how2)]))
         if best[0] is None:  # a part some move of which waits on what a plain part reads (a guard)
             for use_ctx, (c, extra, tel, T3) in kept.items():
                 plain = plains[use_ctx]
@@ -677,6 +712,8 @@ def machine(V, found):
     for a in sorted(found):
         for t, how in found[a][2]:
             index(t)
+            if isinstance(how, tuple):
+                index(how[1])
     vals = {}  # the values of the chosen parts at every beginning (a guarded part after its guard)
     for j, t in enumerate(chosen):
         if t[5] is None:
@@ -694,11 +731,12 @@ def machine(V, found):
             rules.append((False, [], {}, default))
             continue
         pr, use_ctx, specs = found[a]
-        local = [(chosen.index(t), how) for t, how in specs]
+        local = [(chosen.index(t), (how[0], chosen.index(how[1])) if isinstance(how, tuple) else how) for t, how in specs]
         table = {}
         for s in steps:
-            key = (int(ctx[s]) if use_ctx else 0,) + tuple(int(read_of(int(vals[j][par[s]]), chosen[j], how)) for j, how in local)
-            if specs and specs[0][1].startswith("value"):
+            at = {j: int(vals[j][par[s]]) for j in vals}
+            key = (int(ctx[s]) if use_ctx else 0,) + tuple(reading_at(at, chosen, j, how) for j, how in local)
+            if specs and valued(specs[0][1]):
                 ok = ok and int(eff[s]) == (key[1] if specs[0][1] == "value+" else -key[1])
             else:
                 ok = ok and table.get(key, int(eff[s])) == int(eff[s])
@@ -730,7 +768,8 @@ def rivals(m):
             if t2 is None:
                 continue
             swap = lambda x: t2 if x == t else x if x[5] is None or x[5][0] != t else x[:5] + ((t2, x[5][1]),)
-            found = {a: (pr, c, [(swap(x), how) for x, how in specs]) for a, (pr, c, specs) in m.found.items()}
+            found = {a: (pr, c, [(swap(x), (how[0], swap(how[1])) if isinstance(how, tuple) else how) for x, how in specs])
+                     for a, (pr, c, specs) in m.found.items()}
             if any(how in ("top", "full") and x[0] == "counter" or how == "full" and x[1] > 12
                    for _, _, specs in found.values() for x, how in specs):
                 continue
@@ -745,9 +784,9 @@ def rivals(m):
     return out
 
 
-def parting(m1, m2, depth=14, most=60000):
+def parting(m1, m2, depth=24, most=60000):
     """The shortest story (of at most depth symbols) after which two machines show different things: a walk in breadth
-    over the pairs of their states."""
+    over the pairs of their states (two dozen symbols: a circle of twelve and a counter part after thirteen)."""
     syms = m1.H.syms
     s0 = (m1.start(), m2.start())
     frontier, seen = [((), s0)], {s0}
@@ -820,19 +859,23 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
     is neither, long stories as a check. Where the kept machine is wrong the parts are looked for again. It is sure
     when no rival is left, no row is lacking and the last SURE long stories were answered rightly.
     Returns the machine, the number of questions asked, the stories heard, and whether every symbol was explained.
-    give_up: the learner stops when some symbol is not explained, or when so many questions are asked and the machine
-    has not yet answered SURE // 2 stories in a row (another learner may take the rest of the questions)."""
+    give_up: the learner stops when some symbol is not explained; when every one of its first EARLY[0] questions, or
+    all but one of its first EARLY[1], refuted the machine it kept (no few parts explain this rule: every story asked
+    shows it); or when so many questions are asked and the machine has not yet answered SURE // 2 stories in a row.
+    Another learner may then take the rest of the questions."""
     log = (lambda *a: None) if quiet else (lambda *a: print(*a, flush=True))
     late = lambda: deadline is not None and time.time() > deadline
     H = Heard(syms, oracle([]))
     hear = lambda w: H.add(w, [oracle(list(w[:i])) for i in range(1, len(w) + 1)])
     for w, _ in data:
         hear(list(w))
-    asked, row, run, best_run, same = 0, 0, 0, 0, set()
+    asked, row, run, best_run, wrongs, same = 0, 0, 0, 0, 0, set()
     m, whole = explained(H, log, None, late)
+    H.trace = [("", whole, m.bits)]  # what every question was for, whether it was answered rightly, the bits of the machine kept
     log(f"  kept {m}\n{m.table()}")
     while asked < asks and not late():
-        if give_up is not None and (not whole or asked >= give_up and best_run < SURE // 2):
+        if give_up is not None and (not whole or asked == EARLY[0] and wrongs == asked or
+                                    asked == EARLY[1] and wrongs >= asked - 1 or asked >= give_up and best_run < SURE // 2):
             break
         w, why = None, "a check"
         if whole:
@@ -843,7 +886,7 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
                     if w is not None:
                         why = f"a rival ({r})"
                         break
-                    same.add(key)  # (no story of a dozen symbols parts them: taken for the same machine)
+                    same.add(key)  # (no story of two dozen symbols parts them: taken for the same machine)
             if w is None:
                 w, why = lacking(m), "a reading not met"
         if w is None:
@@ -863,10 +906,12 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
             m.others = others
             run, row = run + 1, row + (why == "a check")
             best_run = max(best_run, run)
+            H.trace.append((why[:8], True, m.bits))
             log(f"  asked {asked} ({why}): answered rightly")
             continue
-        run = row = 0
+        run, row, wrongs = 0, 0, wrongs + 1
         m, whole = explained(H, lambda *a: None, m, late)
+        H.trace.append((why[:8], False if whole else None, m.bits))
         log(f"  asked {asked} ({why}): {'answered wrongly' if not right else 'a thing not seen before'}; kept {m}\n{m.table()}")
     m.sure = bool(whole and row >= SURE)
     return m, asked, H, whole
@@ -891,6 +936,8 @@ def main():
     m, asked, H, whole = learn(syms, oracle, data, rng, a.asks, a.quiet, None, a.give_up)
     print(m.table())
     print(f"{'' if m.sure else 'NOT SURE: '}{m}; asked {asked}; {time.time() - t0:.0f} s; every symbol explained: {whole}")
+    # (the questions in order: + answered rightly, - wrongly, ? and some symbol was then left unexplained; the bits kept)
+    print("trace:", " ".join(("+" if ok else "?" if ok is None else "-") + f"{bits:.0f}" for _, ok, bits in H.trace[1:]))
     for L in (20, 100, 500):
         tr = random.Random(1000 + L)
         seqs = [[tr.choice(syms) for _ in range(L)] for _ in range(300)]
