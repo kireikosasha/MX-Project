@@ -6,7 +6,7 @@ for this project. A family made of a model: the alphabet is the inputs of the ma
 inputs is the output the implementation gives to the last of them.
 
     python external/mealy_dot.py PATH_TO_DotModels          writes external/protocols/NN-name/family.py and hashes
-    python external/mealy_dot.py --same FOUND.pkl ...        (see same): is a machine found the model, exactly
+    python external/mealy_dot.py --same FOUND.pkl ... [--in FOLDER_OF_FAMILIES]   is a machine found the model, exactly
 
 No code of the collection is run: the .dot files are read as text.
 """
@@ -102,14 +102,22 @@ if __name__ == "__main__":
     if sys.argv[1] == "--same":
         sys.path.insert(0, os.path.dirname(here))
         import importlib.util
-        for path in sys.argv[2:]:  # FOLDER/NN-name.pkl, written by sealed_run.py --save FOLDER
+        args, where = sys.argv[2:], os.path.join(here, "protocols")
+        if "--in" in args:  # (the folder of the families, if not external/protocols)
+            where = args[args.index("--in") + 1]
+            args = args[:args.index("--in")] + args[args.index("--in") + 2:]
+        exact = 0
+        for path in args:  # FOLDER/NN-name.pkl, written by sealed_run.py --save FOLDER
             name = os.path.basename(path)[:-4]
-            spec = importlib.util.spec_from_file_location("family", os.path.join(here, "protocols", name, "family.py"))
+            spec = importlib.util.spec_from_file_location("family", os.path.join(where, name, "family.py"))
             fam = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(fam)
             m = pickle.load(open(path, "rb"))
-            w = None if m is None else same(m, fam.ALPHABET, fam.START, fam.TRANS)
+            w = None if m is None else same(m, fam.ALPHABET, fam.START, fam.TRANS, 60000)
+            exact += m is not None and w is None
             print(f"{name}: " + ("no machine" if m is None else "the model exactly" if w is None else
-                                 f"not the model: they part on a story of {len(w)} inputs"))
+                                 f"not the model: they part on a story of {len(w)} inputs") +
+                  ("" if m is None else ", sure" if m.sure else ", not sure"))
+        print(f"exactly the model: {exact} of {len(args)}")
     else:
         write(sys.argv[1], os.path.join(here, "protocols"))
