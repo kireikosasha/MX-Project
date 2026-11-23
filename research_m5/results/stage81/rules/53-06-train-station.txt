@@ -1,0 +1,6 @@
+the number shown as a sum; 2 parts: a counter; a counter under a guard; 59 bits
+    part 0, a counter. train: +1; whistle: to 0
+    part 1, a counter. rider: +1; whistle, only while part 0 is above zero: -2
+    train: the number shown is 1 and part 0 is zero -> -1; the number shown is 2 or more and part 0 is zero -> -2; otherwise the display stays
+    rider: the number shown is 0 and part 0 is above zero and part 1 is less than 2 -> +0; otherwise +1
+    whistle: the display stays

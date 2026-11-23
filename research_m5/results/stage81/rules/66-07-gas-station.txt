@@ -1,0 +1,6 @@
+the number shown as a sum; 2 parts: a level of 7; a level of 5; 50 bits
+    part 0, a level of 7 (0 to 6) (a move that does not fit is not made). car: +1; truck: +3; tanker: to 0
+    part 1, a level of 5 (0 to 4). car: +1; truck: +3; tanker: to 0
+    car: part 0 is at its top -> +1; otherwise the display stays
+    truck: part 1 is at its top -> +1; otherwise the display stays
+    tanker: the display stays

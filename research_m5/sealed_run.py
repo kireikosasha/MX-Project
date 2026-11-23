@@ -56,7 +56,7 @@ def one(path, out, a):
         data = [(w, oracle(w)) for w, _ in data]
     reserve = a.reserve * (a.asks - spent) // a.asks  # (of the questions left, the same share is kept for the last check)
     m, asked = (taken, 0) if taken is not None else \
-        cells.learn(syms, oracle, data, rng, a.asks - spent, a.seconds, a.longest, quiet=True, workers=a.workers, known=known,
+        cells.learn(syms, oracle, data, rng, a.asks - spent, a.seconds, a.longest, quiet=True, workers=a.workers, known=known, lazy=a.lazy,
                            shorten=a.shorten, reserve=reserve, explore=a.explore, frugal=a.frugal, slack=a.slack, guards="tests" if a.tests else a.guards, build=a.build, plan=a.plan, committee=a.committee, flags=a.flags, cascades=a.cascades, rules=a.rules, keep=a.keep, watch=a.watch, dep=a.dep, warm=a.warm, patience=a.patience, tier=a.tier, tour_=a.tour, anchor=a.anchor, far=a.far, deep=a.deep, mealy=a.mealy or begin is not None, reach=a.reach, pairs=a.pairs, rare=a.rare,
                            deadline=t0 + a.minutes * 60 - 180 if a.deadline else None)
     asked += spent
@@ -129,6 +129,7 @@ def main():
     ap.add_argument("--alike", action="store_true", help="with --mealy: of the machines that explain the stories, the one where the fewest moves with the same answer lead to different places")
     ap.add_argument("--rare", action="store_true", help="with --watch: before a second machine is looked for, every symbol is tried after every beginning that ends in an answer barely seen (at most half the questions); with --pairs, first the pairs whose first move leads to the place the fewest stories heard have been in")
     ap.add_argument("--parts", action="store_true", help="with --watch: first the rule is looked for as a few small parts (parts.py: counters, levels and circles moved by a few events), with at most half the questions unless it comes to answer them; the machine as a table is looked for only if that one is not sure")
+    ap.add_argument("--lazy", action="store_true", help="with --parts and --far: the stories the first learner asked are not put into the formulas of the second; its machine is checked on them, and the shortest beginning it answers wrongly is taught on")
     ap.add_argument("--sum", action="store_true", help="with --watch, when every answer is a whole number that never goes down in the stories heard (a count): the machine is looked for that answers what each symbol adds to the number shown (the answer of the last move, as with --mealy), and the number is told as the sum")
     ap.add_argument("--pairs", action="store_true", help="with --watch: stories are asked through the pairs of moves of the kept machine that no story has made, and a machine is sure only when none is left")
     ap.add_argument("--engine", default="", help="the solver (of pysat's; glucose4 if not given)")

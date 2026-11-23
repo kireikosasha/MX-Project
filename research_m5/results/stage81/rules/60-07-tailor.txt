@@ -1,0 +1,7 @@
+2 parts: a counter; a circle of 2; 53 bits
+    part 0, a counter. thread: +1; snip: to 0
+    part 1, a circle of 2. press: +1
+    thread: the display stays
+    stitch: the label shown is flat and part 0 is above zero and part 1 is zero -> puckered; the label shown is flat and part 0 is above zero and part 1 is above zero -> gathered; the label shown is gathered and part 0 is above zero and part 1 is zero -> flat; the label shown is gathered and part 0 is above zero and part 1 is above zero -> puckered; the label shown is puckered and part 0 is above zero and part 1 is zero -> gathered; the label shown is puckered and part 0 is above zero and part 1 is above zero -> flat; otherwise the display stays
+    snip: the display stays
+    press: the display stays

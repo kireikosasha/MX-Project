@@ -1,0 +1,15 @@
+After the record run of stage 81: the same runner with --lazy (the stories the first learner asked are not put into the
+formulas of the second: its machine is checked on them, and the shortest beginning it answers wrongly is taught on),
+on the two families the record run lost and on two that the second learner took more slowly than at stage 74.
+One run; the code as committed with this file; the other flags as in code_commit.txt.
+
+53-12-weather-station (c8d12d80e8083e69): NOT SURE: 1 states + a level of 5 (steps -1..1, held at the ends, or set) + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first; asked 40; length 20 / 100 / 500: 100.0 / 100.0 / 100.0 % (the commonest answer: 42 / 49 / 49 %) (784 s)
+58-08-laundromat (9021a37c2b1ae92e): NOT SURE: 3 states named by the answers and one to begin in + a circle of 3, 3 of the symbols moving by what the first number reads; asked 40; length 20 / 100 / 500: 99.7 / 95.0 / 94.7 % (the commonest answer: 43 / 43 / 44 %) (253 s)
+66-01-brewery (44fb97c60f44c230): NOT SURE: 4 states named by the answers and one to begin in + a circle of 3, 3 of the symbols moving by what the first number reads; asked 38; length 20 / 100 / 500: 98.7 / 98.7 / 99.3 % (the commonest answer: 62 / 62 / 66 %) (1625 s)
+70-03-bookbinder (9c82a254a6722133): NOT SURE: the number shown as a sum; 2 parts: a level of 7; a level of 7; 175 bits; asked 20; length 20 / 100 / 500: 60.7 / 13.0 / 10.3 % (the commonest answer: 48 / 32 / 26 %) (1631 s)
+
+the record run (without --lazy), the same families:
+53-12-weather-station (c8d12d80e8083e69): NOT SURE: 1 states + a level of 5 (steps -1..1, held at the ends, or set) + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first; asked 40; length 20 / 100 / 500: 100.0 / 100.0 / 100.0 % (the commonest answer: 42 / 49 / 49 %) (571 s)
+58-08-laundromat (9021a37c2b1ae92e): NOT SURE: 3 states named by the answers and one to begin in + a circle of 3, 3 of the symbols moving by what the first number reads; asked 40; length 20 / 100 / 500: 100.0 / 100.0 / 100.0 % (the commonest answer: 43 / 43 / 44 %) (603 s)
+66-01-brewery (44fb97c60f44c230): NOT SURE: 4 states named by the answers and one to begin in + a level of 4 (steps -2..2, held at the ends, or set), 3 of the symbols moving by what the first number reads; asked 18; length 20 / 100 / 500: 96.7 / 94.7 / 98.0 % (the commonest answer: 62 / 62 / 66 %) (1623 s)
+70-03-bookbinder (9c82a254a6722133): NOT SURE: the number shown as a sum; 2 parts: a level of 7; a level of 7; 175 bits; asked 20; length 20 / 100 / 500: 60.7 / 13.0 / 10.3 % (the commonest answer: 48 / 32 / 26 %) (1635 s)

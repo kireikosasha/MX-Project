@@ -1666,7 +1666,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
           workers=4, shorten=False, reserve=0, explore=False, frugal=False, guards=False, build=0, plan=False,
           committee=0, flags=False, cascades=False, rules=False, deadline=None, keep=False, dep=False, watch=False,
           warm=False, patience=0, tier=0, tour_=0, anchor=0, far=0, deep=0, mealy=False, reach=False, pairs=False,
-          rare=False, known=()):
+          rare=False, known=(), lazy=False):
     """frugal: a question is asked only while it can still tell something: of the stories on which a second machine
     answers otherwise, one (its answer refutes one of the two); of the check, one by one up to the first answered wrongly
     (the counterexample of an equivalence query, Angluin 1987).
@@ -1695,13 +1695,16 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     untrodden).
     deep (warm, with build): the last search for a second machine, the one 'sure' rests on, writes stories of up to so
     many symbols, not build: two machines may agree on every story of a dozen symbols and part later.
-    known (watched): stories already asked and paid for by another learner; they are heard again for nothing."""
+    known (watched): stories already asked and paid for by another learner; they are heard again for nothing.
+    lazy (with known and far): what was heard of the known stories is not put into the formulas (they would grow by
+    every beginning of every story): the machine found is checked on them, and only the shortest beginning it answers
+    wrongly is taught on, as with a long story."""
     tour_ = tour_ if watch else 0
     far = far if watch else 0
     deep = deep if W_ok(warm, workers) and build else 0
     def missed():  # (far) the shortest long story heard that the machine answers wrongly, if any, as a list
         have = {x for x, _ in data}
-        return sorted(((x, y) for x, y in heard.items() if len(x) > LONG and x not in have and machine.run(x) != y),
+        return sorted(((x, y) for x, y in heard.items() if (len(x) > LONG or x in idle) and x not in have and machine.run(x) != y),
                       key=lambda t: (len(t[0]), t[0]))[:1]
     # where a second machine is looked for: the shapes at most slack bits longer; of the shapes with the answers as
     # states, only the kept machine's own (one with more hidden values always holds another machine)
@@ -1711,7 +1714,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
         any(machine.run(x[:i]) != heard[tuple(x[:i])] for i in range(1, len(x) + 1))
     settled, settled_for, hurried = set(), None, 0
     W = Warm() if warm and workers <= 1 else None
-    heard = {}
+    heard, idle = {}, set()  # (idle: beginnings heard that are kept out of the formulas until the machine misses one)
     if watch:  # the answer is seen after every symbol, as a display is read while the keys are pressed: a story asked
         ask = oracle  # (one question) tells the answers of all its beginnings; so do the stories taught on
         def oracle(w):
@@ -1721,8 +1724,11 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
             return heard[tuple(w)]
         for w, y in data:
             oracle(list(w))
+        before = set(heard)
         for w in known:
             oracle(list(w))
+        if lazy and far:
+            idle = set(heard) - before
     labels = sorted({y for _, y in data})
     committee = committee if build else 0  # (a committee needs the machines a story is written against)
     asked, dead, fixed, tries, novel = 0, set(), pool, {}, 0
@@ -1734,7 +1740,7 @@ def learn(syms, oracle, data, rng, asks=40, seconds=60, longest=4, quiet=False, 
     while True:
         if watch:  # (every beginning seen so far is a story taught on)
             have = {x for x, _ in data}
-            data = data + sorted((x, y) for x, y in heard.items() if x not in have and (not far or len(x) <= LONG))
+            data = data + sorted((x, y) for x, y in heard.items() if x not in have and x not in idle and (not far or len(x) <= LONG))
             if far and machine is not None:
                 data = data + missed()
         new = sorted(set(labels) | {y for _, y in data})

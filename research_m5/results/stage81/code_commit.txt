@@ -1,0 +1,11 @@
+cells.py, parts.py: bb257e6 (parts.py as of 22deb6a)
+sealed_run.py: bb257e6 for the 31 families done first; f1bd45b for the rest. The one change between the two: a number
+  shown is learnt as a sum only when it never went down in the stories heard (a count). The four families of the 31
+  that the change touches (the second learner was given a number that goes up and down as a sum: 53-07-library,
+  58-02-parking-garage, 58-12-bicycle-shop, 60-11-ferris-wheel) were run again with f1bd45b, and it is those results
+  that are recorded; for the other 27 the two runners do the same.
+flags: --minutes 30 --workers 1 --seconds 3 --shorten --reserve 21 --explore --frugal --slack 16 --guards --build 12 --flags --cascades --keep --deadline --watch --warm --patience 30 --part 100000 --tour 24 --anchor 65 --far 100 --sum --parts
+  (the flags of stage 74, and --sum --parts); one thread a process (OMP_NUM_THREADS=1), four processes at once.
+Two runs were stopped before this one and are not recorded: the first (e7c64ad) after 13 families, when the early
+  giving-up rule was added; the second (22deb6a) after 9, when the choice between two unsure machines was changed
+  (by the shorter description it had lost the garden).

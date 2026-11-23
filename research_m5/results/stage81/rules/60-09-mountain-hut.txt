@@ -1,0 +1,7 @@
+the number shown as a sum; 2 parts: a counter; a level of 4 under a guard; 39 bits
+    part 0, a counter. hiker: +1; leave: -1
+    part 1, a level of 4 (0 to 3). log: +1; dusk, only while part 0 is above zero: -1
+    hiker: the display stays
+    leave: the display stays
+    log: the display stays
+    dusk: part 0 is above zero and part 1 is zero -> +1; otherwise the display stays

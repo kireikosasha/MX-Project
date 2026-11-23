@@ -1,0 +1,8 @@
+the number shown as a sum; 2 parts: a counter; a counter; 34 bits
+    part 0, a counter. fog: +1; clear: to 0
+    part 1, a counter. dusk: +1; dawn: to 0
+    dusk: the display stays
+    dawn: the display stays
+    fog: the display stays
+    clear: the display stays
+    ship: part 0 is above zero and part 1 is zero -> +1; otherwise the display stays
