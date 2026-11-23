@@ -25,9 +25,34 @@ MODELS = ["Bluetooth/CYBLE-416045-02.dot", "Bluetooth/bluetooth_model.dot", "Blu
           "TCP/tcp_server_ubuntu_trans.dot"]
 
 
-def read(path):
-    """The inputs, the state begun in and the table (state, input) -> (state, output) of a Mealy machine in .dot."""
+def read(path, any_kind=False):
+    """The inputs, the state begun in and the table (state, input) -> (state, output) of a Mealy machine in .dot.
+    any_kind: a Moore machine (states written as records 'name | output') or an acceptor (accepting states drawn as
+    double circles) is read as the same table: the output of a move is that of the state arrived at."""
     text = open(path, encoding="utf-8", errors="replace").read()
+    of, moore = {}, False
+    for m in re.finditer(r'^\s*(\w+)\s*\[(.*?)\];?\s*$', text, re.M):
+        lab = re.search(r'label\s*=\s*"(.*?)"', m.group(2))
+        if lab and "|" in lab.group(1) and "record" in m.group(2):
+            of[m.group(1)], moore = lab.group(1).strip("{} ").split("|", 1)[1].strip(), True
+        elif "doublecircle" in m.group(2):
+            of[m.group(1)] = "accept"
+        elif "circle" in m.group(2):
+            of.setdefault(m.group(1), "reject")
+    if any_kind and (moore or not re.search(r'label\s*=\s*(?:"[^"]*/|<[^>]*<br)', text)):  # (no 'input/output' on the edges)
+        start, trans = None, {}
+        for m in re.finditer(r'^\s*(\w+)\s*->\s*(\w+)\s*(?:\[(.*?)\])?;?\s*$', text, re.M):
+            a, b, attrs = m.group(1), m.group(2), m.group(3) or ""
+            if a.startswith("__start"):
+                start = b
+                continue
+            lab = re.search(r'label\s*=\s*"(.*?)"', attrs)
+            trans[a, lab.group(1).strip() if lab else ""] = (b, of.get(b, "?"))
+        states = sorted({a for a, _ in trans} | {b for b, _ in trans.values()})
+        inputs = sorted({i for _, i in trans})
+        start = start or ("s0" if "s0" in states else states[0])
+        assert trans and all((q, i) in trans for q in states for i in inputs), path
+        return inputs, start, trans
     start, trans = None, {}
     for m in re.finditer(r'^\s*(\w+)\s*->\s*(\w+)\s*(?:\[(.*?)\])?;?\s*$', text, re.M):
         a, b, attrs = m.group(1), m.group(2), m.group(3) or ""

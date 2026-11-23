@@ -3,7 +3,7 @@
 
     python external/wiki_fetch.py RAW_FOLDER OUT_FOLDER
 
-(with --beyond after them: the second set, see select) fetches the overview and the .dot models of every benchmark (as text; nothing of it is run), selects by the rule named
+(with --beyond after them: the second set, see select; with --toys: the third, see select_toys) fetches the overview and the .dot models of every benchmark (as text; nothing of it is run), selects by the rule named
 before any run (README, stage 77) and writes OUT_FOLDER/NN-name/family.py. The models themselves are not kept in this
 repository; wiki_selected.txt lists the files selected, their sizes and the hashes of the files as fetched.
 
@@ -48,6 +48,42 @@ def fetch(raw):
                 time.sleep(0.3)
 
 
+TOYS = ("BenchmarkToyMealy", "BenchmarkToyMoore", "BenchmarkToyDFA", "BenchmarkMoore-RivestShapire1993")
+
+
+def fetch_toys(raw):
+    """The small machines written by people as examples (the toy pages) and the environments of Rivest and Schapire
+    1993: Mealy and Moore machines and acceptors."""
+    for b in TOYS:
+        d = os.path.join(raw, b)
+        os.makedirs(d, exist_ok=True)
+        for page in ("Mealy", "Moore", "DFA", "Description"):
+            f = os.path.join(d, f"_{page}.html")
+            if not os.path.exists(f):
+                get(f"https://automata.cs.ru.nl/{b}/{page}", f)
+                time.sleep(0.3)
+        text = "".join(open(f, encoding="utf-8", errors="replace").read() for f in glob.glob(os.path.join(d, "_*.html")))
+        for u in sorted(set(re.findall(r"https://automata\.cs\.ru\.nl/pmwiki/uploads/" + re.escape(b) + r"/[^'\"]*\.dot", text))):
+            f = os.path.join(d, urllib.parse.unquote(u.rsplit("/", 1)[1]).replace("/", "_").replace(" ", "_"))
+            if not os.path.exists(f):
+                get(u, f)
+                time.sleep(0.3)
+
+
+def select_toys(raw):
+    chosen = []
+    for b in TOYS:
+        for f in sorted(glob.glob(os.path.join(raw, b, "*.dot"))):
+            try:
+                inputs, start, trans = mealy_dot.read(f, True)
+            except Exception:
+                continue
+            states = len(mealy_dot.reached(start, inputs, trans))
+            if 2 <= states <= 10 and len(inputs) <= 12:
+                chosen.append((b, os.path.basename(f), states, len(inputs)))
+    return chosen
+
+
 def select(raw, beyond=False):
     """beyond: the models the rule left out only by its cap of twelve a benchmark (stage 78)."""
     ran = set()
@@ -58,7 +94,7 @@ def select(raw, beyond=False):
         ran.add(frozenset(fam.TRANS.items()))
     chosen = []
     for b in sorted(os.listdir(raw)):
-        if not os.path.isdir(os.path.join(raw, b)) or b in WHOLLY:
+        if not os.path.isdir(os.path.join(raw, b)) or b in WHOLLY or b in TOYS or b.startswith(SKIP):
             continue
         ok = []
         for f in sorted(glob.glob(os.path.join(raw, b, "*.dot"))):
@@ -79,11 +115,15 @@ def select(raw, beyond=False):
 if __name__ == "__main__":
     raw, out = sys.argv[1], sys.argv[2]
     beyond = len(sys.argv) > 3 and sys.argv[3] == "--beyond"
-    fetch(raw)
+    toys = len(sys.argv) > 3 and sys.argv[3] == "--toys"
+    if toys:
+        fetch_toys(raw)
+    else:
+        fetch(raw)
     lines = []
-    for n, (b, f, states, inputs) in enumerate(select(raw, beyond), 1):
+    for n, (b, f, states, inputs) in enumerate(select_toys(raw) if toys else select(raw, beyond), 1):
         path = os.path.join(raw, b, f)
-        ins, start, trans = mealy_dot.read(path)
+        ins, start, trans = mealy_dot.read(path, toys)
         short = re.sub(r"^Benchmark", "", b).split("-")[0].lower()
         name = f"{n:02d}-{short}-" + re.sub(r"[^a-z0-9]+", "-", f[:-4].lower()).strip("-")[:40]
         os.makedirs(os.path.join(out, name), exist_ok=True)
