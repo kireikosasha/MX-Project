@@ -1,0 +1,6 @@
+cells.py, sealed_run.py, external/mealy_dot.py: 80485fa (the commit that named the blind check; no change after it)
+flags: --asks 400 --minutes 30 --workers 1 --seconds 3 --shorten --reserve 21 --explore --frugal --slack 16 --guards --build 12 --flags --cascades --keep --deadline --watch --warm --patience 30 --part 100000 --tour 24 --anchor 65 --far 100 --deep 24 --mealy --reach --pairs --rare --alike --room 1500
+the models: external/wiki_fetch.py RAW OUT --larger (the list and the hashes of the files: external/wiki_selected_larger.txt)
+the exact check: external/mealy_dot.py --same MACHINES --in OUT, a walk over the pairs (state of the model, configuration of the machine found), at most 60 000 pairs
+one run, four groups on four cores
+seen_44_models.txt (before the blind check was named): the same flags with --asks 200 --minutes 15, the working tree that became 80485fa
