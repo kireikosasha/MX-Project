@@ -482,40 +482,58 @@ class Parts:
     def said(self, s):
         W = len(self.slots)
         a, e = self.slots[s % W]
-        return self.H.syms[a] + ("" if e is None else " (seen %+d)" % e if self.summed else " (the label changed)" if e else " (the label stayed)")
+        return self.H.syms[a] + ("" if e is None else " (and the number goes %s)" % ("up by %d" % e if e > 0 else "down by %d" % -e if e else "nowhere")
+                                 if self.summed else " (and the label changes)" if e else " (and the label stays)")
 
     def effect(self, v):
         return "%+d" % v if self.summed else "the same" if v < 0 else self.names[v]
 
+    def reads(self, j, how, v):
+        """In words: part j read in the way `how` gives v."""
+        if how == "zero":
+            return f"part {j} is {'above zero' if v else 'zero'}"
+        if how == "top":
+            return f"part {j} is {'at' if v else 'below'} its top"
+        if how in ("ge2", "ge3"):
+            return f"part {j} is {how[2] + ' or more' if v else 'less than ' + how[2]}"
+        return f"part {j} is {v}"
+
+    def seen(self, c):
+        if self.summed:
+            return "the number shown is " + ("0", "1", "2 or more")[c]
+        return "the label shown is " + self.names[c]
+
     def __str__(self):
-        H, W = self.H, len(self.slots)
         words = "the number shown as a sum; " if self.summed else ""
-        if all(not specs and not ctxs for ctxs, specs, _, _ in self.rules) and not self.parts:
-            return words + "no part"
+        if not self.parts:
+            return words + ("no part" if all(not ctxs for ctxs, _, _, _ in self.rules) else
+                            f"no part (the display by what it shows and the symbol); {self.bits:.0f} bits")
         return words + f"{len(self.parts)} part{'s' if len(self.parts) != 1 else ''}: " + \
             "; ".join(f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}" +
                       ("" if t[5] is None else " that takes what another holds" if t[5][1] == "gives" else " under a guard")
                       for t in self.parts) + f"; {self.bits:.0f} bits"
 
     def table(self):
+        """The rule in words: the parts and what moves them; then, for every symbol, what the display does."""
         H, W, lines = self.H, len(self.slots), []
         for j, (kind, n, reject, touched, chosen, guard) in enumerate(self.parts):
-            moves = ", ".join(self.said(s) + (f" when part {self.guard[j]} reads {guard[1]} = {s // W - 1}" if s >= W else "") +
-                              (f": {'%+d' % x}" if what == "add" else f": all that part {self.guard[j]} holds" if what == "take"
+            moves = "; ".join(self.said(s) + ("" if s < W else ", only while " + self.reads(self.guard[j], guard[1], s // W - 1)) +
+                              (f": {'%+d' % x}" if what == "add" else f": plus all that part {self.guard[j]} holds" if what == "take"
                                else f": to {n - 1 if x == 'top' else x}")
                               for s, (what, x) in zip(touched, chosen))
-            lines.append(f"    part {j}: a {kind}{'' if kind == 'counter' else ' of %d' % n}"
-                         f"{' (a move that does not fit is not made)' if reject else ''}; {moves}")
+            lines.append(f"    part {j}, a {kind}{'' if kind == 'counter' else ' of %d (0 to %d)' % (n, n - 1) if kind == 'level' else ' of %d' % n}"
+                         f"{' (a move that does not fit is not made)' if reject else ''}. {moves}")
         for a, (ctxs, specs, table, default) in enumerate(self.rules):
             if not specs and not ctxs:
-                lines.append(f"    {H.syms[a]}: always {self.effect(default)}")
+                lines.append(f"    {H.syms[a]}: {'the display stays' if (default == 0 if self.summed else default < 0) else 'always ' + self.effect(default)}")
             elif specs[:1] and specs[0][1].startswith("value"):
-                lines.append(f"    {H.syms[a]}: {'adds' if specs[0][1] == 'value+' else 'takes away'} what part {specs[0][0]} holds")
-            else:
-                lines.append(f"    {H.syms[a]}: by {'what is shown' if ctxs else ''}{' and ' if ctxs and specs else ''}"
-                             f"{', '.join('part %d (%s)' % s for s in specs)}: " +
-                             "; ".join(f"{k if ctxs else k[1:]} -> {self.effect(v)}" for k, v in sorted(table.items())[:16]) +
-                             (" ..." if len(table) > 16 else ""))
+                lines.append(f"    {H.syms[a]}: the number goes {'up' if specs[0][1] == 'value+' else 'down'} by what part {specs[0][0]} holds")
+            else:  # (the commonest thing the display does, and the readings at which it does another)
+                common = max(set(table.values()), key=lambda v: (sum(x == v for x in table.values()), v == (0 if self.summed else -1)))
+                rows = [" and ".join(([self.seen(k[0])] if ctxs else []) + [self.reads(j, how, v) for (j, how), v in zip(specs, k[1:])]) +
+                        " -> " + self.effect(v) for k, v in sorted(table.items()) if v != common]
+                lines.append(f"    {H.syms[a]}: " + "; ".join(rows[:12]) + (" ..." if len(rows) > 12 else "") +
+                             f"; otherwise {'the display stays' if (common == 0 if self.summed else common < 0) else self.effect(common)}")
         return "\n".join(lines)
 
 
