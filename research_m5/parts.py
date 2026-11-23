@@ -11,6 +11,9 @@ finds it:
     (a guard); or one of its moves may add all that another part holds (what is on the bench goes to the shelf);
   - a row of flags, one for each value of a circle or level (a seat for every place the wheel can stop at): an event
     raises, lowers or turns over the flag where that part points, and the flag where it points is what is read;
+  - a line, first come first served: a symbol brings someone of its kind to the back, another sends away the first
+    (or the last), another empties the line or sends away every one of a kind; who is first, who is last, how many
+    there are (of a kind) is what is read;
   - what the display does at a symbol is a table over what is seen before the symbol (the label; whether the number is
     zero) and what one or two parts read (zero or not, at the top or not, the value itself; or how one part stands to
     another: below it, level with it, above it); or the number shown goes up, or down, by what a part holds;
@@ -38,7 +41,10 @@ BIG = 120  # (a counter is kept below this: values are held in a byte)
 ROWS = 7  # a row of flags is one flag for each value of a circle or level of at most so many values
 FLAG_ACTS = [("flag", 1), ("flag", 0), ("flag", -1)]  # raise, lower, turn over the flag where the address points
 SWITCHES = 8  # so many plain parts of two values are tried as what turns the way an address moves
+QLEN = 5  # a line holds at most so many, of at most three kinds (each kind is brought by one symbol)
+LINE_READS = ["front", "back", "len", "count1", "count2"]
 OTHERS = 3  # so many other explanations of a symbol, the next cheapest, are kept as rivals of the one told
+SHARED = 8  # so many of them are weighed again with the parts other symbols read already paid for
 SURE = 10  # the machine is sure when no rival is left and it answered the last so many stories asked, long ones
 LONG = (60, 120)  # the last stories asked are of so many symbols
 EARLY = (5, 8)  # (give_up) the learner gives up when its first 5 questions, or 7 of its first 8, all refuted its machine
@@ -282,6 +288,8 @@ def reading_at(vals, parts, j, how):
         return (vals[j] > vals[how[1]]) - (vals[j] < vals[how[1]]) + 1
     if how == "here":  # (a row of flags: the flag where its address points)
         return (int(vals[j]) >> int(vals[parts.index(parts[j][5][0])])) & 1
+    if how in LINE_READS:
+        return int(LINE_READ[how][int(vals[j])])
     return int(read_of(vals[j], parts[j], how))
 
 
@@ -543,6 +551,100 @@ def flag_rows(V, adds, steps, c, y, late=lambda: False, most=1 + 3, chunk=20000)
     return sorted(found, key=lambda x: x[0])[:most]
 
 
+def _lines():
+    """Every line of at most QLEN, of kinds 1 to 3, as a number: a leading 1 and then a base-4 digit for everyone in it,
+    the first come first (0 is the empty line too). The tables: the line after every operation, and what is read."""
+    M = 4 ** (QLEN + 1)
+    code = lambda t: int("1" + "".join(str(k) for k in t), 4)
+    every = [()]
+    for n in range(1, QLEN + 1):
+        every += [t + (k,) for t in every if len(t) == n - 1 for k in (1, 2, 3)]
+    names = ["none"] + [f"push{k}" for k in (1, 2, 3)] + [f"move{k}" for k in (1, 2, 3)] + ["popf", "popb", "clear"] + \
+            [f"drop{k}" for k in (1, 2, 3)]
+    ops = np.tile(np.arange(M, dtype=np.int16), (len(names), 1))
+    reads = {h: np.zeros(M, np.int16) for h in LINE_READS}
+    for t in every:
+        v = code(t)
+        after = {"none": t, "popf": t[1:], "popb": t[:-1], "clear": ()}
+        for k in (1, 2, 3):
+            after[f"push{k}"] = t + (k,) if len(t) < QLEN else t
+            rest = tuple(x for x in t if x != k)
+            after[f"move{k}"] = rest + (k,)
+            after[f"drop{k}"] = rest
+        for i, nm in enumerate(names):
+            ops[i, v] = code(after[nm])
+        reads["front"][v], reads["back"][v], reads["len"][v] = (t[0] if t else 0), (t[-1] if t else 0), len(t)
+        reads["count1"][v], reads["count2"][v] = t.count(1), t.count(2)
+    ops[:, 0] = ops[:, 1]
+    for h in LINE_READS:
+        reads[h][0] = reads[h][1]
+    return {nm: i for i, nm in enumerate(names)}, ops, reads
+
+
+LINE_OP, LINE_OPS, LINE_READ = _lines()
+
+
+def line_forms(V):
+    """The lines of a small description: one or two slots that bring someone (each its own kind), one that sends away
+    the first or the last, and maybe one more that empties the line or sends away every one of a kind."""
+    W, out = len(V.slots), []
+    for p in (1, 2):
+        for pushers in itertools.combinations(range(W), p):
+            if clash(pushers, V):
+                continue
+            for mode in ("push", "move"):
+                for r in range(W):
+                    if r in pushers or clash(pushers + (r,), V):
+                        continue
+                    for pop in ("popf", "popb"):
+                        base = [(sl, (mode, k + 1)) for k, sl in enumerate(pushers)] + [(r, (pop, 0))]
+                        extras = [None] + [(e, x) for e in range(W) if e not in pushers and e != r
+                                           and not clash(pushers + (r, e), V)
+                                           for x in [("clear", 0)] + [("drop", k + 1) for k in range(p)]]
+                        for ex in extras:
+                            items = sorted(base + ([ex] if ex else []))
+                            out.append(("line", QLEN, False, tuple(sl for sl, _ in items), tuple(a for _, a in items), None))
+    return out
+
+
+def run_lines(ts, V):
+    """The line of many line parts at every beginning heard (as numbers: see _lines)."""
+    W, par = len(V.slots), V.par
+    opid = np.zeros((len(ts), W + 1), np.int16)
+    for i, t in enumerate(ts):
+        for sl, (what, k) in zip(t[3], t[4]):
+            opid[i, sl] = LINE_OP[what + (str(k) if what in ("push", "move", "drop") else "")]
+    out = np.zeros((len(ts), len(par)), np.int16)
+    rows = np.arange(len(ts))
+    for i in range(1, len(par)):
+        v = LINE_OPS[opid[:, V.sslot[i]], out[:, par[i]]] if V.sslot[i] >= 0 else out[:, par[i]]
+        if V.eslot[i] >= 0:
+            v = LINE_OPS[opid[:, V.eslot[i]], v]
+        out[:, i] = v
+    return out
+
+
+def line_parts(V, steps, c, y, cache, late=lambda: False, most=1 + 3):
+    """The lines that, by who is first or last or how many there are, make y a function with c:
+    [(price, part, reading)], the cheapest first. cache: the lines and their values, made once for every search."""
+    W, par = len(V.slots), V.par
+    if "ts" not in cache:
+        cache["ts"] = line_forms(V)
+        cache["V"] = run_lines(cache["ts"], V) if cache["ts"] else np.zeros((0, len(par)), np.int16)
+    ts, L = cache["ts"], cache["V"]
+    nlab = math.log2(max(2, len(set(y.tolist()))))
+    found = []
+    at = L[:, par[steps]]
+    for how in LINE_READS:
+        if late():
+            break
+        F = LINE_READ[how][at].astype(np.int8)
+        left, _ = untold(F, c, y)
+        for j in np.nonzero(left == 0)[0]:
+            found.append((price(ts[j], W) + len(np.unique(c * 16 + F[j])) * nlab + 0.5, ts[j], how))
+    return sorted(found, key=lambda x: x[0])[:most]
+
+
 class Parts:
     """The machine: the parts, and for every symbol which of them are read (and how) with the table of what the display
     does."""
@@ -560,6 +662,13 @@ class Parts:
         base = [a] + ([self.slot[a, seen]] if (a, seen) in self.slot else [])
         out = []
         for j, (v, (kind, n, reject, touched, chosen, guard)) in enumerate(zip(vals, self.parts)):
+            if kind == "line":
+                for sl in base:
+                    if sl in touched:
+                        what, k = chosen[touched.index(sl)]
+                        v = int(LINE_OPS[LINE_OP[what + (str(k) if what in ("push", "move", "drop") else "")], v])
+                out.append(v)
+                continue
             if kind == "row":  # (the flag where the address points, as it was before this symbol)
                 acts = [chosen[touched.index(sl)] for sl in base if sl in touched]
                 if acts:
@@ -632,6 +741,12 @@ class Parts:
             return f"part {j} is {('below', 'level with', 'above')[v]} part {how[1]}"
         if how == "here":
             return f"the flag of part {j} where part {self.guard[j]} points is {'up' if v else 'down'}"
+        if how in ("front", "back"):
+            return f"the {'first' if how == 'front' else 'last'} in line {j} is {self.kind_name(j, v) if v else 'nobody (it is empty)'}"
+        if how == "len":
+            return f"line {j} holds {v}"
+        if how in ("count1", "count2"):
+            return f"line {j} holds {v} of {self.kind_name(j, int(how[-1]))}"
         if how == "zero":
             return f"part {j} is {'above zero' if v else 'zero'}"
         if how == "top":
@@ -639,6 +754,14 @@ class Parts:
         if how in ("ge2", "ge3"):
             return f"part {j} is {how[2] + ' or more' if v else 'less than ' + how[2]}"
         return f"part {j} is {v}"
+
+    def kind_name(self, j, k):
+        """The kind k of line j, named by the symbol that brings it."""
+        t = self.parts[j]
+        for sl, (what, x) in zip(t[3], t[4]):
+            if what in ("push", "move") and x == k:
+                return "a '" + self.H.syms[self.slots[sl % len(self.slots)][0]] + "'"
+        return f"kind {k}"
 
     def seen(self, c):
         if self.summed:
@@ -651,7 +774,7 @@ class Parts:
             return words + ("no part" if all(not ctxs for ctxs, _, _, _ in self.rules) else
                             f"no part (the display by what it shows and the symbol); {self.bits:.0f} bits")
         return words + f"{len(self.parts)} part{'s' if len(self.parts) != 1 else ''}: " + \
-            "; ".join((f"a row of {t[1]} flags" if t[0] == "row" else f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}") +
+            "; ".join((f"a row of {t[1]} flags" if t[0] == "row" else f"a line of at most {t[1]}" if t[0] == "line" else f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}") +
                       ("" if t[5] is None or t[0] == "row" else " that takes what another holds" if t[5][1] == "gives" else " under a guard")
                       for t in self.parts) + f"; {self.bits:.0f} bits"
 
@@ -659,6 +782,14 @@ class Parts:
         """The rule in words: the parts and what moves them; then, for every symbol, what the display does."""
         H, W, lines = self.H, len(self.slots), []
         for j, (kind, n, reject, touched, chosen, guard) in enumerate(self.parts):
+            if kind == "line":
+                words = {"popf": "the first in line leaves", "popb": "the last in line leaves", "clear": "the line is emptied"}
+                lines.append(f"    part {j}, a line of at most {n}, first come first served. " + "; ".join(
+                    self.said(sl) + ": " + (f"{self.kind_name(j, x)} joins the back of the line (when there is room)" if what == "push" else
+                                            f"{self.kind_name(j, x)} goes to the back of the line (not twice)" if what == "move" else
+                                            f"every {self.kind_name(j, x)} leaves the line" if what == "drop" else words[what])
+                    for sl, (what, x) in zip(touched, chosen)))
+                continue
             if kind == "row":
                 lines.append(f"    part {j}, a row of {n} flags, one for each value of part {self.guard[j]}. " +
                              "; ".join(self.said(sl) + ": " + ("raise", "lower")[1 - x] if x in (0, 1) else self.said(sl) + ": turn over"
@@ -694,7 +825,8 @@ def explain(V, log=print, before=None, late=lambda: False):
     t0 = time.time()
     base = pool_of(templates(V), V, W)
     log(f"  {len(base.ts)} parts of one or two slots, different on the {N} beginnings heard ({time.time() - t0:.1f} s)")
-    found, others, adds = {}, {}, None  # symbol -> (price, with what is seen, [(part, reading)]); the next cheapest ones
+    found, others, adds, lines, every = {}, {}, None, {}, {}  # symbol -> (price, with what is seen, [(part, reading)]); the next
+    # cheapest ones; the addresses of rows of flags and the lines, made when first needed
     was = [] if before is None else [(t[5][0][:5], t[5][1]) for t in before.parts if t[5] is not None and t[5][1] not in ("gives", "address")]
     for a in range(len(H.syms)):
         steps = np.nonzero(sym == a)[0]
@@ -811,14 +943,45 @@ def explain(V, log=print, before=None, late=lambda: False):
             for use_ctx, (c, extra, tel, T3) in kept.items():
                 for pr, t, how in flag_rows(V, adds, steps, c, y, late):
                     better((pr + extra, use_ctx, [(t, how)]))
+        if (best[0] is None or best[0][0] > least) and not late():  # a line, first come first served
+            for use_ctx, (c, extra, tel, T3) in kept.items():
+                for pr, t, how in line_parts(V, steps, c, y, lines, late):
+                    better((pr + extra, use_ctx, [(t, how)]))
         if best[0] is not None:
             found[a] = best[0]
             rest = sorted((c for c in cands if c[1:] != best[0][1:]), key=lambda c: c[0])
             others[a] = list({str(c[1:]): c for c in reversed(rest[:OTHERS])}.values())
+            every[a] = [best[0]] + list({str(c[1:]): c for c in reversed(rest[:SHARED])}.values())
         log(f"  {H.syms[a]}: {'not explained' if best[0] is None else '%.0f bits' % best[0][0]} ({time.time() - t0:.1f} s)")
+    # a part that another symbol reads is in the machine already: it is not paid for twice (Rissanen: the description
+    # of the whole machine is what is short, not of each symbol on its own)
+    for _ in range(2):
+        for a in every:
+            used = set()
+            for b, (_, _, specs) in found.items():
+                if b != a:
+                    used |= chain(specs)
+            share = lambda cand: cand[0] - sum(price(p, W) for p in chain(cand[2]) & used)
+            pick = min(every[a], key=lambda cand: (share(cand), cand[0]))
+            if pick[1:] != found[a][1:]:
+                others[a] = [found[a]] + [c for c in others.get(a, []) if c[1:] != pick[1:]][:OTHERS - 1]
+                found[a] = pick
     m, ok = machine(V, found)
     m.others = others
     return m, len(found) == len(H.syms)
+
+
+def chain(specs):
+    """The parts an explanation reads, and the parts those wait on, take from or are addressed by."""
+    out = set()
+    todo = [t for t, _ in specs] + [how[1] for _, how in specs if isinstance(how, tuple)]
+    while todo:
+        t = todo.pop()
+        if t not in out:
+            out.add(t)
+            if t[5] is not None:
+                todo.append(t[5][0])
+    return out
 
 
 def machine(V, found):
@@ -842,7 +1005,9 @@ def machine(V, found):
                 index(how[1])
     vals = {}  # the values of the chosen parts at every beginning (a guarded part after its guard)
     for j, t in enumerate(chosen):
-        if t[5] is None:
+        if t[0] == "line":
+            vals[j] = run_lines([t], V)[0]
+        elif t[5] is None:
             vals[j] = run_all([t], V)[0]
         elif t[5][1] == "gives":
             vals[j] = run_all([t], V, None, vals[chosen.index(t[5][0])])[0]

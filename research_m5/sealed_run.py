@@ -67,12 +67,15 @@ def one(path, out, a):
         # neither learner is sure. The machine of parts was kept before the second learner asked anything: if it answers
         # every story the second learner went on to ask (five at least), it has passed a check it was not fitted to, and
         # it is told, its tables read off all that is heard now (not sure). If the second learner found nothing at all,
-        # the parts are looked for once more on everything heard.
+        # or what it tells answers something heard wrongly (it was stopped by the time), the parts are looked for once
+        # more on everything heard by the two, and told if they explain it all (not sure).
         fresh = [w for w in later if w and w not in H.index]  # (what parts.py had not heard)
         asked_later = [w for w in sorted(fresh, key=len) if not any(len(v) > len(w) and v[:len(w)] == w for v in fresh)]
         stood = whole and len(asked_later) >= 5 and all(first.run(list(w[:i])) == oracle(list(w[:i]))
                                                         for w in asked_later for i in range(1, len(w) + 1))
-        if stood or m is None:
+        wrong = m is not None and any(m.run(list(w[:i])) != oracle(list(w[:i])) for w in known + asked_later
+                                      for i in range(1, len(w) + 1))
+        if stood or m is None or wrong:
             for w in asked_later:
                 H.add(list(w), [oracle(list(w[:i])) for i in range(1, len(w) + 1)])
             V = parts.View(H, first.summed)
