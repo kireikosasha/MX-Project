@@ -11,6 +11,9 @@ finds it:
     (a guard); or one of its moves may add all that another part holds (what is on the bench goes to the shelf);
   - a row of flags, one for each value of a circle or level (a seat for every place the wheel can stop at): an event
     raises, lowers or turns over the flag where that part points, and the flag where it points is what is read;
+  - a stack, the last put on top: a symbol puts someone of its kind on top, another takes the top one off; who is on
+    top, who is under it, and whether one or more are there is what is read (the next rung of Chomsky's ladder after
+    the counters: brackets of several kinds, undo);
   - a line, first come first served: a symbol brings someone of its kind to the back, another sends away the first
     (or the last), another empties the line or sends away every one of a kind; who is first, who is last, how many
     there are (of a kind) is what is read;
@@ -42,6 +45,8 @@ ROWS = 7  # a row of flags is one flag for each value of a circle or level of at
 FLAG_ACTS = [("flag", 1), ("flag", 0), ("flag", -1)]  # raise, lower, turn over the flag where the address points
 SWITCHES = 8  # so many plain parts of two values are tried as what turns the way an address moves
 QLEN = 5  # a line holds at most so many, of at most three kinds (each kind is brought by one symbol)
+SDEPTH = 30  # (in the search) a stack holds at most so many; the stack of the machine found holds any number
+STACK_READS = ["top", "under", "topn"]  # who is on top; who is under it; who is on top and whether one or more are there
 LINE_READS = ["front", "back", "len", "count1", "count2"]
 OTHERS = 3  # so many other explanations of a symbol, the next cheapest, are kept as rivals of the one told
 SHARED = 8  # so many of them are weighed again with the parts other symbols read already paid for
@@ -290,6 +295,8 @@ def reading_at(vals, parts, j, how):
         return (int(vals[j]) >> int(vals[parts.index(parts[j][5][0])])) & 1
     if how in LINE_READS:
         return int(LINE_READ[how][int(vals[j])])
+    if how in STACK_READS:
+        return stack_read(int(vals[j]), how)
     return int(read_of(vals[j], parts[j], how))
 
 
@@ -645,6 +652,89 @@ def line_parts(V, steps, c, y, cache, late=lambda: False, most=1 + 3):
     return sorted(found, key=lambda x: x[0])[:most]
 
 
+def stack_read(v, how):
+    """What is read of a stack held as a number: a leading 1, then a base-4 digit (its kind) for every one in it, the
+    top last (0 is the empty stack too)."""
+    top = v % 4 if v > 1 else 0
+    if how == "top":
+        return top
+    if how == "under":
+        return (v // 4) % 4 if v // 4 > 1 else 0
+    return top * 3 + (0 if v <= 1 else 1 if v < 16 else 2)
+
+
+def stack_forms(V):
+    """The stacks of a small description: one to three symbols that put someone of their kind on top, one to three that
+    take the top one off, and maybe one that empties the stack."""
+    S, out = len(V.H.syms), []
+    for p in (1, 2, 3):
+        for pushers in itertools.combinations(range(S), p):
+            rest = [x for x in range(S) if x not in pushers]
+            for q in (1, 2, 3):
+                for poppers in itertools.combinations(rest, q):
+                    others = [x for x in rest if x not in poppers]
+                    for ex in [None] + others:
+                        items = sorted([(sl, ("push", k + 1)) for k, sl in enumerate(pushers)] + [(sl, ("pop", 0)) for sl in poppers] +
+                                       ([(ex, ("clear", 0))] if ex is not None else []))
+                        out.append(("stack", SDEPTH, False, tuple(sl for sl, _ in items), tuple(a for _, a in items), None))
+    return out
+
+
+def run_stacks(ts, V):
+    """The stack of many stack parts at every beginning heard, for the search: the top SDEPTH of it as base-4 digits
+    (the top last) and how deep it is (deeper than that, the bottom is forgotten)."""
+    par = V.par
+    S = len(V.H.syms)
+    op = np.zeros((len(ts), S + 1), np.int64)  # (1-3: put on top that kind; 4: take off; 5: empty)
+    for i, t in enumerate(ts):
+        for sl, (what, k) in zip(t[3], t[4]):
+            op[i, sl] = k if what == "push" else 4 if what == "pop" else 5
+    v, d = np.zeros((len(ts), len(par)), np.int64), np.zeros((len(ts), len(par)), np.int32)
+    keep = 4 ** SDEPTH
+    for i in range(1, len(par)):
+        v0, d0 = v[:, par[i]], d[:, par[i]]
+        o = op[:, V.sslot[i]] if V.sslot[i] >= 0 else np.zeros(len(ts), np.int64)
+        push, pop, clear = (o >= 1) & (o <= 3), (o == 4) & (d0 > 0), o == 5
+        v[:, i] = np.where(push, (v0 * 4 + o) % keep, np.where(pop, v0 // 4, np.where(clear, 0, v0)))
+        d[:, i] = np.where(push, d0 + 1, np.where(pop, d0 - 1, np.where(clear, 0, d0)))
+    return v, d
+
+
+def run_stack_exact(t, V):
+    """One stack part at every beginning heard, exactly (the machine's numbers: see stack_read)."""
+    par, sym = V.par, V.sym
+    op = {sl: act for sl, act in zip(t[3], t[4])}
+    out = [1] * len(par)
+    for i in range(1, len(par)):
+        v = out[par[i]]
+        what, k = op.get(int(sym[i]), (None, 0))
+        out[i] = v * 4 + k if what == "push" else (v // 4 if v > 1 else v) if what == "pop" else 1 if what == "clear" else v
+    return np.array(out, dtype=object)
+
+
+def stack_parts(V, steps, c, y, cache, late=lambda: False, most=1 + 3):
+    """The stacks that, by who is on top (or under it), make y a function with c: [(price, part, reading)]."""
+    W, par = len(V.slots), V.par
+    if "ts" not in cache:
+        cache["ts"] = stack_forms(V)
+        cache["V"] = run_stacks(cache["ts"], V)
+    ts, (St, Sd) = cache["ts"], cache["V"]
+    nlab = math.log2(max(2, len(set(y.tolist()))))
+    at, deep = St[:, par[steps]], Sd[:, par[steps]]
+    top = np.where(deep > 0, at % 4, 0)
+    feats = {"top": top, "under": np.where(deep > 1, (at // 4) % 4, 0),
+             "topn": top * 3 + np.minimum(deep, 2)}
+    found = []
+    for how in STACK_READS:
+        if late():
+            break
+        F = feats[how].astype(np.int8)
+        left, _ = untold(F, c, y)
+        for j in np.nonzero(left == 0)[0]:
+            found.append((price(ts[j], W) + len(np.unique(c * 16 + F[j])) * nlab + 0.5, ts[j], how))
+    return sorted(found, key=lambda x: x[0])[:most]
+
+
 class Parts:
     """The machine: the parts, and for every symbol which of them are read (and how) with the table of what the display
     does."""
@@ -662,6 +752,12 @@ class Parts:
         base = [a] + ([self.slot[a, seen]] if (a, seen) in self.slot else [])
         out = []
         for j, (v, (kind, n, reject, touched, chosen, guard)) in enumerate(zip(vals, self.parts)):
+            if kind == "stack":
+                if a in touched:
+                    what, k = chosen[touched.index(a)]
+                    v = max(int(v), 1) * 4 + k if what == "push" else (v // 4 if v > 1 else v) if what == "pop" else 1
+                out.append(v)
+                continue
             if kind == "line":
                 for sl in base:
                     if sl in touched:
@@ -741,6 +837,14 @@ class Parts:
             return f"part {j} is {('below', 'level with', 'above')[v]} part {how[1]}"
         if how == "here":
             return f"the flag of part {j} where part {self.guard[j]} points is {'up' if v else 'down'}"
+        if how in ("top", "under"):
+            return f"{'on top of' if how == 'top' else 'under the top of'} stack {j} is {self.kind_name(j, v) if v else 'nobody'}"
+        if how == "topn":
+            return f"on top of stack {j} is {self.kind_name(j, v // 3) if v // 3 else 'nobody'}" + ("" if v % 3 == 0 else ", the only one" if v % 3 == 1 else ", with more under it")
+        if how in ("top", "under"):
+            return f"{'on top of' if how == 'top' else 'under the top of'} stack {j} is {self.kind_name(j, v) if v else 'nobody'}"
+        if how == "topn":
+            return f"on top of stack {j} is {self.kind_name(j, v // 3) if v // 3 else 'nobody'}" + ("" if v % 3 == 0 else ", the only one" if v % 3 == 1 else ", with more under it")
         if how in ("front", "back"):
             return f"the {'first' if how == 'front' else 'last'} in line {j} is {self.kind_name(j, v) if v else 'nobody (it is empty)'}"
         if how == "len":
@@ -760,7 +864,7 @@ class Parts:
         t = self.parts[j]
         for sl, (what, x) in zip(t[3], t[4]):
             if what in ("push", "move") and x == k:
-                return "a '" + self.H.syms[self.slots[sl % len(self.slots)][0]] + "'"
+                return "a '" + self.H.syms[self.slots[sl % len(self.slots)][0] if t[0] != "stack" else sl] + "'"
         return f"kind {k}"
 
     def seen(self, c):
@@ -774,7 +878,7 @@ class Parts:
             return words + ("no part" if all(not ctxs for ctxs, _, _, _ in self.rules) else
                             f"no part (the display by what it shows and the symbol); {self.bits:.0f} bits")
         return words + f"{len(self.parts)} part{'s' if len(self.parts) != 1 else ''}: " + \
-            "; ".join((f"a row of {t[1]} flags" if t[0] == "row" else f"a line of at most {t[1]}" if t[0] == "line" else f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}") +
+            "; ".join((f"a row of {t[1]} flags" if t[0] == "row" else f"a line of at most {t[1]}" if t[0] == "line" else "a stack" if t[0] == "stack" else f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}") +
                       ("" if t[5] is None or t[0] == "row" else " that takes what another holds" if t[5][1] == "gives" else " under a guard")
                       for t in self.parts) + f"; {self.bits:.0f} bits"
 
@@ -786,23 +890,32 @@ class Parts:
         begin = int(H.begin) if self.summed else H.begin
         kinds = {}  # (line, kind) -> the symbol that brings it
         for j, t in enumerate(self.parts):
-            if t[0] == "line":
+            if t[0] in ("line", "stack"):
                 for sl, (what, k) in zip(t[3], t[4]):
                     if what in ("push", "move"):
-                        kinds[j, k] = H.syms[self.slots[sl % W][0]]
+                        kinds[j, k] = H.syms[self.slots[sl % W][0] if t[0] == "line" else sl]
         lines = [f"ALPHABET = {q(list(H.syms))}", "", "", "def answer(seq):",
                  f"    shown = {q(begin)}  # what the display shows"]
         for j, t in enumerate(self.parts):
             kind, n = t[0], t[1]
             what = {"counter": "a counter, not below zero", "level": f"a level from 0 to {n - 1}", "circle": f"a circle of {n}",
-                    "row": f"a row of {n} flags, one for each value of p{self.guard[j]}", "line": f"a line of at most {n}, first come first served"}[kind]
-            lines.append(f"    p{j} = {'[]' if kind == 'line' else '0'}  # {what}")
+                    "row": f"a row of {n} flags, one for each value of p{self.guard[j]}", "line": f"a line of at most {n}, first come first served",
+                    "stack": "a stack, the last put on top"}[kind]
+            lines.append(f"    p{j} = {'[]' if kind in ('line', 'stack') else '0'}  # {what}")
         def read(j, how):
             t = self.parts[j]
             if isinstance(how, tuple):
                 return f"(p{j} > p{how[1]}) - (p{j} < p{how[1]}) + 1"
             if how == "here":
                 return f"(p{j} >> p{self.guard[j]}) & 1"
+            if how in STACK_READS:  # (the stack as a list, the top last)
+                ks = {name: k for (jj, k), name in kinds.items() if jj == j}
+                top = f"({q(ks)}[p{j}[-1]] if p{j} else 0)"
+                if how == "top":
+                    return top
+                if how == "under":
+                    return f"({q(ks)}[p{j}[-2]] if len(p{j}) > 1 else 0)"
+                return f"({top} * 3 + min(len(p{j}), 2))"
             if how in ("front", "back"):
                 ks = {name: k for (jj, k), name in kinds.items() if jj == j}
                 at = "0" if how == "front" else "-1"
@@ -843,6 +956,12 @@ class Parts:
                 lines.append("            seen = int(new != shown)")
             # the moves of the parts at this symbol, from the values before it
             for j, (kind, n, reject, touched, chosen, guard) in enumerate(self.parts):
+                if kind == "stack":
+                    if a in touched:
+                        what, k = chosen[touched.index(a)]
+                        lines.append(f"            n{j} = " + (f"p{j} + [{q(kinds.get((j, k), ''))}]" if what == "push" else
+                                                         f"p{j}[:-1]" if what == "pop" else "[]"))
+                    continue
                 mine = [(sl, act) for sl, act in zip(touched, chosen) if self.slots[sl % W][0] == a]
                 if not mine:
                     continue
@@ -883,7 +1002,7 @@ class Parts:
                 step = f"(p{j} + d{j}) % {n}" if kind == "circle" else \
                     (f"p{j} + d{j} if 0 <= p{j} + d{j} <= {top} else p{j}" if reject else f"max(0, min({top}, p{j} + d{j}))")
                 lines.append(f"            n{j} = s{j} if s{j} is not None else {step}")
-            moved = [j for j, t in enumerate(self.parts) if any(self.slots[sl % W][0] == a for sl in t[3])]
+            moved = [j for j, t in enumerate(self.parts) if (a in t[3] if t[0] == "stack" else any(self.slots[sl % W][0] == a for sl in t[3]))]
             for j in moved:
                 lines.append(f"            p{j} = n{j}")
             lines.append("            shown = new")
@@ -894,6 +1013,12 @@ class Parts:
         """The rule in words: the parts and what moves them; then, for every symbol, what the display does."""
         H, W, lines = self.H, len(self.slots), []
         for j, (kind, n, reject, touched, chosen, guard) in enumerate(self.parts):
+            if kind == "stack":
+                lines.append(f"    part {j}, a stack, the last put on top. " + "; ".join(
+                    self.H.syms[sl] + ": " + (f"{self.kind_name(j, x)} goes on top" if what == "push" else
+                                              "the top one is taken off" if what == "pop" else "the stack is emptied")
+                    for sl, (what, x) in zip(touched, chosen)))
+                continue
             if kind == "line":
                 words = {"popf": "the first in line leaves", "popb": "the last in line leaves", "clear": "the line is emptied"}
                 lines.append(f"    part {j}, a line of at most {n}, first come first served. " + "; ".join(
@@ -937,7 +1062,7 @@ def explain(V, log=print, before=None, late=lambda: False):
     t0 = time.time()
     base = pool_of(templates(V), V, W)
     log(f"  {len(base.ts)} parts of one or two slots, different on the {N} beginnings heard ({time.time() - t0:.1f} s)")
-    found, others, adds, lines, every = {}, {}, None, {}, {}  # symbol -> (price, with what is seen, [(part, reading)]); the next
+    found, others, adds, lines, every, stacks = {}, {}, None, {}, {}, {}  # symbol -> (price, with what is seen, [(part, reading)]); the next
     # cheapest ones; the addresses of rows of flags and the lines, made when first needed
     was = [] if before is None else [(t[5][0][:5], t[5][1]) for t in before.parts if t[5] is not None and t[5][1] not in ("gives", "address")]
     for a in range(len(H.syms)):
@@ -1059,6 +1184,10 @@ def explain(V, log=print, before=None, late=lambda: False):
             for use_ctx, (c, extra, tel, T3) in kept.items():
                 for pr, t, how in line_parts(V, steps, c, y, lines, late):
                     better((pr + extra, use_ctx, [(t, how)]))
+        if (best[0] is None or best[0][0] > least) and not late():  # a stack, the last put on top
+            for use_ctx, (c, extra, tel, T3) in kept.items():
+                for pr, t, how in stack_parts(V, steps, c, y, stacks, late):
+                    better((pr + extra, use_ctx, [(t, how)]))
         if best[0] is not None:
             found[a] = best[0]
             rest = sorted((c for c in cands if c[1:] != best[0][1:]), key=lambda c: c[0])
@@ -1119,6 +1248,8 @@ def machine(V, found):
     for j, t in enumerate(chosen):
         if t[0] == "line":
             vals[j] = run_lines([t], V)[0]
+        elif t[0] == "stack":
+            vals[j] = run_stack_exact(t, V)
         elif t[5] is None:
             vals[j] = run_all([t], V)[0]
         elif t[5][1] == "gives":
