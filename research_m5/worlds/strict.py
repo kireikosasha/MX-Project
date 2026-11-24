@@ -39,7 +39,7 @@ def alive(rule, syms, n, rng):
 
 
 def check(m, syms, rule, rng, n_long=60):
-    short = {2: 14, 3: 9, 4: 8}.get(len(syms), 7)
+    short = {2: 14, 3: 9, 4: 8, 5: 7, 6: 7, 7: 6, 8: 6}.get(len(syms), 5)  # (some hundred thousand stories at most)
     total = right = 0
     for n in range(1, short + 1):
         for w in itertools.product(syms, repeat=n):
