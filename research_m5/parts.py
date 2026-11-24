@@ -51,8 +51,9 @@ STACK_READS = ["top", "under", "topn"]  # who is on top; who is under it; who is
 LINE_READS = ["front", "back", "len", "count1", "count2"]
 OTHERS = 3  # so many other explanations of a symbol, the next cheapest, are kept as rivals of the one told
 SHARED = 64  # so many of them are weighed again with the parts other symbols read already paid for
-SURE = 10  # the machine is sure when no rival is left and it answered the last so many stories asked, long ones
+SURE = 10  # the machine is sure when no rival is left and it answered the last so many stories asked, long ones (and MORE)
 LONG = (60, 120)  # the last stories asked are of so many symbols
+MORE = ("alive", "pumped", "alive", "pumped")  # and after the SURE plain ones, these (see alive and pumped)
 EARLY = (5, 8)  # (give_up) the learner gives up when its first 5 questions, or 7 of its first 8, all refuted its machine
 SWELL = (8, 6, 1.5)  # (give_up) and when 6 of its last 8 questions refuted its machine and it grew half as long again in them
 
@@ -1579,15 +1580,16 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
             if w is None:
                 w, why = lacking(m), "a reading not met"
         if w is None:
-            if whole and row >= SURE:
+            if whole and row >= SURE + len(MORE):
                 break
-            # (every other long story with no symbol repeated on purpose: as the machine will be used)
-            # (of every three long stories one is kept away from an answer the machine never leaves, see alive, and one
-            # is a story with a rare answer drawn out, see pumped)
-            w, why = (alive(m, syms, rng, rng.randint(*LONG)) if whole and row % 3 == 1 else
-                      pumped(H, rng, LONG[1]) if whole and row % 3 == 2 else None), "a check"
+            # (the first SURE long stories: every other with no symbol repeated on purpose, as the machine will be used,
+            # and every other with symbols repeated, so that tops and bottoms are reached; then MORE: kept away from an
+            # answer the machine never leaves, see alive, and a story with a rare answer drawn out, see pumped)
+            kind = MORE[row - SURE] if whole and row >= SURE else None
+            w, why = (alive(m, syms, rng, rng.randint(*LONG)) if kind == "alive" else
+                      pumped(H, rng, LONG[1]) if kind == "pumped" else None), "a check"
             if w is None:
-                w = story(syms, rng, rng.randint(*LONG) if whole else 24, 0.0)
+                w = story(syms, rng, rng.randint(*LONG) if whole else 24, 0.3 if row % 2 else 0.0)
         elif len(w) < 24:  # (seen after every symbol, a longer story costs the same: it goes on)
             w = w + story(syms, rng, 24 - len(w))
         asked += 1
@@ -1610,7 +1612,7 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
         wrongs += not (whole and set(m.parts) == set(before.parts) and m.summed == before.summed)
         H.trace.append((why[:8], False if whole else None, m.bits))
         log(f"  asked {asked} ({why}): {'answered wrongly' if not right else 'a thing not seen before'}; kept {m}\n{m.table()}")
-    m.sure = bool(whole and row >= SURE)
+    m.sure = bool(whole and row >= SURE + len(MORE))
     return m, asked, H, whole
 
 
