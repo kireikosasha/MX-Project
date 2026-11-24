@@ -35,8 +35,9 @@ import numpy as np
 
 ACTS = [("add", 1), ("add", -1), ("set", 0), ("set", "top"), ("add", 2), ("add", -2), ("add", 3), ("add", -3)]
 GROW = 150  # so many of the parts that tell the most of a symbol are given one more slot, or made to wait on a guard
-READS = ["zero", "full", "top", "ge2", "ge3"]
-KINDS = [("counter", 0)] + [("level", n) for n in range(2, 8)] + [("circle", n) for n in range(2, 8)] + [("circle", 12)]
+READS = ["zero", "full", "top", "ge2", "ge3", "sign"]
+KINDS = [("counter", 0)] + [("level", n) for n in range(2, 8)] + [("circle", n) for n in range(2, 8)] + [("circle", 12)] + \
+    [("number", 0)]  # (a whole number, below zero as well: how far a is ahead of b)
 FIRSTS = 8  # with so many of the parts that tell the most of a symbol alone, a second part is looked for
 GUARDS = 12  # so many plain parts, the ones that settle the most steps of a symbol by themselves, are tried as guards
 GIVERS = 40  # so many plain counters that some slot empties are tried as what another part takes at that slot
@@ -115,7 +116,7 @@ def acts_of(kind, n):
     """The actions a part of this kind may be moved by."""
     out = []
     for act in ACTS:
-        if kind == "counter" and act == ("set", "top"):
+        if kind in ("counter", "number") and act == ("set", "top"):
             continue
         if kind == "circle" and (act == ("set", "top") and n > 2 or act == ("add", -1) and n == 2 or
                                  act[0] == "add" and abs(act[1]) > 1 and n <= 3):
@@ -146,7 +147,7 @@ def idle(kind, touched, chosen, V):
     W, slots = len(V.slots), V.slots
     if all(a[0] == "set" for a in chosen) and len({a[1] for a in chosen}) < 2:
         return True
-    if kind != "circle" and not any(a[0] == "set" and a[1] == "top" or a[0] in ("add", "take") and a[1] > 0 for a in chosen):
+    if kind not in ("circle", "number") and not any(a[0] == "set" and a[1] == "top" or a[0] in ("add", "take") and a[1] > 0 for a in chosen):
         return True
     for (s1, a1), (s2, a2) in itertools.combinations(zip(touched, chosen), 2):
         if a1 == a2 and slots[s1 % W][0] == slots[s2 % W][0]:
@@ -227,7 +228,7 @@ def price(t, W):
     """The length of a part's description, in bits: its kind (a level and a circle say their size), and for every slot
     which it is and what it does; a guard, and which reading of it each slot is for."""
     kind, n, reject, touched, chosen, guard = t
-    return math.log2(3) + (0 if kind == "counter" else math.log2(7)) + (1 if reject else 0) + \
+    return math.log2(4) + (0 if kind in ("counter", "number") else math.log2(7)) + (1 if reject else 0) + \
         len(touched) * (math.log2(W) + math.log2(len(ACTS))) + \
         (0 if guard is None else 2 if guard[1] in ("gives", "address") else 2 + len(touched))
 
@@ -241,7 +242,7 @@ def run_all(ts, V, g=None, gv=None):
     take = np.zeros((C, width + 1), np.int16)
     kind, size, rej = np.zeros(C, np.int8), np.zeros(C, np.int16), np.zeros(C, bool)
     for i, (k, n, reject, touched, chosen, _) in enumerate(ts):
-        kind[i], size[i], rej[i] = ("counter", "level", "circle").index(k), n, reject
+        kind[i], size[i], rej[i] = ("counter", "level", "circle", "number").index(k), n, reject
         for s, (what, v) in zip(touched, chosen):
             if what == "add":
                 add[i, s] = v
@@ -266,7 +267,7 @@ def run_all(ts, V, g=None, gv=None):
                     a = a + take[:, h] * int(gv[par[i]])
                 s = np.where(setv[:, h] >= 0, setv[:, h], s)
         w = v + a
-        nv = np.where(kind == 2, np.mod(w, mod), np.where(rej & ((w < 0) | (w > top)), v, np.clip(w, 0, top)))
+        nv = np.where(kind == 3, np.clip(w, -127, 127), np.where(kind == 2, np.mod(w, mod), np.where(rej & ((w < 0) | (w > top)), v, np.clip(w, 0, top))))
         out[:, i] = np.where(s >= 0, s, nv)
     return out
 
@@ -279,6 +280,8 @@ def read_of(v, t, how):
         return v
     if how == "top":
         return (v == t[1] - 1) * 1
+    if how == "sign":
+        return (v > 0) * 1 - (v < 0) * 1 + 1
     return (v >= int(how[2])) * 1
 
 
@@ -310,6 +313,8 @@ def reading(Vs, sizes, counters, how):
         return Vs, ~counters & (sizes > 2) & (sizes <= 12)
     if how == "top":
         return (Vs == (sizes - 1)[:, None]).astype(np.int8), ~counters & (sizes > 2)
+    if how == "sign":  # (a whole number: below zero, zero, above zero)
+        return (np.sign(Vs) + 1).astype(np.int8), ~counters & (sizes == 0)
     c = int(how[2])
     return (Vs >= c).astype(np.int8), counters | (sizes > c + 1)
 
@@ -789,6 +794,8 @@ class Parts:
                     w = v + sum(x * vals[self.guard[j]] if what == "take" else x for what, x in acts)
                     if kind == "circle":
                         v = w % n
+                    elif kind == "number":
+                        v = w
                     else:
                         top = BIG if kind == "counter" else n - 1
                         v = v if reject and not 0 <= w <= top else max(0, min(top, w))
@@ -856,7 +863,9 @@ class Parts:
         if how in ("count1", "count2"):
             return f"line {j} holds {v} of {self.kind_name(j, int(how[-1]))}"
         if how == "zero":
-            return f"part {j} is {'above zero' if v else 'zero'}"
+            return f"part {j} is {'above zero' if v else 'zero' if self.parts[j][0] != 'number' else 'not above zero'}"
+        if how == "sign":
+            return f"part {j} is {('below zero', 'zero', 'above zero')[v]}"
         if how == "top":
             return f"part {j} is {'at' if v else 'below'} its top"
         if how in ("ge2", "ge3"):
@@ -882,7 +891,7 @@ class Parts:
             return words + ("no part" if all(not ctxs for ctxs, _, _, _ in self.rules) else
                             f"no part (the display by what it shows and the symbol); {self.bits:.0f} bits")
         return words + f"{len(self.parts)} part{'s' if len(self.parts) != 1 else ''}: " + \
-            "; ".join((f"a row of {t[1]} flags" if t[0] == "row" else f"a line of at most {t[1]}" if t[0] == "line" else "a stack" if t[0] == "stack" else f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}") +
+            "; ".join((f"a row of {t[1]} flags" if t[0] == "row" else f"a line of at most {t[1]}" if t[0] == "line" else "a stack" if t[0] == "stack" else "a whole number" if t[0] == "number" else f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}") +
                       ("" if t[5] is None or t[0] == "row" else " that takes what another holds" if t[5][1] == "gives" else " under a guard")
                       for t in self.parts) + f"; {self.bits:.0f} bits"
 
@@ -902,7 +911,7 @@ class Parts:
                  f"    shown = {q(begin)}  # what the display shows"]
         for j, t in enumerate(self.parts):
             kind, n = t[0], t[1]
-            what = {"counter": "a counter, not below zero", "level": f"a level from 0 to {n - 1}", "circle": f"a circle of {n}",
+            what = {"counter": "a counter, not below zero", "number": "a whole number", "level": f"a level from 0 to {n - 1}", "circle": f"a circle of {n}",
                     "row": f"a row of {n} flags, one for each value of p{self.guard[j]}", "line": f"a line of at most {n}, first come first served",
                     "stack": "a stack, the last put on top"}[kind]
             lines.append(f"    p{j} = {'[]' if kind in ('line', 'stack') else '0'}  # {what}")
@@ -934,6 +943,8 @@ class Parts:
                 return f"p{j}"
             if how == "top":
                 return f"int(p{j} == {t[1] - 1})"
+            if how == "sign":
+                return f"(p{j} > 0) - (p{j} < 0) + 1"
             return f"int(p{j} >= {how[2]})"
         lines.append("    for tok in seq:")
         for a, (ctxs, specs, table, default) in enumerate(self.rules):
@@ -993,7 +1004,7 @@ class Parts:
                     what, x = conds[0][1]
                     w = f"p{j} - {-x}" if what == "add" and x < 0 else f"p{j} + {x}"
                     lines.append(f"            n{j} = " + (str(n - 1 if x == "top" else x) if what == "set" else
-                                 f"({w}) % {n}" if kind == "circle" else
+                                 f"({w}) % {n}" if kind == "circle" else f"{w}" if kind == "number" else
                                  f"{w} if 0 <= {w} <= {top} else p{j}" if reject else
                                  f"max(0, {w})" if kind == "counter" and x < 0 else f"{w}" if kind == "counter" else
                                  f"min({top}, {w})" if x > 0 else f"max(0, {w})"))
@@ -1003,7 +1014,7 @@ class Parts:
                     st = f"s{j} = {n - 1 if x == 'top' else x}" if what == "set" else \
                         f"d{j} += {x} * p{self.guard[j]}" if what == "take" else f"d{j} += {x}"
                     lines.append(f"            {'if ' + c + ': ' if c else ''}{st}")
-                step = f"(p{j} + d{j}) % {n}" if kind == "circle" else \
+                step = f"(p{j} + d{j}) % {n}" if kind == "circle" else f"p{j} + d{j}" if kind == "number" else \
                     (f"p{j} + d{j} if 0 <= p{j} + d{j} <= {top} else p{j}" if reject else f"max(0, min({top}, p{j} + d{j}))")
                 lines.append(f"            n{j} = s{j} if s{j} is not None else {step}")
             moved = [j for j, t in enumerate(self.parts) if (a in t[3] if t[0] == "stack" else any(self.slots[sl % W][0] == a for sl in t[3]))]
@@ -1040,7 +1051,7 @@ class Parts:
                               (f": {'%+d' % x}" if what == "add" else f": plus all that part {self.guard[j]} holds" if what == "take"
                                else f": to {n - 1 if x == 'top' else x}")
                               for s, (what, x) in zip(touched, chosen))
-            lines.append(f"    part {j}, a {kind}{'' if kind == 'counter' else ' of %d (0 to %d)' % (n, n - 1) if kind == 'level' else ' of %d' % n}"
+            lines.append(f"    part {j}, {'a whole number' if kind == 'number' else 'a ' + kind}{'' if kind in ('counter', 'number') else ' of %d (0 to %d)' % (n, n - 1) if kind == 'level' else ' of %d' % n}"
                          f"{' (a move that does not fit is not made)' if reject else ''}. {moves}")
         for a, (ctxs, specs, table, default) in enumerate(self.rules):
             if not specs and not ctxs:
@@ -1330,7 +1341,7 @@ def rivals(m):
             swap = lambda x: t2 if x == t else x if x[5] is None or x[5][0] != t else x[:5] + ((t2, x[5][1]),)
             found = {a: (pr, c, [(swap(x), (how[0], swap(how[1])) if isinstance(how, tuple) else how) for x, how in specs])
                      for a, (pr, c, specs) in m.found.items()}
-            if any(how in ("top", "full") and x[0] == "counter" or how == "full" and x[1] > 12
+            if any(how in ("top", "full") and x[0] in ("counter", "number") or how == "sign" and x[0] != "number" or how == "full" and x[1] > 12
                    for _, _, specs in found.values() for x, how in specs):
                 continue
             r, ok = machine(m.V, found)
