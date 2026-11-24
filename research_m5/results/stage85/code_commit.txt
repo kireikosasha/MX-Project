@@ -1,0 +1,8 @@
+cells.py, parts.py, sealed_run.py: 220b6e1 (written down before the run: the fixes after stage 84 and the whole number)
+flags: as in results/stage82/code_commit.txt (the flags of stage 74 and --sum --parts); one thread a process, four at once.
+worlds_results.txt: the 19 worlds of worlds/ (16 of stages 83-84 and 3 new ones); worlds_strict.txt: worlds/strict.py on the machines of this run.
+results.txt: the 72 open families; beside_stage82.txt: the same beside the record of stage 82 (and stage 74).
+During the run of the families: two short timed tests of the endless line and of the row's address (at nice 19) shared the machine for some minutes.
+Two families of this run failed: 60-11-ferris-wheel and 70-08-carousel ("negative shift count": a rival put a whole number in place of a row's address). Counted as not taken.
+After the run (not blind), with the code of d98338f (the endless line, 215ab9b, and a row's address kept a circle or a level of at most seven): after_the_run_results.txt.
+After the run, the first learner alone (parts.learn as sealed_run.py calls it, frozen code of 220b6e1) on 70-12-weaving-loom and 58-12-bicycle-shop: it asked 20 questions each (the half it may), its machine refuted by nearly all, 67 -> 351 and 27 -> 241 bits; at stage 82 it gave up after its first five.

@@ -1,0 +1,6 @@
+the number shown as a sum; 2 parts: a circle of 4; a row of 4 flags; 37 bits
+    part 0, a circle of 4. turn: -1
+    part 1, a row of 4 flags, one for each value of part 0. board: raise; exit: lower the flag where part 0 points
+    turn: the display stays
+    board: the flag of part 1 where part 0 points is down -> +1; otherwise the display stays
+    exit: the flag of part 1 where part 0 points is up -> -1; otherwise the display stays

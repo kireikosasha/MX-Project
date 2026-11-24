@@ -1,0 +1,5 @@
+1 part: a whole number; 34 bits
+    part 0, a whole number. a (and the label stays): -1; b (and the label stays): +1
+    a: the label shown is b and part 0 is not above zero -> tie; the label shown is tie and part 0 is not above zero -> a; otherwise the display stays
+    b: the label shown is a and part 0 is zero -> tie; the label shown is tie and part 0 is zero -> b; otherwise the display stays
+    c: the display stays

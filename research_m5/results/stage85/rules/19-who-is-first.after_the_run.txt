@@ -1,0 +1,5 @@
+1 part: a line; 49 bits
+    part 0, a line, first come first served. serve: the first in line leaves; a (and the label stays): a 'a' joins the back of the line; b (and the label stays): a 'b' joins the back of the line
+    a: the label shown is nobody -> a; otherwise the display stays
+    b: the label shown is nobody -> b; otherwise the display stays
+    serve: the label shown is a and the first in line 0 is nobody (it is empty) -> nobody; the label shown is a and the first in line 0 is a 'b' -> b; the label shown is b and the first in line 0 is nobody (it is empty) -> nobody; the label shown is b and the first in line 0 is a 'a' -> a; otherwise the display stays

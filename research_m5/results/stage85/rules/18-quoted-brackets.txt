@@ -1,0 +1,10 @@
+2 states + a whole number (offsets -1..1, read clipped to -1..1), 1 of the symbols moving by what the first number reads, the answer read from the numbers only
+    (            read (-1,): states 0>0 1>1   numbers by state (0) (0)
+    (            read (0,): states 0>0 1>1   numbers by state (1) (0)
+    (            read (1,): states 0>0 1>1   numbers by state (1) (0)
+    )            read (-1,): states 0>0 1>1   numbers by state (-1) (0)
+    )            read (0,): states 0>0 1>1   numbers by state (-1) (0)
+    )            read (1,): states 0>0 1>1   numbers by state (-1) (0)
+    "            read (-1,): states 0>1 1>0   numbers by state (0) (0)
+    "            read (0,): states 0>1 1>0   numbers by state (0) (0)
+    "            read (1,): states 0>1 1>0   numbers by state (0) (0)

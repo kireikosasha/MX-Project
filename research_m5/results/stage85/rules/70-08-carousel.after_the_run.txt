@@ -1,0 +1,8 @@
+the number shown as a sum; 3 parts: a circle of 2; a circle of 5 under a guard; a row of 5 flags; 60 bits
+    part 0, a circle of 2. reverse: +1
+    part 1, a circle of 5. spin, only while part 0 is zero: -1; spin, only while part 0 is above zero: +1
+    part 2, a row of 5 flags, one for each value of part 1. board: raise; alight: lower the flag where part 1 points
+    spin: the display stays
+    reverse: the display stays
+    board: the flag of part 2 where part 1 points is down -> +1; otherwise the display stays
+    alight: the flag of part 2 where part 1 points is up -> -1; otherwise the display stays

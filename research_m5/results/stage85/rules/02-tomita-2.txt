@@ -1,0 +1,4 @@
+1 part: a whole number; 27 bits
+    part 0, a whole number. 0: +1; 1 (and the label stays): +2; 1 (and the label changes): -1
+    0: part 0 is below zero -> yes; part 0 is zero -> no; otherwise the display stays
+    1: the label shown is yes -> no; otherwise the display stays
