@@ -1391,11 +1391,12 @@ def rivals(m):
     (a counter for a level, a level with another top: the stories heard may never have reached the top); and the kept
     one with one symbol explained by the next cheapest parts found for it."""
     out = []
+    addresses = {x[5][0] for x in m.parts if x[0] == "row"}
     for t in m.parts:
         for kind, n in KINDS:
             t2 = alike(t, kind, n)
-            if t2 is None:
-                continue
+            if t2 is None or t in addresses and (kind not in ("circle", "level") or n > ROWS):
+                continue  # (a row of flags is addressed by a circle or a level of at most ROWS values)
             swap = lambda x: t2 if x == t else x if x[5] is None or x[5][0] != t else x[:5] + ((t2, x[5][1]),)
             found = {a: (pr, c, [(swap(x), (how[0], swap(how[1])) if isinstance(how, tuple) else how) for x, how in specs])
                      for a, (pr, c, specs) in m.found.items()}
