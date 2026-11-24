@@ -174,7 +174,7 @@ def main():
                         loss = nn.functional.cross_entropy(model(x, l), y, ignore_index=-1)
                         opt.zero_grad(); loss.backward(); opt.step()
                     taught = accuracy(model, fresh, sid, lid, len(syms))
-                    long = [accuracy(model, tests[L], sid, lid, len(syms), part=50) for L in tests]
+                    long = [accuracy(model, tests[L], sid, lid, len(syms), part=1000 if L.startswith('every') else 50) for L in tests]
                     rows.append((taught, *long))
                     print(f"  {name:9s} {kind:11s} x{times:<3d} seed {seed}: taught lengths {taught:5.1f}  "
                           f"length {'/'.join(tests)}: {' '.join(f'{v:5.1f}' for v in long)}  ({time.time() - t0:.0f} s)", flush=True)

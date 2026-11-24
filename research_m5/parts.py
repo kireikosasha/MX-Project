@@ -1474,6 +1474,49 @@ def explained(H, log=print, before=None, late=lambda: False):
     return kept
 
 
+def pumped(H, rng, longest):
+    """A story heard that ends in one of the rarest answers, every symbol of it said k times over (k from 2 up, as long
+    as it stays within longest symbols): abc -> aabbcc, (()) -> (((()))). What a rule says once, it says again on the
+    story drawn out (the pumping lemma, read backwards): a machine that got the short story right by a coincidence of
+    small numbers is caught on the long one."""
+    ends = {}
+    for p, i in H.index.items():
+        if p:
+            ends.setdefault(H.shown[i], []).append(p)
+    rare = min(len(v) for v in ends.values())
+    pool = [p for v in ends.values() if len(v) <= max(rare, 3) for p in v if 2 * len(p) <= longest]
+    if not pool:
+        return None
+    w = rng.choice(pool)
+    k = rng.randint(2, max(2, longest // len(w)))
+    return [x for x in w for _ in range(k)]
+
+
+def alive(m, syms, rng, n, again=0.3, tries=6, deep=8):
+    """A story of n symbols kept away from an answer the machine m itself never leaves once given (a broken bracket
+    stays broken): after every symbol, one is chosen among those after which a few random goings-on of m all keep the
+    answer it gives (any symbol, if every one leads there). On a rule with such an answer a random long story falls into it
+    within a few symbols, and then checks nothing; this one goes where the machine still has something to say."""
+    A = len(syms)
+    def final(state):
+        y = state[1]
+        for _ in range(tries):
+            s = state
+            for _ in range(deep):
+                s, _ = m.next(s, rng.randrange(A))
+                if s[1] != y:
+                    return False
+        return True
+    state, w, last = m.start(), [], None
+    for _ in range(n):
+        ok = [a for a in range(A) if not final(m.next(state, a)[0])] or list(range(A))
+        a = last if last in ok and rng.random() < again else rng.choice(ok)
+        state, _ = m.next(state, a)
+        w.append(syms[a])
+        last = a
+    return w
+
+
 def story(syms, rng, n, again=0.3):
     """A story of n symbols in which a symbol is often repeated: tops and bottoms are reached."""
     w, last = [], None
@@ -1539,7 +1582,12 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
             if whole and row >= SURE:
                 break
             # (every other long story with no symbol repeated on purpose: as the machine will be used)
-            w, why = story(syms, rng, rng.randint(*LONG) if whole else 24, 0.3 if row % 2 else 0.0), "a check"
+            # (of every three long stories one is kept away from an answer the machine never leaves, see alive, and one
+            # is a story with a rare answer drawn out, see pumped)
+            w, why = (alive(m, syms, rng, rng.randint(*LONG)) if whole and row % 3 == 1 else
+                      pumped(H, rng, LONG[1]) if whole and row % 3 == 2 else None), "a check"
+            if w is None:
+                w = story(syms, rng, rng.randint(*LONG) if whole else 24, 0.0)
         elif len(w) < 24:  # (seen after every symbol, a longer story costs the same: it goes on)
             w = w + story(syms, rng, 24 - len(w))
         asked += 1
