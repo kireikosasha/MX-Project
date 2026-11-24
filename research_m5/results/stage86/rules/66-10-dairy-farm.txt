@@ -1,0 +1,8 @@
+2 parts: a level of 3; a counter; 101 bits
+    part 0, a level of 3 (0 to 2). milk: +1; calf: -1; truck: to 0
+    part 1, a counter. storm: +1; repair: to 0
+    milk: the display stays
+    calf: the display stays
+    storm: the display stays
+    repair: the display stays
+    truck: the label shown is fair and part 0 is 1 and part 1 is zero -> good; the label shown is fair and part 0 is 1 and part 1 is above zero -> poor; the label shown is fair and part 0 is 2 and part 1 is zero -> good; the label shown is fair and part 0 is 2 and part 1 is above zero -> poor; the label shown is good and part 0 is 1 and part 1 is zero -> prime; the label shown is good and part 0 is 1 and part 1 is above zero -> fair; the label shown is good and part 0 is 2 and part 1 is zero -> prime; the label shown is good and part 0 is 2 and part 1 is above zero -> fair; the label shown is poor and part 0 is 1 and part 1 is zero -> fair; the label shown is poor and part 0 is 2 and part 1 is zero -> fair; the label shown is prime and part 0 is 1 and part 1 is above zero -> good; the label shown is prime and part 0 is 2 and part 1 is above zero -> good; otherwise the display stays

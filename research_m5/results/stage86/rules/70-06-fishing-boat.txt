@@ -1,0 +1,5 @@
+2 states + a level of 4 (steps -1..1, held at the ends, or set), the answer is the first number itself
+    cast         states 0>1 1>1   numbers by state (0) (0)
+    haul         states 0>0 1>0   numbers by state (0) (1)
+    gull         states 0>0 1>1   numbers by state (-1) (-1)
+    port         states 0>0 1>1   numbers by state (100) (100)
