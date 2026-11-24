@@ -112,6 +112,7 @@ def main():
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--watch", action="store_true", help="the watcher's protocol: the answer of every beginning of a story "
                     "taught on is taught too, and (as the learner's 40 questions) 40 more stories of length 8-32 per --teach")
+    ap.add_argument("--strict", action="store_true", help="with --folder: also every story up to a length and long stories kept alive (worlds/strict.py)")
     ap.add_argument("--folder", help="sealed families (folder/NN-name/family.py with ALPHABET and answer) instead of the named ones")
     a = ap.parse_args()
     if a.folder:  # the families of a sealed pool, loaded as sealed_run.py loads them
@@ -140,6 +141,14 @@ def main():
             tr = random.Random(7)
             labels = sorted({oracle([tr.choice(syms) for _ in range(tr.randint(1, 30))]) for _ in range(5000)})
             tests = {str(L): stories(syms, oracle, random.Random(1000 + L), a.test, L, L) for L in (20, 100, 500)}
+            if a.strict:  # (worlds/strict.py: every story up to a length, and long stories kept away from a final answer)
+                import itertools
+                from worlds import strict
+                short = {2: 14, 3: 9, 4: 8}.get(len(syms), 7)
+                tests["every<=%d" % short] = [(list(w), oracle(list(w))) for n in range(1, short + 1) for w in itertools.product(syms, repeat=n)]
+                for L in (100, 500):
+                    rs = random.Random(5)
+                    tests[f"alive{L}"] = [(w, oracle(w)) for w in (strict.alive(oracle, syms, L, rs) for _ in range(60))]
             fresh = stories(syms, oracle, random.Random(99), a.test, 1, a.longest)
             make = lambda rng, n: stories(syms, oracle, rng, n, 1, a.longest)
         sid = {c: i for i, c in enumerate(syms)}

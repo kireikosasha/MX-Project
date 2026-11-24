@@ -1,0 +1,4 @@
+1 part: a counter; 26 bits
+    part 0, a counter. 0: -1; 1 (and the label stays): -1; 1 (and the label changes): +1
+    0: the label shown is no and part 0 is above zero -> yes; the label shown is yes and part 0 is zero -> no; otherwise the display stays
+    1: the label shown is yes -> no; otherwise the display stays

@@ -1,0 +1,5 @@
+2 parts: a counter; a counter; 38 bits
+    part 0, a counter. a: to 0; b: +1
+    part 1, a counter. a: +1; b: to 0
+    a: the label shown is no and part 0 is above zero -> yes; the label shown is yes and part 0 is above zero -> no; otherwise the display stays
+    b: the label shown is no and part 1 is above zero -> yes; the label shown is yes and part 1 is above zero -> no; otherwise the display stays
