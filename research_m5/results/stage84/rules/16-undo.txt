@@ -1,0 +1,5 @@
+1 part: a stack; 49 bits
+    part 0, a stack, the last put on top. x: a 'x' goes on top; y: a 'y' goes on top; undo: the top one is taken off
+    x: the label shown is x -> the same; otherwise x
+    y: the label shown is y -> the same; otherwise y
+    undo: the label shown is x and under the top of stack 0 is nobody -> empty; the label shown is x and under the top of stack 0 is a 'y' -> y; the label shown is y and under the top of stack 0 is nobody -> empty; the label shown is y and under the top of stack 0 is a 'x' -> x; otherwise the display stays

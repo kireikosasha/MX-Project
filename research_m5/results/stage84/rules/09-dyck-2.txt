@@ -1,0 +1,6 @@
+1 part: a stack; 83 bits
+    part 0, a stack, the last put on top. (: a '(' goes on top; ): the top one is taken off; [: a '[' goes on top; ]: the top one is taken off
+    (: the label shown is balanced -> open; otherwise the display stays
+    ): the label shown is balanced and on top of stack 0 is nobody -> broken; the label shown is open and on top of stack 0 is a '(', the only one -> balanced; the label shown is open and on top of stack 0 is a '[', the only one -> broken; the label shown is open and on top of stack 0 is a '[', with more under it -> broken; otherwise the display stays
+    [: the label shown is balanced -> open; otherwise the display stays
+    ]: the label shown is balanced and on top of stack 0 is nobody -> broken; the label shown is open and on top of stack 0 is a '(', the only one -> broken; the label shown is open and on top of stack 0 is a '(', with more under it -> broken; the label shown is open and on top of stack 0 is a '[', the only one -> balanced; otherwise the display stays

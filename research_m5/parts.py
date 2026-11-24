@@ -49,7 +49,7 @@ SDEPTH = 30  # (in the search) a stack holds at most so many; the stack of the m
 STACK_READS = ["top", "under", "topn"]  # who is on top; who is under it; who is on top and whether one or more are there
 LINE_READS = ["front", "back", "len", "count1", "count2"]
 OTHERS = 3  # so many other explanations of a symbol, the next cheapest, are kept as rivals of the one told
-SHARED = 8  # so many of them are weighed again with the parts other symbols read already paid for
+SHARED = 64  # so many of them are weighed again with the parts other symbols read already paid for
 SURE = 10  # the machine is sure when no rival is left and it answered the last so many stories asked, long ones
 LONG = (60, 120)  # the last stories asked are of so many symbols
 EARLY = (5, 8)  # (give_up) the learner gives up when its first 5 questions, or 7 of its first 8, all refuted its machine
@@ -732,7 +732,11 @@ def stack_parts(V, steps, c, y, cache, late=lambda: False, most=1 + 3):
         left, _ = untold(F, c, y)
         for j in np.nonzero(left == 0)[0]:
             found.append((price(ts[j], W) + len(np.unique(c * 16 + F[j])) * nlab + 0.5, ts[j], how))
-    return sorted(found, key=lambda x: x[0])[:most]
+    found.sort(key=lambda x: x[0])
+    # (and the cheapest of those every symbol has a part in: on short stories a stack moved by fewer symbols explains
+    # one symbol as well, but only one that all of them move can be the one stack all the symbols read)
+    whole = [f for f in found if len(f[1][3]) == len(V.H.syms)][:64]
+    return found[:most] + [f for f in whole if f not in found[:most]]
 
 
 class Parts:
@@ -1079,12 +1083,13 @@ def explain(V, log=print, before=None, late=lambda: False):
         def better(cand):
             cands.append(cand)
             best[0] = cand if best[0] is None or cand[0] < best[0][0] else best[0]
-        kept = {}
+        kept, allc = {}, {}
         for use_ctx in (False, True):
             if use_ctx and not (ctx[steps] != ctx[steps][0]).any():
                 continue
             c = ctx[steps] if use_ctx else np.zeros(len(steps), int)
             extra = 2.0 if use_ctx else 0.0
+            allc[use_ctx] = (c, extra)
             if untold(np.zeros((1, len(y)), np.int8), c, y)[0][0] == 0:
                 better((extra + T0.rows(c), use_ctx, []))
                 continue
@@ -1177,15 +1182,15 @@ def explain(V, log=print, before=None, late=lambda: False):
             if adds is None:
                 adds = addresses(V, base)
                 log(f"  {len(adds)} addresses for rows of flags ({time.time() - t0:.1f} s)")
-            for use_ctx, (c, extra, tel, T3) in kept.items():
+            for use_ctx, (c, extra) in allc.items():  # (with what is seen or without, whatever was found before)
                 for pr, t, how in flag_rows(V, adds, steps, c, y, late):
                     better((pr + extra, use_ctx, [(t, how)]))
         if (best[0] is None or best[0][0] > least) and not late():  # a line, first come first served
-            for use_ctx, (c, extra, tel, T3) in kept.items():
+            for use_ctx, (c, extra) in allc.items():  # (with what is seen or without, whatever was found before)
                 for pr, t, how in line_parts(V, steps, c, y, lines, late):
                     better((pr + extra, use_ctx, [(t, how)]))
         if (best[0] is None or best[0][0] > least) and not late():  # a stack, the last put on top
-            for use_ctx, (c, extra, tel, T3) in kept.items():
+            for use_ctx, (c, extra) in allc.items():  # (with what is seen or without, whatever was found before)
                 for pr, t, how in stack_parts(V, steps, c, y, stacks, late):
                     better((pr + extra, use_ctx, [(t, how)]))
         if best[0] is not None:
@@ -1195,20 +1200,39 @@ def explain(V, log=print, before=None, late=lambda: False):
             every[a] = [best[0]] + list({str(c[1:]): c for c in reversed(rest[:SHARED])}.values())
         log(f"  {H.syms[a]}: {'not explained' if best[0] is None else '%.0f bits' % best[0][0]} ({time.time() - t0:.1f} s)")
     # a part that another symbol reads is in the machine already: it is not paid for twice (Rissanen: the description
-    # of the whole machine is what is short, not of each symbol on its own)
-    for _ in range(2):
+    # of the whole machine is what is short, not of each symbol on its own). The explanations are chosen together: the
+    # length of all the parts read, each once, and of every symbol's table; a move puts one symbol on another of its
+    # explanations, or every symbol that can read some part on its explanation that reads it
+    own = lambda cand: cand[0] - sum(price(p, W) for p in chain(cand[2]))
+    def total(pick):
+        used = set()
+        for cand in pick.values():
+            used |= chain(cand[2])
+        return sum(own(c) for c in pick.values()) + sum(price(p, W) for p in used)
+    best_total = total(found)
+    for _ in range(4):
+        moves = []
         for a in every:
-            used = set()
-            for b, (_, _, specs) in found.items():
-                if b != a:
-                    used |= chain(specs)
-            share = lambda cand: cand[0] - sum(price(p, W) for p in chain(cand[2]) & used)
-            pick = min(every[a], key=lambda cand: (share(cand), cand[0]))
-            if pick[1:] != found[a][1:]:
-                others[a] = [found[a]] + [c for c in others.get(a, []) if c[1:] != pick[1:]][:OTHERS - 1]
-                found[a] = pick
+            for cand in every[a]:
+                if cand[1:] != found[a][1:]:
+                    moves.append({**found, a: cand})
+        shared = {}
+        for a in every:
+            for cand in every[a]:
+                for p in chain(cand[2]):
+                    shared.setdefault(p, {}).setdefault(a, []).append(cand)
+        for p, by in shared.items():
+            if len(by) > 1:
+                moves.append({**found, **{a: min(cs, key=own) for a, cs in by.items()}})
+        better_ = min(moves, key=total, default=None)
+        if better_ is None or total(better_) >= best_total - 1e-9:
+            break
+        for a in found:
+            if better_[a][1:] != found[a][1:]:
+                others[a] = [found[a]] + [c for c in others.get(a, []) if c[1:] != better_[a][1:]][:OTHERS - 1]
+        found, best_total = dict(better_), total(better_)
     m, ok = machine(V, found)
-    m.others = others
+    m.others, m.every = others, every
     return m, len(found) == len(H.syms)
 
 

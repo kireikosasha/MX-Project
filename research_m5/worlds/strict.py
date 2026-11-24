@@ -50,6 +50,16 @@ def check(m, syms, rule, rng, n_long=60):
         ws = [alive(rule, syms, L, rng) for _ in range(n_long)]
         out[L] = 100 * sum(m.run(w) == rule(w) for w in ws) / len(ws)
         out[f"common{L}"] = 100 * max(sum(rule(w) == y for w in ws) for y in {rule(w) for w in ws}) / len(ws)
+        # and the step into a final answer, deep in a long story (a wrong bracket after many open ones)
+        into = []
+        for w in ws:
+            for _ in range(20):
+                cut = rng.randint(L // 2, L - 1)
+                last = [s for s in syms if sink(rule, syms, w[:cut] + [s], rng)]
+                if last:
+                    into.append(w[:cut] + [rng.choice(last)])
+                    break
+        out[f"into{L}"] = 100 * sum(m.run(v) == rule(v) for v in into) / len(into) if into else None
     return out
 
 
@@ -68,7 +78,8 @@ def main():
         r = check(m, syms, rule, random.Random(5))
         right, total, short = r["short"]
         print(f"{name:22s} every story up to {short:2d}: {right}/{total} ({100 * right / total:6.2f} %)   long stories kept alive, "
-              f"length 100 / 500: {r[100]:5.1f} / {r[500]:5.1f} %  (the commonest answer there: {r['common100']:.0f} / {r['common500']:.0f} %)", flush=True)
+              f"length 100 / 500: {r[100]:5.1f} / {r[500]:5.1f} %  (the commonest answer there: {r['common100']:.0f} / {r['common500']:.0f} %)" +
+              ("" if r["into100"] is None else f"   stepping at last into a final answer, 100 / 500: {r['into100']:5.1f} / {r['into500']:5.1f} %"), flush=True)
 
 
 if __name__ == "__main__":

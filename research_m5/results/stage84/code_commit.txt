@@ -1,0 +1,4 @@
+cells.py, parts.py, sealed_run.py: 051106e (the code of stage 82 and the stack)
+flags: as in results/stage83/code_commit.txt; one thread a process, four at once.
+strict.txt: worlds/strict.py (with the long stories that step at last into a final answer, added after the run) on the machines of this run.
+Before the run: the stack was tried by itself on 16-undo (it failed when a long story took the stack deeper than the search held; the search was then made to keep the top 30 and the true depth), on 09-dyck-2, and for five minutes on 15-dyck-3 (stopped before it ended; nothing seen of it).
