@@ -295,7 +295,7 @@ def reading_at(vals, parts, j, how):
         return (int(vals[j]) >> int(vals[parts.index(parts[j][5][0])])) & 1
     if how in LINE_READS:
         return int(LINE_READ[how][int(vals[j])])
-    if how in STACK_READS:
+    if parts[j][0] == "stack":  # (a stack's "top" is who is on top, not "at the top" of a level)
         return stack_read(int(vals[j]), how)
     return int(read_of(vals[j], parts[j], how))
 
@@ -841,13 +841,13 @@ class Parts:
             return f"part {j} is {('below', 'level with', 'above')[v]} part {how[1]}"
         if how == "here":
             return f"the flag of part {j} where part {self.guard[j]} points is {'up' if v else 'down'}"
-        if how in ("top", "under"):
+        if self.parts[j][0] == "stack" and how in ("top", "under"):
             return f"{'on top of' if how == 'top' else 'under the top of'} stack {j} is {self.kind_name(j, v) if v else 'nobody'}"
-        if how == "topn":
+        if self.parts[j][0] == "stack" and how == "topn":
             return f"on top of stack {j} is {self.kind_name(j, v // 3) if v // 3 else 'nobody'}" + ("" if v % 3 == 0 else ", the only one" if v % 3 == 1 else ", with more under it")
-        if how in ("top", "under"):
+        if self.parts[j][0] == "stack" and how in ("top", "under"):
             return f"{'on top of' if how == 'top' else 'under the top of'} stack {j} is {self.kind_name(j, v) if v else 'nobody'}"
-        if how == "topn":
+        if self.parts[j][0] == "stack" and how == "topn":
             return f"on top of stack {j} is {self.kind_name(j, v // 3) if v // 3 else 'nobody'}" + ("" if v % 3 == 0 else ", the only one" if v % 3 == 1 else ", with more under it")
         if how in ("front", "back"):
             return f"the {'first' if how == 'front' else 'last'} in line {j} is {self.kind_name(j, v) if v else 'nobody (it is empty)'}"
@@ -912,7 +912,7 @@ class Parts:
                 return f"(p{j} > p{how[1]}) - (p{j} < p{how[1]}) + 1"
             if how == "here":
                 return f"(p{j} >> p{self.guard[j]}) & 1"
-            if how in STACK_READS:  # (the stack as a list, the top last)
+            if t[0] == "stack":  # (the stack as a list, the top last)
                 ks = {name: k for (jj, k), name in kinds.items() if jj == j}
                 top = f"({q(ks)}[p{j}[-1]] if p{j} else 0)"
                 if how == "top":
@@ -1420,7 +1420,7 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
     when no rival is left, no row is lacking and the last SURE long stories were answered rightly.
     Returns the machine, the number of questions asked, the stories heard, and whether every symbol was explained.
     give_up: the learner stops when some symbol is not explained; when every one of its first EARLY[0] questions, or
-    all but one of its first EARLY[1], refuted the machine it kept (no few parts explain this rule: every story asked
+    all but one of its first EARLY[1], refuted the parts of the machine it kept (not only a row of a table) (no few parts explain this rule: every story asked
     shows it); or when so many questions are asked and the machine has not yet answered SURE // 2 stories in a row.
     Another learner may then take the rest of the questions."""
     log = (lambda *a: None) if quiet else (lambda *a: print(*a, flush=True))
@@ -1469,8 +1469,11 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
             H.trace.append((why[:8], True, m.bits))
             log(f"  asked {asked} ({why}): answered rightly")
             continue
-        run, row, wrongs = 0, 0, wrongs + 1
+        run, row, before = 0, 0, m
         m, whole = explained(H, lambda *a: None, m, late)
+        # (a story that only fills a row of a table the same parts read tells nothing against the parts: what counts
+        # toward giving up early is a story after which the parts themselves are not the same)
+        wrongs += not (whole and set(m.parts) == set(before.parts) and m.summed == before.summed)
         H.trace.append((why[:8], False if whole else None, m.bits))
         log(f"  asked {asked} ({why}): {'answered wrongly' if not right else 'a thing not seen before'}; kept {m}\n{m.table()}")
     m.sure = bool(whole and row >= SURE)
