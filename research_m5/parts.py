@@ -45,7 +45,7 @@ BIG = 120  # (a counter is kept below this: values are held in a byte)
 ROWS = 7  # a row of flags is one flag for each value of a circle or level of at most so many values
 FLAG_ACTS = [("flag", 1), ("flag", 0), ("flag", -1)]  # raise, lower, turn over the flag where the address points
 SWITCHES = 8  # so many plain parts of two values are tried as what turns the way an address moves
-QLEN = 5  # a line holds at most so many, of at most three kinds (each kind is brought by one symbol)
+QLEN = 6  # (in the search) the first so many of a line are held, and how many there are; the line itself has no end
 SDEPTH = 30  # (in the search) a stack holds at most so many; the stack of the machine found holds any number
 STACK_READS = ["top", "under", "topn"]  # who is on top; who is under it; who is on top and whether one or more are there
 LINE_READS = ["front", "back", "len", "count1", "count2"]
@@ -296,8 +296,8 @@ def reading_at(vals, parts, j, how):
         return (vals[j] > vals[how[1]]) - (vals[j] < vals[how[1]]) + 1
     if how == "here":  # (a row of flags: the flag where its address points)
         return (int(vals[j]) >> int(vals[parts.index(parts[j][5][0])])) & 1
-    if how in LINE_READS:
-        return int(LINE_READ[how][int(vals[j])])
+    if parts[j][0] == "line":
+        return line_read(vals[j], how)
     if parts[j][0] == "stack":  # (a stack's "top" is who is on top, not "at the top" of a level)
         return stack_read(int(vals[j]), how)
     return int(read_of(vals[j], parts[j], how))
@@ -564,25 +564,27 @@ def flag_rows(V, adds, steps, c, y, late=lambda: False, most=1 + 3, chunk=20000)
 
 
 def _lines():
-    """Every line of at most QLEN, of kinds 1 to 3, as a number: a leading 1 and then a base-4 digit for everyone in it,
-    the first come first (0 is the empty line too). The tables: the line after every operation, and what is read."""
+    """The first QLEN of a line, of kinds 1 to 3 (0: someone not held, beyond the first QLEN), as a number: a leading 1
+    and then a base-4 digit for everyone, the first come first (0 is the empty line too). The tables: the first QLEN
+    after every operation, and what is read of them."""
     M = 4 ** (QLEN + 1)
     code = lambda t: int("1" + "".join(str(k) for k in t), 4)
     every = [()]
     for n in range(1, QLEN + 1):
-        every += [t + (k,) for t in every if len(t) == n - 1 for k in (1, 2, 3)]
-    names = ["none"] + [f"push{k}" for k in (1, 2, 3)] + [f"move{k}" for k in (1, 2, 3)] + ["popf", "popb", "clear"] + \
+        every += [t + (k,) for t in every if len(t) == n - 1 for k in (0, 1, 2, 3)]
+    names = ["none"] + [f"push{k}" for k in (0, 1, 2, 3)] + [f"move{k}" for k in (1, 2, 3)] + ["popf", "popb", "clear"] + \
             [f"drop{k}" for k in (1, 2, 3)]
     ops = np.tile(np.arange(M, dtype=np.int16), (len(names), 1))
     reads = {h: np.zeros(M, np.int16) for h in LINE_READS}
     for t in every:
         v = code(t)
         after = {"none": t, "popf": t[1:], "popb": t[:-1], "clear": ()}
-        for k in (1, 2, 3):
+        for k in (0, 1, 2, 3):
             after[f"push{k}"] = t + (k,) if len(t) < QLEN else t
-            rest = tuple(x for x in t if x != k)
-            after[f"move{k}"] = rest + (k,)
-            after[f"drop{k}"] = rest
+            if k:
+                rest = tuple(x for x in t if x != k)
+                after[f"move{k}"] = (rest + (k,))[:QLEN]
+                after[f"drop{k}"] = rest
         for i, nm in enumerate(names):
             ops[i, v] = code(after[nm])
         reads["front"][v], reads["back"][v], reads["len"][v] = (t[0] if t else 0), (t[-1] if t else 0), len(t)
@@ -620,20 +622,72 @@ def line_forms(V):
 
 
 def run_lines(ts, V):
-    """The line of many line parts at every beginning heard (as numbers: see _lines)."""
+    """The line of many line parts at every beginning heard, for the search: its first QLEN (as numbers: see _lines)
+    and how many there are."""
     W, par = len(V.slots), V.par
     opid = np.zeros((len(ts), W + 1), np.int16)
     for i, t in enumerate(ts):
         for sl, (what, k) in zip(t[3], t[4]):
             opid[i, sl] = LINE_OP[what + (str(k) if what in ("push", "move", "drop") else "")]
-    out = np.zeros((len(ts), len(par)), np.int16)
-    rows = np.arange(len(ts))
+    out, n = np.zeros((len(ts), len(par)), np.int16), np.zeros((len(ts), len(par)), np.int16)
+    popf, popb, clear, push0 = LINE_OP["popf"], LINE_OP["popb"], LINE_OP["clear"], LINE_OP["push0"]
+    pushes = np.zeros(len(LINE_OP), bool)
+    pushes[[LINE_OP[f"push{k}"] for k in (1, 2, 3)]] = True
     for i in range(1, len(par)):
-        v = LINE_OPS[opid[:, V.sslot[i]], out[:, par[i]]] if V.sslot[i] >= 0 else out[:, par[i]]
-        if V.eslot[i] >= 0:
-            v = LINE_OPS[opid[:, V.eslot[i]], v]
-        out[:, i] = v
-    return out
+        v, d = out[:, par[i]], n[:, par[i]]
+        for sl in (V.sslot[i], V.eslot[i]):
+            if sl < 0:
+                continue
+            o = opid[:, sl]
+            w = LINE_OPS[o, v]
+            # (beyond the first QLEN: a push is only counted; the first sent away lets one not held come forward;
+            # the last sent away was not held)
+            w = np.where((o == popf) & (d > QLEN), LINE_OPS[push0, w], np.where((o == popb) & (d > QLEN), v, w))
+            gone = LINE_READ["len"][v] - LINE_READ["len"][w]
+            d = np.where(pushes[o], d + 1, np.where(o == clear, 0, np.where((o == popf) | (o == popb), np.maximum(d - 1, 0),
+                                                                          np.maximum(d - gone, 0))))
+            v = w
+        out[:, i], n[:, i] = v, d
+    return out, n
+
+
+def run_line_exact(t, V):
+    """One line part at every beginning heard, exactly: the line as a tuple of kinds, the first come first."""
+    par = V.par
+    acts = dict(zip(t[3], t[4]))
+    out = [()] * len(par)
+    for i in range(1, len(par)):
+        v = out[par[i]]
+        for sl in (V.sslot[i], V.eslot[i]):
+            if sl >= 0 and sl in acts:
+                v = line_step(v, *acts[sl])
+        out[i] = v
+    arr = np.empty(len(par), dtype=object)
+    arr[:] = out
+    return arr
+
+
+def line_step(t, what, k):
+    t = tuple(t) if isinstance(t, tuple) else ()
+    if what == "push":
+        return t + (k,)
+    if what == "move":
+        return tuple(x for x in t if x != k) + (k,)
+    if what == "drop":
+        return tuple(x for x in t if x != k)
+    return t[1:] if what == "popf" else t[:-1] if what == "popb" else ()
+
+
+def line_read(t, how):
+    """What is read of a line (a tuple): as the search reads it (who is last is not known beyond the first QLEN)."""
+    t = tuple(t) if isinstance(t, tuple) else ()
+    if how == "front":
+        return t[0] if t else 0
+    if how == "back":
+        return t[-1] if t and len(t) <= QLEN else 0
+    if how == "len":
+        return min(len(t), QLEN)
+    return t[:QLEN].count(int(how[-1]))
 
 
 def line_parts(V, steps, c, y, cache, late=lambda: False, most=1 + 3):
@@ -642,15 +696,19 @@ def line_parts(V, steps, c, y, cache, late=lambda: False, most=1 + 3):
     W, par = len(V.slots), V.par
     if "ts" not in cache:
         cache["ts"] = line_forms(V)
-        cache["V"] = run_lines(cache["ts"], V) if cache["ts"] else np.zeros((0, len(par)), np.int16)
-    ts, L = cache["ts"], cache["V"]
+        cache["V"] = run_lines(cache["ts"], V) if cache["ts"] else (np.zeros((0, len(par)), np.int16),) * 2
+    ts, (L, Ln) = cache["ts"], cache["V"]
     nlab = math.log2(max(2, len(set(y.tolist()))))
     found = []
-    at = L[:, par[steps]]
+    at, many = L[:, par[steps]], Ln[:, par[steps]]
     for how in LINE_READS:
         if late():
             break
         F = LINE_READ[how][at].astype(np.int8)
+        if how == "back":
+            F = np.where(many > QLEN, 0, F).astype(np.int8)
+        if how == "len":
+            F = np.minimum(many, QLEN).astype(np.int8)
         left, _ = untold(F, c, y)
         for j in np.nonzero(left == 0)[0]:
             found.append((price(ts[j], W) + len(np.unique(c * 16 + F[j])) * nlab + 0.5, ts[j], how))
@@ -767,12 +825,11 @@ class Parts:
                     v = max(int(v), 1) * 4 + k if what == "push" else (v // 4 if v > 1 else v) if what == "pop" else 1
                 out.append(v)
                 continue
-            if kind == "line":
+            if kind == "line":  # (the whole line, as a tuple of kinds)
                 for sl in base:
                     if sl in touched:
-                        what, k = chosen[touched.index(sl)]
-                        v = int(LINE_OPS[LINE_OP[what + (str(k) if what in ("push", "move", "drop") else "")], v])
-                out.append(v)
+                        v = line_step(v, *chosen[touched.index(sl)])
+                out.append(v if isinstance(v, tuple) else ())
                 continue
             if kind == "row":  # (the flag where the address points, as it was before this symbol)
                 acts = [chosen[touched.index(sl)] for sl in base if sl in touched]
@@ -891,7 +948,7 @@ class Parts:
             return words + ("no part" if all(not ctxs for ctxs, _, _, _ in self.rules) else
                             f"no part (the display by what it shows and the symbol); {self.bits:.0f} bits")
         return words + f"{len(self.parts)} part{'s' if len(self.parts) != 1 else ''}: " + \
-            "; ".join((f"a row of {t[1]} flags" if t[0] == "row" else f"a line of at most {t[1]}" if t[0] == "line" else "a stack" if t[0] == "stack" else "a whole number" if t[0] == "number" else f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}") +
+            "; ".join((f"a row of {t[1]} flags" if t[0] == "row" else "a line" if t[0] == "line" else "a stack" if t[0] == "stack" else "a whole number" if t[0] == "number" else f"a {t[0]}{'' if t[0] == 'counter' else ' of %d' % t[1]}") +
                       ("" if t[5] is None or t[0] == "row" else " that takes what another holds" if t[5][1] == "gives" else " under a guard")
                       for t in self.parts) + f"; {self.bits:.0f} bits"
 
@@ -912,7 +969,7 @@ class Parts:
         for j, t in enumerate(self.parts):
             kind, n = t[0], t[1]
             what = {"counter": "a counter, not below zero", "number": "a whole number", "level": f"a level from 0 to {n - 1}", "circle": f"a circle of {n}",
-                    "row": f"a row of {n} flags, one for each value of p{self.guard[j]}", "line": f"a line of at most {n}, first come first served",
+                    "row": f"a row of {n} flags, one for each value of p{self.guard[j]}", "line": "a line, first come first served",
                     "stack": "a stack, the last put on top"}[kind]
             lines.append(f"    p{j} = {'[]' if kind in ('line', 'stack') else '0'}  # {what}")
         def read(j, how):
@@ -929,14 +986,13 @@ class Parts:
                 if how == "under":
                     return f"({q(ks)}[p{j}[-2]] if len(p{j}) > 1 else 0)"
                 return f"({top} * 3 + min(len(p{j}), 2))"
-            if how in ("front", "back"):
+            if how in ("front", "back"):  # (as the search reads it: who is last is not known beyond the first QLEN)
                 ks = {name: k for (jj, k), name in kinds.items() if jj == j}
-                at = "0" if how == "front" else "-1"
-                return f"({q(ks)}[p{j}[{at}]] if p{j} else 0)"
+                return f"({q(ks)}[p{j}[0]] if p{j} else 0)" if how == "front" else f"({q(ks)}[p{j}[-1]] if 0 < len(p{j}) <= {QLEN} else 0)"
             if how == "len":
-                return f"len(p{j})"
+                return f"min(len(p{j}), {QLEN})"
             if how in ("count1", "count2"):
-                return f"p{j}.count({q(kinds.get((j, int(how[-1])), ''))})"
+                return f"p{j}[:{QLEN}].count({q(kinds.get((j, int(how[-1])), ''))})"
             if how == "zero":
                 return f"int(p{j} >= 1)"
             if how in ("full", "value+", "value-"):
@@ -987,6 +1043,8 @@ class Parts:
                     if b >= 0 and kind not in ("row", "line"):
                         c.append(f"{read(self.guard[j], guard[1])} == {b}")
                     conds.append((" and ".join(c), act))
+                if kind in ("row", "line") and any(c for c, _ in conds):
+                    lines.append(f"            n{j} = p{j}")  # (what a move only at some reading leaves as it was)
                 if kind == "row":
                     for c, (_, x) in conds:
                         op = {1: "|", 0: "& ~", -1: "^"}[x]
@@ -995,7 +1053,7 @@ class Parts:
                 if kind == "line":
                     for c, (what, k) in conds:
                         nm = q(kinds.get((j, k), ""))
-                        expr = {"push": f"p{j} + [{nm}] if len(p{j}) < {n} else p{j}", "move": f"[x for x in p{j} if x != {nm}] + [{nm}]",
+                        expr = {"push": f"p{j} + [{nm}]", "move": f"[x for x in p{j} if x != {nm}] + [{nm}]",
                                 "drop": f"[x for x in p{j} if x != {nm}]", "popf": f"p{j}[1:]", "popb": f"p{j}[:-1]", "clear": "[]"}[what]
                         lines.append(f"            {'if ' + c + ': ' if c else ''}n{j} = {expr}")
                     continue
@@ -1036,8 +1094,8 @@ class Parts:
                 continue
             if kind == "line":
                 words = {"popf": "the first in line leaves", "popb": "the last in line leaves", "clear": "the line is emptied"}
-                lines.append(f"    part {j}, a line of at most {n}, first come first served. " + "; ".join(
-                    self.said(sl) + ": " + (f"{self.kind_name(j, x)} joins the back of the line (when there is room)" if what == "push" else
+                lines.append(f"    part {j}, a line, first come first served. " + "; ".join(
+                    self.said(sl) + ": " + (f"{self.kind_name(j, x)} joins the back of the line" if what == "push" else
                                             f"{self.kind_name(j, x)} goes to the back of the line (not twice)" if what == "move" else
                                             f"every {self.kind_name(j, x)} leaves the line" if what == "drop" else words[what])
                     for sl, (what, x) in zip(touched, chosen)))
@@ -1282,7 +1340,7 @@ def machine(V, found):
     vals = {}  # the values of the chosen parts at every beginning (a guarded part after its guard)
     for j, t in enumerate(chosen):
         if t[0] == "line":
-            vals[j] = run_lines([t], V)[0]
+            vals[j] = run_line_exact(t, V)
         elif t[0] == "stack":
             vals[j] = run_stack_exact(t, V)
         elif t[5] is None:
@@ -1305,7 +1363,7 @@ def machine(V, found):
         local = [(chosen.index(t), (how[0], chosen.index(how[1])) if isinstance(how, tuple) else how) for t, how in specs]
         table = {}
         for s in steps:
-            at = {j: int(vals[j][par[s]]) for j in vals}
+            at = {j: vals[j][par[s]] if vals[j].dtype == object else int(vals[j][par[s]]) for j in vals}
             key = (int(ctx[s]) if use_ctx else 0,) + tuple(reading_at(at, chosen, j, how) for j, how in local)
             if specs and valued(specs[0][1]):
                 ok = ok and int(eff[s]) == (key[1] if specs[0][1] == "value+" else -key[1])
