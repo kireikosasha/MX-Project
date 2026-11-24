@@ -54,6 +54,7 @@ SHARED = 64  # so many of them are weighed again with the parts other symbols re
 SURE = 10  # the machine is sure when no rival is left and it answered the last so many stories asked, long ones
 LONG = (60, 120)  # the last stories asked are of so many symbols
 EARLY = (5, 8)  # (give_up) the learner gives up when its first 5 questions, or 7 of its first 8, all refuted its machine
+SWELL = (8, 6, 1.5)  # (give_up) and when 6 of its last 8 questions refuted its machine and it grew half as long again in them
 
 
 class Heard:
@@ -1482,6 +1483,17 @@ def story(syms, rng, n, again=0.3):
     return w
 
 
+def swollen(trace):
+    """Whether SWELL[1] of the last SWELL[0] questions (the last of them too) refuted the machine kept, and it grew in
+    them to SWELL[2] times its length. trace: (what the question was for, answered rightly, the bits of the machine kept
+    after it), the first entry the machine before any question."""
+    w, k, f = SWELL
+    if len(trace) <= w:
+        return False
+    last = trace[-w:]
+    return sum(not r for _, r, _ in last) >= k and not trace[-1][1] and trace[-1][2] >= f * trace[-w - 1][2]
+
+
 def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=None):
     """The stories taught on (with the answers of all their beginnings, as a watcher sees them) and up to asks stories
     asked. A story is asked where it can tell something: the story on which a rival machine (see rivals) shows another
@@ -1491,7 +1503,10 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
     Returns the machine, the number of questions asked, the stories heard, and whether every symbol was explained.
     give_up: the learner stops when some symbol is not explained; when every one of its first EARLY[0] questions, or
     all but one of its first EARLY[1], refuted the parts of the machine it kept (not only a row of a table) (no few parts explain this rule: every story asked
-    shows it); or when so many questions are asked and the machine has not yet answered SURE // 2 stories in a row.
+    shows it); or when so many questions are asked and the machine has not yet answered SURE // 2 stories in a row;
+    or when SWELL[1] of its last SWELL[0] questions (the last among them) refuted its machine, and the machine kept is
+    SWELL[2] times as long as the one kept SWELL[0] questions before: a rule of a few parts that comes together stops
+    growing, a machine that grows with every story heard is learning the stories by heart, not the rule.
     Another learner may then take the rest of the questions."""
     log = (lambda *a: None) if quiet else (lambda *a: print(*a, flush=True))
     late = lambda: deadline is not None and time.time() > deadline
@@ -1505,7 +1520,8 @@ def learn(syms, oracle, data, rng, asks=40, quiet=False, deadline=None, give_up=
     log(f"  kept {m}\n{m.table()}")
     while asked < asks and not late():
         if give_up is not None and (not whole or asked == EARLY[0] and wrongs == asked or
-                                    asked == EARLY[1] and wrongs >= asked - 1 or asked >= give_up and best_run < SURE // 2):
+                                    asked == EARLY[1] and wrongs >= asked - 1 or asked >= give_up and best_run < SURE // 2 or
+                                    swollen(H.trace)):
             break
         w, why = None, "a check"
         if whole:
