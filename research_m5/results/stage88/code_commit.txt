@@ -1,0 +1,8 @@
+cells.py, parts.py, sealed_run.py, random_dfa.py: ecafb41 (written down before the run).
+flags: as in results/stage82/code_commit.txt (the flags of stage 74 and --sum --parts); one thread a process, four at once.
+random_automata/: the 20 automata, made by random_dfa.py (seed 8800) at the start of the run, not looked at before it.
+sets_results.txt: the 20 automata, the 15 languages of formal/ and the 19 worlds of worlds/, one run (the number after each name in the run's folders is dropped here).
+sets_strict.txt: worlds/strict.py on the machines of this run, after the families' run. Two faults of the script were mended first (a machine that is nothing; a long story of one length that never steps into a final answer); the check itself is the same.
+results.txt: the 72 open families; beside_stage82.txt: the same beside the record of stage 82.
+03-shuffle-6: killed for lack of memory, as at stage 87.
+The rivals of stage 87 (LSTM, transformer) were stopped before this run, so as not to share the machine.

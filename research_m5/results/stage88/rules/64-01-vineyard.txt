@@ -1,0 +1,7 @@
+2 parts: a level of 3; a level of 4; 68 bits
+    part 0, a level of 3 (0 to 2). sun: -1; pick: to 2
+    part 1, a level of 4 (0 to 3). sun: +1; rain: -1; frost: to 0
+    sun: the display stays
+    rain: the display stays
+    frost: the display stays
+    pick: the label shown is acacia and part 0 is zero and part 1 is 2 or more -> oak; the label shown is chestnut and part 0 is zero and part 1 is 2 or more -> acacia; the label shown is oak and part 0 is zero and part 1 is 2 or more -> chestnut; otherwise the display stays

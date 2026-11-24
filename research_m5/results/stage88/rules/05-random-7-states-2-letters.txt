@@ -1,0 +1,7 @@
+4 parts: a circle of 3; a level of 3 under a guard; a counter; a circle of 3; 86 bits
+    part 0, a circle of 3. b: +1; a (and the label stays): +1
+    part 1, a level of 3 (0 to 2). a (and the label changes): to 2; b (and the label stays), only while part 0 is below its top: -1
+    part 2, a counter. a (and the label changes): +1; b (and the label stays): to 0
+    part 3, a circle of 3. b: -1; a (and the label stays): -1
+    a: the label shown is no and part 0 is below its top and part 1 is below its top -> yes; the label shown is no and part 0 is below its top and part 1 is at its top -> yes; the label shown is yes and part 0 is at its top and part 1 is at its top -> no; otherwise the display stays
+    b: the label shown is no and part 2 is zero and part 3 is below its top -> yes; the label shown is no and part 2 is above zero and part 3 is below its top -> yes; the label shown is yes and part 2 is above zero and part 3 is at its top -> no; otherwise the display stays

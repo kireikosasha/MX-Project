@@ -74,12 +74,16 @@ def main():
             print(f"{name:22s} no machine")
             continue
         m = pickle.load(open(p, "rb"))
+        if m is None:  # (the learner found nothing)
+            print(f"{name:22s} no machine")
+            continue
         syms, rule = load(os.path.join(worlds, name, "family.py"))
         r = check(m, syms, rule, random.Random(5))
         right, total, short = r["short"]
         print(f"{name:22s} every story up to {short:2d}: {right}/{total} ({100 * right / total:6.2f} %)   long stories kept alive, "
               f"length 100 / 500: {r[100]:5.1f} / {r[500]:5.1f} %  (the commonest answer there: {r['common100']:.0f} / {r['common500']:.0f} %)" +
-              ("" if r["into100"] is None else f"   stepping at last into a final answer, 100 / 500: {r['into100']:5.1f} / {r['into500']:5.1f} %"), flush=True)
+              ("" if r["into100"] is None and r["into500"] is None else "   stepping at last into a final answer, 100 / 500: " +
+               " / ".join("  -  " if r[k] is None else f"{r[k]:5.1f}" for k in ("into100", "into500")) + " %"), flush=True)
 
 
 if __name__ == "__main__":
