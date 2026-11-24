@@ -991,7 +991,7 @@ class Parts:
                 top = "10 ** 9" if kind == "counter" else str(n - 1)
                 if len(conds) == 1 and not conds[0][0] and conds[0][1][0] in ("add", "set"):  # (one plain move: said plainly)
                     what, x = conds[0][1]
-                    w = f"p{j} + {x}" if x >= 0 or what != "add" else f"p{j} - {-x}"
+                    w = f"p{j} - {-x}" if what == "add" and x < 0 else f"p{j} + {x}"
                     lines.append(f"            n{j} = " + (str(n - 1 if x == "top" else x) if what == "set" else
                                  f"({w}) % {n}" if kind == "circle" else
                                  f"{w} if 0 <= {w} <= {top} else p{j}" if reject else
