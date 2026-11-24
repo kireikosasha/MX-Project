@@ -144,7 +144,7 @@ def main():
             if a.strict:  # (worlds/strict.py: every story up to a length, and long stories kept away from a final answer)
                 import itertools
                 from worlds import strict
-                short = {2: 14, 3: 9, 4: 8}.get(len(syms), 7)
+                short = {2: 14, 3: 9, 4: 8, 5: 7, 6: 7, 7: 6, 8: 6}.get(len(syms), 5)  # (as worlds/strict.py)
                 tests["every<=%d" % short] = [(list(w), oracle(list(w))) for n in range(1, short + 1) for w in itertools.product(syms, repeat=n)]
                 for L in (100, 500):
                     rs = random.Random(5)

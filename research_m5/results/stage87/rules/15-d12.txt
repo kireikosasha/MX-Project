@@ -1,0 +1,5 @@
+2 parts: a circle of 12; a counter; 49 bits
+    part 0, a circle of 12. a: +1; b: -1
+    part 1, a counter. b: -1; a (and the label stays): +1
+    a: the label shown is maybe and part 0 is zero -> no; the label shown is yes and part 0 is zero -> maybe; otherwise the display stays
+    b: the label shown is maybe and part 1 is zero -> yes; the label shown is yes and part 1 is zero -> no; otherwise the display stays

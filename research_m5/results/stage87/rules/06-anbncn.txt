@@ -1,0 +1,7 @@
+3 parts: a counter; a counter; a level of 6; 64 bits
+    part 0, a counter. b: +1
+    part 1, a counter. a: +1; b: -1
+    part 2, a level of 6 (0 to 5) (a move that does not fit is not made). a: +2; b: +3
+    a: the label shown is maybe and part 0 is above zero -> no; the label shown is yes and part 0 is above zero -> no; otherwise the display stays
+    b: the label shown is maybe and part 1 is zero -> no; the label shown is yes and part 1 is zero -> no; otherwise the display stays
+    c: the label shown is maybe and part 2 is below its top -> no; the label shown is maybe and part 2 is at its top -> yes; the label shown is yes and part 2 is at its top -> no; otherwise the display stays

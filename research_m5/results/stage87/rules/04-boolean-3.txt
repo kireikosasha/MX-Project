@@ -1,0 +1,7 @@
+1 part: a stack; 69 bits
+    part 0, a stack, the last put on top. 0: the top one is taken off; 1: the top one is taken off; &: a '&' goes on top; |: a '|' goes on top
+    0: the label shown is maybe and on top of stack 0 is nobody -> yes; the label shown is yes and on top of stack 0 is nobody -> no; otherwise the display stays
+    1: the label shown is maybe and on top of stack 0 is nobody -> yes; the label shown is yes and on top of stack 0 is nobody -> no; otherwise the display stays
+    ~: the label shown is yes -> no; otherwise the display stays
+    &: the label shown is yes -> no; otherwise the display stays
+    |: the label shown is yes -> no; otherwise the display stays

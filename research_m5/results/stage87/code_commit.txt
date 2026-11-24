@@ -1,0 +1,5 @@
+cells.py, parts.py, sealed_run.py: as at 002c459 (the code of stage 86, dde2e90; the 15 languages were written after it)
+flags: as in results/stage82/code_commit.txt (the flags of stage 74 and --sum --parts); one thread a process, four at once.
+worlds/strict.py at 002c459: every story up to 7 symbols for alphabets of 5 and 6, up to 6 for 7 and 8, up to 5 for more.
+03-shuffle-6: the process was killed for lack of memory (11.8 GB, the limit of the machine) - counted as not taken.
+strict.txt: worlds/strict.py on the machines of this run, after the run.
