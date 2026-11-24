@@ -1,2 +1,8 @@
-cells.py, parts.py, sealed_run.py: ddc98a0
-flags: as in results/stage81/code_commit.txt (the flags of stage 74 and --sum --parts); one thread a process, four at once.
+results.txt, beside_stage81.txt: cells.py, parts.py, sealed_run.py of ec3e876 (rows of flags, the line, a part paid for
+  once, the safety net when the table's last machine contradicts what was heard). The machine was restarted after 69 of
+  the 72 families; the other three (70-02, 70-06, 70-10) were run after it with the same code (the runner skips the
+  families already written).
+rows_only_results.txt, rows_only_beside_stage81.txt: the run with rows of flags alone, ddc98a0.
+flags of both: --minutes 30 --workers 1 --seconds 3 --shorten --reserve 21 --explore --frugal --slack 16 --guards
+  --build 12 --flags --cascades --keep --deadline --watch --warm --patience 30 --part 100000 --tour 24 --anchor 65
+  --far 100 --sum --parts; one thread a process, four processes at once.

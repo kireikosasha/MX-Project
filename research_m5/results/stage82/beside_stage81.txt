@@ -1,10 +1,19 @@
 72 families done
   stage 74  taken 51; exact 47; exact and sure 37; sure and below 99 at 100: []; sure and not exact: []; seconds 42628
   stage 81  taken 55; exact 55; exact and sure 46; sure and below 99 at 100: []; sure and not exact: []; seconds 35359
-  now       taken 56; exact 56; exact and sure 47; sure and below 99 at 100: []; sure and not exact: []; seconds 33513
-gained over stage 81: ['60-11-ferris-wheel']
-lost against stage 81: []
-sure now, not at stage 81: ['60-11-ferris-wheel']
-sure at stage 81, not now: []
-  58-02-parking-garage       now  53.0  46.3  50.3 not sure  7 q  1622 s table | 81:  53.0 not sure  5 q  1646 s | 6 states + a level of 5 (steps -2..2, held at the 
-  60-11-ferris-wheel         now 100.0 100.0 100.0 sure     17 q    22 s parts | 81:  13.7 not sure  7 q  1622 s | the number shown as a sum; 2 parts: a circle of 4;
+  now       taken 59; exact 57; exact and sure 47; sure and below 99 at 100: []; sure and not exact: []; seconds 33708
+gained over stage 81: ['58-02-parking-garage', '60-11-ferris-wheel', '66-01-brewery', '66-09-flower-shop', '70-08-carousel']
+lost against stage 81: ['53-06-train-station']
+sure now, not at stage 81: ['58-02-parking-garage', '60-11-ferris-wheel']
+sure at stage 81, not now: ['53-06-train-station']
+  53-02-ferry                now  53.7  42.0  42.3 not sure  9 q  1635 s parts | 81:  42.3 not sure  9 q  1621 s | 2 parts: a circle of 7; a circle of 12; 143 bits
+  53-06-train-station        now  92.7  88.7  80.0 not sure 20 q  1645 s parts | 81: 100.0 sure     36 q   118 s | the number shown as a sum; 2 parts: a counter; a l
+  58-02-parking-garage       now 100.0 100.0 100.0 sure     18 q    97 s parts | 81:  53.0 not sure  5 q  1646 s | the number shown as a sum; 2 parts: a line of at m
+  60-02-harbor-crane         now  72.7  49.7  46.3 not sure  8 q  1633 s parts | 81:  54.7 not sure  8 q  1621 s | the number shown as a sum; 3 parts: a counter; a l
+  60-04-recycling-plant      now  65.0  48.3  53.0 not sure 16 q  1646 s parts | 81:  40.7 not sure 16 q  1621 s | 4 parts: a circle of 7; a circle of 3; a line of a
+  60-11-ferris-wheel         now 100.0 100.0 100.0 sure     16 q    40 s parts | 81:  13.7 not sure  7 q  1622 s | the number shown as a sum; 2 parts: a circle of 4;
+  66-01-brewery              now  95.0  95.3  97.3 not sure 18 q  1693 s parts | 81:  94.7 not sure 18 q  1623 s | 5 parts: a circle of 3; a circle of 3; a level of 
+  66-08-tram-depot           now  31.3  22.3  25.0 not sure  7 q  1647 s parts | 81:  26.0 not sure  7 q  1621 s | 4 parts: a circle of 6; a circle of 12; a circle o
+  66-09-flower-shop          now  97.0  97.7  96.7 not sure 29 q  1679 s parts | 81:  89.0 not sure 29 q  1626 s | 3 parts: a level of 6; a counter; a counter; 122 b
+  70-08-carousel             now 100.0 100.0 100.0 not sure 17 q  1621 s parts | 81:   8.3 not sure 15 q  1621 s | the number shown as a sum; 3 parts: a circle of 2;
+  70-09-archive              now  51.3   3.3   0.0 not sure  9 q  1635 s parts | 81:  59.0 not sure  9 q  1621 s | the number shown as a sum; 2 parts: a level of 7; 

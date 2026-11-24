@@ -1,0 +1,7 @@
+the number shown as a sum; 2 parts: a line of at most 5; a counter; 77 bits
+    part 0, a line of at most 5, first come first served. leave: the first in line leaves; tow: every a 'van' leaves the line; car (and the number goes down by 1): a 'car' joins the back of the line (when there is room); van (and the number goes down by 2): a 'van' joins the back of the line (when there is room)
+    part 1, a counter. tow: to 0; van (and the number goes down by 2): +2; leave (and the number goes up by 2): -2
+    car: the number shown is 0 -> +0; otherwise -1
+    van: the number shown is 2 or more -> -2; otherwise the display stays
+    leave: the first in line 0 is a 'car' -> +1; the first in line 0 is a 'van' -> +2; otherwise the display stays
+    tow: the number goes up by what part 1 holds
