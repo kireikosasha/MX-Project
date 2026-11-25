@@ -67,6 +67,54 @@ class Transformer(nn.Module):
         return self.out(h[torch.arange(B, device=x.device), lengths])
 
 
+class Loop(nn.Module):
+    """A loop transformer with damped gates, as GLM-5.4 (Z.ai, 2026) builds it: a prelude of layers run once, a block of
+    layers whose weights are shared run `passes` times, and a coda run once. Each pass writes back only part of what it
+    proposes: x_k = x_(k-1) + b_k * (h_k - x_(k-1)), b_k = sigmoid(Linear_k(RMSNorm(x_(k-1)))), one gate a token and a
+    pass. With prelude 1, block 2 and coda 1 it has the weights of a transformer of 4 layers and the depth of 3 + 2 * passes.
+    alibi: as in Transformer."""
+    def __init__(self, nsym, nlab, width=128, heads=4, prelude=1, block=2, coda=1, passes=3, alibi=False):
+        super().__init__()
+        self.alibi, self.heads, self.passes, self.width = alibi, heads, passes, width
+        self.emb = nn.Embedding(nsym + 2, width)
+        self.ask = nsym + 1
+        mk = lambda n: nn.TransformerEncoder(nn.TransformerEncoderLayer(width, heads, 4 * width, dropout=0.0, batch_first=True,
+                                                                        norm_first=True), n, enable_nested_tensor=False)
+        self.prelude, self.block, self.coda = mk(prelude), mk(block), mk(coda)
+        self.norms = nn.ModuleList(nn.RMSNorm(width) for _ in range(passes))
+        self.gates = nn.ModuleList(nn.Linear(width, 1) for _ in range(passes))
+        self.out = nn.Linear(width, nlab)
+
+    pos = Transformer.pos
+
+    def forward(self, x, lengths):
+        B, L = x.shape
+        x = x.clone()
+        x = torch.cat([x, torch.full((B, 1), self.ask - 1, device=x.device)], 1)
+        x[torch.arange(B, device=x.device), lengths] = self.ask
+        if self.alibi:
+            n = L + 1
+            i = torch.arange(n, device=x.device)
+            dist = (i[:, None] - i[None, :]).float()
+            slopes = torch.tensor([2 ** (-8 * (k + 1) / self.heads) for k in range(self.heads)], device=x.device)
+            bias = (-slopes[:, None, None] * dist[None]).masked_fill(dist[None] < 0, float("-inf")).repeat(B, 1, 1)
+            run = lambda f, h: f(h, mask=bias)
+            h = self.emb(x)
+        else:
+            pad = torch.arange(L + 1, device=x.device)[None, :] > lengths[:, None]
+            run = lambda f, h: f(h, src_key_padding_mask=pad)
+            h = self.emb(x) + self.pos(L + 1)
+        fast = torch.backends.mha.get_fastpath_enabled()
+        torch.backends.mha.set_fastpath_enabled(False)
+        h = run(self.prelude, h)
+        for k in range(self.passes):  # the damped gate: how much of the pass is written back, a token at a time
+            beta = torch.sigmoid(self.gates[k](self.norms[k](h)))
+            h = h + beta * (run(self.block, h) - h)
+        h = run(self.coda, h)
+        torch.backends.mha.set_fastpath_enabled(fast)
+        return self.out(h[torch.arange(B, device=x.device), lengths])
+
+
 def batch(stories, sid, lid, nsym):
     L = max(len(s) for s, _ in stories)
     x = torch.full((len(stories), L), nsym, dtype=torch.long)
@@ -105,6 +153,7 @@ def main():
     ap.add_argument("--steps", type=int, default=3000)
     ap.add_argument("--seeds", type=int, default=3)
     ap.add_argument("--kinds", nargs="*", default=["lstm", "transformer"])
+    ap.add_argument("--passes", type=int, default=3, help="loop, loop-alibi: how many times the shared block is run")
     ap.add_argument("--test", type=int, default=300)
     ap.add_argument("--threads", type=int, default=4)
     ap.add_argument("--width", type=int, default=128)
@@ -165,6 +214,7 @@ def main():
                         teach = list({tuple(w[:i]): (list(w[:i]), oracle(list(w[:i]))) for w, _ in teach
                                       for i in range(1, len(w) + 1)}.values())
                     model = (LSTM(len(syms), len(labels), a.width) if kind == "lstm" else
+                             Loop(len(syms), len(labels), a.width, passes=a.passes, alibi=kind == "loop-alibi") if kind.startswith("loop") else
                              Transformer(len(syms), len(labels), a.width, a.layers, alibi=kind == "alibi")).to(DEVICE)
                     opt = torch.optim.Adam(model.parameters(), lr=1e-3)
                     t0 = time.time()
