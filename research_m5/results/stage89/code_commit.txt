@@ -1,0 +1,9 @@
+cells.py, parts.py, sealed_run.py, random_dfa.py: 6f1d93e (written down before the run).
+flags: as in results/stage82/code_commit.txt (the flags of stage 74 and --sum --parts); one thread a process, four at once.
+random_automata_8900/: the 20 new automata, made by random_dfa.py (seed 8900) at the start of the run, not looked at before it.
+sets_results.txt: the 20 new automata (-new), the 20 of stage 88 (-old), the 15 languages of formal/, the 19 worlds; one run.
+sets_strict.txt: worlds/strict.py (as at c175d86) on the machines of this run; two of the four groups ran while the last two families were run (see below).
+results.txt: the 72 open families; beside_stage82.txt: beside the record of stage 82.
+The worker of the session was restarted when 70 of the 72 families were done; the two then running (70-06-fishing-boat, 70-10-circus) were run again from their beginning with the same code and flags (sealed_run.py --after).
+06-anbncn: exact on the strict check, but its machine keeps b - c on a circle of 12 and is wrong from n = 12 on (a^12 b^12 c^12 and on); it is "not sure". Counted here as not exact.
+03-shuffle-6: killed for lack of memory, as at stages 87 and 88.
