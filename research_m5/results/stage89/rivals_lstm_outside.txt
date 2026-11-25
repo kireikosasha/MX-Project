@@ -1,0 +1,327 @@
+LSTM under the watcher's protocol on the two outside sets (cells_rivals.py --folder formal | results/stage89/random_automata_8900 --watch --kinds lstm --strict;
+3 seeds, 3000 steps; x1: the same 300 stories, x40: 12 000; one thread). Run after stage 89, the transformer stopped (8 minutes a model on one core: left to Colab).
+Exact: the mean of the 3 seeds at 100 % on every short story and on the long stories kept alive, length 100 and 500 (as at stage 83).
+
+formal    x1 : 15 tasks; exact on the mean of 3 seeds: 2 ['07-anbncndn', '08-parity']; exact with the best seed: 6; mean alive500 43.7
+formal    x40: 15 tasks; exact on the mean of 3 seeds: 2 ['04-boolean-3', '07-anbncndn']; exact with the best seed: 6; mean alive500 42.7
+   01-shuffle-2                   x1 every/alive100/alive500  96.4   1.1   0.0   x40 100.0   1.7   0.0
+   02-shuffle-4                   x1 every/alive100/alive500  94.6   0.0   0.0   x40  99.5   0.0   0.0
+   03-shuffle-6                   x1 every/alive100/alive500  95.0   0.6   0.0   x40  99.1   0.0   0.0
+   04-boolean-3                   x1 every/alive100/alive500  99.4 100.0 100.0   x40 100.0 100.0 100.0
+   05-boolean-5                   x1 every/alive100/alive500  98.3  77.2  68.3   x40 100.0  97.2  94.4
+   06-anbncn                      x1 every/alive100/alive500  99.9 100.0 100.0   x40  99.9 100.0 100.0
+   07-anbncndn                    x1 every/alive100/alive500 100.0 100.0 100.0   x40 100.0 100.0 100.0
+   08-parity                      x1 every/alive100/alive500 100.0 100.0 100.0   x40  50.0  48.3  48.3
+   09-aa-star                     x1 every/alive100/alive500 100.0  66.7  66.7   x40 100.0  66.7  66.7
+   10-aaaa-star                   x1 every/alive100/alive500 100.0  33.3  33.3   x40 100.0   0.0   0.0
+   11-abab-star                   x1 every/alive100/alive500 100.0  66.7  66.7   x40 100.0  33.3  33.3
+   12-d2                          x1 every/alive100/alive500  99.6   0.0   0.0   x40 100.0  98.3  68.9
+   13-d3                          x1 every/alive100/alive500  99.7   0.6   0.0   x40 100.0  45.0   8.9
+   14-d4                          x1 every/alive100/alive500  99.0   5.0   1.7   x40 100.0  27.8   1.7
+   15-d12                         x1 every/alive100/alive500  99.6  31.7  18.9   x40 100.0  17.8  18.3
+automata  x1 : 20 tasks; exact on the mean of 3 seeds: 8 ['01-random-3-states-2-letters', '05-random-7-states-2-letters', '07-random-3-states-2-letters', '13-random-3-states-2-letters', '14-random-4-states-3-letters', '15-random-5-states-2-letters', '19-random-3-states-2-letters', '20-random-4-states-3-letters']; exact with the best seed: 11; mean alive500 90.9
+automata  x40: 20 tasks; exact on the mean of 3 seeds: 19 ['02-random-4-states-3-letters', '03-random-5-states-2-letters', '04-random-6-states-3-letters', '05-random-7-states-2-letters', '06-random-8-states-3-letters', '07-random-3-states-2-letters', '08-random-4-states-3-letters', '09-random-5-states-2-letters', '10-random-6-states-3-letters', '11-random-7-states-2-letters', '12-random-8-states-3-letters', '13-random-3-states-2-letters', '14-random-4-states-3-letters', '15-random-5-states-2-letters', '16-random-6-states-3-letters', '17-random-7-states-2-letters', '18-random-8-states-3-letters', '19-random-3-states-2-letters', '20-random-4-states-3-letters']; exact with the best seed: 19; mean alive500 97.5
+   01-random-3-states-2-letters   x1 every/alive100/alive500 100.0 100.0 100.0   x40  47.2  42.2  49.4
+   02-random-4-states-3-letters   x1 every/alive100/alive500  86.2  81.7  84.4   x40 100.0 100.0 100.0
+   03-random-5-states-2-letters   x1 every/alive100/alive500  99.9 100.0 100.0   x40 100.0 100.0 100.0
+   04-random-6-states-3-letters   x1 every/alive100/alive500  99.2 100.0 100.0   x40 100.0 100.0 100.0
+   05-random-7-states-2-letters   x1 every/alive100/alive500 100.0 100.0 100.0   x40 100.0 100.0 100.0
+   06-random-8-states-3-letters   x1 every/alive100/alive500  70.8  63.9  64.4   x40 100.0 100.0 100.0
+   07-random-3-states-2-letters   x1 every/alive100/alive500 100.0 100.0 100.0   x40 100.0 100.0 100.0
+   08-random-4-states-3-letters   x1 every/alive100/alive500  92.3  40.6  11.1   x40 100.0 100.0 100.0
+   09-random-5-states-2-letters   x1 every/alive100/alive500  85.9  77.8  77.2   x40 100.0 100.0 100.0
+   10-random-6-states-3-letters   x1 every/alive100/alive500  99.0 100.0 100.0   x40 100.0 100.0 100.0
+   11-random-7-states-2-letters   x1 every/alive100/alive500  99.9 100.0 100.0   x40 100.0 100.0 100.0
+   12-random-8-states-3-letters   x1 every/alive100/alive500  98.1  95.6  97.2   x40 100.0 100.0 100.0
+   13-random-3-states-2-letters   x1 every/alive100/alive500 100.0 100.0 100.0   x40 100.0 100.0 100.0
+   14-random-4-states-3-letters   x1 every/alive100/alive500 100.0 100.0 100.0   x40 100.0 100.0 100.0
+   15-random-5-states-2-letters   x1 every/alive100/alive500 100.0 100.0 100.0   x40 100.0 100.0 100.0
+   16-random-6-states-3-letters   x1 every/alive100/alive500  97.3  96.1  97.8   x40 100.0 100.0 100.0
+   17-random-7-states-2-letters   x1 every/alive100/alive500  97.1  88.9  97.8   x40 100.0 100.0 100.0
+   18-random-8-states-3-letters   x1 every/alive100/alive500  90.8  88.9  87.8   x40 100.0 100.0 100.0
+   19-random-3-states-2-letters   x1 every/alive100/alive500 100.0 100.0 100.0   x40 100.0 100.0 100.0
+   20-random-4-states-3-letters   x1 every/alive100/alive500 100.0 100.0 100.0   x40 100.0 100.0 100.0
+
+--- every seed
+  01-shuffle-2 lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=8/alive100/alive500:  96.7  99.7  99.3  97.0   3.3   0.0  (42 s)
+  01-shuffle-2 lstm        x1   seed 1: taught lengths  99.0  length 20/100/500/every<=8/alive100/alive500:  96.7 100.0  99.3  95.8   0.0   0.0  (45 s)
+  01-shuffle-2 lstm        x1   seed 2: taught lengths  99.3  length 20/100/500/every<=8/alive100/alive500:  97.3  99.7  99.3  96.4   0.0   0.0  (43 s)
+01-shuffle-2 lstm        x1   mean of 3: taught lengths  99.4  length 20/100/500/every<=8/alive100/alive500:  96.9  99.8  99.3  96.4   1.1   0.0
+  01-shuffle-2 lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0  99.3 100.0   5.0   0.0  (44 s)
+  01-shuffle-2 lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0  99.3 100.0   0.0   0.0  (43 s)
+  01-shuffle-2 lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0  99.3 100.0   0.0   0.0  (44 s)
+01-shuffle-2 lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0  99.3 100.0   1.7   0.0
+  02-shuffle-4 lstm        x1   seed 0: taught lengths  99.3  length 20/100/500/every<=6/alive100/alive500:  98.0 100.0 100.0  94.3   0.0   0.0  (45 s)
+  02-shuffle-4 lstm        x1   seed 1: taught lengths  98.7  length 20/100/500/every<=6/alive100/alive500:  98.7 100.0 100.0  94.5   0.0   0.0  (44 s)
+  02-shuffle-4 lstm        x1   seed 2: taught lengths  97.3  length 20/100/500/every<=6/alive100/alive500:  98.0 100.0 100.0  94.9   0.0   0.0  (45 s)
+02-shuffle-4 lstm        x1   mean of 3: taught lengths  98.4  length 20/100/500/every<=6/alive100/alive500:  98.2 100.0 100.0  94.6   0.0   0.0
+  02-shuffle-4 lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500:  99.0 100.0 100.0  99.6   0.0   0.0  (47 s)
+  02-shuffle-4 lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500:  98.0 100.0 100.0  99.4   0.0   0.0  (49 s)
+  02-shuffle-4 lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500:  99.7 100.0 100.0  99.4   0.0   0.0  (50 s)
+02-shuffle-4 lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500:  98.9 100.0 100.0  99.5   0.0   0.0
+  03-shuffle-6 lstm        x1   seed 0: taught lengths  97.3  length 20/100/500/every<=5/alive100/alive500:  99.7 100.0 100.0  94.6   0.0   0.0  (45 s)
+  03-shuffle-6 lstm        x1   seed 1: taught lengths  96.7  length 20/100/500/every<=5/alive100/alive500:  98.7 100.0 100.0  94.3   1.7   0.0  (45 s)
+  03-shuffle-6 lstm        x1   seed 2: taught lengths  98.3  length 20/100/500/every<=5/alive100/alive500:  99.7 100.0 100.0  96.0   0.0   0.0  (44 s)
+03-shuffle-6 lstm        x1   mean of 3: taught lengths  97.4  length 20/100/500/every<=5/alive100/alive500:  99.3 100.0 100.0  95.0   0.6   0.0
+  03-shuffle-6 lstm        x40  seed 0: taught lengths  98.7  length 20/100/500/every<=5/alive100/alive500:  99.3 100.0 100.0  99.3   0.0   0.0  (43 s)
+  03-shuffle-6 lstm        x40  seed 1: taught lengths  98.3  length 20/100/500/every<=5/alive100/alive500:  99.3 100.0 100.0  99.2   0.0   0.0  (41 s)
+  03-shuffle-6 lstm        x40  seed 2: taught lengths  98.3  length 20/100/500/every<=5/alive100/alive500:  99.7 100.0 100.0  98.8   0.0   0.0  (42 s)
+03-shuffle-6 lstm        x40  mean of 3: taught lengths  98.4  length 20/100/500/every<=5/alive100/alive500:  99.4 100.0 100.0  99.1   0.0   0.0
+  04-boolean-3 lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=7/alive100/alive500:  97.0  93.0  95.3  99.3 100.0 100.0  (41 s)
+  04-boolean-3 lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=7/alive100/alive500:  97.3  93.3  95.3  99.6 100.0 100.0  (40 s)
+  04-boolean-3 lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=7/alive100/alive500:  96.7  93.3  95.3  99.2 100.0 100.0  (43 s)
+04-boolean-3 lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=7/alive100/alive500:  97.0  93.2  95.3  99.4 100.0 100.0
+  04-boolean-3 lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=7/alive100/alive500: 100.0  99.0  95.7 100.0 100.0 100.0  (45 s)
+  04-boolean-3 lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=7/alive100/alive500: 100.0  99.0  96.0 100.0 100.0 100.0  (43 s)
+  04-boolean-3 lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=7/alive100/alive500: 100.0  99.0  95.3 100.0 100.0 100.0  (44 s)
+04-boolean-3 lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=7/alive100/alive500: 100.0  99.0  95.7 100.0 100.0 100.0
+  05-boolean-5 lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500:  93.7  97.0  87.0  98.3  80.0  76.7  (40 s)
+  05-boolean-5 lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500:  93.0  97.3  95.0  98.0  73.3  63.3  (42 s)
+  05-boolean-5 lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500:  95.0  97.3  96.0  98.6  78.3  65.0  (39 s)
+05-boolean-5 lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500:  93.9  97.2  92.7  98.3  77.2  68.3
+  05-boolean-5 lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500: 100.0  99.3  99.3 100.0  96.7  98.3  (42 s)
+  05-boolean-5 lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500: 100.0  99.7  99.7 100.0 100.0  96.7  (43 s)
+  05-boolean-5 lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500:  99.3  99.7  98.7 100.0  95.0  88.3  (43 s)
+05-boolean-5 lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=6/alive100/alive500:  99.8  99.6  99.2 100.0  97.2  94.4
+  06-anbncn lstm        x1   seed 0: taught lengths  99.7  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0  99.9 100.0 100.0  (40 s)
+  06-anbncn lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+  06-anbncn lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0  99.9 100.0 100.0  (42 s)
+06-anbncn lstm        x1   mean of 3: taught lengths  99.9  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0  99.9 100.0 100.0
+  06-anbncn lstm        x40  seed 0: taught lengths  99.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  06-anbncn lstm        x40  seed 1: taught lengths  99.3  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+  06-anbncn lstm        x40  seed 2: taught lengths  97.3  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0  99.9 100.0 100.0  (40 s)
+06-anbncn lstm        x40  mean of 3: taught lengths  98.6  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0  99.9 100.0 100.0
+  07-anbncndn lstm        x1   seed 0: taught lengths  99.7  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0 100.0  99.9 100.0 100.0  (43 s)
+  07-anbncndn lstm        x1   seed 1: taught lengths  99.0  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  07-anbncndn lstm        x1   seed 2: taught lengths  99.7  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (39 s)
+07-anbncndn lstm        x1   mean of 3: taught lengths  99.4  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  07-anbncndn lstm        x40  seed 0: taught lengths  99.3  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  07-anbncndn lstm        x40  seed 1: taught lengths  99.3  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (46 s)
+  07-anbncndn lstm        x40  seed 2: taught lengths  99.3  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+07-anbncndn lstm        x40  mean of 3: taught lengths  99.3  length 20/100/500/every<=8/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  08-parity lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  08-parity lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0  99.7 100.0 100.0 100.0  (44 s)
+  08-parity lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (39 s)
+08-parity lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0  99.9 100.0 100.0 100.0
+  08-parity lstm        x40  seed 0: taught lengths  50.3  length 20/100/500/every<=14/alive100/alive500:  48.3  46.7  53.0  50.0  55.0  55.0  (44 s)
+  08-parity lstm        x40  seed 1: taught lengths  63.0  length 20/100/500/every<=14/alive100/alive500:  51.7  53.3  47.0  50.0  45.0  45.0  (43 s)
+  08-parity lstm        x40  seed 2: taught lengths  49.7  length 20/100/500/every<=14/alive100/alive500:  51.7  53.3  47.0  50.0  45.0  45.0  (44 s)
+08-parity lstm        x40  mean of 3: taught lengths  54.3  length 20/100/500/every<=14/alive100/alive500:  50.6  51.1  49.0  50.0  48.3  48.3
+  09-aa-star lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  09-aa-star lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (42 s)
+  09-aa-star lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+09-aa-star lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  66.7  66.7
+  09-aa-star lstm        x40  seed 0: taught lengths  80.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (41 s)
+  09-aa-star lstm        x40  seed 1: taught lengths  81.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  09-aa-star lstm        x40  seed 2: taught lengths  89.7  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (47 s)
+09-aa-star lstm        x40  mean of 3: taught lengths  83.6  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  66.7  66.7
+  10-aaaa-star lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (43 s)
+  10-aaaa-star lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (40 s)
+  10-aaaa-star lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (43 s)
+  10-aaaa-star lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (39 s)
+10-aaaa-star lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  33.3  33.3
+  10-aaaa-star lstm        x40  seed 0: taught lengths  99.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (43 s)
+  10-aaaa-star lstm        x40  seed 1: taught lengths  99.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (42 s)
+  10-aaaa-star lstm        x40  seed 2: taught lengths  99.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (42 s)
+10-aaaa-star lstm        x40  mean of 3: taught lengths  99.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0
+  11-abab-star lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  11-abab-star lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (44 s)
+  11-abab-star lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+11-abab-star lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  66.7  66.7
+  11-abab-star lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  11-abab-star lstm        x40  seed 1: taught lengths  97.3  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (41 s)
+  11-abab-star lstm        x40  seed 2: taught lengths  97.3  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (43 s)
+11-abab-star lstm        x40  mean of 3: taught lengths  98.2  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  33.3  33.3
+  12-d2     lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.7 100.0 100.0  99.3   0.0   0.0  (44 s)
+  12-d2     lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.7 100.0 100.0  99.6   0.0   0.0  (39 s)
+  12-d2     lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   0.0   0.0  (41 s)
+12-d2     lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.8 100.0 100.0  99.6   0.0   0.0
+  12-d2     lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0  98.3  (44 s)
+  12-d2     lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  12-d2     lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  95.0   8.3  (43 s)
+12-d2     lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  98.3  68.9
+  13-d3     lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.7 100.0 100.0 100.0   1.7   0.0  (43 s)
+  13-d3     lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.3 100.0 100.0  99.4   0.0   0.0  (41 s)
+  13-d3     lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0  99.8   0.0   0.0  (42 s)
+13-d3     lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.7 100.0 100.0  99.7   0.6   0.0
+  13-d3     lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  86.7  26.7  (43 s)
+  13-d3     lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  45.0   0.0  (42 s)
+  13-d3     lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   3.3   0.0  (44 s)
+13-d3     lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  45.0   8.9
+  14-d4     lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  98.0 100.0 100.0  98.2   3.3   1.7  (40 s)
+  14-d4     lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0  99.1  11.7   1.7  (41 s)
+  14-d4     lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.0 100.0 100.0  99.8   0.0   1.7  (40 s)
+14-d4     lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.0 100.0 100.0  99.0   5.0   1.7
+  14-d4     lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  80.0   1.7  (41 s)
+  14-d4     lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   1.7   1.7  (44 s)
+  14-d4     lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0   1.7   1.7  (47 s)
+14-d4     lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0  27.8   1.7
+  15-d12    lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.7  95.0 100.0 100.0  25.0  18.3  (41 s)
+  15-d12    lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.3  95.3 100.0  99.9  61.7  20.0  (41 s)
+  15-d12    lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  98.7  97.3 100.0  99.0   8.3  18.3  (41 s)
+15-d12    lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.2  95.9 100.0  99.6  31.7  18.9
+  15-d12    lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.7  95.0  99.7 100.0  16.7  18.3  (42 s)
+  15-d12    lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.7  95.0  99.3 100.0  15.0  18.3  (42 s)
+  15-d12    lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0  95.0  99.7 100.0  21.7  18.3  (38 s)
+15-d12    lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.8  95.0  99.6 100.0  17.8  18.3
+  01-random-3-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  01-random-3-states-2-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  01-random-3-states-2-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0  99.7 100.0 100.0 100.0 100.0  (41 s)
+01-random-3-states-2-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0  99.9 100.0 100.0 100.0 100.0
+  01-random-3-states-2-letters lstm        x40  seed 0: taught lengths  64.3  length 20/100/500/every<=14/alive100/alive500:  43.3  40.3  36.7  47.2  43.3  51.7  (43 s)
+  01-random-3-states-2-letters lstm        x40  seed 1: taught lengths  59.0  length 20/100/500/every<=14/alive100/alive500:  53.3  51.7  47.7  50.0  38.3  58.3  (45 s)
+  01-random-3-states-2-letters lstm        x40  seed 2: taught lengths  45.7  length 20/100/500/every<=14/alive100/alive500:  34.3  28.7  30.3  44.4  45.0  38.3  (44 s)
+01-random-3-states-2-letters lstm        x40  mean of 3: taught lengths  56.3  length 20/100/500/every<=14/alive100/alive500:  43.7  40.2  38.2  47.2  42.2  49.4
+  02-random-4-states-3-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  84.3  82.7  84.7  88.9  83.3  88.3  (43 s)
+  02-random-4-states-3-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  85.3  78.7  84.0  86.4  85.0  83.3  (41 s)
+  02-random-4-states-3-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  80.7  76.0  81.7  83.3  76.7  81.7  (42 s)
+02-random-4-states-3-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  83.4  79.1  83.4  86.2  81.7  84.4
+  02-random-4-states-3-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+  02-random-4-states-3-letters lstm        x40  seed 1: taught lengths  90.3  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+  02-random-4-states-3-letters lstm        x40  seed 2: taught lengths  90.3  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (38 s)
+02-random-4-states-3-letters lstm        x40  mean of 3: taught lengths  93.6  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  03-random-5-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+  03-random-5-states-2-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0  99.6 100.0 100.0  (40 s)
+  03-random-5-states-2-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+03-random-5-states-2-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0  99.9 100.0 100.0
+  03-random-5-states-2-letters lstm        x40  seed 0: taught lengths  84.3  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+  03-random-5-states-2-letters lstm        x40  seed 1: taught lengths  84.3  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  03-random-5-states-2-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+03-random-5-states-2-letters lstm        x40  mean of 3: taught lengths  89.6  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  04-random-6-states-3-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  99.7 100.0  99.7  99.6 100.0 100.0  (40 s)
+  04-random-6-states-3-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  99.3 100.0  99.7  98.9 100.0 100.0  (40 s)
+  04-random-6-states-3-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  99.7  98.7  99.7  99.3 100.0 100.0  (41 s)
+04-random-6-states-3-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  99.6  99.6  99.7  99.2 100.0 100.0
+  04-random-6-states-3-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+  04-random-6-states-3-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  04-random-6-states-3-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (45 s)
+04-random-6-states-3-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  05-random-7-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (47 s)
+  05-random-7-states-2-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (45 s)
+  05-random-7-states-2-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (44 s)
+05-random-7-states-2-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  05-random-7-states-2-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (45 s)
+  05-random-7-states-2-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (46 s)
+  05-random-7-states-2-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (44 s)
+05-random-7-states-2-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  06-random-8-states-3-letters lstm        x1   seed 0: taught lengths  99.0  length 20/100/500/every<=9/alive100/alive500:  63.0  63.3  62.0  67.8  66.7  68.3  (41 s)
+  06-random-8-states-3-letters lstm        x1   seed 1: taught lengths  99.0  length 20/100/500/every<=9/alive100/alive500:  70.7  66.7  66.3  72.2  66.7  60.0  (42 s)
+  06-random-8-states-3-letters lstm        x1   seed 2: taught lengths  99.7  length 20/100/500/every<=9/alive100/alive500:  70.3  68.3  69.0  72.4  58.3  65.0  (43 s)
+06-random-8-states-3-letters lstm        x1   mean of 3: taught lengths  99.2  length 20/100/500/every<=9/alive100/alive500:  68.0  66.1  65.8  70.8  63.9  64.4
+  06-random-8-states-3-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  06-random-8-states-3-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (44 s)
+  06-random-8-states-3-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (44 s)
+06-random-8-states-3-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  07-random-3-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (45 s)
+  07-random-3-states-2-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  07-random-3-states-2-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+07-random-3-states-2-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  07-random-3-states-2-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (45 s)
+  07-random-3-states-2-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  07-random-3-states-2-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+07-random-3-states-2-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  08-random-4-states-3-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  84.7  99.0  99.0  94.7  26.7   6.7  (41 s)
+  08-random-4-states-3-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  75.7  97.3 100.0  90.4  53.3   6.7  (43 s)
+  08-random-4-states-3-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  76.3  83.7  99.0  91.9  41.7  20.0  (43 s)
+08-random-4-states-3-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  78.9  93.3  99.3  92.3  40.6  11.1
+  08-random-4-states-3-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (38 s)
+  08-random-4-states-3-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (39 s)
+  08-random-4-states-3-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+08-random-4-states-3-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  09-random-5-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  81.7  74.7  75.0  86.0  80.0  73.3  (40 s)
+  09-random-5-states-2-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  73.0  65.7  71.0  78.0  71.7  75.0  (41 s)
+  09-random-5-states-2-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  90.3  79.0  82.0  93.6  81.7  83.3  (39 s)
+09-random-5-states-2-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  81.7  73.1  76.0  85.9  77.8  77.2
+  09-random-5-states-2-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  09-random-5-states-2-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (46 s)
+  09-random-5-states-2-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+09-random-5-states-2-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  10-random-6-states-3-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  99.3  98.3 100.0  99.5 100.0 100.0  (42 s)
+  10-random-6-states-3-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  96.0  95.7  96.0  97.9 100.0 100.0  (40 s)
+  10-random-6-states-3-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  99.7  98.3 100.0  99.7 100.0 100.0  (38 s)
+10-random-6-states-3-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  98.3  97.4  98.7  99.0 100.0 100.0
+  10-random-6-states-3-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  10-random-6-states-3-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  10-random-6-states-3-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+10-random-6-states-3-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  11-random-7-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.3  78.0  77.7  99.8 100.0 100.0  (41 s)
+  11-random-7-states-2-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  11-random-7-states-2-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+11-random-7-states-2-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.8  92.7  92.6  99.9 100.0 100.0
+  11-random-7-states-2-letters lstm        x40  seed 0: taught lengths  90.7  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  11-random-7-states-2-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0  98.7  87.7 100.0 100.0 100.0  (40 s)
+  11-random-7-states-2-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0  98.0  90.7 100.0 100.0 100.0  (42 s)
+11-random-7-states-2-letters lstm        x40  mean of 3: taught lengths  96.9  length 20/100/500/every<=14/alive100/alive500: 100.0  98.9  92.8 100.0 100.0 100.0
+  12-random-8-states-3-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  95.3  96.3  96.7  98.3  95.0  98.3  (39 s)
+  12-random-8-states-3-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  96.7  95.7  96.7  98.3  96.7  95.0  (38 s)
+  12-random-8-states-3-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  95.0  95.3  95.7  97.8  95.0  98.3  (42 s)
+12-random-8-states-3-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  95.7  95.8  96.3  98.1  95.6  97.2
+  12-random-8-states-3-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+  12-random-8-states-3-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+  12-random-8-states-3-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+12-random-8-states-3-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  13-random-3-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (45 s)
+  13-random-3-states-2-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  13-random-3-states-2-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+13-random-3-states-2-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  13-random-3-states-2-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  13-random-3-states-2-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+  13-random-3-states-2-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+13-random-3-states-2-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  14-random-4-states-3-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  14-random-4-states-3-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  14-random-4-states-3-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+14-random-4-states-3-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  14-random-4-states-3-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+  14-random-4-states-3-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  14-random-4-states-3-letters lstm        x40  seed 2: taught lengths  91.3  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+14-random-4-states-3-letters lstm        x40  mean of 3: taught lengths  97.1  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  15-random-5-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.7 100.0 100.0 100.0 100.0 100.0  (42 s)
+  15-random-5-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.7 100.0 100.0 100.0 100.0 100.0  (41 s)
+  15-random-5-states-2-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  15-random-5-states-2-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+15-random-5-states-2-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  99.9 100.0 100.0 100.0 100.0 100.0
+  15-random-5-states-2-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  15-random-5-states-2-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  15-random-5-states-2-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+15-random-5-states-2-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  16-random-6-states-3-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  96.3  96.3  97.3  98.9 100.0  96.7  (40 s)
+  16-random-6-states-3-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0  99.7 100.0 100.0 100.0 100.0  (41 s)
+  16-random-6-states-3-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  88.3  90.3  92.0  93.1  88.3  96.7  (41 s)
+16-random-6-states-3-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  94.9  95.4  96.4  97.3  96.1  97.8
+  16-random-6-states-3-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+  16-random-6-states-3-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (38 s)
+  16-random-6-states-3-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+16-random-6-states-3-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  17-random-7-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  96.7  95.3  92.7  97.3  91.7  96.7  (40 s)
+  17-random-7-states-2-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  97.0  96.7  95.0  97.8  95.0 100.0  (43 s)
+  17-random-7-states-2-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  93.0  89.3  91.0  96.2  80.0  96.7  (41 s)
+17-random-7-states-2-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500:  95.6  93.8  92.9  97.1  88.9  97.8
+  17-random-7-states-2-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  17-random-7-states-2-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (44 s)
+  17-random-7-states-2-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (44 s)
+17-random-7-states-2-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  18-random-8-states-3-letters lstm        x1   seed 0: taught lengths  99.3  length 20/100/500/every<=9/alive100/alive500:  80.7  83.0  83.7  90.7  86.7  88.3  (39 s)
+  18-random-8-states-3-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  85.7  84.7  82.0  91.4  90.0  83.3  (42 s)
+  18-random-8-states-3-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500:  82.0  82.0  79.3  90.3  90.0  91.7  (41 s)
+18-random-8-states-3-letters lstm        x1   mean of 3: taught lengths  99.8  length 20/100/500/every<=9/alive100/alive500:  82.8  83.2  81.7  90.8  88.9  87.8
+  18-random-8-states-3-letters lstm        x40  seed 0: taught lengths  85.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (42 s)
+  18-random-8-states-3-letters lstm        x40  seed 1: taught lengths  82.3  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  18-random-8-states-3-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+18-random-8-states-3-letters lstm        x40  mean of 3: taught lengths  89.1  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  19-random-3-states-2-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (45 s)
+  19-random-3-states-2-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+  19-random-3-states-2-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+19-random-3-states-2-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  19-random-3-states-2-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+  19-random-3-states-2-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  19-random-3-states-2-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (44 s)
+19-random-3-states-2-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=14/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  20-random-4-states-3-letters lstm        x1   seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (44 s)
+  20-random-4-states-3-letters lstm        x1   seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+  20-random-4-states-3-letters lstm        x1   seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+20-random-4-states-3-letters lstm        x1   mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
+  20-random-4-states-3-letters lstm        x40  seed 0: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (40 s)
+  20-random-4-states-3-letters lstm        x40  seed 1: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (43 s)
+  20-random-4-states-3-letters lstm        x40  seed 2: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0  (41 s)
+20-random-4-states-3-letters lstm        x40  mean of 3: taught lengths 100.0  length 20/100/500/every<=9/alive100/alive500: 100.0 100.0 100.0 100.0 100.0 100.0
