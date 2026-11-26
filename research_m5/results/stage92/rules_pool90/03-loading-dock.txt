@@ -1,0 +1,8 @@
+the number shown as a sum; 4 parts: a counter; a whole number; a circle of 12; a counter; 125 bits
+    part 0, a counter. truck: -3; crate (and the number goes nowhere): +1
+    part 1, a whole number. truck: -3; crate: +1
+    part 2, a circle of 12. truck: -3; crate: +1; go: to 0
+    part 3, a counter. truck (and the number goes nowhere): +1; crate (and the number goes up by 1): -2
+    truck: part 0 is 3 or more and part 1 is above zero -> +1; otherwise the display stays
+    crate: the number shown is 0 and part 2 is 2 and part 3 is 3 or more -> +1; the number shown is 0 and part 2 is 5 and part 3 is 3 or more -> +1; the number shown is 0 and part 2 is 11 and part 3 is less than 3 -> +1; the number shown is 1 and part 2 is 5 and part 3 is 3 or more -> +1; the number shown is 1 and part 2 is 11 and part 3 is less than 3 -> +1; the number shown is 1 and part 2 is 11 and part 3 is 3 or more -> +1; the number shown is 2 or more and part 2 is 2 and part 3 is 3 or more -> +1; the number shown is 2 or more and part 2 is 3 and part 3 is 3 or more -> +1; the number shown is 2 or more and part 2 is 5 and part 3 is 3 or more -> +1; the number shown is 2 or more and part 2 is 7 and part 3 is 3 or more -> +1; the number shown is 2 or more and part 2 is 11 and part 3 is 3 or more -> +1; otherwise the display stays
+    go: the display stays
