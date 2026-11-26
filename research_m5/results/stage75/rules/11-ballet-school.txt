@@ -1,0 +1,6 @@
+1 part: a whole number; 62 bits
+    part 0, a whole number. plie: to 0; releve: -1; jump: to 0
+    plie: the display stays
+    releve: the display stays
+    turn: the label shown is barre and part 0 is below zero -> piano; the label shown is mirror and part 0 is below zero -> window; the label shown is piano and part 0 is below zero -> mirror; the label shown is window and part 0 is below zero -> barre; otherwise the display stays
+    jump: the label shown is barre and part 0 is zero -> mirror; the label shown is mirror and part 0 is zero -> barre; the label shown is piano and part 0 is zero -> window; the label shown is window and part 0 is zero -> piano; otherwise the display stays

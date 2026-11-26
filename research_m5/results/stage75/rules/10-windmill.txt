@@ -1,0 +1,6 @@
+1 part: a counter; 47 bits
+    part 0, a counter. brake: +1; lull: to 0
+    sack: the label shown is empty -> low; the label shown is high -> full; the label shown is low -> high; otherwise the display stays
+    gust: the label shown is full and part 0 is zero -> high; the label shown is high and part 0 is zero -> low; the label shown is low and part 0 is zero -> empty; otherwise the display stays
+    brake: the display stays
+    lull: the display stays

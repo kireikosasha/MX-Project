@@ -1,0 +1,5 @@
+no part (the display by what it shows and the symbol); 52 bits
+    dive: the label shown is cruise -> deep; the label shown is periscope -> cruise; the label shown is surface -> periscope; otherwise the display stays
+    rise: the label shown is cruise -> periscope; the label shown is deep -> cruise; the label shown is periscope -> surface; otherwise the display stays
+    blow: the label shown is open -> the same; the label shown is surface -> the same; otherwise surface
+    hatch: the label shown is open -> surface; the label shown is surface -> open; otherwise the display stays

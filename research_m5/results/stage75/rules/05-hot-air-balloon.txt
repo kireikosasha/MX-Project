@@ -1,0 +1,4 @@
+no part (the display by what it shows and the symbol); 21 bits
+    burn: the label shown is ground -> low; the label shown is low -> mid; the label shown is mid -> high; otherwise the display stays
+    vent: the label shown is high -> mid; the label shown is low -> ground; the label shown is mid -> low; otherwise the display stays
+    wait: the display stays

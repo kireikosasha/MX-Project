@@ -1,0 +1,5 @@
+1 part: a circle of 2; 50 bits
+    part 0, a circle of 2. swap: +1
+    wave: the label shown is damp and part 0 is zero -> wet; the label shown is dry and part 0 is zero -> damp; the label shown is wet and part 0 is zero -> awash; otherwise the display stays
+    lull: the label shown is awash and part 0 is above zero -> wet; the label shown is damp and part 0 is above zero -> dry; the label shown is wet and part 0 is above zero -> damp; otherwise the display stays
+    swap: the display stays

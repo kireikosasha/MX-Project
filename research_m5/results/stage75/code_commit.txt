@@ -1,0 +1,12 @@
+The pool: sealed/stage75_families/ and sealed/stage75_hashes.txt, committed in 94acd37, before any run. Twelve authors (subagents)
+were given only sealed/SPEC_SYMBOLS.md and a theme; the rules were checked only mechanically before the runs.
+results.txt (the main run): cells.py, parts.py, sealed_run.py of 6f1d93e (the learners of stage 89), the flags of stages 85-89
+  (--minutes 30 --workers 1 --seconds 3 --shorten --reserve 21 --explore --frugal --slack 16 --guards --build 12 --flags --cascades
+  --keep --deadline --watch --warm --patience 30 --part 100000 --tour 24 --anchor 65 --far 100 --sum --parts).
+results_code_stage82.txt: the code of ec3e876 (stage 82) with the same flags and --deep 24.
+results_code_stage74.txt: cells.py and sealed_run.py as they were when stage 75 was named (b74b120: the code of stage 74 and --deep);
+  415c3da, named in results/stage74/code_commit.txt, has no --deep yet. Flags of stage 74 and --deep 24, no --save (that code has none);
+  a first try with --save stopped at once on the unknown flag, before any family.
+The three runs one after another, four groups of three families on four cores, nothing else on the machine.
+strict.txt: worlds/strict.py on the machines of the main run.
+rules/: the rules of the main run in words (and as programs where printed).

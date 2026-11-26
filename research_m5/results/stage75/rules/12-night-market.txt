@@ -1,0 +1,7 @@
+the number shown as a sum; 2 parts: a counter; a counter; 44 bits
+    part 0, a counter. steam (and the number goes up by 1): +1; buy (and the number goes down by 1): -1
+    part 1, a counter. rain: +1; clear: to 0
+    steam: part 0 is less than 3 -> +1; otherwise the display stays
+    buy: the number shown is 1 and part 1 is zero -> -1; the number shown is 2 or more and part 1 is zero -> -1; otherwise the display stays
+    rain: the display stays
+    clear: the display stays

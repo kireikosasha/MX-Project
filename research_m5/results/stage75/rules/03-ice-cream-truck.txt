@@ -1,0 +1,7 @@
+the number shown as a sum; 2 parts: a circle of 2; a counter; 51 bits
+    part 0, a circle of 2. honk: +1; rain: to 0
+    part 1, a counter. refill: to 0; kid (and the number goes down by 1): +1
+    kid: the number shown is 1 and part 0 is above zero -> -1; the number shown is 2 or more and part 0 is above zero -> -1; otherwise the display stays
+    honk: the display stays
+    rain: the display stays
+    refill: the number goes up by what part 1 holds

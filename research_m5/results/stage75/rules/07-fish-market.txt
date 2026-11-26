@@ -1,0 +1,5 @@
+no part (the display by what it shows and the symbol); 101 bits
+    boat: the label shown is 0 cold -> 1 cold; the label shown is 0 warm -> 1 warm; the label shown is 1 cold -> 2 cold; the label shown is 1 warm -> 2 warm; the label shown is 2 cold -> 3 cold; the label shown is 2 warm -> 3 warm; otherwise the display stays
+    buyer: the label shown is 1 cold -> 0 cold; the label shown is 1 warm -> 0 warm; the label shown is 2 cold -> 1 cold; the label shown is 2 warm -> 1 warm; the label shown is 3 cold -> 2 cold; the label shown is 3 warm -> 2 warm; otherwise the display stays
+    sun: the label shown is 0 warm -> the same; the label shown is 1 cold -> 1 warm; the label shown is 2 cold -> 2 warm; the label shown is 3 cold -> 3 warm; otherwise 0 warm
+    ice: the label shown is 0 warm -> 0 cold; the label shown is 1 warm -> 1 cold; the label shown is 2 warm -> 2 cold; the label shown is 3 warm -> 3 cold; otherwise the display stays
