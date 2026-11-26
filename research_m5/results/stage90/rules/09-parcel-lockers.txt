@@ -1,0 +1,5 @@
+2 states + a level of 5 (steps -1..1, held at the ends, or set) + a whole number (offsets -1..1, read clipped to -1..1), the second moved by the value of the first, the answer read from the numbers only
+    drop         states 0>0 1>1   numbers by state (1,0) (0,-1)
+    pick         states 0>0 1>1   numbers by state (-1,1) (0,1)
+    jam          states 0>1 1>1   numbers by state (0,0) (0,0)
+    fix          states 0>0 1>0   numbers by state (0,0) (0,0)

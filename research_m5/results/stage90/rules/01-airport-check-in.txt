@@ -1,0 +1,11 @@
+6 parts: a circle of 7; a level of 6; a counter; a level of 7; a counter; a level of 5; 215 bits
+    part 0, a circle of 7. bag (and the label changes): -2
+    part 1, a level of 6 (0 to 5). pax: +1; call: -1
+    part 2, a counter. load: -1; bag (and the label changes): +2
+    part 3, a level of 7 (0 to 6). pax (and the label stays): +2; call (and the label stays): -2; call (and the label changes): +3
+    part 4, a counter. bag (and the label stays): +1; load (and the label stays): to 0
+    part 5, a level of 5 (0 to 4) (a move that does not fit is not made). pax: +2; load: -1
+    pax: the label shown is belt and part 0 is below its top -> even; the label shown is even and part 0 is below its top -> queue; otherwise the display stays
+    call: the label shown is even and part 1 is 1 and part 2 is above zero -> belt; the label shown is even and part 1 is 2 and part 2 is above zero -> belt; the label shown is queue and part 1 is 1 and part 2 is zero -> even; the label shown is queue and part 1 is 2 and part 2 is above zero -> even; the label shown is queue and part 1 is 3 and part 2 is above zero -> even; otherwise the display stays
+    bag: the label shown is even and part 3 is 3 and part 4 is zero -> belt; the label shown is even and part 3 is 3 and part 4 is above zero -> belt; the label shown is even and part 3 is 5 and part 4 is above zero -> belt; the label shown is even and part 3 is 6 and part 4 is zero -> belt; the label shown is even and part 3 is 6 and part 4 is above zero -> belt; the label shown is queue and part 3 is 1 and part 4 is above zero -> even; the label shown is queue and part 3 is 2 and part 4 is above zero -> even; the label shown is queue and part 3 is 3 and part 4 is zero -> even; the label shown is queue and part 3 is 4 and part 4 is zero -> even; the label shown is queue and part 3 is 5 and part 4 is above zero -> even; otherwise the display stays
+    load: the label shown is belt and part 5 is 1 -> even; the label shown is belt and part 5 is 3 -> even; the label shown is belt and part 5 is 4 -> even; the label shown is even and part 5 is 3 -> queue; the label shown is even and part 5 is 4 -> queue; otherwise the display stays

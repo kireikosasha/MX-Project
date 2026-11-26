@@ -1,0 +1,7 @@
+the number shown as a sum; 2 parts: a counter; a counter that takes what another holds; 39 bits
+    part 0, a counter. flat: +1; van: to 0
+    part 1, a counter. back: +1; take: -1; van: plus all that part 0 holds
+    back: the display stays
+    flat: the display stays
+    take: part 1 is zero -> +1; otherwise the display stays
+    van: the display stays

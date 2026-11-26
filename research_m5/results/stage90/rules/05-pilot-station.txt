@@ -1,0 +1,7 @@
+the number shown as a sum; 2 parts: a whole number; a counter; 33 bits
+    part 0, a whole number. ship: -1; pilot: +1
+    part 1, a counter. fog: +1; clear: to 0
+    ship: part 0 is above zero and part 1 is zero -> +0; otherwise +1
+    pilot: the display stays
+    fog: the display stays
+    clear: the display stays

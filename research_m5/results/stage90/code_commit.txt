@@ -1,0 +1,9 @@
+The pool: sealed/stage90_families/ and sealed/stage90_hashes.txt, committed in 33cc7a1, before any run. Twelve authors (subagents)
+were given only sealed/SPEC_SYMBOLS_HARD.md and a theme; the rules were checked only mechanically before the runs.
+results.txt (main): cells.py, parts.py, sealed_run.py of 6f1d93e (the learners of stage 89), the flags of stages 85-89 (see
+  results/stage75/code_commit.txt). results_code_stage74.txt: the code at b74b120 (the code of stage 74 with --deep), flags of
+  stage 74 and --deep 24. One run each, four groups of three families on four cores, one after the other.
+During the main run the processes of the rivals of pool 75 were paused (SIGSTOP; 1.4 GB held); 03-loading-dock was killed for lack
+  of memory when its own process had reached 4.3 GB (four learners at once and the paused rivals under the 16 GB of the machine);
+  it is counted as not taken. The rivals were then stopped and run again after both runs.
+strict.txt: worlds/strict.py on the machines of the main run.
