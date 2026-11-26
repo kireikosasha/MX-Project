@@ -619,7 +619,8 @@ class Summed:
     def __init__(self, machine, begin):
         self.machine, self.begin = machine, begin
 
-    sure = property(lambda self: self.machine.sure)
+    sure = property(lambda self: self.machine.sure, lambda self, v: setattr(self.machine, "sure", v))  # (told not sure
+    # by sealed_run.py when another learner's machine is told instead)
 
     def run(self, seq):
         m = self.machine
