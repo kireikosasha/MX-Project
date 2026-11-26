@@ -1,0 +1,67 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 2, 0), table: price 30 + 7, 139 beginnings, 0 wrong (0 s)
+    (1, 1, 1, 0), table: price 25 + 7, 139 beginnings, 0 wrong (0 s)
+    (0, 2, 1, 0), table: price 25 + 8, 139 beginnings, 0 wrong (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (2, 0, 2, 0), table: price 40 + 9, 139 beginnings, 0 wrong (5 s)
+    (3, 0, 1, 0), table: price 47 + 9, 139 beginnings, 0 wrong (9 s)
+    (1, 1, 2, 0), table: price 25 + 10, 139 beginnings, 0 wrong (10 s)
+    (2, 1, 1, 0), table: price 25 + 10, 139 beginnings, 0 wrong (12 s)
+    (0, 2, 2, 0), table: price 25 + 11, 139 beginnings, 0 wrong (17 s)
+    (1, 2, 1, 0), table: price 25 + 11, 139 beginnings, 0 wrong (22 s)
+    (2, 0, 2, 1), table: out of time, at least 38 + 11 (37 s)
+    (3, 0, 1, 1), table: out of time, at least 37 + 11 (53 s)
+    (2, 1, 1, 1), table: price 25 + 12, 139 beginnings, 0 wrong (56 s)
+    (3, 0, 2, 0), table: out of time, at least 28 + 12 (71 s)
+  kept 1 count (a), 1 difference (b) (price 32): urgent: b+1 | minor: a+1, b-1 | doctor: if a=0 and b>0: b-1; if a>0 and b<0: a-1, b+1; if a>0 and b=0: b-1 | nurse: if a>0: a-1, b+1 | shown by a, b
+    (4, 0, 1, 0), table: out of time, at least 32 + 12 (86 s)
+    (2, 1, 2, 0), table: out of time, at least 24 + 13 (101 s)
+    (3, 1, 1, 0), table: price 25 + 13, 141 beginnings, 1 wrong (114 s)
+    (1, 2, 2, 0), table: out of time, at least 21 + 14 (129 s)
+    (2, 2, 1, 0), table: out of time, at least 23 + 14 (144 s)
+    (3, 0, 2, 1), table: out of time, at least 28 + 14 (160 s)
+    (2, 1, 2, 1), table: out of time, at least 22 + 15 (175 s)
+    (4, 0, 2, 0), table: out of time, at least 26 + 15 (190 s)
+    (3, 1, 2, 0), table: out of time, at least 20 + 16 (205 s)
+    (1, 1, 1, 0), table: price 27 + 7, 153 beginnings, 1 wrong (205 s)
+    (0, 2, 1, 0), table: price 30 + 8, 155 beginnings, 1 wrong (206 s)
+    (1, 1, 1, 0), table: price 32 + 7, 156 beginnings, 1 wrong (206 s)
+    (1, 1, 2, 0), table: price 27 + 10, 157 beginnings, 0 wrong (207 s)
+  asked 1 (4 rivals): answered wrongly; kept 1 count (a), 1 difference (b), 2 states (price 37): urgent: b+1, to state 1 | minor: a+1, b-1 | doctor: if state 0 and a>0: a-1, b+1; if state 1 and a=0: b-1, to state 0; if state 1 and a>0: b-1 | nurse: if a>0: a-1, b+1 | shown by a, b
+    (2, 1, 1, 0), table: price 27 + 10, 158 beginnings, 0 wrong (216 s)
+    (1, 2, 2, 0), table: out of time, at least 23 + 14 (246 s)
+    (0, 2, 2, 0), table: price 27 + 11, 158 beginnings, 1 wrong (256 s)
+    (1, 2, 1, 0), table: price 27 + 11, 176 beginnings, 0 wrong (261 s)
+    (3, 1, 2, 0), table: out of time, at least 22 + 16 (291 s)
+  asked 2 (1 rival): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 37): urgent: a+1, c+1 | minor: b+1, c-1 | doctor: if a=0 and b>0: c+1; if a>0 and b=0: a-1, c-1; if a>0 and b>0: a-1, c-1 | nurse: if b>0: b-1, c+1 | shown by a, c
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+    (0, 1, 2, 0), table: price 51 + 7, 176 beginnings, 3 wrong (291 s)
+    (1, 1, 2, 0), table: out of time, at least 33 + 10 (306 s)
+    (2, 1, 1, 0), table: price 27 + 10, 232 beginnings, 1 wrong (306 s)
+    (2, 1, 1, 0), table: price 28 + 10, 270 beginnings, 0 wrong (306 s)
+    (2, 1, 1, 1), table: price 28 + 12, 270 beginnings, 0 wrong (316 s)
+    (2, 1, 2, 0), table: out of time, at least 26 + 13 (347 s)
+    (1, 2, 2, 0), table: out of time, at least 25 + 14 (407 s)
+  asked 5 (plain): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 38): urgent: a+1, c+1 | minor: b+1, c-1 | doctor: if a=0 and b>0: b-1, c+1; if a>0 and b=0: a-1, c-1; if a>0 and b>0: a-1, c-1 | nurse: if b>0: b-1, c+1 | shown by a, c
+  asked 6 (plain): answered rightly
+  asked 7 (again): answered rightly
+  asked 8 (plain): answered rightly
+  asked 9 (again): answered rightly
+  asked 10 (alive): answered rightly
+  asked 11 (pumped): answered rightly
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (plain): answered rightly
+  asked 15 (again): answered rightly
+  asked 16 (alive): answered rightly
+  asked 17 (pumped): answered rightly
+  asked 18 (plain): answered rightly
+  asked 19 (again): answered rightly
+2 counts (ab), 1 difference (c) (price 38): urgent: a+1, c+1 | minor: b+1, c-1 | doctor: if a=0 and b>0: b-1, c+1; if a>0 and b=0: a-1, c-1; if a>0 and b>0: a-1, c-1 | nurse: if b>0: b-1, c+1 | shown by a, c; asked 19; 407 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

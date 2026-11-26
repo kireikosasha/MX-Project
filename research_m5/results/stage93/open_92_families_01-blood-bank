@@ -1,0 +1,69 @@
+    (1, 0, 1, 0), number: no machine (0 s)
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), number: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), number: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), number: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 2, 0), number: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), number: no machine (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (0, 2, 1, 0), number: no machine (0 s)
+    (0, 2, 1, 0), table: no machine (0 s)
+    (2, 0, 1, 1), number: no machine (0 s)
+    (2, 0, 1, 1), table: no machine (1 s)
+    (2, 0, 2, 0), number: price 24 + 9, 139 beginnings, 0 wrong (1 s)
+    (2, 0, 2, 0), table: no machine (1 s)
+    (3, 0, 1, 0), number: price 20 + 9, 139 beginnings, 0 wrong (1 s)
+    (3, 0, 1, 0), table: no machine (1 s)
+    (1, 1, 2, 0), number: price 24 + 10, 139 beginnings, 0 wrong (1 s)
+    (1, 1, 2, 0), table: out of time, at least 47 + 10 (16 s)
+    (2, 1, 1, 0), number: price 20 + 10, 139 beginnings, 0 wrong (17 s)
+    (2, 1, 1, 0), table: out of time, at least 45 + 10 (32 s)
+    (0, 2, 2, 0), number: price 24 + 11, 139 beginnings, 0 wrong (33 s)
+    (0, 2, 2, 0), table: out of time, at least 39 + 11 (48 s)
+    (1, 2, 1, 0), number: price 20 + 11, 139 beginnings, 0 wrong (48 s)
+    (1, 2, 1, 0), table: out of time, at least 38 + 11 (63 s)
+  kept 3 counts (abc) (price 29): giveO: b+1 | giveA: c+1 | needO: if b=0: a+1; if b>0: b-1 | needA: if b=0 and c=0: a+1; if b=0 and c>0: c-1; if b>0 and c=0: b-1 | shown by nothing; '{}' with a
+    (2, 0, 2, 1), number: price 25 + 11, 140 beginnings, 1 wrong (63 s)
+    (2, 0, 2, 1), table: no machine (64 s)
+    (3, 0, 1, 1), number: price 20 + 11, 145 beginnings, 1 wrong (65 s)
+    (3, 0, 1, 1), table: no machine (70 s)
+    (2, 1, 1, 1), number: price 22 + 12, 154 beginnings, 0 wrong (70 s)
+    (2, 1, 1, 1), table: out of time, at least 40 + 12 (85 s)
+    (3, 0, 2, 0), number: price 22 + 12, 154 beginnings, 0 wrong (86 s)
+    (3, 0, 2, 0), table: out of time, at least 46 + 12 (101 s)
+    (4, 0, 1, 0), number: price 22 + 12, 154 beginnings, 0 wrong (101 s)
+    (4, 0, 1, 0), table: no machine (112 s)
+    (2, 1, 2, 0), number: price 22 + 13, 154 beginnings, 0 wrong (113 s)
+    (2, 1, 2, 0), table: out of time, at least 33 + 13 (128 s)
+  asked 1 (3 rivals): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 34): giveO: empty b, c+1 | giveA: b+1 | needO: if c=0: a+1; if c>0: c-1 | needA: if b=0 and c=0: a+1; if b=0 and c>0: c-1; if b>0 and c=0: b-1 | shown by nothing; '{}' with a
+    (3, 1, 1, 0), number: price 22 + 13, 155 beginnings, 0 wrong (128 s)
+    (3, 1, 1, 0), table: out of time, at least 34 + 13 (144 s)
+    (1, 2, 2, 0), number: price 22 + 14, 155 beginnings, 0 wrong (145 s)
+    (1, 2, 2, 0), table: out of time, at least 31 + 14 (160 s)
+    (2, 2, 1, 0), number: price 22 + 14, 155 beginnings, 0 wrong (161 s)
+    (2, 2, 1, 0), table: out of time, at least 31 + 14 (177 s)
+    (3, 0, 2, 1), number: price 22 + 14, 155 beginnings, 0 wrong (178 s)
+    (3, 0, 2, 1), table: out of time, at least 34 + 14 (193 s)
+  asked 2 (3 rivals): answered wrongly; kept 3 counts (abc), 1 difference (d) (price 35): giveO: b+1 | giveA: c+1 | needO: if b=0: a+1; if b>0: b-1 | needA: if b=0 and c=0: a+1; if b=0 and c>0: c-1; if b>0 and c=0: b-1; if b>0 and c>0: c-1 | shown by nothing; '{}' with a
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (alive): answered rightly
+  asked 8 (pumped): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (plain): answered rightly
+  asked 12 (again): answered rightly
+  asked 13 (alive): answered rightly
+  asked 14 (pumped): answered rightly
+  asked 15 (plain): answered rightly
+  asked 16 (again): answered rightly
+3 counts (abc), 1 difference (d) (price 35): giveO: b+1 | giveA: c+1 | needO: if b=0: a+1; if b>0: b-1 | needA: if b=0 and c=0: a+1; if b=0 and c>0: c-1; if b>0 and c=0: b-1; if b>0 and c>0: c-1 | shown by nothing; '{}' with a; asked 16; 194 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

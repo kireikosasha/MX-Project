@@ -1,0 +1,86 @@
+    (1, 0, 1, 0), number: no machine (0 s)
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), number: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), number: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), number: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 2, 0), number: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), number: no machine (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (0, 2, 1, 0), number: no machine (0 s)
+    (0, 2, 1, 0), table: no machine (0 s)
+    (2, 0, 1, 1), number: no machine (1 s)
+    (2, 0, 1, 1), table: no machine (1 s)
+    (2, 0, 2, 0), number: price 23 + 9, 139 beginnings, 0 wrong (1 s)
+    (2, 0, 2, 0), table: no machine (1 s)
+    (3, 0, 1, 0), number: no machine (1 s)
+    (3, 0, 1, 0), table: no machine (1 s)
+    (1, 1, 2, 0), number: price 23 + 10, 139 beginnings, 0 wrong (1 s)
+    (1, 1, 2, 0), table: no machine (11 s)
+    (2, 1, 1, 0), number: no machine (11 s)
+    (2, 1, 1, 0), table: out of time, at least 41 + 10 (27 s)
+    (0, 2, 2, 0), number: no machine (27 s)
+    (0, 2, 2, 0), table: out of time, at least 35 + 11 (42 s)
+    (1, 2, 1, 0), number: no machine (42 s)
+    (1, 2, 1, 0), table: out of time, at least 36 + 11 (57 s)
+    (2, 0, 2, 1), number: price 18 + 11, 139 beginnings, 0 wrong (57 s)
+    (2, 0, 2, 1), table: no machine (57 s)
+    (3, 0, 1, 1), number: price 22 + 11, 139 beginnings, 0 wrong (58 s)
+    (3, 0, 1, 1), table: no machine (58 s)
+    (2, 1, 1, 1), number: price 22 + 12, 139 beginnings, 0 wrong (59 s)
+    (2, 1, 1, 1), table: out of time, at least 34 + 12 (74 s)
+  kept 2 counts (ab), 2 states (price 29): ship: if state 0 and a=0: b+1; if state 0 and a>0: a-1; if state 1 and a>0: b+1 | tug: a+1 | fog: to state 1 | clear: take a and b from each other, to state 0 | shown by nothing; 'idle {} waiting {}' with a, b | start a=2
+    (3, 0, 2, 0), number: no machine (74 s)
+    (3, 0, 2, 0), table: no machine (82 s)
+    (4, 0, 1, 0), number: no machine (82 s)
+    (4, 0, 1, 0), table: no machine (86 s)
+    (2, 1, 2, 0), number: no machine (86 s)
+    (2, 1, 2, 0), table: out of time, at least 31 + 13 (101 s)
+    (3, 1, 1, 0), number: no machine (101 s)
+    (3, 1, 1, 0), table: out of time, at least 31 + 13 (116 s)
+    (1, 2, 2, 0), number: no machine (117 s)
+    (1, 2, 2, 0), table: out of time, at least 31 + 14 (133 s)
+    (2, 2, 1, 0), number: no machine (133 s)
+    (2, 2, 1, 0), table: out of time, at least 30 + 14 (149 s)
+    (3, 0, 2, 1), number: price 18 + 14, 141 beginnings, 1 wrong (149 s)
+    (3, 0, 2, 1), table: no machine (150 s)
+    (2, 1, 2, 1), number: price 24 + 15, 143 beginnings, 1 wrong (151 s)
+    (2, 1, 2, 1), table: out of time, at least 30 + 15 (166 s)
+    (4, 0, 2, 0), number: no machine (167 s)
+    (4, 0, 2, 0), table: out of time, at least 28 + 15 (182 s)
+    (3, 1, 2, 0), number: no machine (182 s)
+    (3, 1, 2, 0), table: out of time, at least 29 + 16 (198 s)
+    (2, 0, 2, 1), number: price 28 + 11, 148 beginnings, 0 wrong (198 s)
+  asked 1 (4 rivals): answered wrongly; kept 2 counts (ab), 2 states (price 39): ship: if state 0 and a=0: b+1; if state 0 and a>0: a-1; if state 1 and a>0: b+1 | tug: if a=0 and b=0: a+1; if a=0 and b>0: b-1; if a>0 and b=0: a+1; if a>0 and b>0: a+1 | fog: to state 1 | clear: take a and b from each other, to state 0 | shown by nothing; 'idle {} waiting {}' with a, b | start a=2
+    (2, 0, 2, 0), number: no machine (198 s)
+    (3, 0, 2, 1), number: price 24 + 14, 149 beginnings, 1 wrong (199 s)
+    (1, 1, 2, 0), number: no machine (199 s)
+    (3, 0, 1, 1), number: price 29 + 11, 150 beginnings, 1 wrong (199 s)
+    (2, 1, 1, 1), number: price 34 + 12, 162 beginnings, 0 wrong (199 s)
+    (3, 0, 2, 1), number: price 28 + 14, 162 beginnings, 0 wrong (200 s)
+    (2, 0, 2, 1), number: price 30 + 11, 162 beginnings, 0 wrong (201 s)
+    (2, 1, 2, 1), number: price 28 + 15, 162 beginnings, 0 wrong (201 s)
+    (3, 0, 1, 1), number: price 34 + 11, 162 beginnings, 0 wrong (201 s)
+  asked 2 (1 rival): answered wrongly; kept 2 counts (ab), 2 states (price 41): ship: if state 0 and a=0: b+1; if state 0 and a>0: a-1; if state 1 and a=0: b+1; if state 1 and a>0: b+1 | tug: if state 0 and b=0: a+1; if state 0 and b>0: b-1; if state 1 and b=0: a+1; if state 1 and b>0: a+1 | fog: to state 1 | clear: take a and b from each other, to state 0 | shown by nothing; 'idle {} waiting {}' with a, b | start a=2
+  asked 3 (2 rivals): answered rightly
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (plain): answered rightly
+  asked 7 (again): answered rightly
+  asked 8 (alive): answered rightly
+  asked 9 (pumped): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (alive): answered rightly
+  asked 15 (pumped): answered rightly
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+2 counts (ab), 2 states (price 41): ship: if state 0 and a=0: b+1; if state 0 and a>0: a-1; if state 1 and a=0: b+1; if state 1 and a>0: b+1 | tug: if state 0 and b=0: a+1; if state 0 and b>0: b-1; if state 1 and b=0: a+1; if state 1 and b>0: a+1 | fog: to state 1 | clear: take a and b from each other, to state 0 | shown by nothing; 'idle {} waiting {}' with a, b | start a=2; asked 17; 201 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

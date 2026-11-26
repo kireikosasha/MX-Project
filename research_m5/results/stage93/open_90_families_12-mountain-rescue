@@ -1,0 +1,58 @@
+    (1, 0, 1, 0), number: no machine (0 s)
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), number: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), number: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), number: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 2, 0), number: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), number: no machine (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (0, 2, 1, 0), number: no machine (0 s)
+    (0, 2, 1, 0), table: no machine (1 s)
+    (2, 0, 1, 1), number: no machine (1 s)
+    (2, 0, 1, 1), table: no machine (1 s)
+    (2, 0, 2, 0), number: price 32 + 9, 139 beginnings, 0 wrong (1 s)
+    (2, 0, 2, 0), table: no machine (1 s)
+    (3, 0, 1, 0), number: no machine (1 s)
+    (3, 0, 1, 0), table: no machine (2 s)
+    (1, 1, 2, 0), number: price 32 + 10, 139 beginnings, 0 wrong (2 s)
+    (1, 1, 2, 0), table: out of time, at least 34 + 10 (17 s)
+    (2, 1, 1, 0), number: price 32 + 10, 139 beginnings, 0 wrong (17 s)
+    (2, 1, 1, 0), table: out of time, at least 36 + 10 (32 s)
+    (0, 2, 2, 0), number: price 32 + 11, 139 beginnings, 0 wrong (33 s)
+    (0, 2, 2, 0), table: out of time, at least 29 + 11 (48 s)
+    (1, 2, 1, 0), number: price 32 + 11, 139 beginnings, 0 wrong (49 s)
+    (1, 2, 1, 0), table: out of time, at least 31 + 11 (64 s)
+  kept 2 counts (ab), 2 states (price 41): call: if state 0 and b=0: a+1; if state 0 and b>0: b-1; if state 1 and b=0: a+1; if state 1 and b>0: a+1 | crew: if state 0 and a=0: b+1; if state 0 and a>0: a-1; if state 1 and a=0: b+1 | storm: to state 1 | clear: if a=0 and b>0: to state 0; if a>0 and b>0: a-1 | shown by nothing; '{}' with a
+    (2, 0, 2, 1), number: price 28 + 11, 140 beginnings, 1 wrong (64 s)
+    (2, 0, 2, 1), table: no machine (67 s)
+    (3, 0, 1, 1), number: price 32 + 11, 149 beginnings, 1 wrong (70 s)
+    (3, 0, 1, 1), table: out of time, at least 39 + 11 (86 s)
+    (2, 1, 1, 1), number: price 34 + 12, 151 beginnings, 0 wrong (91 s)
+    (2, 1, 1, 1), table: out of time, at least 31 + 12 (106 s)
+    (3, 0, 2, 0), number: price 33 + 12, 151 beginnings, 1 wrong (108 s)
+    (3, 0, 2, 0), table: out of time, at least 30 + 12 (124 s)
+    (4, 0, 1, 0), number: price 41 + 12, 153 beginnings, 0 wrong (126 s)
+  asked 1 (3 rivals): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 46): call: if b=0 and c=0: a+1; if b=0 and c>0: a+1; if b>0 and c=0: b-1; if b>0 and c>0: a+1 | crew: if a=0 and c=0: b+1; if a=0 and c>0: b+1; if a>0 and c=0: a-1; if a>0 and c>0: b+1 | storm: if c=0: c+1 | clear: if c>0: take a and b from each other, c-1 | shown by nothing; '{}' with a
+  asked 2 (1 rival): answered rightly
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (alive): answered rightly
+  asked 8 (pumped): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (plain): answered rightly
+  asked 12 (again): answered rightly
+  asked 13 (alive): answered rightly
+  asked 14 (pumped): answered rightly
+  asked 15 (plain): answered rightly
+  asked 16 (again): answered rightly
+2 counts (ab), 1 difference (c) (price 46): call: if b=0 and c=0: a+1; if b=0 and c>0: a+1; if b>0 and c=0: b-1; if b>0 and c>0: a+1 | crew: if a=0 and c=0: b+1; if a=0 and c>0: b+1; if a>0 and c=0: a-1; if a>0 and c>0: b+1 | storm: if c=0: c+1 | clear: if c>0: take a and b from each other, c-1 | shown by nothing; '{}' with a; asked 16; 192 s
+20 100.0 %
+100 100.0 %
+500 100.0 %
