@@ -1,0 +1,86 @@
+    (1, 0, 1, 0), number: no machine (0 s)
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), number: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), number: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), number: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 2, 0), number: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), number: no machine (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (0, 2, 1, 0), number: no machine (0 s)
+    (0, 2, 1, 0), table: price 37 + 8, 89 beginnings, 0 wrong (0 s)
+    (2, 0, 1, 1), number: no machine (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (2, 0, 2, 0), number: no machine (0 s)
+    (2, 0, 2, 0), table: price 36 + 9, 89 beginnings, 0 wrong (3 s)
+    (3, 0, 1, 0), number: no machine (3 s)
+    (3, 0, 1, 0), table: price 36 + 9, 89 beginnings, 0 wrong (5 s)
+    (1, 1, 2, 0), number: no machine (5 s)
+    (1, 1, 2, 0), table: price 31 + 10, 89 beginnings, 0 wrong (20 s)
+    (2, 1, 1, 0), number: no machine (20 s)
+    (2, 1, 1, 0), table: out of time, at least 31 + 10 (35 s)
+    (0, 2, 2, 0), number: no machine (35 s)
+    (0, 2, 2, 0), table: out of time, at least 26 + 11 (50 s)
+    (1, 2, 1, 0), number: no machine (50 s)
+    (1, 2, 1, 0), table: out of time, at least 25 + 11 (65 s)
+    (2, 0, 2, 1), number: price 12 + 11, 89 beginnings, 0 wrong (65 s)
+    (2, 0, 2, 1), table: price 36 + 11, 89 beginnings, 0 wrong (75 s)
+    (3, 0, 1, 1), number: price 12 + 11, 89 beginnings, 0 wrong (75 s)
+    (3, 0, 1, 1), table: out of time, at least 33 + 11 (91 s)
+    (2, 1, 1, 1), number: price 12 + 12, 89 beginnings, 0 wrong (91 s)
+    (2, 1, 1, 1), table: out of time, at least 28 + 12 (106 s)
+    (3, 0, 2, 0), number: no machine (106 s)
+    (3, 0, 2, 0), table: out of time, at least 26 + 12 (121 s)
+    (4, 0, 1, 0), number: no machine (121 s)
+    (4, 0, 1, 0), table: out of time, at least 27 + 12 (136 s)
+    (2, 1, 2, 0), number: no machine (137 s)
+    (2, 1, 2, 0), table: out of time, at least 22 + 13 (152 s)
+    (3, 1, 1, 0), number: no machine (152 s)
+    (3, 1, 1, 0), table: out of time, at least 23 + 13 (167 s)
+    (1, 2, 2, 0), number: no machine (168 s)
+    (1, 2, 2, 0), table: out of time, at least 20 + 14 (184 s)
+    (2, 2, 1, 0), number: no machine (184 s)
+    (2, 2, 1, 0), table: out of time, at least 21 + 14 (206 s)
+    (3, 0, 2, 1), number: price 12 + 14, 89 beginnings, 0 wrong (207 s)
+    (3, 0, 2, 1), table: out of time, at least 22 + 14 (222 s)
+    (2, 1, 2, 1), number: price 12 + 15, 89 beginnings, 0 wrong (222 s)
+    (2, 1, 2, 1), table: out of time, at least 20 + 15 (239 s)
+    (4, 0, 2, 0), number: no machine (239 s)
+    (4, 0, 2, 0), table: out of time, at least 21 + 15 (256 s)
+    (3, 1, 2, 0), number: no machine (257 s)
+    (3, 1, 2, 0), table: out of time, at least 17 + 16 (272 s)
+  kept 2 counts (ab), 2 states (price 23): stop: if state 0: a+1; if state 1: empty a | turn: to state 1 | school: pour a into b | shown: b
+    (2, 0, 2, 1), number: price 12 + 11, 89 beginnings, 1 wrong (272 s)
+    (2, 0, 2, 1), number: price 13 + 11, 109 beginnings, 1 wrong (272 s)
+    (3, 0, 1, 1), number: price 16 + 11, 124 beginnings, 0 wrong (273 s)
+    (2, 0, 2, 1), number: price 16 + 11, 124 beginnings, 0 wrong (273 s)
+    (2, 1, 1, 1), number: price 16 + 12, 124 beginnings, 0 wrong (274 s)
+    (3, 0, 2, 1), number: price 16 + 14, 124 beginnings, 0 wrong (275 s)
+  asked 1 (plain): answered wrongly; kept 3 counts (abc) (price 27): stop: if a=0: b+1; if a>0: empty b | turn: if a=0: a+1; if a>0: a-1 | school: pour b into c | shown: c
+    (2, 0, 2, 1), number: price 16 + 11, 124 beginnings, 1 wrong (275 s)
+    (2, 0, 2, 1), number: price 19 + 11, 137 beginnings, 0 wrong (276 s)
+    (3, 0, 1, 1), number: price 19 + 11, 137 beginnings, 0 wrong (276 s)
+    (2, 1, 2, 1), number: price 19 + 15, 137 beginnings, 0 wrong (278 s)
+    (2, 1, 1, 1), number: price 19 + 12, 137 beginnings, 0 wrong (278 s)
+  asked 2 (plain): answered wrongly; kept 2 counts (ab), 2 states (price 30): stop: if state 0 and a=0: a+1; if state 0 and a>0: a+1; if state 1 and a>0: a-1 | turn: if state 0: to state 1; if state 1: to state 0 | school: pour a into b | shown: b
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (alive): answered rightly
+  asked 8 (pumped): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (plain): answered rightly
+  asked 12 (again): answered rightly
+  asked 13 (alive): answered rightly
+  asked 14 (pumped): answered rightly
+  asked 15 (plain): answered rightly
+  asked 16 (again): answered rightly
+2 counts (ab), 2 states (price 30): stop: if state 0 and a=0: a+1; if state 0 and a>0: a+1; if state 1 and a>0: a-1 | turn: if state 0: to state 1; if state 1: to state 0 | school: pour a into b | shown: b; asked 16; 278 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

@@ -6,8 +6,9 @@ way: neither of the two explains anything before the other is there. Here the wh
 counter machine (Minsky 1967) written in guarded commands (Dijkstra 1975): a few states of control and a few whole
 numbers, all at 0 at the start. A number is a count (it never goes below 0, and is tested for being 0) or a difference
 (any whole number, tested for its sign). A symbol reads some of the tests and the state, and by what they say it moves
-the control and adds -1, 0 or +1 to every number. What is shown is read from the state and the tests (a table), or is
-one of the numbers itself.
+the control and adds -1, 0 or +1 to every number, or makes one whole move, the loops of Minsky's machines said at once:
+pours all of one count into another, takes two counts from each other while both are above 0, or empties a count. What
+is shown is read from the state and the tests (a table), or is one of the numbers itself.
 
 The machine is found by a solver as the cheapest that answers everything heard (core-guided MaxSAT, Ignatiev, Morgado
 and Marques-Silva 2019): its price is that of the numbers and states kept in mind, of the tests read (by a symbol or by
@@ -26,19 +27,48 @@ import parts
 
 ENGINE = "glucose4"  # (as cells.py: a solve that can be interrupted)
 COUNT, DIFF = (0, 1), (-1, 0, 1)  # what a count's test says (0, above 0), and a difference's (below 0, 0, above 0)
-SHAPES = sorted([(n, z, q) for n in range(5) for z in range(3) for q in (1, 2)
-                 if 1 <= n + z <= 4 and q * 2 ** n * 3 ** z <= 48],
-                key=lambda s: (3 * s[0] + 4 * s[1] + 3 * (s[2] - 1), s))  # (counts, differences, states)
+SHAPES = sorted([(n, z, q, w) for n in range(5) for z in range(3) for q in (1, 2) for w in (0, 1)
+                 if 1 <= n + z <= 4 and q * 2 ** n * 3 ** z <= 48 and (not w or 2 <= n and n + z <= 3 and q * 2 ** n * 3 ** z <= 24)],
+                key=lambda s: (3 * s[0] + 4 * s[1] + 3 * (s[2] - 1) + 2 * s[3], s))
+# (counts, differences, states, whether whole moves are allowed: see Space)
 READ = 2  # the price of a test read (by a symbol or by the display)
 ROW = 1  # of every row of a symbol's table that does something (a row: one reading of the tests it reads)
 # and 1 for every number moved or state changed in it; 3 for every count and state beyond the first, 4 for a difference
 
 
 def base(shape):
-    n, z, q = shape
-    return 3 * n + 4 * z + 3 * (q - 1)
+    n, z, q, w = shape
+    return 3 * n + 4 * z + 3 * (q - 1) + 2 * w
 
 
+def wholes(n):
+    """The whole moves among n counts (Minsky's loops, said at once): all of count i poured into count j, counts i and
+    j taken from each other while both are above 0 (as many as the smaller one), count i emptied."""
+    return [("pour", i, j) for i in range(n) for j in range(n) if i != j] + \
+        [("even", i, j) for i in range(n) for j in range(i + 1, n)] + [("empty", i) for i in range(n)]
+
+
+def whole(c, w):
+    c = list(c)
+    if w[0] == "pour":
+        c[w[2]] += c[w[1]]
+        c[w[1]] = 0
+    elif w[0] == "even":
+        m = min(c[w[1]], c[w[2]])
+        c[w[1]] -= m
+        c[w[2]] -= m
+    else:
+        c[w[1]] = 0
+    return tuple(c)
+
+
+MOVE = 2  # the price of a whole move (beside the row it is in)
+
+
+NONE = 10 ** 6  # (the least price of a shape that has no machine at all)
+ROUND = 60  # seconds a round may take once some machine answers everything heard (the shapes not looked at go on later)
+SHORT = 4  # the beginnings of at most so many symbols are in the formulas from the start (the rest when answered wrongly)
+PER = 15  # seconds the search of one shape is given in a round (it goes on in the next)
 NEED = 14  # sure after so many long stories asked in a row answered rightly (as parts.py: SURE plain, then MORE)
 NAMES = "abcd"
 
@@ -54,7 +84,7 @@ class Machine:
 
     def __init__(self, syms, shape, eff, out, num, reads, oreads, cost):
         self.syms, self.shape = list(syms), shape
-        n, z, self.Q = shape
+        n, z, self.Q, _ = shape
         self.K, self.kinds = n + z, [COUNT] * n + [DIFF] * z
         self.eff, self.out, self.num = eff, out, num
         self.reads, self.oreads, self.cost = reads, oreads, cost
@@ -77,9 +107,9 @@ class Machine:
 
     def next(self, state, a):
         (q, c), _ = state
-        go, d = self.eff[a][self.cell(q, c)]
+        go, d, w = self.eff[a][self.cell(q, c)]
         q = q if go is None else go
-        c = tuple(x + y for x, y in zip(c, d))
+        c = tuple(x + y for x, y in zip(c if w is None else whole(c, w), d))
         y = self.show(q, c)
         return ((q, c), y), y
 
@@ -99,18 +129,20 @@ class Machine:
             c = [0] * (self.K + 1)
             for t, v in zip(T, vals):
                 c[t] = v
-            go, d = self.eff[a][self.cell(c[0], c[1:])]
-            out.append((" and ".join(self.test(t, v) for t, v in zip(T, vals)), go, d))
+            go, d, w = self.eff[a][self.cell(c[0], c[1:])]
+            out.append((" and ".join(self.test(t, v) for t, v in zip(T, vals)), go, d, w))
         return out
 
-    def say(self, go, d):
-        m = [f"{NAMES[i]}{'+1' if x > 0 else '-1'}" for i, x in enumerate(d) if x] + ([f"to state {go}"] if go is not None else [])
+    def say(self, go, d, w=None):
+        m = ([] if w is None else [f"pour {NAMES[w[1]]} into {NAMES[w[2]]}" if w[0] == "pour" else
+                                   f"take {NAMES[w[1]]} and {NAMES[w[2]]} from each other" if w[0] == "even" else
+                                   f"empty {NAMES[w[1]]}"]) + [f"{NAMES[i]}{'+1' if x > 0 else '-1'}" for i, x in enumerate(d) if x] + ([f"to state {go}"] if go is not None else [])
         return ", ".join(m) or "nothing"
 
     def __str__(self):
         words = []
         for a, s in enumerate(self.syms):
-            r = [(t, self.say(go, d)) for t, go, d in self.rows(a)]
+            r = [(t, self.say(go, d, w)) for t, go, d, w in self.rows(a)]
             if len({x for _, x in r}) == 1:
                 words.append(f"{s}: {r[0][1]}")
             else:
@@ -118,7 +150,7 @@ class Machine:
         names = ["state"] + list(NAMES)
         shown = f"shown: {NAMES[self.num[0]]}{'+' + str(self.num[1]) if self.num[1] else ''}" if self.num else \
             f"shown by {', '.join(names[t] for t in self.oreads) or 'nothing'}"
-        n, z, q = self.shape
+        n, z, q, _ = self.shape
         kinds = f"{n} count{'s' * (n != 1)}" + (f" ({NAMES[:n]})" if n else "") + \
             (f", {z} difference{'s' * (z != 1)} ({NAMES[n:n + z]})" if z else "") + (f", {q} states" if q > 1 else "")
         return f"{kinds} (price {self.total}): " + " | ".join(words) + f" | {shown}"
@@ -166,9 +198,10 @@ class Space:
     def __init__(self, H, shape, numeric, nodes, avoid=None):
         self.H, self.shape, self.numeric = H, shape, numeric
         A = self.A = len(H.syms)
-        n_, z_, Q = shape
+        n_, z_, Q, w_ = shape
         K, kinds = n_ + z_, [COUNT] * n_ + [DIFF] * z_
         self.K, self.Q, self.kinds = K, Q, kinds
+        W = self.W = wholes(n_) if w_ else []
         C = self.C = list(itertools.product(range(Q), *kinds))
         at = {c: i for i, c in enumerate(C)}
         tests = self.tests = ([0] if Q > 1 else []) + list(range(1, K + 1))
@@ -188,6 +221,14 @@ class Space:
                         f.add([-D[a][ci][i][0]])  # (a count at 0 is not taken from)
                 if Q > 1:
                     f.one(E[a][ci])
+        M = self.M = [[[f.var() for _ in range(len(W) + 1)] for _ in C] for _ in range(A)] if W else None  # (none, or w)
+        if W:
+            for a in range(A):
+                for ci, c in enumerate(C):
+                    f.one(M[a][ci])
+                    for k, w in enumerate(W):
+                        for i in w[1:]:  # (a number moved as a whole is not moved by one in the same row)
+                            f.add([-M[a][ci][k + 1], D[a][ci][i][1]])
         if numeric:
             self.N = [f.var() for _ in range(K)]
             f.one(self.N)
@@ -209,6 +250,9 @@ class Space:
                     if Q > 1:
                         for j in range(Q + 1):
                             f.add([R[a][t], -E[a][x][j], E[a][y][j]])
+                    if W:
+                        for j in range(len(W) + 1):
+                            f.add([R[a][t], -M[a][x][j], M[a][y][j]])
                 cost += [R[a][t]] * READ
             for ci, c in enumerate(C):  # a move made is paid for once, in the cell where every test not read is at 0;
                 nc = [-R[a][t] for t in tests if c[t] != 0]  # and every row of the table that does something, once
@@ -224,6 +268,11 @@ class Space:
                     f.add([z, E[a][ci][0]] + nc)
                     f.add([row, E[a][ci][0]] + nc)
                     cost.append(z)
+                if W:
+                    z = f.var()
+                    f.add([z, M[a][ci][0]] + nc)
+                    f.add([row, M[a][ci][0]] + nc)
+                    cost += [z] * MOVE
         if not numeric:
             for t in tests:
                 for x, y in pairs[t]:
@@ -285,14 +334,39 @@ class Space:
                         add([-x, -y])
                 p, a = H.parent[n], H.sym[n]
                 X = [[f.var() for _ in DIFF] for _ in range(K)]
+                W = self.W
+                Y = [f.var() for _ in range(len(W) + 1)] if W else None  # (the whole move made here, if any)
+                if W:
+                    add(list(Y))
+                    for x, y in itertools.combinations(Y, 2):
+                        add([-x, -y])
                 for i in range(K):
+                    by = [Y[k + 1] for k, w in enumerate(W) if i in w[1:]]  # (a number moved as a whole here)
                     for x, y in itertools.combinations(X[i], 2):
                         add([-x, -y])
                     for j, delta in enumerate(DIFF):
                         for k in range(0 if self.kinds[i] is COUNT else -d, d + 1):
                             u, v = ge(n, i, k), ge(p, i, k - delta)
-                            add([-X[i][j], no(u), v])
-                            add([-X[i][j], u, no(v)])
+                            add(by + [-X[i][j], no(u), v])
+                            add(by + [-X[i][j], u, no(v)])
+                for k, w in enumerate(W):
+                    y, dp = Y[k + 1], self.dep[p]
+                    i = w[1]
+                    if w[0] != "even":
+                        add([-y, no(ge(n, i, 1))])  # (count i is 0 after it is poured or emptied)
+                    if w[0] == "pour":  # (j after = j before + i before: at least k when i >= t and j >= k - t)
+                        j = w[2]
+                        for kk in range(1, d + 1):
+                            for t in range(0, dp + 1):
+                                add([-y, no(ge(p, i, t)), no(ge(p, j, kk - t)), ge(n, j, kk)])
+                                add([-y, ge(p, i, t + 1), ge(p, j, kk - t), no(ge(n, j, kk))])
+                    elif w[0] == "even":  # (j after = j before - i before, if above 0; and i after = 0 or i - j)
+                        j = w[2]
+                        for (x, z) in ((i, j), (j, i)):
+                            for kk in range(1, d + 1):
+                                for t in range(0, dp + 1):
+                                    add([-y, no(ge(p, x, kk + t)), ge(p, z, t + 1), ge(n, x, kk)])
+                                    add([-y, ge(p, x, kk + t), no(ge(p, z, t)), no(ge(n, x, kk))])
                 for ci, c in enumerate(C):
                     pr = self.pre(p, c)
                     if True in pr:
@@ -300,6 +374,8 @@ class Space:
                     for i in range(K):
                         for j in range(3):
                             add(pr + [-self.D[a][ci][i][j], X[i][j]])
+                    for k in range(len(W) + 1 if W else 0):
+                        add(pr + [-self.M[a][ci][k], Y[k]])
                     if Q > 1:
                         add(pr + [-self.E[a][ci][0], self.S[n][c[0]]])
                         for q in range(Q):
@@ -354,8 +430,11 @@ class Space:
         A, K, Q, C = self.A, self.K, self.Q, self.C
         E, D, R = self.E, self.D, self.R
         price = sum(x in best for x in self.cost)
+        W, M = self.W, self.M
         eff = [[(None if Q == 1 or E[a][ci][0] in best else next(q for q in range(Q) if E[a][ci][q + 1] in best),
-                 tuple(DIFF[next(j for j in range(3) if D[a][ci][i][j] in best)] for i in range(K))) for ci in range(len(C))]
+                 tuple(DIFF[next(j for j in range(3) if D[a][ci][i][j] in best)] for i in range(K)),
+                 None if not W or M[a][ci][0] in best else W[next(k for k in range(len(W)) if M[a][ci][k + 1] in best)])
+                for ci in range(len(C))]
                for a in range(A)]
         reads = [[t for t in self.tests if R[a][t] in best] for a in range(A)]
         if self.numeric:
@@ -392,22 +471,27 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
     wrongly, up to its first wrong answer (kept in H.active, for every shape and every later round). Of every shape the
     least price it can still have is kept (more stories never lower it; a search stopped by the time leaves the bound
     its cores prove) with the machine found (the cheapest of its shape while it answers everything heard). The shape
-    looked at next is the one that could be the cheapest; one whose search runs out of its per seconds is left for
-    the next round, where its search goes on."""
+    looked at next is the one that could be the cheapest; one whose search runs out of its time (per seconds, twice
+    as many every time it runs out, up to 8 per) is left for
+    the next round, where its search goes on (or for the next turn of this one, while nothing is found). Once some
+    machine answers everything heard, a round takes at most ROUND seconds."""
     dep = depths(H)
     if not hasattr(H, "active"):
-        H.active, H.low, H.kept, H.spaces, H.t0 = set(), {}, {}, {}, time.time()
+        H.active, H.low, H.kept, H.spaces, H.t0, H.slow = set(), {}, {}, {}, time.time(), {}
     nodes = H.active
     nodes |= {n for n in range(len(H.parent)) if dep[n] <= short}
     keys = [shape + (mode,) for shape in SHAPES for mode in ((True, False) if H.numeric else (False,))]
-    bound = lambda k: base(k[:3]) + H.low.get(k, 0)
-    best, later = None, set()
-    while time.time() < deadline:
-        left = [k for k in keys if k not in later and (best is None or bound(k) < best.total)]
+    bound = lambda k: base(k[:4]) + H.low.get(k, 0)
+    best, later, start = None, set(), time.time()
+    while time.time() < deadline and (best is None or time.time() < start + ROUND):
+        left = [k for k in keys if k not in later and H.low.get(k, 0) < NONE and (best is None or bound(k) < best.total)]
+        if not left and best is None and later:  # (every search ran out of its time: they all go on)
+            later = set()
+            continue
         if not left:
             break
         key = min(left, key=bound)
-        shape, mode = key[:3], key[3]
+        shape, mode = key[:4], key[4]
         say = f"{shape}, {'number' if mode else 'table'}"
         m = H.kept.get(key)
         if m is None or wrong(m, H):
@@ -418,14 +502,16 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
             if sp is None:
                 sp = H.spaces[key] = Space(H, shape, mode, nodes)
             sp.add(nodes)
-            m = sp.solve(deadline if per is None else min(deadline, time.time() + per))
+            slice_ = None if per is None else min(per * 2 ** H.slow.get(key, 0), 8 * per)
+            m = sp.solve(deadline if per is None else min(deadline, time.time() + slice_))
             if m is None:
+                H.slow[key] = H.slow.get(key, 0) + 1  # (the next time it is given twice as long, up to 8 per)
                 H.low[key] = max(H.low.get(key, 0), sp.solver.cost)
                 later.add(key)
                 log(f"    {say}: out of time, at least {H.low[key]} + {base(shape)} ({time.time() - H.t0:.0f} s)")
                 continue
             if m == "none":
-                H.low[key] = 10 ** 6
+                H.low[key] = NONE
                 log(f"    {say}: no machine ({time.time() - H.t0:.0f} s)")
                 continue
         H.low[key], H.kept[key] = m.cost, m
@@ -467,8 +553,10 @@ def parting(m, r, deep=10, most=200000):
 
 def rivals(m, H, deadline, slack=3, per=30):
     """Machines that answer everything heard, of price at most slack more than m: the cheapest of every other shape
-    kept by explain, and the cheapest of m's own shape that reads other tests."""
+    kept by explain, or else the cheapest of m's own shape that reads other tests."""
     out = [r for r in H.kept.values() if r is not m and r.total <= m.total + slack and not wrong(r, H)]
+    if out:  # (the cheapest of m's own shape reading other tests is looked for only when there is no other rival)
+        return sorted(out, key=lambda r: r.total)
     sp = Space(H, m.shape, m.num is not None, H.active, avoid=m)
     r = sp.solve(min(deadline, time.time() + per))
     sp.delete()
@@ -477,21 +565,23 @@ def rivals(m, H, deadline, slack=3, per=30):
     return sorted(out, key=lambda r: r.total)
 
 
-def learn(syms, oracle, data, rng, asks=40, deadline=None, H=None, log=lambda *a: None, per=None):
+def learn(syms, oracle, data, rng, asks=40, deadline=None, H=None, log=lambda *a: None, per=PER, cap=0, short=SHORT):
     """The stories taught on (and H, the stories another learner heard, if given), then up to asks questions: first
     the story that parts the machine kept from a rival (see rivals), then long stories as a check (plain, with symbols
     repeated, kept away from an answer never left, a rare answer drawn out, as parts.py asks them); where the machine is
-    wrong it is looked for again. Sure when no rival is left and NEED checks in a row were answered rightly."""
+    wrong it is looked for again. Sure when no rival is left and NEED checks in a row were answered rightly. With cap,
+    it stops when the cheapest machine costs more: that is not a rule of a few quantities, and the questions left are
+    left to another learner."""
     deadline = deadline or time.time() + 600
     if H is None:
         H = parts.Heard(syms, oracle([]))
         for w, _ in data:
             H.add(list(w), [oracle(list(w[:i])) for i in range(1, len(w) + 1)])
-    m = explain(H, deadline, log, per=per)
+    m = explain(H, deadline, log, short=short, per=per)
     asked, row = 0, 0
     log(f"  kept {m}")
     same = set()  # (rivals no story of deep symbols parts from the machine kept)
-    while m is not None and asked < asks and row < NEED and time.time() < deadline:
+    while m is not None and asked < asks and row < NEED and time.time() < deadline and not (cap and m.total > cap):
         w, kind = None, "a check"
         for r in rivals(m, H, deadline):
             if (str(m), str(r)) not in same:
@@ -514,7 +604,7 @@ def learn(syms, oracle, data, rng, asks=40, deadline=None, H=None, log=lambda *a
             log(f"  asked {asked} ({kind}): answered rightly")
             continue
         row = 0
-        m = explain(H, deadline, log, per=per)
+        m = explain(H, deadline, log, short=short, per=per)
         log(f"  asked {asked} ({kind}): answered wrongly; kept {m}")
     if m is not None:
         m.sure = row >= NEED
@@ -527,8 +617,10 @@ def main():
     ap.add_argument("--asks", type=int, default=40)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--minutes", type=float, default=10)
-    ap.add_argument("--per", type=float, default=60, help="seconds for a shape in a round")
+    ap.add_argument("--per", type=float, default=PER, help="seconds for a shape in a round")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--short", type=int, default=SHORT)
+    ap.add_argument("--plain", action="store_true", help="no whole moves")
     a = ap.parse_args()
     spec = importlib.util.spec_from_file_location("family", a.family)
     mod = importlib.util.module_from_spec(spec)
@@ -537,8 +629,11 @@ def main():
     oracle = lambda w: str(answer(list(w)))
     rng = random.Random(a.seed)
     data = [(w, oracle(w)) for w in (tuple(rng.choice(syms) for _ in range(rng.randint(1, 4))) for _ in range(300))]
+    global SHAPES
+    if a.plain:
+        SHAPES = [s for s in SHAPES if not s[3]]
     t0 = time.time()
-    m, asked, H = learn(syms, oracle, data, rng, a.asks, t0 + a.minutes * 60, log=(lambda *x: None) if a.quiet else print, per=a.per)
+    m, asked, H = learn(syms, oracle, data, rng, a.asks, t0 + a.minutes * 60, log=(lambda *x: None) if a.quiet else print, per=a.per, short=a.short)
     if m is None:
         print(f"nothing found; asked {asked}; {time.time() - t0:.0f} s")
         return

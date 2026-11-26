@@ -1,0 +1,116 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 2, 0), table: price 21 + 7, 203 beginnings, 0 wrong (0 s)
+    (1, 1, 1, 0), table: price 21 + 7, 203 beginnings, 0 wrong (0 s)
+    (0, 2, 1, 0), table: price 18 + 8, 203 beginnings, 0 wrong (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (2, 0, 2, 0), table: price 21 + 9, 203 beginnings, 0 wrong (1 s)
+    (3, 0, 1, 0), table: price 22 + 9, 203 beginnings, 0 wrong (1 s)
+    (1, 1, 2, 0), table: price 18 + 10, 203 beginnings, 0 wrong (1 s)
+    (2, 1, 1, 0), table: price 18 + 10, 203 beginnings, 0 wrong (1 s)
+    (0, 2, 2, 0), table: price 17 + 11, 203 beginnings, 0 wrong (2 s)
+    (1, 2, 1, 0), table: price 17 + 11, 203 beginnings, 0 wrong (2 s)
+    (2, 0, 2, 1), table: price 21 + 11, 203 beginnings, 0 wrong (3 s)
+    (3, 0, 1, 1), table: price 21 + 11, 203 beginnings, 0 wrong (3 s)
+    (2, 1, 1, 1), table: price 18 + 12, 203 beginnings, 0 wrong (4 s)
+    (3, 0, 2, 0), table: price 20 + 12, 203 beginnings, 0 wrong (6 s)
+    (4, 0, 1, 0), table: price 20 + 12, 203 beginnings, 0 wrong (7 s)
+    (2, 1, 2, 0), table: price 18 + 13, 203 beginnings, 0 wrong (8 s)
+    (3, 1, 1, 0), table: price 18 + 13, 203 beginnings, 0 wrong (9 s)
+    (1, 2, 2, 0), table: price 17 + 14, 203 beginnings, 0 wrong (11 s)
+    (2, 2, 1, 0), table: price 17 + 14, 203 beginnings, 0 wrong (13 s)
+    (3, 0, 2, 1), table: price 19 + 14, 203 beginnings, 0 wrong (16 s)
+    (2, 1, 2, 1), table: price 18 + 15, 203 beginnings, 0 wrong (23 s)
+    (4, 0, 2, 0), table: price 20 + 15, 203 beginnings, 0 wrong (33 s)
+    (3, 1, 2, 0), table: price 18 + 16, 203 beginnings, 0 wrong (41 s)
+  kept 0 counts, 2 differences (ab) (price 26): car: if a<0: a+1; if a=0: a+1 | fry: a-1 | hand: nothing | honk: if a>0: b+1 | toss: if a<0: b-1 | shown by b
+    (0, 2, 1, 0), table: price 18 + 8, 204 beginnings, 1 wrong (41 s)
+    (0, 2, 1, 0), table: price 19 + 8, 207 beginnings, 0 wrong (41 s)
+  asked 1 (a rival (0 counts, 1 difference (a), 2 states (price 28): car: if a<0: a+1; if a=0: a+1 | fry: a-1 | hand: nothing | honk: if a>0: a+1, to state 1 | toss: if a<0: to state 1 | shown by state, a)): answered wrongly; kept 0 counts, 2 differences (ab) (price 27): car: if a<0: a+1; if a=0: a+1 | fry: a-1 | hand: nothing | honk: if a>0: a+1, b+1 | toss: if a<0: b-1 | shown by b
+    (0, 2, 1, 0), table: price 21 + 8, 208 beginnings, 0 wrong (41 s)
+    (0, 1, 2, 0), table: price 26 + 7, 208 beginnings, 0 wrong (41 s)
+    (1, 1, 1, 0), table: price 29 + 7, 208 beginnings, 0 wrong (41 s)
+    (1, 1, 2, 0), table: price 18 + 10, 208 beginnings, 1 wrong (41 s)
+    (1, 1, 2, 0), table: price 20 + 10, 215 beginnings, 0 wrong (42 s)
+    (2, 1, 1, 0), table: price 20 + 10, 215 beginnings, 0 wrong (42 s)
+    (0, 2, 2, 0), table: price 19 + 11, 215 beginnings, 0 wrong (43 s)
+    (1, 2, 1, 0), table: price 19 + 11, 215 beginnings, 0 wrong (44 s)
+  asked 2 (a rival (1 count (a), 1 difference (b), 2 states (price 28): car: to state 1 | fry: a+1 | hand: nothing | honk: if state 1 and a=0: b+1 | toss: if state 0 and a>0: b-1 | shown by b)): answered wrongly; kept 0 counts, 2 differences (ab) (price 29): car: if a=0: a+1 | fry: if b=0: b+1 | hand: nothing | honk: if a>0: a-1, b-1 | toss: if b>0: a-1 | shown by a, b
+  asked 3 (a rival (1 count (a), 1 difference (b), 2 states (price 30): car: to state 1 | fry: a+1 | hand: nothing | honk: if state 1 and a=0: b+1 | toss: if state 0 and a>0: b-1; if state 1 and a>0: a-1 | shown by b)): answered rightly
+    (0, 2, 1, 0), table: price 22 + 8, 218 beginnings, 1 wrong (44 s)
+    (0, 2, 1, 0), table: price 22 + 8, 223 beginnings, 0 wrong (44 s)
+  asked 4 (a rival (0 counts, 2 differences (ab), 2 states (price 30): car: a+1 | fry: if b=0: a-1, b+1 | hand: nothing | honk: if a>0: b-1 | toss: if a<0: to state 1 | shown by state, b)): answered wrongly; kept 0 counts, 2 differences (ab) (price 30): car: if a=0: a+1 | fry: if b=0: b+1 | hand: nothing | honk: if a>0: a-1, b-1 | toss: if b>0: a-1, b-1 | shown by a, b
+    (0, 2, 1, 0), table: price 22 + 8, 223 beginnings, 1 wrong (44 s)
+    (0, 2, 1, 0), table: price 23 + 8, 228 beginnings, 1 wrong (44 s)
+    (2, 0, 2, 0), table: price 29 + 9, 241 beginnings, 2 wrong (51 s)
+    (1, 1, 2, 0), table: price 22 + 10, 257 beginnings, 0 wrong (55 s)
+    (2, 1, 1, 0), table: price 24 + 10, 257 beginnings, 0 wrong (58 s)
+    (0, 2, 2, 0), table: price 22 + 11, 257 beginnings, 1 wrong (63 s)
+    (1, 2, 1, 0), table: price 23 + 11, 259 beginnings, 0 wrong (71 s)
+    (2, 1, 1, 1), table: price 21 + 12, 259 beginnings, 0 wrong (75 s)
+    (0, 2, 1, 0), table: price 24 + 8, 259 beginnings, 0 wrong (76 s)
+    (3, 0, 1, 0), table: price 29 + 9, 259 beginnings, 0 wrong (79 s)
+    (2, 1, 2, 0), table: out of time, at least 21 + 13 (95 s)
+    (3, 1, 1, 0), table: out of time, at least 22 + 13 (115 s)
+  asked 5 (a rival (0 counts, 2 differences (ab), 2 states (price 30): car: a+1 | fry: if b=0: a-1, b+1 | hand: nothing | honk: if a>0: b-1 | toss: if a<0: to state 1 | shown by state, b)): answered wrongly; kept 1 count (a), 1 difference (b), 2 states (price 32): car: to state 1 | fry: if b=0: a+1, b+1 | hand: nothing | honk: if state 1: b-1, to state 0 | toss: if state 0 and a>0: a-1 | shown by a, b
+    (1, 2, 2, 0), table: out of time, at least 20 + 14 (137 s)
+    (2, 2, 1, 0), table: out of time, at least 20 + 14 (152 s)
+    (0, 2, 1, 0), table: price 27 + 8, 261 beginnings, 1 wrong (152 s)
+    (1, 1, 2, 0), table: price 22 + 10, 267 beginnings, 1 wrong (152 s)
+    (1, 1, 2, 0), table: out of time, at least 25 + 10 (167 s)
+    (2, 0, 2, 1), table: price 26 + 11, 280 beginnings, 1 wrong (175 s)
+    (3, 0, 1, 1), table: price 26 + 11, 291 beginnings, 0 wrong (186 s)
+  asked 6 (a rival (0 counts, 2 differences (ab) (price 32): car: if a<0: a+1, b-1; if a=0: a+1 | fry: if b=0: a-1, b+1 | hand: nothing | honk: if a>0: b-1 | toss: if a<0: b-1 | shown by a, b)): answered wrongly; kept 3 counts (abc) (price 37): car: if c=0: a+1 | fry: b+1 | hand: if c=0: take a and b from each other | honk: if a>0 and b=0: c+1 | toss: if a=0: pour b into c | shown by a, c
+    (3, 0, 2, 0), table: out of time, at least 23 + 12 (201 s)
+    (4, 0, 1, 0), table: out of time, at least 26 + 12 (218 s)
+    (0, 1, 2, 0), table: price 34 + 7, 291 beginnings, 1 wrong (218 s)
+    (0, 2, 2, 0), table: price 23 + 11, 293 beginnings, 0 wrong (225 s)
+    (2, 1, 1, 1), table: price 21 + 12, 293 beginnings, 0 wrong (225 s)
+  asked 7 (a rival (2 counts (ab), 1 difference (c) (price 33): car: a+1 | fry: b+1 | hand: take a and b from each other | honk: if a>0 and b=0: c+1 | toss: if a=0 and b>0: c-1 | shown by c)): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 33): car: a+1 | fry: b+1 | hand: take a and b from each other | honk: if a>0 and b=0: c+1 | toss: if a=0 and b>0: c-1 | shown by c
+  asked 8 (a rival (0 counts, 2 differences (ab), 2 states (price 34): car: if state 0: a+1, to state 1 | fry: a-1 | hand: to state 0 | honk: if a>0: b+1 | toss: if state 0 and a<0: b-1; if state 1 and a<0: a+1 | shown by b)): answered rightly
+  asked 9 (a rival (2 counts (ab), 1 difference (c) (price 35): car: a+1 | fry: b+1 | hand: take a and b from each other | honk: if a>0 and b=0 and c=0: c+1 | toss: if a=0 and b>0: c-1 | shown by c)): answered rightly
+  asked 10 (plain): answered rightly
+    (2, 1, 1, 1), table: price 21 + 12, 296 beginnings, 1 wrong (256 s)
+    (2, 1, 1, 1), table: price 23 + 12, 347 beginnings, 1 wrong (266 s)
+    (3, 0, 2, 1), table: out of time, at least 22 + 14 (287 s)
+    (2, 1, 2, 1), table: out of time, at least 21 + 15 (319 s)
+    (2, 1, 1, 0), table: price 26 + 10, 350 beginnings, 0 wrong (330 s)
+  asked 11 (again): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 36): car: a+1 | fry: b+1 | hand: if a>0 and b>0: a-1, b-1 | honk: if a>0 and b=0: a-1, c+1 | toss: if a=0 and b>0: c-1 | shown by c
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (plain): answered rightly
+    (0, 2, 2, 0), table: out of time, at least 24 + 11 (472 s)
+    (1, 2, 1, 0), table: out of time, at least 24 + 11 (487 s)
+    (2, 1, 2, 0), table: out of time, at least 22 + 13 (506 s)
+    (1, 2, 2, 0), table: out of time, at least 20 + 14 (521 s)
+    (2, 2, 1, 0), table: out of time, at least 22 + 14 (544 s)
+    (3, 1, 2, 0), table: out of time, at least 19 + 16 (560 s)
+    (0, 2, 1, 0), table: price 38 + 8, 356 beginnings, 6 wrong (565 s)
+    (1, 1, 2, 0), table: out of time, at least 26 + 10 (581 s)
+    (2, 1, 1, 1), table: out of time, at least 24 + 12 (605 s)
+    (3, 0, 2, 0), table: out of time, at least 23 + 12 (621 s)
+    (3, 1, 1, 0), table: out of time, at least 23 + 13 (637 s)
+    (4, 0, 2, 0), table: out of time, at least 23 + 15 (671 s)
+    (1, 1, 1, 0), table: no machine (672 s)
+    (2, 1, 1, 0), table: price 27 + 10, 504 beginnings, 0 wrong (673 s)
+  asked 15 (again): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 37): car: a+1 | fry: b+1 | hand: if a>0 and b>0: a-1, b-1 | honk: if a>0 and b=0: a-1, c+1 | toss: if a=0 and b>0: b-1, c-1 | shown by c
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+  asked 18 (plain): answered rightly
+  asked 19 (again): answered rightly
+  asked 20 (alive): answered rightly
+  asked 21 (pumped): answered rightly
+  asked 22 (plain): answered rightly
+  asked 23 (again): answered rightly
+  asked 24 (plain): answered rightly
+  asked 25 (again): answered rightly
+  asked 26 (alive): answered rightly
+  asked 27 (pumped): answered rightly
+  asked 28 (plain): answered rightly
+  asked 29 (again): answered rightly
+2 counts (ab), 1 difference (c) (price 37): car: a+1 | fry: b+1 | hand: if a>0 and b>0: a-1, b-1 | honk: if a>0 and b=0: a-1, c+1 | toss: if a=0 and b>0: b-1, c-1 | shown by c; asked 29; 1107 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

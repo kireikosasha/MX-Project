@@ -28,7 +28,7 @@ def one(path, out, a):
         w = tuple(rng.choice(syms) for _ in range(rng.randint(1, a.longest)))
         data.append((w, oracle(w)))
     t0 = time.time()
-    begin, known, spent, taken, H, later, first, whole = None, [], 0, None, None, set(), None, False
+    begin, known, spent, taken, H, later, first, whole, second = None, [], 0, None, None, set(), None, False, None
     if a.parts and a.watch:  # first the rule as a few small parts (parts.py); if it is not sure of one, the machine as a
         import parts            # table (cells.py), with the questions left and the stories already heard
         try:
@@ -42,6 +42,19 @@ def one(path, out, a):
                 taken = m
             else:
                 first = m  # (the machine of parts it stopped with: see below)
+            if taken is None and a.guarded:  # then the quantities that wait on each other, found together (guarded.py),
+                import guarded              # on the stories parts heard, with the questions left but a.keep_asks
+                g, g_asked, _ = guarded.learn(syms, oracle, data, rng, max(0, a.asks - spent - a.keep_asks),
+                                              t0 + a.minutes * 60 * a.guarded, H, cap=a.cap)
+                spent += g_asked
+                for sp in getattr(H, "spaces", {}).values():
+                    sp.delete()  # (the solvers' memory, before the table is looked for)
+                H.spaces = {}
+                if g is not None and g.sure:
+                    taken = g
+                else:
+                    second = g
+            if taken is None:
                 known = [w for w in H.index if w and not any(len(v) > len(w) and v[:len(w)] == w for v in H.index)]
     plain = oracle
     if taken is None and H is not None:  # (what the second learner asks is kept: see below)
@@ -87,6 +100,13 @@ def one(path, out, a):
                     m = mp
             if m is not None:
                 m.sure = False
+    if taken is None and second is not None and (m is None or not m.sure):
+        # the machine of quantities found together, not sure, is told when it answers everything heard by all the
+        # learners and what is told otherwise does not
+        heard = known + [w for w in later if w]
+        ok = lambda x: x is not None and all(x.run(list(w[:i])) == oracle(list(w[:i])) for w in heard for i in range(1, len(w) + 1))
+        if ok(second) and not ok(m):
+            m = second
     if a.save and m is not None and hasattr(m, "table"):  # (the rule in words)
         os.makedirs(a.save, exist_ok=True)
         open(os.path.join(a.save, os.path.basename(os.path.dirname(path)) + ".txt"), "w").write(str(m) + "\n" + m.table() + "\n")
@@ -135,6 +155,9 @@ def main():
     ap.add_argument("--rare", action="store_true", help="with --watch: before a second machine is looked for, every symbol is tried after every beginning that ends in an answer barely seen (at most half the questions); with --pairs, first the pairs whose first move leads to the place the fewest stories heard have been in")
     ap.add_argument("--parts", action="store_true", help="with --watch: first the rule is looked for as a few small parts (parts.py: counters, levels and circles moved by a few events), with at most half the questions unless it comes to answer them; the machine as a table is looked for only if that one is not sure")
     ap.add_argument("--lazy", action="store_true", help="with --parts and --far: the stories the first learner asked are not put into the formulas of the second; its machine is checked on them, and the shortest beginning it answers wrongly is taught on")
+    ap.add_argument("--guarded", type=float, default=0, help="with --parts: when the parts are not sure, the quantities that wait on each other are looked for together (guarded.py), until this share of the minutes has gone")
+    ap.add_argument("--keep-asks", type=int, default=10, help="with --guarded: so many questions are left to the table")
+    ap.add_argument("--cap", type=int, default=0, help="with --guarded: it gives up when the cheapest machine costs more")
     ap.add_argument("--sum", action="store_true", help="with --watch, when every answer is a whole number that never goes down in the stories heard (a count): the machine is looked for that answers what each symbol adds to the number shown (the answer of the last move, as with --mealy), and the number is told as the sum")
     ap.add_argument("--pairs", action="store_true", help="with --watch: stories are asked through the pairs of moves of the kept machine that no story has made, and a machine is sure only when none is left")
     ap.add_argument("--engine", default="", help="the solver (of pysat's; glucose4 if not given)")

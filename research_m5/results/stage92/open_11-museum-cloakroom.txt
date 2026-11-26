@@ -1,0 +1,40 @@
+    (1, 0, 1), table: no machine (0 s)
+    (0, 1, 1), table: no machine (0 s)
+    (1, 0, 2), table: no machine (0 s)
+    (2, 0, 1), table: no machine (0 s)
+    (0, 1, 2), table: price 37 + 7, 89 beginnings, 0 wrong (0 s)
+    (1, 1, 1), table: price 22 + 7, 89 beginnings, 0 wrong (0 s)
+    (0, 2, 1), table: price 22 + 8, 89 beginnings, 0 wrong (0 s)
+    (2, 0, 2), table: price 37 + 9, 89 beginnings, 0 wrong (2 s)
+    (3, 0, 1), table: price 34 + 9, 89 beginnings, 0 wrong (3 s)
+    (1, 1, 2), table: price 22 + 10, 89 beginnings, 0 wrong (3 s)
+    (2, 1, 1), table: price 22 + 10, 89 beginnings, 0 wrong (4 s)
+    (0, 2, 2), table: price 22 + 11, 89 beginnings, 0 wrong (5 s)
+    (1, 2, 1), table: price 22 + 11, 89 beginnings, 0 wrong (5 s)
+    (3, 0, 2), table: out of time, at least 30 + 12 (20 s)
+    (4, 0, 1), table: price 34 + 12, 89 beginnings, 0 wrong (33 s)
+    (2, 1, 2), table: price 22 + 13, 89 beginnings, 0 wrong (36 s)
+    (3, 1, 1), table: price 22 + 13, 89 beginnings, 0 wrong (38 s)
+    (1, 2, 2), table: price 22 + 14, 89 beginnings, 0 wrong (46 s)
+    (2, 2, 1), table: price 22 + 14, 89 beginnings, 0 wrong (51 s)
+    (4, 0, 2), table: out of time, at least 26 + 15 (66 s)
+    (3, 1, 2), table: out of time, at least 21 + 16 (82 s)
+  kept 1 count (a), 1 difference (b) (price 29): coat: b-1 | bag: a+1, b+1 | claim: if a=0 and b<0: b+1; if a>0 and b<0: b+1; if a>0 and b=0: b+1; if a>0 and b>0: a-1, b-1 | shown by a, b
+  asked 1 (plain): answered rightly
+  asked 2 (again): answered rightly
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (alive): answered rightly
+  asked 6 (pumped): answered rightly
+  asked 7 (plain): answered rightly
+  asked 8 (again): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (alive): answered rightly
+  asked 12 (pumped): answered rightly
+  asked 13 (plain): answered rightly
+  asked 14 (again): answered rightly
+1 count (a), 1 difference (b) (price 29): coat: b-1 | bag: a+1, b+1 | claim: if a=0 and b<0: b+1; if a>0 and b<0: b+1; if a>0 and b=0: b+1; if a>0 and b>0: a-1, b-1 | shown by a, b; asked 14; 82 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

@@ -1,0 +1,43 @@
+    (1, 0, 1), table: no machine (0 s)
+    (0, 1, 1), table: no machine (0 s)
+    (1, 0, 2), table: no machine (0 s)
+    (2, 0, 1), table: no machine (0 s)
+    (0, 1, 2), table: price 16 + 7, 139 beginnings, 0 wrong (0 s)
+    (1, 1, 1), table: price 16 + 7, 139 beginnings, 0 wrong (0 s)
+    (0, 2, 1), table: price 16 + 8, 139 beginnings, 0 wrong (0 s)
+    (2, 0, 2), table: price 31 + 9, 139 beginnings, 0 wrong (2 s)
+    (3, 0, 1), table: price 31 + 9, 139 beginnings, 0 wrong (3 s)
+    (1, 1, 2), table: price 16 + 10, 139 beginnings, 0 wrong (3 s)
+    (2, 1, 1), table: price 16 + 10, 139 beginnings, 0 wrong (3 s)
+    (0, 2, 2), table: price 16 + 11, 139 beginnings, 0 wrong (4 s)
+    (1, 2, 1), table: price 16 + 11, 139 beginnings, 0 wrong (4 s)
+    (3, 0, 2), table: price 28 + 12, 139 beginnings, 0 wrong (16 s)
+    (4, 0, 1), table: out of time, at least 30 + 12 (31 s)
+    (2, 1, 2), table: price 16 + 13, 139 beginnings, 0 wrong (32 s)
+    (3, 1, 1), table: price 16 + 13, 139 beginnings, 0 wrong (32 s)
+    (1, 2, 2), table: price 16 + 14, 139 beginnings, 0 wrong (34 s)
+    (2, 2, 1), table: price 16 + 14, 139 beginnings, 0 wrong (35 s)
+    (4, 0, 2), table: out of time, at least 23 + 15 (51 s)
+    (3, 1, 2), table: price 16 + 16, 139 beginnings, 0 wrong (53 s)
+  kept 0 counts, 1 difference (a), 2 states (price 23): book: a+1, to state 1 | cancel: if state 1: a-1, to state 0 | leave: a-1 | walkin: if a<0: a+1 | shown by a
+    (0, 1, 2), table: price 22 + 7, 141 beginnings, 0 wrong (53 s)
+    (1, 1, 1), table: price 16 + 7, 141 beginnings, 0 wrong (53 s)
+  asked 1 (a rival (1 count (a), 1 difference (b) (price 23): book: a+1, b+1 | cancel: if a>0: a-1, b-1 | leave: b-1 | walkin: if b<0: b+1 | shown by b)): answered wrongly; kept 1 count (a), 1 difference (b) (price 23): book: a+1, b+1 | cancel: if a>0: a-1, b-1 | leave: b-1 | walkin: if b<0: b+1 | shown by b
+  asked 2 (plain): answered rightly
+  asked 3 (again): answered rightly
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (alive): answered rightly
+  asked 7 (pumped): answered rightly
+  asked 8 (plain): answered rightly
+  asked 9 (again): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (alive): answered rightly
+  asked 13 (pumped): answered rightly
+  asked 14 (plain): answered rightly
+  asked 15 (again): answered rightly
+1 count (a), 1 difference (b) (price 23): book: a+1, b+1 | cancel: if a>0: a-1, b-1 | leave: b-1 | walkin: if b<0: b+1 | shown by b; asked 15; 53 s
+20 100.0 %
+100 100.0 %
+500 100.0 %
