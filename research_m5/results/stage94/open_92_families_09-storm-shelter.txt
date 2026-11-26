@@ -1,0 +1,85 @@
+    (1, 0, 1, 0), number: no machine (0 s)
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), number: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), number: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), number: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 2, 0), number: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), number: no machine (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (2, 0, 1, 1), number: no machine (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), number: no machine (0 s)
+    (0, 2, 1, 0), table: no machine (1 s)
+    (2, 0, 2, 0), number: price 39 + 9, 139 beginnings, 0 wrong (1 s)
+    (2, 0, 2, 0), table: no machine (2 s)
+    (3, 0, 1, 0), number: price 39 + 9, 139 beginnings, 0 wrong (4 s)
+    (3, 0, 1, 0), table: no machine (8 s)
+    (1, 1, 2, 0), number: price 39 + 10, 139 beginnings, 0 wrong (11 s)
+    (1, 1, 2, 0), table: out of time, at least 41 + 10 (26 s)
+    (2, 1, 1, 0), number: price 39 + 10, 139 beginnings, 0 wrong (36 s)
+    (2, 1, 1, 0), table: out of time, at least 41 + 10 (51 s)
+    (2, 0, 2, 1), number: price 29 + 11, 139 beginnings, 0 wrong (52 s)
+    (2, 0, 2, 1), table: no machine (53 s)
+    (3, 0, 1, 1), number: price 24 + 11, 139 beginnings, 0 wrong (54 s)
+    (3, 0, 1, 1), table: no machine (57 s)
+    (0, 2, 2, 0), number: price 37 + 11, 139 beginnings, 0 wrong (62 s)
+    (0, 2, 2, 0), table: out of time, at least 37 + 11 (78 s)
+    (1, 2, 1, 0), number: out of time, at least 36 + 11 (93 s)
+    (1, 2, 1, 0), table: out of time, at least 36 + 11 (108 s)
+    (2, 1, 1, 1), number: price 26 + 12, 139 beginnings, 0 wrong (112 s)
+    (2, 1, 1, 1), table: out of time, at least 36 + 12 (127 s)
+    (3, 0, 2, 0), number: out of time, at least 31 + 12 (142 s)
+    (3, 0, 2, 0), table: out of time, at least 33 + 12 (158 s)
+    (4, 0, 1, 0), number: out of time, at least 32 + 12 (173 s)
+    (4, 0, 1, 0), table: out of time, at least 32 + 12 (189 s)
+  kept 3 counts (abc) (price 35): arrive: if c=0: a+1, b+1; if c>0: a+1, c-1 | leave: pour a into c | cot: if b=0: c+1; if b>0: b-1 | lull: take a and b from each other | shown by b, c; '{} free' with c; '{} waiting' with b; 'full' with 
+    (2, 1, 2, 0), number: out of time, at least 30 + 13 (204 s)
+    (2, 1, 2, 0), table: out of time, at least 32 + 13 (219 s)
+    (3, 1, 1, 0), number: out of time, at least 29 + 13 (234 s)
+    (3, 1, 1, 0), table: out of time, at least 32 + 13 (251 s)
+    (3, 0, 2, 1), number: out of time, at least 28 + 14 (266 s)
+    (3, 0, 2, 1), table: out of time, at least 30 + 14 (282 s)
+    (1, 2, 2, 0), number: out of time, at least 27 + 14 (297 s)
+    (1, 2, 2, 0), table: out of time, at least 30 + 14 (313 s)
+    (2, 2, 1, 0), number: out of time, at least 27 + 14 (328 s)
+    (2, 2, 1, 0), table: out of time, at least 29 + 14 (343 s)
+    (2, 1, 2, 1), number: out of time, at least 26 + 15 (358 s)
+    (2, 1, 2, 1), table: out of time, at least 31 + 15 (376 s)
+    (4, 0, 2, 0), number: out of time, at least 30 + 15 (391 s)
+    (4, 0, 2, 0), table: out of time, at least 29 + 15 (406 s)
+    (3, 1, 2, 0), number: out of time, at least 25 + 16 (423 s)
+    (3, 1, 2, 0), table: out of time, at least 29 + 16 (440 s)
+    (3, 0, 1, 1), number: price 28 + 11, 141 beginnings, 0 wrong (441 s)
+  asked 1 (2 rivals): answered wrongly; kept 3 counts (abc) (price 39): arrive: if c=0: a+1; if c>0: b+1, c-1 | leave: if a=0: pour b into c; if a>0: a-1 | cot: if a=0: c+1; if a>0: a-1, b+1 | lull: empty a | shown by a, c; '{} free' with c; '{} waiting' with a; 'full' with 
+    (2, 1, 1, 1), number: price 31 + 12, 142 beginnings, 0 wrong (450 s)
+    (3, 0, 1, 1), number: price 28 + 11, 142 beginnings, 1 wrong (450 s)
+    (3, 0, 1, 1), number: price 31 + 11, 159 beginnings, 0 wrong (452 s)
+    (2, 0, 2, 1), number: price 31 + 11, 159 beginnings, 0 wrong (452 s)
+    (2, 1, 2, 1), number: out of time, at least 28 + 15 (483 s)
+    (1, 2, 2, 0), number: out of time, at least 29 + 14 (514 s)
+    (2, 2, 1, 0), number: out of time, at least 30 + 14 (546 s)
+    (3, 1, 2, 0), number: out of time, at least 26 + 16 (576 s)
+  asked 2 (1 rival): answered wrongly; kept 3 counts (abc) (price 42): arrive: if c=0: a+1, b+1; if c>0: b+1, c-1 | leave: if a=0 and b>0: b-1, c+1; if a>0 and b>0: a-1, b-1 | cot: if a=0: c+1; if a>0: a-1 | lull: take a and b from each other | shown by a, c; '{} free' with c; '{} waiting' with a; 'full' with 
+  asked 3 (1 rival): answered rightly
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (plain): answered rightly
+  asked 7 (again): answered rightly
+  asked 8 (alive): answered rightly
+  asked 9 (pumped): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (alive): answered rightly
+  asked 15 (pumped): answered rightly
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+3 counts (abc) (price 42): arrive: if c=0: a+1, b+1; if c>0: b+1, c-1 | leave: if a=0 and b>0: b-1, c+1; if a>0 and b>0: a-1, b-1 | cot: if a=0: c+1; if a>0: a-1 | lull: take a and b from each other | shown by a, c; '{} free' with c; '{} waiting' with a; 'full' with ; asked 17; 576 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

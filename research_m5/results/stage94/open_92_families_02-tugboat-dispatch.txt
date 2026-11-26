@@ -1,0 +1,98 @@
+    (1, 0, 1, 0), number: no machine (0 s)
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), number: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), number: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), number: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 2, 0), number: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), number: no machine (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (2, 0, 1, 1), number: no machine (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), number: no machine (0 s)
+    (0, 2, 1, 0), table: no machine (1 s)
+    (2, 0, 2, 0), number: price 23 + 9, 139 beginnings, 0 wrong (1 s)
+    (2, 0, 2, 0), table: no machine (1 s)
+    (3, 0, 1, 0), number: price 27 + 9, 139 beginnings, 0 wrong (1 s)
+    (3, 0, 1, 0), table: no machine (1 s)
+    (1, 1, 2, 0), number: price 23 + 10, 139 beginnings, 0 wrong (1 s)
+    (1, 1, 2, 0), table: out of time, at least 42 + 10 (17 s)
+    (2, 1, 1, 0), number: price 27 + 10, 139 beginnings, 0 wrong (17 s)
+    (2, 1, 1, 0), table: out of time, at least 40 + 10 (32 s)
+    (2, 0, 2, 1), number: price 18 + 11, 139 beginnings, 0 wrong (32 s)
+    (2, 0, 2, 1), table: no machine (32 s)
+    (3, 0, 1, 1), number: price 22 + 11, 139 beginnings, 0 wrong (32 s)
+    (3, 0, 1, 1), table: no machine (33 s)
+    (0, 2, 2, 0), number: no machine (33 s)
+    (0, 2, 2, 0), table: out of time, at least 37 + 11 (48 s)
+    (1, 2, 1, 0), number: price 27 + 11, 139 beginnings, 0 wrong (48 s)
+    (1, 2, 1, 0), table: out of time, at least 34 + 11 (63 s)
+    (2, 1, 1, 1), number: price 22 + 12, 139 beginnings, 0 wrong (64 s)
+    (2, 1, 1, 1), table: out of time, at least 37 + 12 (79 s)
+    (3, 0, 2, 0), number: price 23 + 12, 139 beginnings, 0 wrong (79 s)
+    (3, 0, 2, 0), table: no machine (85 s)
+    (4, 0, 1, 0), number: price 27 + 12, 139 beginnings, 0 wrong (85 s)
+    (4, 0, 1, 0), table: no machine (94 s)
+    (2, 1, 2, 0), number: price 23 + 13, 139 beginnings, 0 wrong (94 s)
+    (2, 1, 2, 0), table: out of time, at least 34 + 13 (115 s)
+    (3, 1, 1, 0), number: price 27 + 13, 139 beginnings, 0 wrong (116 s)
+    (3, 1, 1, 0), table: out of time, at least 35 + 13 (143 s)
+    (3, 0, 2, 1), number: price 18 + 14, 139 beginnings, 0 wrong (143 s)
+    (3, 0, 2, 1), table: no machine (145 s)
+    (1, 2, 2, 0), number: price 23 + 14, 139 beginnings, 0 wrong (145 s)
+    (1, 2, 2, 0), table: out of time, at least 30 + 14 (160 s)
+    (2, 2, 1, 0), number: price 27 + 14, 139 beginnings, 0 wrong (161 s)
+    (2, 2, 1, 0), table: out of time, at least 32 + 14 (186 s)
+  kept 2 counts (ab), 2 states (price 29): ship: if state 0 and a=0: b+1; if state 0 and a>0: a-1; if state 1 and a>0: b+1 | tug: a+1 | fog: to state 1 | clear: take a and b from each other, to state 0 | shown by nothing; 'idle {} waiting {}' with a, b | start a=2
+    (2, 1, 2, 1), number: price 18 + 15, 141 beginnings, 1 wrong (186 s)
+    (2, 1, 2, 1), table: out of time, at least 31 + 15 (201 s)
+    (4, 0, 2, 0), number: no machine (202 s)
+    (4, 0, 2, 0), table: out of time, at least 29 + 15 (219 s)
+    (3, 1, 2, 0), number: no machine (221 s)
+    (3, 1, 2, 0), table: out of time, at least 25 + 16 (236 s)
+    (2, 0, 2, 1), number: price 28 + 11, 143 beginnings, 0 wrong (236 s)
+    (2, 0, 2, 0), number: no machine (236 s)
+    (3, 0, 2, 1), number: price 24 + 14, 143 beginnings, 1 wrong (237 s)
+    (3, 0, 1, 1), number: price 32 + 11, 148 beginnings, 0 wrong (237 s)
+    (1, 1, 2, 0), number: no machine (237 s)
+    (2, 1, 2, 1), number: price 25 + 15, 148 beginnings, 0 wrong (237 s)
+    (2, 1, 1, 1), number: price 32 + 12, 148 beginnings, 0 wrong (237 s)
+    (3, 0, 2, 0), number: no machine (237 s)
+    (3, 0, 1, 0), number: no machine (237 s)
+    (2, 1, 2, 0), number: no machine (237 s)
+    (2, 1, 1, 0), number: no machine (237 s)
+    (1, 2, 2, 0), number: no machine (237 s)
+    (3, 0, 2, 1), number: price 24 + 14, 148 beginnings, 0 wrong (237 s)
+  asked 1 (5 rivals): answered wrongly; kept 3 counts (abc), 2 states (price 38): ship: if state 0 and a=0: b+1, c+1; if state 0 and a>0: a-1; if state 1 and a>0: b+1 | tug: if c=0: a+1; if c>0: take b and c from each other | fog: to state 1 | clear: take a and b from each other, to state 0 | shown by nothing; 'idle {} waiting {}' with a, b | start a=2
+    (3, 0, 2, 1), number: price 24 + 14, 148 beginnings, 1 wrong (237 s)
+    (3, 0, 2, 1), number: price 27 + 14, 149 beginnings, 1 wrong (238 s)
+    (1, 2, 1, 0), number: no machine (238 s)
+    (2, 0, 2, 1), number: price 28 + 11, 150 beginnings, 1 wrong (238 s)
+    (2, 0, 2, 1), number: price 30 + 11, 162 beginnings, 0 wrong (238 s)
+    (4, 0, 1, 0), number: no machine (238 s)
+    (3, 1, 1, 0), number: no machine (239 s)
+    (2, 1, 2, 1), number: price 30 + 15, 162 beginnings, 0 wrong (239 s)
+  asked 2 (4 rivals): answered wrongly; kept 2 counts (ab), 2 states (price 41): ship: if state 0 and a=0: b+1; if state 0 and a>0: a-1; if state 1 and a>0: b+1 | tug: if state 0 and b=0: a+1; if state 0 and b>0: b-1; if state 1 and b=0: a+1; if state 1 and b>0: a+1 | fog: if b=0: to state 1 | clear: take a and b from each other, to state 0 | shown by nothing; 'idle {} waiting {}' with a, b | start a=2
+    (2, 0, 2, 1), number: price 30 + 11, 163 beginnings, 0 wrong (239 s)
+  asked 3 (1 rival): answered wrongly; kept 2 counts (ab), 2 states (price 41): ship: if state 0 and a=0: b+1; if state 0 and a>0: a-1; if state 1 and a=0: b+1; if state 1 and a>0: b+1 | tug: if state 0 and b=0: a+1; if state 0 and b>0: b-1; if state 1 and b=0: a+1; if state 1 and b>0: a+1 | fog: to state 1 | clear: take a and b from each other, to state 0 | shown by nothing; 'idle {} waiting {}' with a, b | start a=2
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (plain): answered rightly
+  asked 7 (again): answered rightly
+  asked 8 (alive): answered rightly
+  asked 9 (pumped): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (alive): answered rightly
+  asked 15 (pumped): answered rightly
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+2 counts (ab), 2 states (price 41): ship: if state 0 and a=0: b+1; if state 0 and a>0: a-1; if state 1 and a=0: b+1; if state 1 and a>0: b+1 | tug: if state 0 and b=0: a+1; if state 0 and b>0: b-1; if state 1 and b=0: a+1; if state 1 and b>0: a+1 | fog: to state 1 | clear: take a and b from each other, to state 0 | shown by nothing; 'idle {} waiting {}' with a, b | start a=2; asked 17; 239 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

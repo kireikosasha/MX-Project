@@ -1,0 +1,85 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: price 18 + 6, 139 beginnings, 0 wrong (0 s)
+    (2, 0, 1, 0), table: price 18 + 6, 139 beginnings, 0 wrong (0 s)
+    (0, 1, 2, 0), table: price 13 + 7, 139 beginnings, 0 wrong (0 s)
+    (1, 1, 1, 0), table: price 13 + 7, 139 beginnings, 0 wrong (0 s)
+    (2, 0, 1, 1), table: price 16 + 8, 139 beginnings, 0 wrong (0 s)
+    (0, 2, 1, 0), table: price 13 + 8, 139 beginnings, 0 wrong (0 s)
+    (2, 0, 2, 0), table: price 15 + 9, 139 beginnings, 0 wrong (0 s)
+    (3, 0, 1, 0), table: price 15 + 9, 139 beginnings, 0 wrong (0 s)
+    (1, 1, 2, 0), table: price 13 + 10, 139 beginnings, 0 wrong (0 s)
+    (2, 1, 1, 0), table: price 13 + 10, 139 beginnings, 0 wrong (0 s)
+    (2, 0, 2, 1), table: price 15 + 11, 139 beginnings, 0 wrong (1 s)
+    (3, 0, 1, 1), table: price 14 + 11, 139 beginnings, 0 wrong (1 s)
+    (0, 2, 2, 0), table: price 13 + 11, 139 beginnings, 0 wrong (1 s)
+    (1, 2, 1, 0), table: price 13 + 11, 139 beginnings, 0 wrong (1 s)
+    (2, 1, 1, 1), table: price 13 + 12, 139 beginnings, 0 wrong (1 s)
+    (3, 0, 2, 0), table: price 15 + 12, 139 beginnings, 0 wrong (2 s)
+    (4, 0, 1, 0), table: price 15 + 12, 139 beginnings, 0 wrong (2 s)
+    (2, 1, 2, 0), table: price 13 + 13, 139 beginnings, 0 wrong (2 s)
+    (3, 1, 1, 0), table: price 13 + 13, 139 beginnings, 0 wrong (2 s)
+    (3, 0, 2, 1), table: price 14 + 14, 139 beginnings, 0 wrong (3 s)
+    (1, 2, 2, 0), table: price 13 + 14, 139 beginnings, 0 wrong (3 s)
+    (2, 2, 1, 0), table: price 13 + 14, 139 beginnings, 0 wrong (4 s)
+    (2, 1, 2, 1), table: price 13 + 15, 139 beginnings, 0 wrong (4 s)
+    (4, 0, 2, 0), table: price 15 + 15, 139 beginnings, 0 wrong (5 s)
+    (3, 1, 2, 0), table: price 13 + 16, 139 beginnings, 0 wrong (6 s)
+  kept 0 counts, 1 difference (a), 2 states (price 20): pax: a+1 | call: if a>0: a-1, to state 1 | bag: if state 1: a-1 | load: nothing | shown by a
+    (0, 1, 2, 0), table: price 13 + 7, 141 beginnings, 1 wrong (6 s)
+    (0, 1, 2, 0), table: price 34 + 7, 142 beginnings, 1 wrong (6 s)
+    (1, 1, 1, 0), table: price 31 + 7, 143 beginnings, 1 wrong (6 s)
+    (0, 2, 1, 0), table: price 28 + 8, 144 beginnings, 1 wrong (7 s)
+    (1, 1, 2, 0), table: price 20 + 10, 146 beginnings, 1 wrong (7 s)
+    (2, 1, 1, 0), table: price 20 + 10, 147 beginnings, 1 wrong (8 s)
+    (1, 0, 2, 0), table: no machine (8 s)
+    (2, 0, 1, 0), table: no machine (8 s)
+    (2, 0, 1, 1), table: no machine (8 s)
+    (2, 0, 2, 0), table: price 25 + 9, 148 beginnings, 1 wrong (9 s)
+    (3, 0, 1, 0), table: price 26 + 9, 149 beginnings, 1 wrong (11 s)
+    (0, 2, 2, 0), table: out of time, at least 23 + 11 (26 s)
+    (1, 2, 1, 0), table: price 24 + 11, 156 beginnings, 0 wrong (37 s)
+    (3, 0, 1, 1), table: price 24 + 11, 156 beginnings, 0 wrong (45 s)
+    (2, 1, 1, 1), table: price 24 + 12, 156 beginnings, 0 wrong (56 s)
+    (2, 0, 2, 1), table: price 24 + 11, 156 beginnings, 0 wrong (60 s)
+    (2, 1, 2, 0), table: out of time, at least 20 + 13 (76 s)
+    (3, 1, 1, 0), table: out of time, at least 21 + 13 (91 s)
+    (3, 0, 2, 0), table: out of time, at least 23 + 12 (106 s)
+    (4, 0, 1, 0), table: out of time, at least 24 + 12 (121 s)
+    (1, 2, 2, 0), table: out of time, at least 19 + 14 (136 s)
+    (2, 2, 1, 0), table: out of time, at least 20 + 14 (152 s)
+    (3, 0, 2, 1), table: out of time, at least 20 + 14 (167 s)
+    (2, 1, 2, 1), table: out of time, at least 20 + 15 (188 s)
+  asked 1 (7 rivals): answered wrongly; kept 1 count (a), 2 differences (bc) (price 35): pax: b+1, c+1 | call: if c>0: a+1, b-1, c-1 | bag: if a>0 and c=0: b-1, c-1; if a>0 and c>0: b-1 | load: b+1 | shown by b, c
+    (3, 1, 2, 0), table: out of time, at least 18 + 16 (207 s)
+    (1, 1, 2, 0), table: price 24 + 10, 157 beginnings, 1 wrong (212 s)
+    (2, 1, 1, 0), table: price 27 + 10, 173 beginnings, 1 wrong (222 s)
+    (4, 0, 2, 0), table: out of time, at least 19 + 15 (237 s)
+    (2, 1, 2, 0), table: out of time, at least 21 + 13 (267 s)
+    (1, 2, 2, 0), table: out of time, at least 21 + 14 (302 s)
+    (2, 0, 2, 0), table: price 38 + 9, 174 beginnings, 1 wrong (310 s)
+    (1, 1, 2, 0), table: out of time, at least 27 + 10 (325 s)
+    (3, 0, 2, 1), table: out of time, at least 22 + 14 (356 s)
+    (0, 2, 2, 0), table: out of time, at least 25 + 11 (386 s)
+    (3, 1, 1, 0), table: out of time, at least 23 + 13 (417 s)
+    (2, 2, 1, 0), table: out of time, at least 20 + 14 (447 s)
+    (3, 0, 1, 0), table: price 40 + 9, 175 beginnings, 0 wrong (453 s)
+  asked 2 (3 rivals): answered wrongly; kept 3 counts (abc) (price 49): pax: if c=0: a+1; if c>0: a+1, c-1 | call: if a>0 and c=0: a-1, b+1; if a>0 and c>0: a-1 | bag: if a=0 and b>0: b-1, c+1; if a>0 and b>0: a-1, c+1 | load: if b=0 and c>0: c-1; if b>0 and c>0: a+1 | shown by a, b, c
+    (2, 1, 2, 0), table: price 23 + 13, 175 beginnings, 0 wrong (502 s)
+    (4, 0, 2, 0), table: out of time, at least 20 + 15 (533 s)
+    (2, 2, 1, 0), table: out of time, at least 23 + 14 (615 s)
+    (3, 1, 2, 0), table: out of time, at least 19 + 16 (645 s)
+  asked 3 (plain): answered wrongly; kept 2 counts (ab), 1 difference (c), 2 states (price 36): pax: a+1, c+1 | call: if a=0: to state 0; if a>0: a-1, c-1, to state 1 | bag: if state 1: b+1, c-1 | load: if b>0: b-1, c+1 | shown by c
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (plain): answered rightly
+  asked 7 (again): answered rightly
+  asked 8 (alive): answered rightly
+  asked 9 (pumped): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (plain): answered rightly
+NOT SURE: 2 counts (ab), 1 difference (c), 2 states (price 36): pax: a+1, c+1 | call: if a=0: to state 0; if a>0: a-1, c-1, to state 1 | bag: if state 1: b+1, c-1 | load: if b>0: b-1, c+1 | shown by c; asked 12; 901 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

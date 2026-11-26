@@ -1,4 +1,4 @@
-"""Quantities that wait on each other, found together (stages 92-93).
+"""Quantities that wait on each other, found together (stages 92-94).
 
 parts.py builds a rule one part at a time, each part moved by plain events; two quantities each of which waits on the
 other (a car leaves with a bag only when both are there, a bag is thrown away only when no car waits) cannot be built that
@@ -11,7 +11,8 @@ pours all of one count into another, takes two counts from each other while both
 is shown is read from the state and the tests (a table), and when the answers hold numbers it is words with places for
 numbers ('short 3', '2 waiting', 'idle 2 waiting 0'), the words read off the table and each place filled by a number
 of the machine or minus it. A count starts at 0, or, when numbers are shown before any symbol, at what they show. A
-symbol reads at most two tests and the display at most three: an event's condition is kept short, as a person keeps it.
+symbol reads at most three tests and the display at most three (two for a symbol, at stage 93, left the cargo ship
+and the seed bank unsaid: unloading reads the side of the crane and the count on that side).
 
 The machine is found by a solver as the cheapest that answers everything heard (core-guided MaxSAT, Ignatiev, Morgado
 and Marques-Silva 2019): its price is that of the numbers and states kept in mind, of the tests read (by a symbol or by
@@ -76,7 +77,7 @@ def whole(c, w):
 
 MOVE = 2  # the price of a whole move (beside the row it is in)
 START = 3  # the price of a count that starts above 0
-MOST = (2, 3)  # a symbol reads at most two tests, the display at most three (a person keeps an event's condition short)
+MOST = (3, 3)  # a symbol reads at most three tests, the display at most three
 SLOT = re.compile(r"-?\d+")
 
 
@@ -86,7 +87,7 @@ def form(y):
 
 
 NONE = 10 ** 6  # (the least price of a shape that has no machine at all)
-ROUND = 60  # seconds a round may take once some machine answers everything heard (the shapes not looked at go on later)
+ROUND = 180  # seconds a round may take once some machine answers everything heard (the shapes not looked at go on later)
 SHORT = 4  # the beginnings of at most so many symbols are in the formulas from the start (the rest when answered wrongly)
 PER = 15  # seconds the search of one shape is given in a round (it goes on in the next)
 NEED = 14  # sure after so many long stories asked in a row answered rightly (as parts.py: SURE plain, then MORE)
@@ -555,6 +556,7 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
     wordy = any(SLOT.search(y) for y in H.shown)  # (numbers among the answers: words with places for numbers too)
     keys = [shape + (mode,) for shape in SHAPES for mode in ((True, False) if wordy else (False,))]
     bound = lambda k: base(k[:4]) + H.low.get(k, 0)
+    cells = lambda k: k[2] * 2 ** k[0] * 3 ** k[1]
     best, later, start = None, set(), time.time()
     while time.time() < deadline and (best is None or time.time() < start + ROUND):
         left = [k for k in keys if k not in later and H.low.get(k, 0) < NONE and (best is None or bound(k) < best.total)]
@@ -563,7 +565,7 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
             continue
         if not left:
             break
-        key = min(left, key=bound)
+        key = min(left, key=lambda k: (bound(k), cells(k)))  # (of equal bounds, the smaller table first: it is solved sooner)
         shape, mode = key[:4], key[4]
         say = f"{shape}, {'number' if mode else 'table'}"
         m = H.kept.get(key)
