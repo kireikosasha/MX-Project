@@ -40,7 +40,7 @@ stories as a check.
 
     python guarded.py FAMILY/family.py [--asks 40] [--seed 0] [--minutes 10]
 """
-import argparse, ctypes, gc, importlib.util, itertools, os, random, re, select, signal, threading, time
+import argparse, ctypes, gc, importlib.util, itertools, os, random, re, resource, select, signal, threading, time
 from array import array
 from pysat.card import CardEnc, EncType, ITotalizer
 from pysat.formula import WCNF
@@ -118,6 +118,7 @@ SHORT = 4  # the beginnings of at most so many symbols are in the formulas from 
 STEP = 6  # a shape searched by guessing is asked for a machine at most so much above what it is shown to cost at least
 PER = 15  # seconds the search of one shape is given in a round (it goes on in the next)
 ROOM = 2500  # megabytes the solvers kept may hold: past that, those used longest ago go (what they showed is kept)
+LNS = 2  # seconds a search near the last machine is given for one neighbourhood (stage 96)
 GUESS = 24  # a shape with at least so many cells of its table is searched by guessing from the start (stage 96)
 SHARE = 0.25  # the most of the search time the moves of the second kind may take (they cost 2 more: 2 ** -2 of it)
 CLAUSES = 20 * 10 ** 6  # the most clauses the formulas of one shape may have: a shape that needs more is too big to keep
@@ -128,6 +129,7 @@ class TooBig(Exception):
     pass
 
 
+CHILD = 2000  # megabytes the child solving a guess may take beyond what it was forked with
 FRESH = "cadical195"  # (the solver of the search by guessing, stage 96: CaDiCaL 1.9.5, Biere et al. 2024)
 
 
@@ -160,6 +162,8 @@ class Fresh:
         if pid == 0:  # (the child: build, solve, write the answer and the model, go)
             try:
                 os.close(r)
+                vm = int(open("/proc/self/statm").read().split()[0]) * os.sysconf("SC_PAGE_SIZE")
+                resource.setrlimit(resource.RLIMIT_AS, (vm + CHILD * 2 ** 20, vm + CHILD * 2 ** 20))
                 sv, cur = Solver(name=FRESH), []
                 for x in self.cl:
                     if x:
@@ -478,8 +482,19 @@ class Space:
         self.add(nodes)
         self.lits = [x for x in cost]  # (the price: how many of these are true; a literal twice costs twice)
         self.tot, self.low = None, low  # (no machine of this shape is cheaper than low: the solver said so)
+        # (the rows a neighbourhood frees: of one symbol, of two symbols, one number in every symbol, the display)
+        flat = lambda x: [v for y in x for v in (flat(y) if isinstance(y, list) else [y])]
+        sym = [flat(D[a]) + (flat(E[a]) if E else []) + list(R[a].values()) + (flat(self.M[a]) if W else [])
+               for a in range(A)]
+        show = flat(self.O) + list(self.OR.values()) + (flat(self.N) if numeric else []) + flat([v for v in self.V0 if v])
+        num = [[D[a][ci][i][j] for a in range(A) for ci in range(len(C)) for j in range(3)] for i in range(K)]
+        self.table = sorted(set(flat(sym) + show))
+        self.groups = ([sym[a] + show for a in range(A)] + [sym[a] + sym[b] for a, b in itertools.combinations(range(A), 2)]
+                       + num + [show])
+        self.turn, self.last, self.inc = 0, None, None
         if guess:
             self.solver = Fresh(f.cl)
+            self.inc = Solver(name=ENGINE, bootstrap_with=f.cl)  # (kept from call to call: for the neighbourhoods)
         else:
             w = WCNF()
             for c in f.cl:
@@ -504,6 +519,8 @@ class Space:
             self.f.cl.append(out)
         else:
             self.solver.add_clause(out)
+            if self.inc is not None:
+                self.inc.add_clause(out)
 
     def size(self, nodes):
         """About how many clauses the beginnings in nodes not in the formulas yet would add."""
@@ -675,9 +692,11 @@ class Space:
             if self.tot is None:
                 self.tot = ITotalizer(lits=self.lits, ubound=k + 1, top_id=self.f.top)
                 r.append_formula(self.tot.cnf.clauses)
+                self.inc.append_formula(self.tot.cnf.clauses)
             elif len(self.tot.rhs) <= k:
                 self.tot.increase(ubound=k + 1, top_id=self.f.top)
                 r.append_formula(self.tot.cnf.clauses[-self.tot.nof_new:])
+                self.inc.append_formula(self.tot.cnf.clauses[-self.tot.nof_new:])
             self.f.top = max(self.f.top, self.tot.top_id)
             return -self.tot.rhs[k]
 
@@ -692,8 +711,49 @@ class Space:
         # (stage 96: every machine found is checked at once on everything heard; one that answers some of it wrongly
         # puts the beginnings it answers wrongly into the formulas (fix), and the same price is looked under again:
         # only a machine that answers everything heard is made cheaper)
-        cap, good, last = below, None, None
+        def near(cap, model, until):
+            """A machine that answers everything heard, cheaper than cap, found by changing only the rows of one
+            neighbourhood of the machine of model at a time (large neighbourhood search, Shaw 1998; a theory mended
+            and made simpler where it is, not looked for anew); None if none is found by until."""
+            true, inc = set(x for x in model if x > 0), self.inc
+            for _ in range(len(self.groups)):
+                if time.time() >= until:
+                    return None
+                g = set(self.groups[self.turn % len(self.groups)])
+                self.turn += 1
+                ass = [v if v in true else -v for v in self.table if v not in g] + ([] if cap is None else [most(cap - 1)])
+                end = min(until, time.time() + LNS)
+                while True:  # (mended within the same neighbourhood while it is wrong somewhere: quick)
+                    tm = threading.Timer(max(0.0, end - time.time()), inc.interrupt)
+                    tm.start()
+                    try:
+                        ok = inc.solve_limited(assumptions=ass, expect_interrupt=True)
+                    finally:
+                        tm.cancel()
+                    inc.clear_interrupt()
+                    if not ok:
+                        break
+                    mm = inc.get_model()
+                    m = self.read(mm, price(mm))
+                    if fix is None or not fix(m):
+                        return m, mm
+            return None
+
+        cap, good, last, gm = below, None, None, None
+        if self.last is not None and fix is not None:  # (the machine this shape had: mended where it is wrong)
+            got = near(cap, self.last, time.time() + (deadline - time.time()) / 2)
+            if got is not None:
+                good, gm = got
+                cap = good.cost
         while True:
+            if good is not None and fix is not None:  # (made cheaper near itself first)
+                got = near(cap, gm, time.time() + (deadline - time.time()) / 2)
+                if got is not None:
+                    good, gm = got
+                    cap = good.cost
+                    if cap <= self.low:
+                        break
+                    continue
             ok = run([] if cap is None else [most(cap - 1)])
             if ok is None:
                 break
@@ -711,9 +771,11 @@ class Space:
             last = self.read(model, p)
             if fix is not None and fix(last):
                 continue
-            good, cap = last, p
+            good, cap, gm = last, p, model
             if p <= self.low:
                 break
+        if gm is not None:
+            self.last = gm
         if good is None:
             if step is not None and fix is not None:
                 self.probe += step
@@ -771,6 +833,8 @@ class Space:
 
     def delete(self):
         self.solver.delete()
+        if self.inc is not None:
+            self.inc.delete()
 
 
 def wrong(m, H):
