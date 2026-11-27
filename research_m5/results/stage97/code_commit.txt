@@ -1,0 +1,6 @@
+The measured code (results/stage97/open_pipeline.txt) is commit ccb36d6 (lists.py differs from fd18c31 only in its
+docstring). Flags: those of stage 93 and --cap 60 --lists:
+--minutes 30 --workers 1 --seconds 3 --shorten --reserve 21 --explore --frugal --slack 16 --guards --build 12 --flags
+--cascades --keep --deadline --watch --warm --patience 30 --part 100000 --tour 24 --anchor 65 --far 100 --sum --parts
+--guarded 0.7 --keep-asks 10 --cap 60 --lists
+Four groups of six rules, one process each, on four cores; no process was killed for memory.

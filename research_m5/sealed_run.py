@@ -36,7 +36,8 @@ def one(path, out, a):
         except Exception:
             parts = None
         if parts is not None:
-            m, spent, H, whole = parts.learn(syms, oracle, data, rng, a.asks, quiet=True, give_up=a.asks // 2,
+            own = a.asks - a.keep_asks - a.share if a.guarded and a.share else a.asks  # (--share: what parts may ask)
+            m, spent, H, whole = parts.learn(syms, oracle, data, rng, own, quiet=True, give_up=a.asks // 2,
                                              deadline=time.time() + a.minutes * 60 * 0.2)
             if m.sure:
                 taken = m
@@ -51,6 +52,9 @@ def one(path, out, a):
                 g, g_asked, _ = guarded.learn(syms, oracle, data, rng, max(0, a.asks - spent - a.keep_asks),
                                               t0 + a.minutes * 60 * a.guarded, H, cap=a.cap, family=family)
                 spent += g_asked
+                print(f"{os.path.basename(os.path.dirname(path))}: parts.py asked {spent - g_asked}, guarded.py "
+                      f"{g_asked} ({'sure' if g is not None and g.sure else 'found' if g is not None else 'nothing'}, "
+                      f"{time.time() - t0:.0f} s)", file=sys.stderr, flush=True)
                 for sp in getattr(H, "spaces", {}).values():
                     sp.delete()  # (the solvers' memory, before the table is looked for)
                 H.spaces = {}
@@ -161,6 +165,8 @@ def main():
     ap.add_argument("--lazy", action="store_true", help="with --parts and --far: the stories the first learner asked are not put into the formulas of the second; its machine is checked on them, and the shortest beginning it answers wrongly is taught on")
     ap.add_argument("--guarded", type=float, default=0, help="with --parts: when the parts are not sure, the quantities that wait on each other are looked for together (guarded.py), until this share of the minutes has gone")
     ap.add_argument("--keep-asks", type=int, default=10, help="with --guarded: so many questions are left to the table")
+    ap.add_argument("--share", type=int, default=0, help="with --guarded: so many questions parts.py leaves to guarded.py "
+                    "(besides --keep-asks): one learner does not spend the questions of the next")
     ap.add_argument("--lists", action="store_true", help="with --guarded: the machine of parts is said as lists of guarded commands (lists.py), not as one table")
     ap.add_argument("--cap", type=int, default=0, help="with --guarded: it gives up when the cheapest machine costs more")
     ap.add_argument("--sum", action="store_true", help="with --watch, when every answer is a whole number that never goes down in the stories heard (a count): the machine is looked for that answers what each symbol adds to the number shown (the answer of the last move, as with --mealy), and the number is told as the sum")
