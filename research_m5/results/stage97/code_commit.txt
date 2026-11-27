@@ -4,3 +4,8 @@ docstring). Flags: those of stage 93 and --cap 60 --lists:
 --cascades --keep --deadline --watch --warm --patience 30 --part 100000 --tour 24 --anchor 65 --far 100 --sum --parts
 --guarded 0.7 --keep-asks 10 --cap 60 --lists
 Four groups of six rules, one process each, on four cores; no process was killed for memory.
+
+open_pipeline_share10.txt: the same run with the code of 8f2ff3f and --share 10 (parts.py asks at most 40 - 10 - 10 = 20
+of the 40 questions); open_pipeline_share10_asks.txt: what each learner asked (stderr of that run).
+The blind run of pool 97 uses 8f2ff3f with --lists --share 10 (the rule named before: --share 10 if it takes no fewer of
+the 24 opened rules than without it; it takes 17, as without).
