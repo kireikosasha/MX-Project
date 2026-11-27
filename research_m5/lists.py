@@ -33,7 +33,7 @@ from guarded import CNF, ENGINE, Fresh, TooBig, CLAUSES, READ, ROW, START, MOVE,
 KINDS = ("none", "count", "diff")
 VALS = (-1, 0, 1)  # what a number's test says: below 0, 0, above 0
 ROWS = 4  # commands a symbol has at most
-OROWS = 3  # guards of the display at most (beside what is shown when none holds)
+SEE = 3  # tests the display reads at most (what is shown is a table over what they say)
 LITS = 3  # tests a guard reads at most
 KEEP = (0, 3, 4)  # the price of a number not kept, a count, a difference
 VALUE = 3  # the price of every value of a switch beyond the first
@@ -51,20 +51,25 @@ def within(N, S, M, Z):
 
 class ListMachine:
     """Numbers (kinds[i]: 'none', 'count' or 'diff') and switches (sizes[s] values); rows[a] = [(guard, adds, sets,
-    whole move)], the guard a list of (test, value); what is shown: orows = [(guard, label)] and dlab when none holds,
+    whole move)], the guard a list of (test, value); what is shown: oread, the tests the display reads, and otab, the
+    label for what they say (a tuple of values; a slot not read says 0),
     numbers filled in as in guarded.Machine."""
 
-    def __init__(self, syms, key, kinds, sizes, rows, orows, dlab, num, init, cost):
+    def __init__(self, syms, key, kinds, sizes, rows, oread, otab, num, init, cost):
         self.syms, self.key, self.kinds, self.sizes = list(syms), key, kinds, sizes
-        self.rows, self.orows, self.dlab, self.num, self.init = rows, orows, dlab, num, init
+        self.rows, self.oread, self.otab, self.num, self.init = rows, oread, otab, num, init
         self.N, self.cost = len(kinds), cost
         self.total, self.sure, self.proved = cost + (WHOLE if key[2] else 0), False, True
         self.reads = [sorted({t for g, _, _, _ in rows[a] for t, _ in g}) for a in range(len(self.syms))]
-        self.oreads = sorted({t for g, _ in orows for t, _ in g})
+        self.oreads = sorted(oread)
         self.shape = (tuple(kinds), tuple(sizes))
 
     def value(self, st, t):
         return sign(st[1][t]) if t < self.N else st[0][t - self.N]
+
+    def seen(self, st):  # (what the tests the display reads say, as the index of the table)
+        v = [(VALS.index(self.value(st, t)) if t < self.N else self.value(st, t)) for t in self.oread]
+        return tuple(v + [0] * (SEE - len(v)))
 
     def holds(self, g, st):
         return all(self.value(st, t) == v for t, v in g)
@@ -90,7 +95,7 @@ class ListMachine:
         return (st, y), y
 
     def show(self, st):
-        y = next((l for g, l in self.orows if self.holds(g, st)), self.dlab)
+        y = self.otab[self.seen(st)]
         if self.num is None or "\0" not in y:
             return y
         bits = y.split("\0")
@@ -134,7 +139,14 @@ class ListMachine:
             bits = y.split("\0")
             names = ["{" + f"{'-' if g < 0 else ''}{NAMES[j]}{'+' + str(o) if o else ''}" + "}" for j, g, o in self.num[y]]
             return repr("".join(x + v for x, v in zip(bits, names + [""])))
-        shown = "shown: " + "; else ".join([f"if {self.guard(g)}: {fill(l)}" for g, l in self.orows] + [fill(self.dlab)])
+        cells = [(c, l) for c, l in sorted(self.otab.items()) if all(x == 0 for x in c[len(self.oread):])]
+        if len(set(l for _, l in cells)) <= 1:
+            shown = "shown: " + fill(cells[0][1] if cells else "")
+        else:
+            most = max(set(l for _, l in cells), key=lambda l: sum(x == l for _, x in cells))
+            g = lambda c: [(t, VALS[v] if t < self.N else v) for t, v in zip(self.oread, c)]
+            shown = "shown: " + "; ".join(f"if {self.guard(g(c))}: {fill(l)}" for c, l in cells if l != most) + \
+                f"; else {fill(most)}"
         n = [NAMES[i] for i, k in enumerate(self.kinds) if k == "count"]
         z = [NAMES[i] for i, k in enumerate(self.kinds) if k == "diff"]
         sw = [f"{SWITCH[s]} of {k}" for s, k in enumerate(self.sizes) if k > 1]
@@ -148,7 +160,9 @@ class ListMachine:
 
 class ListSpace(guarded.Space):
     """The machines of one layer and one kind of display, as formulas kept from round to round (the search itself,
-    by cores or by guessing, is guarded.Space's)."""
+    by cores or by guessing, is guarded.Space's). The first machine of a layer is looked for at any price and made
+    cheaper from there: a layer where no machine is at all is seen so at once."""
+    free = True
 
     def __init__(self, H, key, nodes, avoid=None, guess=False, low=0):
         N, S, w, numeric = key
@@ -256,18 +270,26 @@ class ListSpace(guarded.Space):
                             f.add([-m[k + 1], -KD[x[1]][1], KD[x[2]][1]])
         if W:  # (a layer with whole moves makes one at least)
             f.add([-Mv[a][r][0] for a in range(A) for r in range(ROWS)])
-        OU = self.OU = [var() for _ in range(OROWS)]
-        OL = self.OL = [[[var() for _ in self.tv[t]] for t in range(T)] for _ in range(OROWS)]
-        OB = self.OB = [[var() for _ in self.labels] for _ in range(OROWS)]
-        DL = self.DL = [var() for _ in self.labels]
-        f.one(DL)
-        for r in range(OROWS):
-            if r + 1 < OROWS:
-                f.add([-OU[r + 1], OU[r]])
-            cost += [OU[r]] * ROW
-            guard(OL[r], OU[r])
-            f.one(OB[r])
-            f.add([OU[r], OB[r][0]])
+        # (the display reads at most SEE tests, in order, the slots not used last, and shows a label for every
+        # reading of them: a table of 3 ** SEE cells whatever the parts)
+        SL = self.SL = [[var() for _ in range(T + 1)] for _ in range(SEE)]  # (slot k reads test t; T: none)
+        self.combos = list(itertools.product(range(3), repeat=SEE))
+        TB = self.TB = [[var() for _ in self.labels] for _ in self.combos]
+        for k in range(SEE):
+            f.one(SL[k])
+            cost.append(-SL[k][T])
+            cost.extend([-SL[k][T]] * (READ - 1))
+            for t in range(T):
+                f.add([-SL[k][t], -KD[t][0]] if t < N else [-SL[k][t], self.ge_size(t - N, 2)])
+            if k + 1 < SEE:
+                f.add([-SL[k][T], SL[k + 1][T]])
+                for t in range(T):  # (read in the order of the tests)
+                    f.add([-SL[k + 1][t]] + [SL[k][u] for u in range(t)])
+        for ci, c in enumerate(self.combos):
+            f.one(TB[ci])
+            for k in range(SEE):
+                if c[k]:  # (a slot not used says 0: the other cells are never seen)
+                    f.add([-SL[k][T], TB[ci][0]])
         if numeric:  # (NV[l][s][j, g]: place s of the words l shows g times number j)
             self.NV = [[[var() for _ in range(2 * N)] for _ in range(y.count("\0"))] for y in self.labels]
             for x in self.NV:
@@ -290,7 +312,7 @@ class ListSpace(guarded.Space):
                     f.add([-R[a][t]] + xs)
                     for x in xs:
                         f.add([-x, R[a][t]])
-                xs = [x for r in range(OROWS) for x in OL[r][t]]
+                xs = [SL[k][t] for k in range(SEE)]
                 f.add([-OR[t]] + xs)
                 for x in xs:
                     f.add([-x, OR[t]])
@@ -303,7 +325,7 @@ class ListSpace(guarded.Space):
         flat = lambda x: [v for y in x for v in (flat(y) if isinstance(y, list) else [y])]
         parts_ = flat(KD) + flat(SZ) + flat(self.V0)
         sym = [flat(U[a]) + flat(L[a]) + flat(D[a]) + flat(E[a]) + (flat(Mv[a]) if W else []) for a in range(A)]
-        show = OU + flat(OL) + flat(OB) + DL + (flat(self.NV) if numeric else [])
+        show = flat(SL) + flat(TB) + (flat(self.NV) if numeric else [])
         num = [[x for a in range(A) for r in range(ROWS) for x in D[a][r][i]] + KD[i] for i in range(N)]
         self.table = sorted(set(flat(sym) + show + parts_))
         self.groups = ([sym[a] + show + parts_ for a in range(A)] +
@@ -343,7 +365,7 @@ class ListSpace(guarded.Space):
         per = sum(len(v) for v in self.tv)
         for n in sorted(x for x in nodes if x not in self.SW):
             d = dep[n] = 0 if n == 0 else dep[self.H.parent[n]] + 1
-            out += (ROWS + OROWS) * (3 * per + 3 * T + 4) + ROWS * (2 * N + 3 * sum(self.S) + len(W) + 2)
+            out += ROWS * (3 * per + 3 * T + 4) + ROWS * (2 * N + 3 * sum(self.S) + len(W) + 2) + 6 * per + 3 ** SEE
             out += 8 * N * (2 * d + V + 2) + (len(W) * 4 * (2 * d + V + 1) ** 2 if W else 0)
         return out
 
@@ -504,11 +526,17 @@ class ListSpace(guarded.Space):
                             add([-x, ge(n, j, u)])
                             add([-x, no(ge(n, j, u + 1))])
             l = self.labels.index(y)
-            ofire = [f.var() for _ in range(OROWS)]
-            oidle = self.guarded_list(n, n, self.OU, self.OL, ofire)
-            for r in range(OROWS):
-                add([-ofire[r], self.OB[r][l]])
-            add([no(oidle), self.DL[l]])
+            sv = [[f.var() for _ in range(3)] for _ in range(SEE)]  # (what slot k reads says here)
+            for k in range(SEE):
+                add(list(sv[k]))
+                for x, y in itertools.combinations(sv[k], 2):
+                    add([-x, -y])
+                add([-self.SL[k][self.T], sv[k][0]])
+                for t in range(self.T):
+                    for vi in range(len(self.tv[t])):
+                        add([-self.SL[k][t]] + [no(y) for y in self.conj(n, t, vi)] + [sv[k][vi]])
+            for ci, c in enumerate(self.combos):
+                add([-sv[k][c[k]] for k in range(SEE)] + [self.TB[ci][l]])
 
     def read(self, model, price):
         best = set(x for x in model if x > 0)
@@ -538,14 +566,14 @@ class ListSpace(guarded.Space):
                 w = None if not self.W or self.M[a][r][0] in best else self.W[one(self.M[a][r]) - 1]
                 rs.append((guard(self.L[a][r]), d, tuple(e), w))
             rows.append(rs)
-        orows = [(guard(self.OL[r]), self.labels[one(self.OB[r])]) for r in range(OROWS) if self.OU[r] in best]
-        dlab = self.labels[one(self.DL)]
+        oread = [t for k in range(SEE) for t in [one(self.SL[k])] if t < T]
+        otab = {c: self.labels[one(self.TB[ci])] for ci, c in enumerate(self.combos)}
         num = None
         if self.numeric:
             num = {y: [(k // 2, (1, -1)[k % 2], self.off[y][s]) for s in range(y.count("\0"))
                        for k in [one(self.NV[l][s])]] for l, y in enumerate(self.labels)}
         init = tuple(one(self.V0[i]) for i in range(N))
-        return ListMachine(self.H.syms, self.key, kinds, sizes, rows, orows, dlab, num, init, price)
+        return ListMachine(self.H.syms, self.key, kinds, sizes, rows, oread, otab, num, init, price)
 
 
 class Lists:
