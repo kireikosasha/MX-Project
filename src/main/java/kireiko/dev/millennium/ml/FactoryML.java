@@ -2,7 +2,6 @@ package kireiko.dev.millennium.ml;
 
 import kireiko.dev.anticheat.MX;
 import kireiko.dev.millennium.ml.logic.*;
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;
@@ -42,7 +41,6 @@ public class FactoryML {
         CACHE.remove(id);
     }
 
-    @SneakyThrows
     public static Millennium loadFromFile(int id, String name, int tSize, int sSize, ModelVer ver) {
         File folder = new File(MX.getInstance().getDataFolder(), "models");
         if (!folder.exists()) folder.mkdirs();
@@ -52,8 +50,12 @@ public class FactoryML {
             RNNModelML m = new RNNModelML(16, 48);
             if (file.exists()) {
                 try (InputStream in = Files.newInputStream(file.toPath())) {
-                    m.load(in);
-                    Logger.info("Model loaded: " + name);
+                    if (m.load(in)) {
+                        Logger.info("Model loaded: " + name);
+                    } else {
+                        Logger.error("Bad v5 model file, overwriting with fresh weights.");
+                        m.saveToFile(file.getAbsolutePath());
+                    }
                 } catch (Exception e) {
                     Logger.error("Bad v5 model file, overwriting with fresh weights.");
                     m.saveToFile(file.getAbsolutePath());
@@ -83,7 +85,6 @@ public class FactoryML {
         return m;
     }
 
-    @SneakyThrows
     public static Millennium loadFromResources(int id, String name, int tSize, int sSize, ModelVer ver) {
         String path = "/ml/" + name;
 
@@ -91,10 +92,12 @@ public class FactoryML {
             if (is != null) {
                 if (ver == ModelVer.VERSION_5) {
                     RNNModelML m = new RNNModelML(16, 48);
-                    m.load(is);
-                    CACHE.put(id, m);
-                    Logger.info("Model loaded from JAR: " + name);
-                    return m;
+                    if (m.load(is)) {
+                        CACHE.put(id, m);
+                        Logger.info("Model loaded from JAR: " + name);
+                        return m;
+                    }
+                    Logger.error("Bad v5 model resource " + name + ", falling back to disk.");
                 } else {
                     try (ObjectInputStream ois = new ObjectInputStream(is)) {
                         Millennium m = (Millennium) ois.readObject();

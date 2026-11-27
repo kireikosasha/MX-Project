@@ -52,7 +52,7 @@ public final class ActivityCommand extends MXSubCommand {
             return true;
         }
         { // uploading
-            AsyncScheduler.run(() -> {
+            AsyncScheduler.runIO(() -> {
                 sender.sendMessage(MessageUtils.wrapColors("&9Uploading, wait for it..."));
                 final String result = NetworkUtil.createPaste(RotationsContainer.getJson(target.getPlayer().getUniqueId()));
                 if (result == null) {

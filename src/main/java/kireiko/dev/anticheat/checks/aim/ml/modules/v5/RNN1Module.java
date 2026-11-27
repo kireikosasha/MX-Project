@@ -5,7 +5,6 @@ import kireiko.dev.millennium.ml.data.module.FlagType;
 import kireiko.dev.millennium.ml.data.module.ModuleML;
 import kireiko.dev.millennium.ml.data.module.ModuleResultML;
 import kireiko.dev.millennium.ml.logic.ModelVer;
-import org.bukkit.Bukkit;
 
 public class RNN1Module implements ModuleML {
 
