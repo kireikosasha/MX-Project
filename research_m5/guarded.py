@@ -700,6 +700,9 @@ class Space:
             self.f.top = max(self.f.top, self.tot.top_id)
             return -self.tot.rhs[k]
 
+        def under(cap):  # (assumptions for "cheaper than cap"; none where every machine of the shape is)
+            return [] if cap is None or cap > len(self.lits) else [most(cap - 1)]
+
         price = self.price
         if step is not None:  # (a little above what it is shown to cost at least: if there is none there, that is
             # shown to be more, by step; stage 96: the ceiling is a probe, not a proof - where no machine is found under
@@ -721,7 +724,7 @@ class Space:
                     return None
                 g = set(self.groups[self.turn % len(self.groups)])
                 self.turn += 1
-                ass = [v if v in true else -v for v in self.table if v not in g] + ([] if cap is None else [most(cap - 1)])
+                ass = [v if v in true else -v for v in self.table if v not in g] + under(cap)
                 end = min(until, time.time() + LNS)
                 while True:  # (mended within the same neighbourhood while it is wrong somewhere: quick)
                     tm = threading.Timer(max(0.0, end - time.time()), inc.interrupt)
@@ -754,7 +757,7 @@ class Space:
                     if cap <= self.low:
                         break
                     continue
-            ok = run([] if cap is None else [most(cap - 1)])
+            ok = run(under(cap))
             if ok is None:
                 break
             if ok is False:

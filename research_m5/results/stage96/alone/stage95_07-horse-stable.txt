@@ -1,0 +1,108 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), table: no machine (0 s)
+    (2, 0, 2, 0), table: no machine (1 s)
+    (3, 0, 1, 0), table: no machine (9 s)
+    (1, 0, 2, 2), table: no machine (9 s)
+    (2, 0, 1, 2), table: no machine (9 s)
+    (1, 1, 2, 0), table: out of time, at least 38 + 10 (24 s)
+    (2, 1, 1, 0), table: out of time, at least 40 + 10 (40 s)
+    (1, 1, 1, 2), table: no machine (40 s)
+    (2, 0, 2, 1), table: no machine (41 s)
+    (3, 0, 1, 1), table: no machine (43 s)
+    (0, 2, 2, 0), table: price 28 + 11, 139 beginnings, 40k clauses, 0 wrong (46 s)
+    (1, 2, 1, 0), table: price 28 + 11, 139 beginnings, 43k clauses, 0 wrong (49 s)
+    (2, 1, 1, 1), table: out of time, at least 36 + 12 (64 s)
+    (3, 0, 2, 0), table: out of time, at least 37 + 12 (79 s)
+    (4, 0, 1, 0), table: out of time, at least 40 + 12 (94 s)
+    (2, 0, 2, 2), table: no machine (95 s)
+    (3, 0, 1, 2), table: no machine (103 s)
+    (2, 1, 2, 0), table: none cheaper than 19 (103 s)
+    (3, 1, 1, 0), table: none cheaper than 19 (103 s)
+    (1, 1, 2, 2), table: out of time, at least 34 + 14 (118 s)
+    (2, 1, 1, 2), table: out of time, at least 31 + 14 (134 s)
+    (3, 0, 2, 1), table: out of time, at least 26 + 14 (149 s)
+    (1, 2, 2, 0), table: none cheaper than 20 (149 s)
+    (2, 2, 1, 0), table: none cheaper than 20 (149 s)
+    (2, 1, 2, 1), table: none cheaper than 21 (150 s)
+    (4, 0, 2, 0), table: none cheaper than 21 (150 s)
+    (3, 1, 2, 0), table: none cheaper than 22 (150 s)
+    (2, 1, 2, 0), table: none cheaper than 25 (150 s)
+    (3, 1, 1, 0), table: none cheaper than 25 (150 s)
+    (1, 2, 2, 0), table: none cheaper than 26 (151 s)
+    (2, 2, 1, 0), table: none cheaper than 26 (151 s)
+    (2, 1, 2, 1), table: none cheaper than 27 (151 s)
+    (4, 0, 2, 0), table: none cheaper than 27 (151 s)
+    (3, 1, 2, 0), table: none cheaper than 28 (151 s)
+    (2, 1, 2, 0), table: none cheaper than 31 (152 s)
+    (3, 1, 1, 0), table: none cheaper than 31 (153 s)
+    (1, 2, 2, 0), table: none cheaper than 32 (153 s)
+    (2, 2, 1, 0), table: none cheaper than 32 (154 s)
+    (2, 1, 2, 1), table: none cheaper than 33 (154 s)
+    (4, 0, 2, 0), table: none cheaper than 33 (155 s)
+    (3, 1, 2, 0), table: none cheaper than 34 (156 s)
+    (2, 1, 2, 0), table: none cheaper than 37 (158 s)
+    (1, 2, 1, 2), table: out of time, at least 28 + 15 (174 s)
+    (3, 1, 1, 0), table: none cheaper than 37 (175 s)
+    (1, 2, 2, 0), table: none cheaper than 38 (182 s)
+  kept 0 counts, 2 differences (ab), 2 states (price 39): bay: a-1, b+1 | grey: a-1, b-1, to state 1 | ride: if state 0 and b>0: a+1, b-1; if state 1 and b<0: a+1, to state 0; if state 1 and b=0: a+1, b-1 | hay: a+1 | shown by state, a, b
+    (2, 2, 1, 0), table: none cheaper than 38 (186 s)
+    (2, 1, 2, 1), table: none cheaper than 39 (189 s)
+    (4, 0, 2, 0), table: none cheaper than 39 (191 s)
+    (3, 1, 2, 0), table: none cheaper than 40 (201 s)
+    (2, 1, 2, 0), table: none cheaper than 43 (212 s)
+    (3, 1, 1, 0), table: none cheaper than 43 (217 s)
+    (1, 2, 2, 0), table: out of time, at least 24 + 14 (232 s)
+    (3, 0, 2, 2), table: out of time, at least 24 + 16 (248 s)
+    (2, 2, 1, 0), table: out of time, at least 24 + 14 (263 s)
+    (0, 2, 2, 0), table: price 32 + 11, 152 beginnings, 46k clauses, 1 wrong (275 s)
+    (1, 2, 1, 0), table: price 29 + 11, 155 beginnings, 53k clauses, 0 wrong (275 s)
+    (2, 1, 2, 1), table: none cheaper than 40 (280 s)
+    (4, 0, 2, 0), table: none cheaper than 40 (282 s)
+    (2, 1, 2, 2), table: none cheaper than 23 (283 s)
+    (2, 1, 2, 2), table: none cheaper than 29 (283 s)
+    (2, 1, 2, 2), table: none cheaper than 35 (285 s)
+    (2, 1, 2, 2), table: none cheaper than 40 (295 s)
+  asked 1 (1 rival): answered wrongly; kept 1 count (a), 2 differences (bc) (price 40): bay: b-1, c+1 | grey: a+1, b-1, c-1 | ride: if a=0 and c>0: b+1, c-1; if a>0 and c<0: a-1, b+1, c+1; if a>0 and c=0: b+1, c-1 | hay: b+1 | shown by a, b, c
+    (3, 0, 2, 1), table: none cheaper than 46 (322 s)
+    (1, 2, 1, 0), table: price 29 + 11, 155 beginnings, 53k clauses, 1 wrong (322 s)
+    (1, 2, 1, 0), table: price 31 + 11, 162 beginnings, 56k clauses, 0 wrong (326 s)
+    (2, 1, 2, 1), table: none cheaper than 42 (336 s)
+    (4, 0, 2, 0), table: none cheaper than 42 (343 s)
+    (3, 1, 2, 0), table: out of time, at least 24 + 16 (358 s)
+    (3, 0, 2, 2), table: none cheaper than 42 (366 s)
+    (2, 1, 2, 2), table: none cheaper than 42 (378 s)
+  asked 2 (plain): answered wrongly; kept 1 count (a), 2 differences (bc) (price 42): bay: a+1, b-1, c+1 | grey: a+1, b-1, c-1 | ride: if a>0 and c<0: a-1, b+1, c+1; if a>0 and c=0: b+1, c-1; if a>0 and c>0: a-1, b+1, c-1 | hay: b+1 | shown by a, b, c
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (alive): answered rightly
+  asked 8 (pumped): answered rightly
+    (1, 2, 1, 0), table: price 31 + 11, 167 beginnings, 58k clauses, 1 wrong (590 s)
+    (1, 2, 1, 0), table: price 31 + 11, 173 beginnings, 60k clauses, 6 wrong (590 s)
+    (1, 2, 1, 0), table: price 31 + 11, 292 beginnings, 184k clauses, 5 wrong (590 s)
+    (1, 2, 1, 0), table: price 32 + 11, 356 beginnings, 260k clauses, 0 wrong (594 s)
+    (2, 1, 2, 1), table: out of time, at least 27 + 15 (611 s)
+    (4, 0, 2, 0), table: none cheaper than 43 (618 s)
+    (3, 0, 2, 2), table: out of time, at least 26 + 16 (657 s)
+    (2, 1, 2, 2), table: out of time, at least 25 + 17 (680 s)
+  asked 9 (plain): answered wrongly; kept 1 count (a), 2 differences (bc) (price 43): bay: a+1, b-1, c+1 | grey: a+1, b-1, c-1 | ride: if a>0 and c<0: a-1, b+1, c+1; if a>0 and c=0: a-1, b+1, c-1; if a>0 and c>0: a-1, b+1, c-1 | hay: b+1 | shown by a, b, c
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (alive): answered rightly
+  asked 15 (pumped): answered rightly
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+NOT SURE: 1 count (a), 2 differences (bc) (price 43): bay: a+1, b-1, c+1 | grey: a+1, b-1, c-1 | ride: if a>0 and c<0: a-1, b+1, c+1; if a>0 and c=0: a-1, b+1, c-1; if a>0 and c>0: a-1, b+1, c-1 | hay: b+1 | shown by a, b, c; asked 17; 900 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

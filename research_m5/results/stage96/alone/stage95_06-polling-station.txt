@@ -1,0 +1,66 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), table: price 18 + 7, 139 beginnings, 16k clauses, 0 wrong (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), table: price 18 + 8, 139 beginnings, 22k clauses, 0 wrong (0 s)
+    (2, 0, 2, 0), table: price 20 + 9, 139 beginnings, 19k clauses, 0 wrong (1 s)
+    (3, 0, 1, 0), table: price 20 + 9, 139 beginnings, 22k clauses, 0 wrong (1 s)
+    (1, 0, 2, 2), table: no machine (1 s)
+    (2, 0, 1, 2), table: price 34 + 10, 139 beginnings, 42k clauses, 0 wrong (1 s)
+    (1, 1, 2, 0), table: price 18 + 10, 139 beginnings, 28k clauses, 0 wrong (2 s)
+    (2, 1, 1, 0), table: price 18 + 10, 139 beginnings, 31k clauses, 0 wrong (2 s)
+    (1, 1, 1, 2), table: price 14 + 11, 139 beginnings, 36k clauses, 0 wrong (2 s)
+    (2, 0, 2, 1), table: price 18 + 11, 139 beginnings, 38k clauses, 0 wrong (3 s)
+    (3, 0, 1, 1), table: price 16 + 11, 139 beginnings, 79k clauses, 0 wrong (3 s)
+    (0, 2, 2, 0), table: price 18 + 11, 139 beginnings, 40k clauses, 0 wrong (4 s)
+    (1, 2, 1, 0), table: price 18 + 11, 139 beginnings, 43k clauses, 0 wrong (4 s)
+    (2, 1, 1, 1), table: price 18 + 12, 139 beginnings, 54k clauses, 0 wrong (5 s)
+    (3, 0, 2, 0), table: price 20 + 12, 139 beginnings, 42k clauses, 0 wrong (8 s)
+    (4, 0, 1, 0), table: price 20 + 12, 139 beginnings, 45k clauses, 0 wrong (11 s)
+    (2, 0, 2, 2), table: price 18 + 13, 139 beginnings, 57k clauses, 0 wrong (12 s)
+    (3, 0, 1, 2), table: price 16 + 13, 139 beginnings, 158k clauses, 0 wrong (12 s)
+    (2, 1, 2, 0), table: none cheaper than 19 (13 s)
+    (3, 1, 1, 0), table: none cheaper than 19 (13 s)
+    (1, 1, 2, 2), table: price 14 + 14, 139 beginnings, 53k clauses, 0 wrong (13 s)
+    (2, 1, 1, 2), table: price 14 + 14, 139 beginnings, 128k clauses, 0 wrong (13 s)
+    (3, 0, 2, 1), table: price 16 + 14, 139 beginnings, 117k clauses, 0 wrong (14 s)
+    (1, 2, 2, 0), table: none cheaper than 20 (15 s)
+    (2, 2, 1, 0), table: none cheaper than 20 (15 s)
+    (1, 2, 1, 2), table: price 14 + 15, 139 beginnings, 116k clauses, 0 wrong (16 s)
+    (2, 1, 2, 1), table: none cheaper than 21 (16 s)
+    (4, 0, 2, 0), table: none cheaper than 21 (16 s)
+    (3, 0, 2, 2), table: price 16 + 16, 139 beginnings, 217k clauses, 0 wrong (17 s)
+    (3, 1, 2, 0), table: none cheaper than 22 (18 s)
+    (2, 1, 2, 2), table: none cheaper than 23 (18 s)
+    (2, 1, 2, 0), table: none cheaper than 25 (18 s)
+    (3, 1, 1, 0), table: none cheaper than 25 (19 s)
+    (1, 2, 2, 0), table: none cheaper than 25 (19 s)
+    (2, 2, 1, 0), table: none cheaper than 25 (19 s)
+    (2, 1, 2, 1), table: none cheaper than 25 (19 s)
+    (4, 0, 2, 0), table: none cheaper than 25 (19 s)
+    (3, 1, 2, 0), table: none cheaper than 25 (19 s)
+    (2, 1, 2, 2), table: none cheaper than 25 (20 s)
+  kept 1 count (a), 1 difference (b) (price 25): voter: a+1 | red: if a>0: a-1, b-1 | blue: if a>0: a-1, b+1 | spoil: if a>0: a-1 | shown by b
+  asked 1 (12 rivals): answered rightly
+  asked 2 (plain): answered rightly
+  asked 3 (again): answered rightly
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (alive): answered rightly
+  asked 7 (pumped): answered rightly
+  asked 8 (plain): answered rightly
+  asked 9 (again): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (alive): answered rightly
+  asked 13 (pumped): answered rightly
+  asked 14 (plain): answered rightly
+  asked 15 (again): answered rightly
+1 count (a), 1 difference (b) (price 25): voter: a+1 | red: if a>0: a-1, b-1 | blue: if a>0: a-1, b+1 | spoil: if a>0: a-1 | shown by b; asked 15; 20 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

@@ -1,0 +1,83 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), table: price 40 + 7, 203 beginnings, 23k clauses, 0 wrong (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), table: price 36 + 8, 203 beginnings, 32k clauses, 0 wrong (1 s)
+    (2, 0, 2, 0), table: out of time, at least 34 + 9 (16 s)
+    (3, 0, 1, 0), table: price 37 + 9, 203 beginnings, 32k clauses, 0 wrong (26 s)
+    (1, 0, 2, 2), table: no machine (26 s)
+    (2, 0, 1, 2), table: no machine (26 s)
+    (1, 1, 2, 0), table: out of time, at least 28 + 10 (41 s)
+    (2, 1, 1, 0), table: price 29 + 10, 203 beginnings, 45k clauses, 0 wrong (49 s)
+    (1, 1, 1, 2), table: price 18 + 11, 203 beginnings, 52k clauses, 0 wrong (49 s)
+    (2, 0, 2, 1), table: price 23 + 11, 203 beginnings, 55k clauses, 0 wrong (50 s)
+    (3, 0, 1, 1), table: price 20 + 11, 203 beginnings, 114k clauses, 0 wrong (51 s)
+    (0, 2, 2, 0), table: price 27 + 11, 203 beginnings, 58k clauses, 0 wrong (66 s)
+    (1, 2, 1, 0), table: out of time, at least 28 + 11 (81 s)
+    (2, 1, 1, 1), table: price 23 + 12, 203 beginnings, 78k clauses, 0 wrong (83 s)
+    (3, 0, 2, 0), table: out of time, at least 26 + 12 (99 s)
+    (4, 0, 1, 0), table: out of time, at least 29 + 12 (114 s)
+    (2, 0, 2, 2), table: price 23 + 13, 203 beginnings, 82k clauses, 0 wrong (115 s)
+    (3, 0, 1, 2), table: price 20 + 13, 203 beginnings, 225k clauses, 0 wrong (116 s)
+    (2, 1, 2, 0), table: none cheaper than 19 (116 s)
+    (3, 1, 1, 0), table: none cheaper than 19 (117 s)
+    (1, 1, 2, 2), table: price 18 + 14, 203 beginnings, 76k clauses, 0 wrong (117 s)
+    (2, 1, 1, 2), table: price 18 + 14, 203 beginnings, 184k clauses, 0 wrong (118 s)
+    (3, 0, 2, 1), table: price 20 + 14, 203 beginnings, 168k clauses, 0 wrong (121 s)
+    (1, 2, 2, 0), table: none cheaper than 20 (121 s)
+    (2, 2, 1, 0), table: none cheaper than 20 (121 s)
+    (1, 2, 1, 2), table: price 18 + 15, 203 beginnings, 167k clauses, 0 wrong (123 s)
+    (2, 1, 2, 1), table: none cheaper than 21 (123 s)
+    (4, 0, 2, 0), table: none cheaper than 21 (124 s)
+    (3, 0, 2, 2), table: price 20 + 16, 203 beginnings, 309k clauses, 0 wrong (127 s)
+    (3, 1, 2, 0), table: none cheaper than 22 (127 s)
+    (2, 1, 2, 2), table: none cheaper than 23 (128 s)
+    (2, 1, 2, 0), table: none cheaper than 25 (128 s)
+    (3, 1, 1, 0), table: none cheaper than 25 (128 s)
+    (1, 2, 2, 0), table: none cheaper than 26 (129 s)
+    (2, 2, 1, 0), table: none cheaper than 26 (129 s)
+    (2, 1, 2, 1), table: none cheaper than 27 (129 s)
+    (4, 0, 2, 0), table: none cheaper than 27 (129 s)
+    (3, 1, 2, 0), table: none cheaper than 28 (130 s)
+    (2, 1, 2, 2), table: none cheaper than 29 (130 s)
+    (2, 1, 2, 0), table: none cheaper than 29 (130 s)
+    (3, 1, 1, 0), table: none cheaper than 29 (131 s)
+    (1, 2, 2, 0), table: none cheaper than 29 (131 s)
+    (2, 2, 1, 0), table: none cheaper than 29 (132 s)
+    (2, 1, 2, 1), table: none cheaper than 29 (132 s)
+    (4, 0, 2, 0), table: none cheaper than 29 (132 s)
+    (3, 1, 2, 0), table: none cheaper than 29 (133 s)
+  kept 1 count (a), 1 difference (b) (price 29): ring: a+1 | pickup: take all of a from b | hangup: if a>0: a-1, b+1 | rush: take all of a from b | outage: pour a into b | shown by b
+    (1, 1, 1, 2), table: price 18 + 11, 204 beginnings, 52k clauses, 1 wrong (133 s)
+    (1, 1, 1, 2), table: price 20 + 11, 205 beginnings, 53k clauses, 0 wrong (133 s)
+    (2, 1, 2, 0), table: none cheaper than 31 (133 s)
+    (3, 1, 1, 0), table: none cheaper than 31 (134 s)
+    (2, 1, 2, 1), table: none cheaper than 31 (134 s)
+    (2, 1, 2, 2), table: none cheaper than 31 (134 s)
+    (4, 0, 2, 0), table: none cheaper than 31 (135 s)
+    (1, 2, 2, 0), table: none cheaper than 31 (136 s)
+    (2, 2, 1, 0), table: none cheaper than 31 (137 s)
+    (3, 1, 2, 0), table: none cheaper than 31 (138 s)
+  asked 1 (5 rivals): answered wrongly; kept 1 count (a), 1 difference (b) (price 31): ring: a+1 | pickup: if a>0: a-1, b-1 | hangup: if a>0: a-1, b+1 | rush: take all of a from b | outage: pour a into b | shown by b
+  asked 2 (plain): answered rightly
+  asked 3 (again): answered rightly
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (alive): answered rightly
+  asked 7 (pumped): answered rightly
+  asked 8 (plain): answered rightly
+  asked 9 (again): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (alive): answered rightly
+  asked 13 (pumped): answered rightly
+  asked 14 (plain): answered rightly
+  asked 15 (again): answered rightly
+1 count (a), 1 difference (b) (price 31): ring: a+1 | pickup: if a>0: a-1, b-1 | hangup: if a>0: a-1, b+1 | rush: take all of a from b | outage: pour a into b | shown by b; asked 15; 141 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

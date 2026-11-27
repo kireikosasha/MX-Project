@@ -1,0 +1,20 @@
+# The hardest formulas of the sushi conveyor (shape (2, 1, 2), the search by guessing of 1701c98): saved as they were
+# asked of the solver in the run (glucose 4 kept from call to call: call 05 took 72 s and found a machine, calls 04, 06
+# and 08 were stopped at 34, 48 and 30 s), then solved anew by each solver (pysat 1.x): seconds, and whether a machine is there.
+# solver       formula               machine seconds
+glucose4     05_True_72s.cnf        True 4.8 s
+glucose4     04_None_34s.cnf        True 63.9 s
+glucose4     06_None_48s.cnf        True 146.4 s
+glucose4     08_None_30s.cnf        True 69.8 s
+cadical195   05_True_72s.cnf        True 3.6 s
+cadical195   04_None_34s.cnf        True 30.6 s
+cadical195   06_None_48s.cnf        True 3.1 s
+cadical195   08_None_30s.cnf        True 4.4 s
+kissat404    05_True_72s.cnf        True 4.2 s
+kissat404    04_None_34s.cnf        True 39.7 s
+kissat404    06_None_48s.cnf        True 3.7 s
+kissat404    08_None_30s.cnf        True 1.6 s
+maplechrono  05_True_72s.cnf        True 67.4 s
+maplechrono  04_None_34s.cnf        True 47.1 s
+maplechrono  06_None_48s.cnf        True 71.6 s
+maplechrono  08_None_30s.cnf        True 8.0 s

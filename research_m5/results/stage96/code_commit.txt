@@ -1,0 +1,11 @@
+Stage 96 (open: the rules of pools 93 and 95 were opened before; not a blind check).
+
+alone/      guarded.py of 5d10bbb by itself (python3 guarded.py FAMILY/family.py --minutes 15), four rules at a time on
+            four cores, 12 opened rules (pools 92, 93, 95); seed 0, 300 stories taught, up to 40 questions.
+open_pipeline.txt
+            the whole pipeline of the blind runs (sealed_run.py, the flags of stage 93 as in results/stage93/code_commit.txt)
+            with guarded.py of 5d10bbb on the 24 opened rules of pools 93 and 95, four groups of six on four cores.
+            Two rules (seed bank, hydroelectric dam) failed at first on a price bound past the size of the totalizer
+            (IndexError in Space.solve.most); fixed (under(): no bound where every machine of the shape is cheaper) and
+            run again alone, two at a time; their lines say so.
+solvers.txt the four hardest formulas of the sushi conveyor, solved anew by four solvers.
