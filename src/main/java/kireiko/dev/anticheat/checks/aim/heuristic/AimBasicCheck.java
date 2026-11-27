@@ -6,10 +6,10 @@ import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.checks.aim.AimHeuristicCheck;
 import kireiko.dev.millennium.math.Simplification;
 import kireiko.dev.millennium.math.Statistics;
+import kireiko.dev.millennium.types.ConcurrentEvictingList;
 import kireiko.dev.millennium.vectors.Vec2;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class AimBasicCheck implements HeuristicComponent {
     private final AimHeuristicCheck check;
@@ -21,7 +21,7 @@ public final class AimBasicCheck implements HeuristicComponent {
 
     public AimBasicCheck(final AimHeuristicCheck check) {
         this.check = check;
-        this.rawRotations = new CopyOnWriteArrayList<>();
+        this.rawRotations = new ConcurrentEvictingList<>(16);
     }
 
     @Override

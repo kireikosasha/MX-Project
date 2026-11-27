@@ -52,7 +52,7 @@ public final class LogCommand extends MXSubCommand {
             return true;
         }
         { // uploading
-            AsyncScheduler.run(() -> {
+            AsyncScheduler.runIO(() -> {
                 final StringBuilder logBuilder = new StringBuilder();
                 for (final String l : LogUtils.getLog(args[0])) logBuilder.append("\n").append(l);
                 for (final String l : target.getLogs()) logBuilder.append("\n").append(l);
