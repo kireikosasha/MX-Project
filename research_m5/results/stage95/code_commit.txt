@@ -3,3 +3,6 @@ blind_results.txt: the blind pool 95 (sealed/stage95_families, committed in fa86
 --explore --frugal --slack 16 --guards --build 12 --flags --cascades --keep --deadline --watch --warm --patience 30 --part 100000
 --tour 24 --anchor 65 --far 100 --sum --parts --guarded 0.7 --keep-asks 10 --cap 60), as named in README (1701c98). Four groups
 of three families on four cores, nothing else on the machine.
+blind_results_code_53e92ed.txt: the same pool, the same flags and groups, the code 53e92ed, run after it.
+blind_strict.txt: worlds/strict.py on the machines kept by each of the two runs.
+post_*.txt: after the rules were opened, guarded.py alone (code 1701c98, --minutes 15) on four rules not taken; not blind.
