@@ -804,12 +804,13 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
     dep = depths(H)
     if not hasattr(H, "active"):
         H.active, H.low, H.kept, H.spaces, H.t0, H.slow, H.used = set(), {}, {}, {}, time.time(), {}, {}
+        H.soft = {}  # (stage 96: what a shape searched by guessing is not seen to cost less than: its probe less STEP)
         H.spent = [0.0, 0.0]  # (seconds of search: all shapes, shapes with moves of the second kind)
     nodes = H.active
     nodes |= {n for n in range(len(H.parent)) if dep[n] <= short}
     wordy = any(SLOT.search(y) for y in H.shown)  # (numbers among the answers: words with places for numbers too)
     keys = [shape + (mode,) for shape in SHAPES for mode in ((True, False) if wordy else (False,))]
-    bound = lambda k: base(k[:4]) + H.low.get(k, 0)
+    bound = lambda k: base(k[:4]) + max(H.low.get(k, 0), H.soft.get(k, 0))  # (the order the shapes are looked at in)
     cells = lambda k: k[2] * 2 ** k[0] * 3 ** k[1]
     best, later, start = None, set(), time.time()
     while time.time() < deadline and (best is None or time.time() < start + ROUND):
@@ -853,6 +854,8 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
             room(H, key, log)
             if key not in H.spaces:  # (too big: dropped)
                 continue
+            if sp.guess:  # (a space made anew goes on from the probe its shape had reached)
+                sp.probe = max(getattr(sp, "probe", 0), H.soft.get(key, 0) + STEP)
             slice_ = None if per is None else min(per * 2 ** H.slow.get(key, 0), 8 * per)
 
             def fix(m, sp=sp):  # (the beginnings m answers wrongly go into the formulas of its shape at once)
@@ -876,6 +879,8 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
                 log(f"    {say}: too big to keep in mind ({time.time() - H.t0:.0f} s)")
                 continue
             H.low[key] = max(H.low.get(key, 0), sp.low)
+            if sp.guess and (m is None or m == "above"):  # (nothing found under the probe: it was raised)
+                H.soft[key] = max(H.soft.get(key, 0), getattr(sp, "probe", STEP) - STEP)
             H.used[key] = time.time()
             H.spent[0] += H.used[key] - t
             H.spent[1] += (H.used[key] - t) * (shape[3] == 2)
