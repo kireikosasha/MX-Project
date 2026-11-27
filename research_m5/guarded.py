@@ -765,7 +765,7 @@ class Space:
             if ok is False:
                 if good is not None:
                     self.low = max(self.low, cap)
-                elif cap is None:
+                elif cap is None or cap > len(self.lits):  # (no machine at any price)
                     return "none"
                 else:
                     self.low = max(self.low, cap)

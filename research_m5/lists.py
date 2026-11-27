@@ -161,9 +161,7 @@ class ListMachine:
 
 class ListSpace(guarded.Space):
     """The machines of one layer and one kind of display, as formulas kept from round to round (the search itself,
-    by cores or by guessing, is guarded.Space's). The first machine of a layer is looked for at any price and made
-    cheaper from there: a layer where no machine is at all is seen so at once."""
-    free = True
+    by cores or by guessing, is guarded.Space's)."""
 
     def __init__(self, H, key, nodes, avoid=None, guess=False, low=0):
         N, S, w, numeric = key
