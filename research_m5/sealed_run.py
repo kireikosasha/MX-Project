@@ -44,8 +44,12 @@ def one(path, out, a):
                 first = m  # (the machine of parts it stopped with: see below)
             if taken is None and a.guarded:  # then the quantities that wait on each other, found together (guarded.py),
                 import guarded              # on the stories parts heard, with the questions left but a.keep_asks
+                family = guarded.TABLES
+                if a.lists:  # (stage 97: the machine of parts said as lists of commands, lists.py)
+                    import lists
+                    family = lists.LISTS
                 g, g_asked, _ = guarded.learn(syms, oracle, data, rng, max(0, a.asks - spent - a.keep_asks),
-                                              t0 + a.minutes * 60 * a.guarded, H, cap=a.cap)
+                                              t0 + a.minutes * 60 * a.guarded, H, cap=a.cap, family=family)
                 spent += g_asked
                 for sp in getattr(H, "spaces", {}).values():
                     sp.delete()  # (the solvers' memory, before the table is looked for)
@@ -157,6 +161,7 @@ def main():
     ap.add_argument("--lazy", action="store_true", help="with --parts and --far: the stories the first learner asked are not put into the formulas of the second; its machine is checked on them, and the shortest beginning it answers wrongly is taught on")
     ap.add_argument("--guarded", type=float, default=0, help="with --parts: when the parts are not sure, the quantities that wait on each other are looked for together (guarded.py), until this share of the minutes has gone")
     ap.add_argument("--keep-asks", type=int, default=10, help="with --guarded: so many questions are left to the table")
+    ap.add_argument("--lists", action="store_true", help="with --guarded: the machine of parts is said as lists of guarded commands (lists.py), not as one table")
     ap.add_argument("--cap", type=int, default=0, help="with --guarded: it gives up when the cheapest machine costs more")
     ap.add_argument("--sum", action="store_true", help="with --watch, when every answer is a whole number that never goes down in the stories heard (a count): the machine is looked for that answers what each symbol adds to the number shown (the answer of the last move, as with --mealy), and the number is told as the sum")
     ap.add_argument("--pairs", action="store_true", help="with --watch: stories are asked through the pairs of moves of the kept machine that no story has made, and a machine is sure only when none is left")

@@ -373,6 +373,7 @@ class Space:
     """The machines of one shape and one kind of display, as formulas for a solver kept from round to round: the
     beginnings heard are added to it as they come, and what the solver found (its cores, Ignatiev et al. 2019) stays
     true when more is added, so a search stopped by the time goes on from where it stopped in the next round."""
+    free = False  # (stage 97, lists.py: the first machine of a space searched by guessing is looked for at any price)
 
     def __init__(self, H, shape, numeric, nodes, avoid=None, guess=False, low=0):
         self.H, self.shape, self.numeric, self.guess = H, shape, numeric, guess
@@ -708,7 +709,8 @@ class Space:
             # shown to be more, by step; stage 96: the ceiling is a probe, not a proof - where no machine is found under
             # it in the time given, it is raised by step all the same, and one found sets it at its price and step more)
             self.probe = max(getattr(self, "probe", 0), self.low + step)
-            below = self.probe if below is None else min(below, self.probe)
+            if not (self.free and self.last is None):  # (free: the first machine of a space is looked for at any price)
+                below = self.probe if below is None else min(below, self.probe)
         if below is not None and below <= self.low:
             return "above"
         # (stage 96: every machine found is checked at once on everything heard; one that answers some of it wrongly
@@ -840,6 +842,41 @@ class Space:
             self.inc.delete()
 
 
+class Tables:
+    """The machines looked for: a flat table over the state and the tests (stages 92-96). A key is a shape and whether
+    what is shown is words with numbers; explain, rivals and learn look for machines of a family through these."""
+
+    def keys(self, wordy):
+        return [shape + (mode,) for shape in SHAPES for mode in ((True, False) if wordy else (False,))]
+
+    def base(self, key):
+        return base(key[:4])
+
+    def cells(self, key):
+        return key[2] * 2 ** key[0] * 3 ** key[1]
+
+    def second(self, key):  # (whether the key has the moves of the second kind: they are given at most SHARE)
+        return key[3] == 2
+
+    def guess(self, key, rival=False):  # (a big table is searched by guessing from the start; a rival by cores)
+        return not rival and self.cells(key) >= GUESS
+
+    def numeric(self, key):
+        return key[4]
+
+    def say(self, key):
+        return f"{key[:4]}, {'number' if key[4] else 'table'}"
+
+    def key(self, m):
+        return m.shape + (m.num is not None,)
+
+    def space(self, H, key, nodes, guess=False, low=0, avoid=None):
+        return Space(H, key[:4], key[4], nodes, avoid=avoid, guess=guess, low=low)
+
+
+TABLES = Tables()
+
+
 def wrong(m, H):
     """The beginnings heard that m answers wrongly while answering every beginning before them rightly."""
     st, bad, ok = [None] * len(H.parent), [], [True] * len(H.parent)
@@ -858,7 +895,7 @@ def wrong(m, H):
     return bad
 
 
-def explain(H, deadline, log=lambda *a: None, short=4, per=None):
+def explain(H, deadline, log=lambda *a: None, short=4, per=None, family=TABLES):
     """The cheapest machine over all shapes that answers everything heard; None when time runs out first. In the
     formulas are the beginnings of at most short symbols and, of the others, only those some machine found answered
     wrongly, up to its first wrong answer (kept in H.active, for every shape and every later round). Of every shape the
@@ -876,9 +913,9 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
     nodes = H.active
     nodes |= {n for n in range(len(H.parent)) if dep[n] <= short}
     wordy = any(SLOT.search(y) for y in H.shown)  # (numbers among the answers: words with places for numbers too)
-    keys = [shape + (mode,) for shape in SHAPES for mode in ((True, False) if wordy else (False,))]
-    bound = lambda k: base(k[:4]) + max(H.low.get(k, 0), H.soft.get(k, 0))  # (the order the shapes are looked at in)
-    cells = lambda k: k[2] * 2 ** k[0] * 3 ** k[1]
+    keys = family.keys(wordy)
+    bound = lambda k: family.base(k) + max(H.low.get(k, 0), H.soft.get(k, 0))  # (the order the shapes are looked at in)
+    cells = family.cells
     best, later, start = None, set(), time.time()
     while time.time() < deadline and (best is None or time.time() < start + ROUND):
         left = [k for k in keys if k not in later and H.low.get(k, 0) < NONE and (best is None or bound(k) < best.total)]
@@ -887,18 +924,17 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
             continue
         if not left:
             break
-        if H.spent[1] > SHARE * H.spent[0] and any(k[3] < 2 for k in left):
-            left = [k for k in left if k[3] < 2]  # (the second kind has had its share of the time: the first goes on)
+        if H.spent[1] > SHARE * H.spent[0] and any(not family.second(k) for k in left):
+            left = [k for k in left if not family.second(k)]  # (the second kind has had its share of the time: the first goes on)
         key = min(left, key=lambda k: (bound(k), cells(k)))  # (of equal bounds, the smaller table first: it is solved sooner)
-        shape, mode = key[:4], key[4]
-        say = f"{shape}, {'number' if mode else 'table'}"
+        mode, say, second = family.numeric(key), family.say(key), family.second(key)
         m = H.kept.get(key)
         if m is None or not m.proved or wrong(m, H):
             sp = H.spaces.get(key)
             if sp is not None and not set(form(y)[0] if mode else y for y in H.shown) <= set(sp.labels):
                 sp.delete()  # (a label not heard before: the space is made anew)
                 sp = None
-            guess = H.slow.get(key, 0) > 0 or cells(key) >= GUESS  # (a shape whose search by cores ran out of time,
+            guess = H.slow.get(key, 0) > 0 or family.guess(key)  # (a shape whose search by cores ran out of time,
             # or whose table is big, is searched by guessing)
             if sp is not None and sp.guess != guess:
                 sp.delete()
@@ -906,7 +942,7 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
             t = time.time()
             try:
                 if sp is None:
-                    sp = Space(H, shape, mode, nodes, guess=guess, low=H.low.get(key, 0))
+                    sp = family.space(H, key, nodes, guess=guess, low=H.low.get(key, 0))
                     H.spaces[key] = sp
                 sp.add(nodes)
             except TooBig:
@@ -914,7 +950,7 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
                     H.spaces.pop(key).delete()
                 H.low[key] = NONE
                 H.spent[0] += time.time() - t
-                H.spent[1] += (time.time() - t) * (shape[3] == 2)
+                H.spent[1] += (time.time() - t) * second
                 log(f"    {say}: too big to keep in mind ({time.time() - H.t0:.0f} s)")
                 continue
             H.used[key] = time.time()
@@ -936,13 +972,13 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
                 return bool(bad)
             try:
                 m = sp.solve(deadline if per is None else min(deadline, time.time() + slice_),
-                             None if best is None else best.total - base(shape),  # (only a machine cheaper than best matters)
+                             None if best is None else best.total - family.base(key),  # (only a machine cheaper than best matters)
                              fix=fix if sp.guess else None)
             except TooBig:
                 H.spaces.pop(key).delete()
                 H.low[key] = NONE
                 H.spent[0] += time.time() - t
-                H.spent[1] += (time.time() - t) * (shape[3] == 2)
+                H.spent[1] += (time.time() - t) * second
                 log(f"    {say}: too big to keep in mind ({time.time() - H.t0:.0f} s)")
                 continue
             H.low[key] = max(H.low.get(key, 0), sp.low)
@@ -950,25 +986,25 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
                 H.soft[key] = max(H.soft.get(key, 0), getattr(sp, "probe", STEP) - STEP)
             H.used[key] = time.time()
             H.spent[0] += H.used[key] - t
-            H.spent[1] += (H.used[key] - t) * (shape[3] == 2)
+            H.spent[1] += (H.used[key] - t) * second
             room(H, key, log)
             if m is None:
                 H.slow[key] = H.slow.get(key, 0) + 1  # (the next time it is given twice as long, up to 8 per)
                 later.add(key)
-                log(f"    {say}: out of time, at least {H.low[key]} + {base(shape)} ({time.time() - H.t0:.0f} s)")
+                log(f"    {say}: out of time, at least {H.low[key]} + {family.base(key)} ({time.time() - H.t0:.0f} s)")
                 continue
             if m == "none":
                 H.low[key] = NONE
                 log(f"    {say}: no machine ({time.time() - H.t0:.0f} s)")
                 continue
             if m == "above":
-                log(f"    {say}: none cheaper than {H.low[key] + base(shape)} ({time.time() - H.t0:.0f} s)")
+                log(f"    {say}: none cheaper than {H.low[key] + family.base(key)} ({time.time() - H.t0:.0f} s)")
                 continue
         H.kept[key] = m
         if m.proved:
             H.low[key] = max(H.low.get(key, 0), m.cost)
         bad = wrong(m, H)
-        log(f"    {say}: price {m.cost}{'' if m.proved else ' (or less)'} + {base(shape)}, {len(nodes)} beginnings, "
+        log(f"    {say}: price {m.cost}{'' if m.proved else ' (or less)'} + {family.base(key)}, {len(nodes)} beginnings, "
             f"{getattr(H.spaces.get(key), 'n', 0) // 1000}k clauses, {len(bad)} wrong ({time.time() - H.t0:.0f} s)")
         if not m.proved and not bad:  # (the search was cut: it goes on in the next round)
             H.slow[key] = H.slow.get(key, 0) + 1
@@ -1007,27 +1043,51 @@ def parting(m, r, deep=10, most=200000, a0=None, b0=None):
     return None
 
 
-def rivals(m, H, deadline, slack=6, per=30):
+def rivals(m, H, deadline, slack=6, per=30, family=TABLES):
     """Machines that answer everything heard, of price at most slack more than m: the cheapest of every other shape
     kept by explain, or else the cheapest of m's own shape that reads other tests."""
     out = [r for r in H.kept.values() if r is not m and r.total <= m.total + slack and not wrong(r, H)]
     if out:  # (the cheapest of m's own shape reading other tests is looked for only when there is no other rival)
         return sorted(out, key=lambda r: r.total)
-    guess = H.slow.get(m.shape + (m.num is not None,), 0) > 0  # (as explain searched m's shape)
-    if held() > ROOM:  # (no room for a second copy of the formulas)
+    key = family.key(m)
+    guess = H.slow.get(key, 0) > 0 or family.guess(key, rival=True)  # (as explain searched m's shape)
+    alone = getattr(H, "alone", set())  # (machines shown to have no rival of their own shape: more heard keeps it so)
+    if str(m) in alone or held() > ROOM:  # (no room for a second copy of the formulas)
         return out
+    kept = getattr(H, "rival", {}).get(str(m))  # (the rival found before, while it answers everything heard)
+    if kept is not None and not wrong(kept, H):
+        return [kept]
     try:
-        sp = Space(H, m.shape, m.num is not None, H.active, avoid=m, guess=guess)
+        sp = family.space(H, key, H.active, guess=guess, avoid=m)
     except TooBig:
         return out
-    r = sp.solve(min(deadline, time.time() + per), m.total + slack + 1 - base(m.shape), step=None)
+    dep = depths(H)
+
+    def fix(r):  # (a rival found answering something heard wrongly is mended there, as explain does)
+        bad = wrong(r, H)
+        for n in sorted(bad, key=lambda n: dep[n])[:10]:
+            while n not in H.active:
+                H.active.add(n)
+                n = H.parent[n]
+        if bad:
+            sp.add(H.active)
+        return bool(bad)
+    try:
+        r = sp.solve(min(deadline, time.time() + per), m.total + slack + 1 - family.base(key), step=None,
+                     fix=fix if sp.guess else None)
+    except TooBig:
+        r = None
     sp.delete()
+    if r in ("none", "above"):
+        H.alone = alone | {str(m)}
     if r not in (None, "none", "above") and r.total <= m.total + slack and not wrong(r, H):
         out.append(r)
+        H.rival = dict(getattr(H, "rival", {}), **{str(m): r})
     return sorted(out, key=lambda r: r.total)
 
 
-def learn(syms, oracle, data, rng, asks=40, deadline=None, H=None, log=lambda *a: None, per=PER, cap=0, short=SHORT):
+def learn(syms, oracle, data, rng, asks=40, deadline=None, H=None, log=lambda *a: None, per=PER, cap=0, short=SHORT,
+          family=TABLES):
     """The stories taught on (and H, the stories another learner heard, if given), then up to asks questions: first
     the story that parts the machine kept from a rival (see rivals), then long stories as a check (plain, with symbols
     repeated, kept away from an answer never left, a rare answer drawn out, as parts.py asks them); where the machine is
@@ -1039,7 +1099,7 @@ def learn(syms, oracle, data, rng, asks=40, deadline=None, H=None, log=lambda *a
         H = parts.Heard(syms, oracle([]))
         for w, _ in data:
             H.add(list(w), [oracle(list(w[:i])) for i in range(1, len(w) + 1)])
-    m = explain(H, deadline, log, short=short, per=per)
+    m = explain(H, deadline, log, short=short, per=per, family=family)
     asked, row = 0, 0
     log(f"  kept {m}")
     same = set()  # (rivals no story of deep symbols parts from the machine kept)
@@ -1047,7 +1107,7 @@ def learn(syms, oracle, data, rng, asks=40, deadline=None, H=None, log=lambda *a
         w, kind = None, "a check"
         # (one story parts the machine from several rivals, one after another: from where the story so far has brought
         # the machine and the next rival not yet parted, the shortest going-on after which the two show different things)
-        left = [r for r in rivals(m, H, deadline) if (str(m), str(r)) not in same]
+        left = [r for r in rivals(m, H, deadline, family=family) if (str(m), str(r)) not in same]
         story, parted = [], 0
         while left and len(story) < 40:
             r = left.pop(0)
@@ -1083,7 +1143,7 @@ def learn(syms, oracle, data, rng, asks=40, deadline=None, H=None, log=lambda *a
             log(f"  asked {asked} ({kind}): answered rightly")
             continue
         row = 0
-        m = explain(H, deadline, log, short=short, per=per)
+        m = explain(H, deadline, log, short=short, per=per, family=family)
         log(f"  asked {asked} ({kind}): answered wrongly; kept {m}")
     if m is not None:
         m.sure = row >= NEED
