@@ -367,7 +367,10 @@ class ListSpace(guarded.Space):
         for n in sorted(x for x in nodes if x not in self.SW):
             d = dep[n] = 0 if n == 0 else dep[self.H.parent[n]] + 1
             out += ROWS * (3 * per + 3 * T + 4) + ROWS * (2 * N + 3 * sum(self.S) + len(W) + 2) + 6 * per + 3 ** SEE
-            out += 8 * N * (2 * d + V + 2) + (len(W) * 4 * (2 * d + V + 1) ** 2 if W else 0)
+            out += 8 * N * (2 * d + V + 2)
+            for w in W:
+                out += (2 * (2 * d + V) * (d + V) if w[0] == "pour" else 4 * (d + V) * (d + V) if w[0] == "even" else
+                        6 * (2 * d + V + 1) if w[0] == "copy" else 2)
         return out
 
     def guarded_list(self, n, at, U, L, OUT):
@@ -461,10 +464,10 @@ class ListSpace(guarded.Space):
                     if w[0] != "even":  # (number i is 0 after it is poured or emptied)
                         add([-y, no(ge(n, i, 1))])
                         add([-y, ge(n, i, 0)])
-                    if w[0] == "pour":  # (j after = j before + g times i before)
+                    if w[0] == "pour":  # (j after = j before + g times i before; i is a count)
                         j, g = w[2], w[3]
                         for kk in range(-d + 1, d + self.V + 1):
-                            for t in range(-dp, dp + self.V + 1):
+                            for t in range(0, dp + self.V + 1):
                                 add([-y, no(ge(p, i, t)), ge(p, i, t + 1), no(ge(p, j, kk - g * t)), ge(n, j, kk)])
                                 add([-y, no(ge(p, i, t)), ge(p, i, t + 1), ge(p, j, kk - g * t), no(ge(n, j, kk))])
                     elif w[0] == "even":  # (j after = j before - i before, if above 0; and i after = 0 or i - j)
