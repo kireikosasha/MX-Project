@@ -1,4 +1,4 @@
-"""Quantities that wait on each other, found together (stages 92-95).
+"""Quantities that wait on each other, found together (stages 92-96).
 
 parts.py builds a rule one part at a time, each part moved by plain events; two quantities each of which waits on the
 other (a car leaves with a bag only when both are there, a bag is thrown away only when no car waits) cannot be built that
@@ -29,14 +29,19 @@ which is quick when the table is small. A shape whose search by cores runs out o
 then on, by guessing (stage 95): a machine is found first, then one cheaper than it, and so on (linear search, sat to
 unsat), under a ceiling: the price of the best machine found so far, or, before there is one, a little above what the
 shape is shown to cost at least, which is raised when no machine is there (deepening by price). A guess not yet shown
-to be the cheapest of its shape may be kept when it answers everything heard; its shape is searched on later. A shape
+to be the cheapest of its shape may be kept when it answers everything heard; its shape is searched on later. Stage 96:
+every guess is checked at once on everything heard, and one that answers some of it wrongly puts those beginnings into
+the formulas before anything cheaper is looked for (a hypothesis is mended before it is made simpler); the ceiling is a
+probe, raised by STEP when nothing is found under it in the time given, without waiting for a proof that nothing is
+there; and the formulas of a guess are solved anew by CaDiCaL in a child process (Fresh). A shape
 whose formulas would not fit in mind (CLAUSES) is left. The learner asks where machines that answer everything heard
 part (rivals, as parts.py asks; one story parts the machine from several rivals one after another), and then long
 stories as a check.
 
     python guarded.py FAMILY/family.py [--asks 40] [--seed 0] [--minutes 10]
 """
-import argparse, ctypes, gc, importlib.util, itertools, os, random, re, threading, time
+import argparse, ctypes, gc, importlib.util, itertools, os, random, re, select, signal, threading, time
+from array import array
 from pysat.card import CardEnc, EncType, ITotalizer
 from pysat.formula import WCNF
 from pysat.examples.rc2 import RC2
@@ -113,6 +118,7 @@ SHORT = 4  # the beginnings of at most so many symbols are in the formulas from 
 STEP = 6  # a shape searched by guessing is asked for a machine at most so much above what it is shown to cost at least
 PER = 15  # seconds the search of one shape is given in a round (it goes on in the next)
 ROOM = 2500  # megabytes the solvers kept may hold: past that, those used longest ago go (what they showed is kept)
+GUESS = 24  # a shape with at least so many cells of its table is searched by guessing from the start (stage 96)
 SHARE = 0.25  # the most of the search time the moves of the second kind may take (they cost 2 more: 2 ** -2 of it)
 CLAUSES = 20 * 10 ** 6  # the most clauses the formulas of one shape may have: a shape that needs more is too big to keep
 # in mind (a pour is written for every value of the two numbers at every beginning: long stories make it big)
@@ -120,6 +126,83 @@ CLAUSES = 20 * 10 ** 6  # the most clauses the formulas of one shape may have: a
 
 class TooBig(Exception):
     pass
+
+
+FRESH = "cadical195"  # (the solver of the search by guessing, stage 96: CaDiCaL 1.9.5, Biere et al. 2024)
+
+
+class Fresh:
+    """The formulas of a shape searched by guessing, solved anew at every call by FRESH in a child process that is
+    stopped at the deadline (stage 96). On the hardest formulas of the search by guessing CaDiCaL solved anew is many
+    times quicker than glucose kept from call to call (3-30 s against 34-146 s on the formulas of the sushi conveyor),
+    and it cannot be stopped from outside but as a process. The clauses are kept flat (0 ends a clause), and the child
+    has them as they are, without copying (fork)."""
+
+    def __init__(self, clauses):
+        self.cl, self.model = array("i"), None
+        self.append_formula(clauses)
+
+    def add_clause(self, c):
+        self.cl.extend(c)
+        self.cl.append(0)
+
+    def append_formula(self, cls):
+        for c in cls:
+            self.add_clause(c)
+
+    def solve(self, assumptions, deadline):
+        """True (the model is in self.model), False, or None when the deadline comes first."""
+        left = deadline - time.time()
+        if left <= 0:
+            return None
+        r, w = os.pipe()
+        pid = os.fork()
+        if pid == 0:  # (the child: build, solve, write the answer and the model, go)
+            try:
+                os.close(r)
+                sv, cur = Solver(name=FRESH), []
+                for x in self.cl:
+                    if x:
+                        cur.append(x)
+                    else:
+                        sv.add_clause(cur)
+                        cur = []
+                ok = sv.solve(assumptions=list(assumptions))
+                out = array("i", [1 if ok else 0]) + (array("i", sv.get_model()) if ok else array("i"))
+                b = memoryview(out.tobytes())
+                while b:
+                    b = b[os.write(w, b):]
+            finally:
+                os._exit(0)
+        os.close(w)
+        got = bytearray()
+        try:
+            while True:
+                left = deadline - time.time()
+                if left <= 0 or not select.select([r], [], [], left)[0]:
+                    os.kill(pid, signal.SIGKILL)
+                    return None
+                chunk = os.read(r, 1 << 20)
+                if not chunk:
+                    break
+                got += chunk
+        finally:
+            os.close(r)
+            os.waitpid(pid, 0)
+        if len(got) < 4:
+            return None
+        out = array("i")
+        out.frombytes(bytes(got))
+        if not out[0]:
+            return False
+        self.model = list(out[1:])
+        return True
+
+    def get_model(self):
+        return self.model
+
+    def delete(self):
+        self.cl, self.model = array("i"), None
 
 
 def held():
@@ -396,7 +479,7 @@ class Space:
         self.lits = [x for x in cost]  # (the price: how many of these are true; a literal twice costs twice)
         self.tot, self.low = None, low  # (no machine of this shape is cheaper than low: the solver said so)
         if guess:
-            self.solver = Solver(name=ENGINE, bootstrap_with=f.cl)
+            self.solver = Fresh(f.cl)
         else:
             w = WCNF()
             for c in f.cl:
@@ -574,7 +657,7 @@ class Space:
                 if True not in pr:
                     add(pr + [self.O[ci][l]])
 
-    def solve(self, deadline, below=None, step=STEP):
+    def solve(self, deadline, below=None, step=STEP, fix=None):
         """The cheapest machine found by the deadline (m.proved when none is cheaper), of price below below if given;
         "none" if there is none at all, "above" if none is below below; None if time ran out before any was found.
         By cores (RC2) the cheapest is found by raising what the price is shown to be at least until a machine is
@@ -586,17 +669,7 @@ class Space:
         r = self.solver
 
         def run(ass):
-            left = deadline - time.time()
-            if left <= 0:
-                return None
-            tm = threading.Timer(left, r.interrupt)
-            tm.start()
-            try:
-                ok = r.solve_limited(assumptions=ass, expect_interrupt=True)
-            finally:
-                tm.cancel()
-            r.clear_interrupt()
-            return ok
+            return r.solve(ass, deadline)
 
         def most(k):  # (the literal that says "the price is at most k")
             if self.tot is None:
@@ -610,31 +683,45 @@ class Space:
 
         price = self.price
         if step is not None:  # (a little above what it is shown to cost at least: if there is none there, that is
-            below = self.low + step if below is None else min(below, self.low + step)  # shown to be more, by step)
+            # shown to be more, by step; stage 96: the ceiling is a probe, not a proof - where no machine is found under
+            # it in the time given, it is raised by step all the same, and one found sets it at its price and step more)
+            self.probe = max(getattr(self, "probe", 0), self.low + step)
+            below = self.probe if below is None else min(below, self.probe)
         if below is not None and below <= self.low:
             return "above"
-        ok = run([] if below is None else [most(below - 1)])
-        if ok is None:
-            return None
-        if ok is False:
-            if below is None:
-                return "none"
-            self.low = max(self.low, below)
-            return "above"
-        model = r.get_model()
-        p = price(model)
-        while p > self.low:
-            ok = run([most(p - 1)])
+        # (stage 96: every machine found is checked at once on everything heard; one that answers some of it wrongly
+        # puts the beginnings it answers wrongly into the formulas (fix), and the same price is looked under again:
+        # only a machine that answers everything heard is made cheaper)
+        cap, good, last = below, None, None
+        while True:
+            ok = run([] if cap is None else [most(cap - 1)])
             if ok is None:
                 break
             if ok is False:
-                self.low = p
+                if good is not None:
+                    self.low = max(self.low, cap)
+                elif cap is None:
+                    return "none"
+                else:
+                    self.low = max(self.low, cap)
+                    return "above"
                 break
             model = r.get_model()
             p = price(model)
-        m = self.read(model, p)
-        m.proved = p <= self.low
-        return m
+            last = self.read(model, p)
+            if fix is not None and fix(last):
+                continue
+            good, cap = last, p
+            if p <= self.low:
+                break
+        if good is None:
+            if step is not None and fix is not None:
+                self.probe += step
+            return None if fix is not None or last is None else last
+        good.proved = good.cost <= self.low
+        if step is not None:
+            self.probe = good.cost + step
+        return good
 
     def cores(self, deadline):
         if deadline <= time.time():
@@ -743,7 +830,8 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
             if sp is not None and not set(form(y)[0] if mode else y for y in H.shown) <= set(sp.labels):
                 sp.delete()  # (a label not heard before: the space is made anew)
                 sp = None
-            guess = H.slow.get(key, 0) > 0  # (a shape whose search by cores ran out of time is searched by guessing)
+            guess = H.slow.get(key, 0) > 0 or cells(key) >= GUESS  # (a shape whose search by cores ran out of time,
+            # or whose table is big, is searched by guessing)
             if sp is not None and sp.guess != guess:
                 sp.delete()
                 sp = None
@@ -766,8 +854,27 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
             if key not in H.spaces:  # (too big: dropped)
                 continue
             slice_ = None if per is None else min(per * 2 ** H.slow.get(key, 0), 8 * per)
-            m = sp.solve(deadline if per is None else min(deadline, time.time() + slice_),
-                         None if best is None else best.total - base(shape))  # (only a machine cheaper than best matters)
+
+            def fix(m, sp=sp):  # (the beginnings m answers wrongly go into the formulas of its shape at once)
+                bad = wrong(m, H)
+                for n in sorted(bad, key=lambda n: dep[n])[:10]:
+                    while n not in nodes:
+                        nodes.add(n)
+                        n = H.parent[n]
+                if bad:
+                    sp.add(nodes)
+                return bool(bad)
+            try:
+                m = sp.solve(deadline if per is None else min(deadline, time.time() + slice_),
+                             None if best is None else best.total - base(shape),  # (only a machine cheaper than best matters)
+                             fix=fix if sp.guess else None)
+            except TooBig:
+                H.spaces.pop(key).delete()
+                H.low[key] = NONE
+                H.spent[0] += time.time() - t
+                H.spent[1] += (time.time() - t) * (shape[3] == 2)
+                log(f"    {say}: too big to keep in mind ({time.time() - H.t0:.0f} s)")
+                continue
             H.low[key] = max(H.low.get(key, 0), sp.low)
             H.used[key] = time.time()
             H.spent[0] += H.used[key] - t
