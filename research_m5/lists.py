@@ -139,7 +139,8 @@ class ListMachine:
             bits = y.split("\0")
             names = ["{" + f"{'-' if g < 0 else ''}{NAMES[j]}{'+' + str(o) if o else ''}" + "}" for j, g, o in self.num[y]]
             return repr("".join(x + v for x, v in zip(bits, names + [""])))
-        cells = [(c, l) for c, l in sorted(self.otab.items()) if all(x == 0 for x in c[len(self.oread):])]
+        cells = [(c, l) for c, l in sorted(self.otab.items()) if all(x == 0 for x in c[len(self.oread):]) and
+                 not any(t < self.N and self.kinds[t] == "count" and v == 0 for t, v in zip(self.oread, c))]
         if len(set(l for _, l in cells)) <= 1:
             shown = "shown: " + fill(cells[0][1] if cells else "")
         else:
