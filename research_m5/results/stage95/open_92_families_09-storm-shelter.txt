@@ -1,0 +1,101 @@
+    (1, 0, 1, 0), number: no machine (0 s)
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), number: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), number: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), number: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), number: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), number: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), number: no machine (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (2, 0, 1, 1), number: no machine (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), number: no machine (0 s)
+    (0, 2, 1, 0), table: no machine (1 s)
+    (2, 0, 2, 0), number: price 39 + 9, 139 beginnings, 19k clauses, 0 wrong (1 s)
+    (2, 0, 2, 0), table: no machine (2 s)
+    (3, 0, 1, 0), number: price 39 + 9, 139 beginnings, 23k clauses, 0 wrong (4 s)
+    (3, 0, 1, 0), table: no machine (8 s)
+    (1, 0, 2, 2), number: no machine (8 s)
+    (1, 0, 2, 2), table: no machine (8 s)
+    (2, 0, 1, 2), number: no machine (8 s)
+    (2, 0, 1, 2), table: no machine (8 s)
+    (1, 1, 2, 0), number: price 39 + 10, 139 beginnings, 28k clauses, 0 wrong (12 s)
+    (1, 1, 2, 0), table: out of time, at least 41 + 10 (28 s)
+    (2, 1, 1, 0), number: price 39 + 10, 139 beginnings, 32k clauses, 0 wrong (37 s)
+    (2, 1, 1, 0), table: out of time, at least 41 + 10 (53 s)
+    (1, 1, 1, 2), number: price 17 + 11, 139 beginnings, 37k clauses, 0 wrong (53 s)
+    (1, 1, 1, 2), table: no machine (53 s)
+    (2, 0, 2, 1), number: price 29 + 11, 139 beginnings, 39k clauses, 0 wrong (53 s)
+    (2, 0, 2, 1), table: no machine (55 s)
+    (3, 0, 1, 1), number: price 24 + 11, 139 beginnings, 80k clauses, 0 wrong (56 s)
+    (3, 0, 1, 1), table: no machine (59 s)
+    (0, 2, 2, 0), number: price 37 + 11, 139 beginnings, 40k clauses, 0 wrong (64 s)
+    (0, 2, 2, 0), table: out of time, at least 37 + 11 (81 s)
+    (1, 2, 1, 0), number: out of time, at least 36 + 11 (96 s)
+    (1, 2, 1, 0), table: out of time, at least 36 + 11 (111 s)
+    (2, 1, 1, 1), number: price 26 + 12, 139 beginnings, 55k clauses, 0 wrong (114 s)
+    (2, 1, 1, 1), table: out of time, at least 36 + 12 (130 s)
+    (3, 0, 2, 0), number: out of time, at least 31 + 12 (145 s)
+    (3, 0, 2, 0), table: out of time, at least 33 + 12 (162 s)
+    (4, 0, 1, 0), number: out of time, at least 32 + 12 (177 s)
+    (4, 0, 1, 0), table: out of time, at least 32 + 12 (193 s)
+  kept 1 count (a), 1 difference (b) (price 28): arrive: a+1, b+1 | leave: if a>0: a-1, b-1 | cot: b-1 | lull: if b>0: take all of a from b | shown by b; '{} free' with -b; '{} waiting' with b; 'full' with 
+  asked 1 (plain): answered rightly
+    (2, 0, 2, 2), number: price 27 + 13, 141 beginnings, 58k clauses, 2 wrong (194 s)
+    (2, 0, 2, 2), table: no machine (196 s)
+    (3, 0, 1, 2), number: price 28 + 13, 161 beginnings, 249k clauses, 2 wrong (200 s)
+    (3, 0, 1, 2), table: no machine (206 s)
+    (2, 1, 2, 0), number: out of time, at least 25 + 13 (221 s)
+    (2, 1, 2, 0), table: out of time, at least 32 + 13 (236 s)
+    (3, 1, 1, 0), number: out of time, at least 29 + 13 (252 s)
+    (3, 1, 1, 0), table: out of time, at least 33 + 13 (267 s)
+    (1, 1, 2, 2), number: price 17 + 14, 186 beginnings, 192k clauses, 1 wrong (268 s)
+    (1, 1, 2, 2), table: out of time, at least 33 + 14 (284 s)
+    (2, 1, 1, 2), number: price 22 + 14, 210 beginnings, 1208k clauses, 1 wrong (300 s)
+    (2, 1, 1, 2), table: out of time, at least 31 + 14 (319 s)
+    (3, 0, 2, 1), number: out of time, at least 27 + 14 (337 s)
+    (3, 0, 2, 1), table: out of time, at least 32 + 14 (356 s)
+    (1, 2, 2, 0), number: out of time, at least 26 + 14 (371 s)
+    (1, 2, 2, 0), table: out of time, at least 32 + 14 (392 s)
+    (2, 2, 1, 0), number: out of time, at least 27 + 14 (409 s)
+    (2, 2, 1, 0), table: out of time, at least 30 + 14 (425 s)
+    (1, 2, 1, 2), number: price 22 + 15, 212 beginnings, 913k clauses, 0 wrong (438 s)
+  asked 2 (again): answered wrongly; kept 1 count (a), 2 differences (bc) (price 37): arrive: a+1, b+1 | leave: if a>0: a-1, b-1, c+1 | cot: b-1 | lull: if b>0 and c=0: take all of a from b; if b>0 and c>0: b-1 | shown by b; '{} free' with -b; '{} waiting' with b; 'full' with 
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+    (1, 2, 1, 2), table: out of time, at least 28 + 15 (541 s)
+    (2, 1, 2, 1), number: out of time, at least 26 + 15 (557 s)
+    (2, 1, 2, 1), table: out of time, at least 29 + 15 (578 s)
+    (4, 0, 2, 0), number: out of time, at least 29 + 15 (595 s)
+    (4, 0, 2, 0), table: out of time, at least 29 + 15 (610 s)
+    (3, 0, 2, 2), number: out of time, at least 25 + 16 (631 s)
+    (3, 0, 2, 2), table: out of time, at least 28 + 16 (651 s)
+    (3, 1, 2, 0), number: out of time, at least 25 + 16 (667 s)
+    (3, 1, 2, 0), table: out of time, at least 28 + 16 (683 s)
+    (2, 1, 2, 2), number: out of time, at least 20 + 17 (704 s)
+    (3, 0, 1, 1), number: price 31 + 11, 218 beginnings, 967k clauses, 0 wrong (712 s)
+  asked 6 (again): answered wrongly; kept 3 counts (abc) (price 42): arrive: if c=0: a+1, b+1; if c>0: a+1, c-1 | leave: if a>0 and b=0: a-1, c+1; if a>0 and b>0: a-1, b-1 | cot: if b=0: c+1; if b>0: b-1 | lull: take a and b from each other | shown by b, c; '{} free' with c; '{} waiting' with b; 'full' with 
+  asked 7 (plain): answered rightly
+  asked 8 (again): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (alive): answered rightly
+  asked 12 (pumped): answered rightly
+  asked 13 (plain): answered rightly
+  asked 14 (again): answered rightly
+  asked 15 (plain): answered rightly
+  asked 16 (again): answered rightly
+  asked 17 (alive): answered rightly
+  asked 18 (pumped): answered rightly
+  asked 19 (plain): answered rightly
+  asked 20 (again): answered rightly
+3 counts (abc) (price 42): arrive: if c=0: a+1, b+1; if c>0: a+1, c-1 | leave: if a>0 and b=0: a-1, c+1; if a>0 and b>0: a-1, b-1 | cot: if b=0: c+1; if b>0: b-1 | lull: take a and b from each other | shown by b, c; '{} free' with c; '{} waiting' with b; 'full' with ; asked 20; 877 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

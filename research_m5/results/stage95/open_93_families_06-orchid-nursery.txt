@@ -1,0 +1,120 @@
+    (1, 0, 1, 0), number: no machine (0 s)
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), number: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), number: price 20 + 6, 139 beginnings, 8k clauses, 0 wrong (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), number: price 22 + 6, 139 beginnings, 11k clauses, 0 wrong (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), number: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), number: price 20 + 7, 139 beginnings, 13k clauses, 0 wrong (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), number: price 21 + 7, 139 beginnings, 16k clauses, 0 wrong (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (2, 0, 1, 1), number: price 18 + 8, 139 beginnings, 27k clauses, 0 wrong (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), number: price 21 + 8, 139 beginnings, 23k clauses, 0 wrong (0 s)
+    (0, 2, 1, 0), table: price 49 + 8, 139 beginnings, 22k clauses, 0 wrong (1 s)
+    (2, 0, 2, 0), number: price 20 + 9, 139 beginnings, 19k clauses, 0 wrong (1 s)
+    (2, 0, 2, 0), table: price 40 + 9, 139 beginnings, 19k clauses, 0 wrong (4 s)
+    (3, 0, 1, 0), number: price 22 + 9, 139 beginnings, 23k clauses, 0 wrong (4 s)
+    (3, 0, 1, 0), table: price 49 + 9, 139 beginnings, 22k clauses, 0 wrong (14 s)
+    (1, 0, 2, 2), number: price 17 + 10, 139 beginnings, 9k clauses, 0 wrong (14 s)
+    (1, 0, 2, 2), table: no machine (14 s)
+    (2, 0, 1, 2), number: price 18 + 10, 139 beginnings, 43k clauses, 0 wrong (14 s)
+    (2, 0, 1, 2), table: no machine (14 s)
+    (1, 1, 2, 0), number: price 20 + 10, 139 beginnings, 28k clauses, 0 wrong (14 s)
+    (1, 1, 2, 0), table: price 35 + 10, 139 beginnings, 28k clauses, 0 wrong (23 s)
+    (2, 1, 1, 0), number: price 21 + 10, 139 beginnings, 32k clauses, 0 wrong (23 s)
+    (2, 1, 1, 0), table: out of time, at least 38 + 10 (38 s)
+    (1, 1, 1, 2), number: price 19 + 11, 139 beginnings, 37k clauses, 0 wrong (39 s)
+    (1, 1, 1, 2), table: no machine (39 s)
+    (2, 0, 2, 1), number: price 17 + 11, 139 beginnings, 39k clauses, 0 wrong (39 s)
+    (2, 0, 2, 1), table: price 36 + 11, 139 beginnings, 38k clauses, 0 wrong (45 s)
+    (3, 0, 1, 1), number: price 18 + 11, 139 beginnings, 80k clauses, 0 wrong (45 s)
+    (3, 0, 1, 1), table: out of time, at least 37 + 11 (60 s)
+    (0, 2, 2, 0), number: price 20 + 11, 139 beginnings, 41k clauses, 0 wrong (61 s)
+    (0, 2, 2, 0), table: out of time, at least 31 + 11 (76 s)
+    (1, 2, 1, 0), number: price 21 + 11, 139 beginnings, 44k clauses, 0 wrong (76 s)
+    (1, 2, 1, 0), table: out of time, at least 31 + 11 (91 s)
+    (2, 1, 1, 1), number: price 18 + 12, 139 beginnings, 55k clauses, 0 wrong (91 s)
+    (2, 1, 1, 1), table: out of time, at least 33 + 12 (107 s)
+    (3, 0, 2, 0), number: price 20 + 12, 139 beginnings, 43k clauses, 0 wrong (107 s)
+    (3, 0, 2, 0), table: out of time, at least 32 + 12 (124 s)
+    (4, 0, 1, 0), number: price 22 + 12, 139 beginnings, 46k clauses, 0 wrong (125 s)
+    (4, 0, 1, 0), table: out of time, at least 32 + 12 (141 s)
+    (2, 0, 2, 2), number: price 17 + 13, 139 beginnings, 57k clauses, 0 wrong (141 s)
+    (2, 0, 2, 2), table: price 35 + 13, 139 beginnings, 57k clauses, 0 wrong (147 s)
+    (3, 0, 1, 2), number: price 18 + 13, 139 beginnings, 158k clauses, 0 wrong (149 s)
+    (3, 0, 1, 2), table: out of time, at least 34 + 13 (165 s)
+    (2, 1, 2, 0), number: price 20 + 13, 139 beginnings, 61k clauses, 0 wrong (166 s)
+    (2, 1, 2, 0), table: out of time, at least 25 + 13 (181 s)
+  kept 1 count (a), 2 states (price 26): pot: a+1 | mist: to state 0 | sun: if state 0 and a=0: to state 1; if state 0 and a>0: to state 1; if state 1 and a>0: a-1 | buyer: if state 0 and a>0: a-1 | shown by nothing; '{}' with a
+  asked 1 (13 rivals): answered rightly
+    (3, 1, 1, 0), number: price 22 + 13, 141 beginnings, 66k clauses, 1 wrong (182 s)
+    (3, 1, 1, 0), table: out of time, at least 26 + 13 (197 s)
+    (1, 1, 2, 2), number: price 21 + 14, 145 beginnings, 57k clauses, 2 wrong (198 s)
+    (1, 1, 2, 2), table: out of time, at least 31 + 14 (213 s)
+    (2, 1, 1, 2), number: price 23 + 14, 149 beginnings, 150k clauses, 2 wrong (217 s)
+    (2, 1, 1, 2), table: out of time, at least 29 + 14 (234 s)
+    (3, 0, 2, 1), number: out of time, at least 22 + 14 (250 s)
+    (3, 0, 2, 1), table: out of time, at least 26 + 14 (265 s)
+    (1, 2, 2, 0), number: price 24 + 14, 168 beginnings, 117k clauses, 1 wrong (272 s)
+    (1, 2, 2, 0), table: out of time, at least 24 + 14 (287 s)
+    (2, 2, 1, 0), number: out of time, at least 26 + 14 (303 s)
+    (2, 2, 1, 0), table: out of time, at least 25 + 14 (319 s)
+    (1, 2, 1, 2), number: price 25 + 15, 180 beginnings, 509k clauses, 1 wrong (329 s)
+    (1, 2, 1, 2), table: out of time, at least 26 + 15 (347 s)
+    (2, 1, 2, 1), number: out of time, at least 24 + 15 (363 s)
+    (2, 1, 2, 1), table: out of time, at least 25 + 15 (387 s)
+    (4, 0, 2, 0), number: price 25 + 15, 188 beginnings, 153k clauses, 1 wrong (397 s)
+    (4, 0, 2, 0), table: out of time, at least 25 + 15 (419 s)
+    (3, 0, 2, 2), number: out of time, at least 18 + 16 (442 s)
+    (3, 1, 2, 0), number: out of time, at least 23 + 16 (458 s)
+    (3, 0, 2, 2), table: out of time, at least 25 + 16 (479 s)
+    (3, 1, 2, 0), table: out of time, at least 21 + 16 (495 s)
+    (1, 0, 2, 0), number: no machine (495 s)
+    (2, 0, 1, 1), number: no machine (496 s)
+    (0, 1, 2, 0), number: no machine (496 s)
+    (2, 0, 1, 0), number: no machine (496 s)
+    (1, 1, 1, 0), number: price 28 + 7, 195 beginnings, 52k clauses, 0 wrong (496 s)
+  asked 2 (plain): answered wrongly; kept 1 count (a), 1 difference (b) (price 35): pot: a+1 | mist: if b=0: b-1; if b>0: b-1 | sun: if a=0 and b=0: b+1; if a>0 and b<0: b+1; if a>0 and b=0: b+1; if a>0 and b>0: a-1 | buyer: if a>0 and b<0: a-1; if a>0 and b=0: a-1 | shown by nothing; '{}' with a
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+    (2, 0, 2, 1), number: price 28 + 11, 195 beginnings, 412k clauses, 1 wrong (501 s)
+    (2, 0, 2, 0), number: price 30 + 9, 218 beginnings, 54k clauses, 1 wrong (501 s)
+    (3, 0, 1, 1), number: out of time, at least 24 + 11 (530 s)
+    (0, 2, 1, 0), number: price 30 + 8, 269 beginnings, 162k clauses, 0 wrong (530 s)
+    (1, 1, 2, 0), number: price 30 + 10, 269 beginnings, 143k clauses, 0 wrong (534 s)
+    (2, 1, 1, 1), number: out of time, at least 27 + 12 (553 s)
+    (2, 1, 2, 2), number: out of time, at least 17 + 17 (591 s)
+    (3, 0, 1, 0), number: price 32 + 9, 269 beginnings, 133k clauses, 0 wrong (593 s)
+    (2, 1, 1, 0), number: price 30 + 10, 269 beginnings, 179k clauses, 0 wrong (596 s)
+    (0, 2, 2, 0), number: price 30 + 11, 269 beginnings, 195k clauses, 0 wrong (603 s)
+    (3, 0, 2, 0), number: out of time, at least 30 + 12 (618 s)
+    (1, 2, 1, 0), number: price 30 + 11, 269 beginnings, 232k clauses, 0 wrong (628 s)
+    (2, 1, 2, 0), number: out of time, at least 27 + 13 (643 s)
+    (4, 0, 1, 0), number: out of time, at least 31 + 12 (659 s)
+    (1, 1, 1, 0), number: price 30 + 7, 269 beginnings, 120k clauses, 0 wrong (659 s)
+    (3, 1, 1, 0), number: out of time, at least 28 + 13 (674 s)
+    (3, 0, 2, 1), number: none cheaper than 37 (699 s)
+  asked 5 (plain): answered wrongly; kept 1 count (a), 1 difference (b) (price 37): pot: a+1 | mist: if b=0: b-1; if b>0: b-1 | sun: if a=0 and b<0: b+1; if a=0 and b=0: b+1; if a>0 and b<0: b+1; if a>0 and b=0: b+1; if a>0 and b>0: a-1 | buyer: if a>0 and b<0: a-1; if a>0 and b=0: a-1 | shown by nothing; '{}' with a
+  asked 6 (plain): answered rightly
+  asked 7 (again): answered rightly
+  asked 8 (plain): answered rightly
+  asked 9 (again): answered rightly
+  asked 10 (alive): answered rightly
+  asked 11 (pumped): answered rightly
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (plain): answered rightly
+  asked 15 (again): answered rightly
+  asked 16 (alive): answered rightly
+  asked 17 (pumped): answered rightly
+  asked 18 (plain): answered rightly
+  asked 19 (again): answered rightly
+1 count (a), 1 difference (b) (price 37): pot: a+1 | mist: if b=0: b-1; if b>0: b-1 | sun: if a=0 and b<0: b+1; if a=0 and b=0: b+1; if a>0 and b<0: b+1; if a>0 and b=0: b+1; if a>0 and b>0: a-1 | buyer: if a>0 and b<0: a-1; if a>0 and b=0: a-1 | shown by nothing; '{}' with a; asked 19; 699 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

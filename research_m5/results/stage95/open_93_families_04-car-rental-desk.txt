@@ -1,0 +1,95 @@
+    (1, 0, 1, 0), number: no machine (0 s)
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), number: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), number: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), number: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), number: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), number: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), number: no machine (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (2, 0, 1, 1), number: no machine (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), number: no machine (0 s)
+    (0, 2, 1, 0), table: no machine (1 s)
+    (2, 0, 2, 0), number: price 20 + 9, 139 beginnings, 19k clauses, 0 wrong (1 s)
+    (2, 0, 2, 0), table: no machine (2 s)
+    (3, 0, 1, 0), number: price 20 + 9, 139 beginnings, 23k clauses, 0 wrong (2 s)
+    (3, 0, 1, 0), table: no machine (5 s)
+    (1, 0, 2, 2), number: no machine (5 s)
+    (1, 0, 2, 2), table: no machine (5 s)
+    (2, 0, 1, 2), number: no machine (5 s)
+    (2, 0, 1, 2), table: no machine (5 s)
+    (1, 1, 2, 0), number: price 20 + 10, 139 beginnings, 28k clauses, 0 wrong (5 s)
+    (1, 1, 2, 0), table: out of time, at least 40 + 10 (20 s)
+    (2, 1, 1, 0), number: price 20 + 10, 139 beginnings, 32k clauses, 0 wrong (20 s)
+    (2, 1, 1, 0), table: out of time, at least 41 + 10 (35 s)
+    (1, 1, 1, 2), number: price 34 + 11, 139 beginnings, 37k clauses, 0 wrong (35 s)
+    (1, 1, 1, 2), table: no machine (36 s)
+    (2, 0, 2, 1), number: price 20 + 11, 139 beginnings, 39k clauses, 0 wrong (36 s)
+    (2, 0, 2, 1), table: out of time, at least 50 + 11 (51 s)
+    (3, 0, 1, 1), number: price 20 + 11, 139 beginnings, 80k clauses, 0 wrong (51 s)
+    (3, 0, 1, 1), table: out of time, at least 45 + 11 (67 s)
+    (0, 2, 2, 0), number: price 20 + 11, 139 beginnings, 41k clauses, 0 wrong (67 s)
+    (0, 2, 2, 0), table: out of time, at least 38 + 11 (83 s)
+    (1, 2, 1, 0), number: price 20 + 11, 139 beginnings, 44k clauses, 0 wrong (83 s)
+    (1, 2, 1, 0), table: out of time, at least 35 + 11 (98 s)
+    (2, 1, 1, 1), number: price 20 + 12, 139 beginnings, 55k clauses, 0 wrong (99 s)
+    (2, 1, 1, 1), table: out of time, at least 38 + 12 (114 s)
+    (3, 0, 2, 0), number: price 20 + 12, 139 beginnings, 43k clauses, 0 wrong (114 s)
+    (3, 0, 2, 0), table: out of time, at least 37 + 12 (129 s)
+    (4, 0, 1, 0), number: price 20 + 12, 139 beginnings, 46k clauses, 0 wrong (129 s)
+    (4, 0, 1, 0), table: out of time, at least 38 + 12 (144 s)
+    (2, 0, 2, 2), number: price 20 + 13, 139 beginnings, 57k clauses, 0 wrong (144 s)
+    (2, 0, 2, 2), table: out of time, at least 56 + 13 (160 s)
+    (3, 0, 1, 2), number: price 20 + 13, 139 beginnings, 159k clauses, 0 wrong (160 s)
+    (3, 0, 1, 2), table: out of time, at least 39 + 13 (175 s)
+    (2, 1, 2, 0), number: price 20 + 13, 139 beginnings, 61k clauses, 0 wrong (176 s)
+    (2, 1, 2, 0), table: out of time, at least 32 + 13 (191 s)
+  kept 2 counts (ab), 2 states (price 29): small: to state 1 | large: b+1 | solo: if state 0 and b=0: a+1; if state 0 and b>0: b-1; if state 1 and b=0: to state 0 | group: if b=0: a+1; if b>0: b-1 | shown by nothing; '{}' with a
+    (3, 1, 1, 0), number: price 20 + 13, 140 beginnings, 66k clauses, 1 wrong (191 s)
+    (3, 1, 1, 0), table: out of time, at least 33 + 13 (206 s)
+    (1, 1, 2, 2), number: price 25 + 14, 145 beginnings, 58k clauses, 1 wrong (207 s)
+    (1, 1, 2, 2), table: out of time, at least 36 + 14 (222 s)
+    (2, 1, 1, 2), number: price 22 + 14, 159 beginnings, 252k clauses, 0 wrong (223 s)
+    (2, 1, 1, 2), table: out of time, at least 33 + 14 (239 s)
+    (3, 0, 2, 1), number: price 22 + 14, 159 beginnings, 212k clauses, 0 wrong (240 s)
+    (3, 0, 2, 1), table: out of time, at least 32 + 14 (256 s)
+    (1, 2, 2, 0), number: price 22 + 14, 159 beginnings, 107k clauses, 0 wrong (257 s)
+    (1, 2, 2, 0), table: out of time, at least 29 + 14 (274 s)
+    (2, 2, 1, 0), number: price 22 + 14, 159 beginnings, 113k clauses, 0 wrong (275 s)
+    (2, 2, 1, 0), table: out of time, at least 31 + 14 (290 s)
+    (1, 2, 1, 2), number: price 21 + 15, 159 beginnings, 206k clauses, 0 wrong (291 s)
+    (1, 2, 1, 2), table: out of time, at least 30 + 15 (310 s)
+    (2, 1, 2, 1), number: price 22 + 15, 159 beginnings, 140k clauses, 0 wrong (311 s)
+    (2, 1, 2, 1), table: out of time, at least 31 + 15 (326 s)
+    (4, 0, 2, 0), number: price 22 + 15, 159 beginnings, 112k clauses, 0 wrong (329 s)
+    (4, 0, 2, 0), table: out of time, at least 34 + 15 (344 s)
+    (3, 0, 2, 2), number: price 22 + 16, 159 beginnings, 367k clauses, 0 wrong (346 s)
+    (3, 0, 2, 2), table: out of time, at least 31 + 16 (362 s)
+    (3, 1, 2, 0), number: price 22 + 16, 159 beginnings, 161k clauses, 0 wrong (366 s)
+    (3, 1, 2, 0), table: out of time, at least 27 + 16 (381 s)
+  asked 1 (8 rivals): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 36): small: b+1 | large: c+1 | solo: if b=0 and c=0: a+1; if b=0 and c>0: c-1; if b>0 and c=0: b-1; if b>0 and c>0: b-1 | group: if c=0: a+1; if c>0: c-1 | shown by nothing; '{}' with a
+  asked 2 (1 rival): answered rightly
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (alive): answered rightly
+  asked 8 (pumped): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (plain): answered rightly
+  asked 12 (again): answered rightly
+  asked 13 (alive): answered rightly
+  asked 14 (pumped): answered rightly
+  asked 15 (plain): answered rightly
+  asked 16 (again): answered rightly
+2 counts (ab), 1 difference (c) (price 36): small: b+1 | large: c+1 | solo: if b=0 and c=0: a+1; if b=0 and c>0: c-1; if b>0 and c=0: b-1; if b>0 and c>0: b-1 | group: if c=0: a+1; if c>0: c-1 | shown by nothing; '{}' with a; asked 16; 382 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

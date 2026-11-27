@@ -1,4 +1,4 @@
-"""Quantities that wait on each other, found together (stages 92-94).
+"""Quantities that wait on each other, found together (stages 92-95).
 
 parts.py builds a rule one part at a time, each part moved by plain events; two quantities each of which waits on the
 other (a car leaves with a bag only when both are there, a bag is thrown away only when no car waits) cannot be built that
@@ -6,35 +6,48 @@ way: neither of the two explains anything before the other is there. Here the wh
 counter machine (Minsky 1967) written in guarded commands (Dijkstra 1975): a few states of control and a few whole
 numbers, all at 0 at the start. A number is a count (it never goes below 0, and is tested for being 0) or a difference
 (any whole number, tested for its sign). A symbol reads some of the tests and the state, and by what they say it moves
-the control and adds -1, 0 or +1 to every number, or makes one whole move, the loops of Minsky's machines said at once:
-pours all of one count into another, takes two counts from each other while both are above 0, or empties a count. What
+the control and adds -1, 0 or +1 to every number, or makes one whole move, the loops of Minsky's machines said at once.
+Of the first kind, among counts: pour all of one count into another, take two counts from each other while both are
+above 0, empty a count. Of the second kind (stage 95, at a higher price, and given at most a quarter of the time the
+search has taken, SHARE: a shape that costs 2 more is given 2 ** -2 of the time, as in universal search, Levin 1973): add all of a count to any number or take it from it (a count is left at 0 if there is not as much: 'all the
+tied-up tubes leave, each with a guest'), the count being 0 after ('everyone waiting is served at once'); and make a
+number what another is, going on by one in the same row ('reheated: it can take as many blows as it has gathers'). What
 is shown is read from the state and the tests (a table), and when the answers hold numbers it is words with places for
 numbers ('short 3', '2 waiting', 'idle 2 waiting 0'), the words read off the table and each place filled by a number
 of the machine or minus it. A count starts at 0, or, when numbers are shown before any symbol, at what they show. A
-symbol reads at most three tests and the display at most three (two for a symbol, at stage 93, left the cargo ship
-and the seed bank unsaid: unloading reads the side of the crane and the count on that side).
+symbol reads at most three tests and the display at most three.
 
-The machine is found by a solver as the cheapest that answers everything heard (core-guided MaxSAT, Ignatiev, Morgado
-and Marques-Silva 2019): its price is that of the numbers and states kept in mind, of the tests read (by a symbol or by
-the display), of the rows of the tables that do something, and of the moves they make. Every test a symbol reads is paid
-for, so a symbol reads only what the stories show it must, and does where nothing was heard what it does where it was:
-that is how the machine answers stories longer than any it heard. The stories enter the formulas lazily: the short ones
-first, then, of a story a machine found answers wrongly, its beginning up to the first wrong answer. The learner asks
-where machines that answer everything heard part (rivals, as parts.py asks; one story parts the machine from several
-rivals one after another), and then long stories as a check.
+The machine is found by a solver as the cheapest that answers everything heard: its price is that of the numbers and
+states kept in mind, of the tests read (by a symbol or by the display), of the rows of the tables that do something,
+and of the moves they make. Every test a symbol reads is paid for, so a symbol reads only what the stories show it must,
+and does where nothing was heard what it does where it was: that is how the machine answers stories longer than any it
+heard. The stories enter the formulas lazily: the short ones first, then, of a story a machine found answers wrongly,
+its beginning up to the first wrong answer. Every shape (how many counts, differences, states, which whole moves) has a
+solver of its own, kept from round to round. A shape is first searched from below, by cores (core-guided MaxSAT,
+Ignatiev, Morgado and Marques-Silva 2019: what the price is shown to be at least is raised until a machine is there),
+which is quick when the table is small. A shape whose search by cores runs out of its time is searched from above from
+then on, by guessing (stage 95): a machine is found first, then one cheaper than it, and so on (linear search, sat to
+unsat), under a ceiling: the price of the best machine found so far, or, before there is one, a little above what the
+shape is shown to cost at least, which is raised when no machine is there (deepening by price). A guess not yet shown
+to be the cheapest of its shape may be kept when it answers everything heard; its shape is searched on later. A shape
+whose formulas would not fit in mind (CLAUSES) is left. The learner asks where machines that answer everything heard
+part (rivals, as parts.py asks; one story parts the machine from several rivals one after another), and then long
+stories as a check.
 
     python guarded.py FAMILY/family.py [--asks 40] [--seed 0] [--minutes 10]
 """
-import argparse, importlib.util, itertools, random, re, threading, time
-from pysat.card import CardEnc, EncType
+import argparse, ctypes, gc, importlib.util, itertools, os, random, re, threading, time
+from pysat.card import CardEnc, EncType, ITotalizer
 from pysat.formula import WCNF
 from pysat.examples.rc2 import RC2
+from pysat.solvers import Solver
 import parts
 
 ENGINE = "glucose4"  # (as cells.py: a solve that can be interrupted)
 COUNT, DIFF = (0, 1), (-1, 0, 1)  # what a count's test says (0, above 0), and a difference's (below 0, 0, above 0)
-SHAPES = sorted([(n, z, q, w) for n in range(5) for z in range(3) for q in (1, 2) for w in (0, 1)
-                 if 1 <= n + z <= 4 and q * 2 ** n * 3 ** z <= 48 and (not w or 2 <= n and n + z <= 3 and q * 2 ** n * 3 ** z <= 24)],
+SHAPES = sorted([(n, z, q, w) for n in range(5) for z in range(3) for q in (1, 2) for w in (0, 1, 2)
+                 if 1 <= n + z <= 4 and q * 2 ** n * 3 ** z <= 48 and
+                 (not w or n >= 3 - w and n + z <= 3 and q * 2 ** n * 3 ** z <= 24)],  # (the first kind: two counts at least)
                 key=lambda s: (3 * s[0] + 4 * s[1] + 3 * (s[2] - 1) + 2 * s[3], s))
 # (counts, differences, states, whether whole moves are allowed: see Space)
 READ = 2  # the price of a test read (by a symbol or by the display)
@@ -47,13 +60,19 @@ def base(shape):
     return 3 * n + 4 * z + 3 * (q - 1) + 2 * w
 
 
-def wholes(n, K):
-    """The whole moves among n counts (Minsky's loops, said at once): all of count i poured into count j, counts i and
-    j taken from each other while both are above 0 (as many as the smaller one), count i emptied. (Pouring from or into
-    a difference, or taking one count's worth from another, was tried on the open pool 92: the cheap machines it lets
-    in crowd the search, and no rule there needed it alone.)"""
-    return [("pour", i, j, 1) for i in range(n) for j in range(n) if i != j] + \
-        [("even", i, j) for i in range(n) for j in range(i + 1, n)] + [("empty", i) for i in range(n)]
+def wholes(n, K, w=2):
+    """The whole moves (Minsky's loops, said at once). Of the first kind (w = 1), among counts only: all of count i
+    poured into count j; counts i and j taken from each other while both are above 0 (as many as the smaller one);
+    count i emptied. Of the second (w = 2, the first and more, at a higher price), from a count: all of count i added
+    to any number j, or taken from it (a count is left at 0 if there is not as much), i being 0 after; and number i
+    made what number j is (a count from a count, a difference from either), i going on by one in the same row if it
+    does."""
+    if w == 1:
+        return [("pour", i, j, 1) for i in range(n) for j in range(n) if i != j] + \
+            [("even", i, j) for i in range(n) for j in range(i + 1, n)] + [("empty", i) for i in range(n)]
+    return [("pour", i, j, g) for i in range(n) for j in range(K) if i != j for g in (1, -1)] + \
+        [("even", i, j) for i in range(n) for j in range(i + 1, n)] + [("empty", i) for i in range(n)] + \
+        [("copy", i, j) for i in range(K) for j in range(K) if i != j and (i >= n or j < n)]
 
 
 def moved(w):
@@ -70,6 +89,8 @@ def whole(c, w):
         m = min(c[w[1]], c[w[2]])
         c[w[1]] -= m
         c[w[2]] -= m
+    elif w[0] == "copy":
+        c[w[1]] = c[w[2]]
     else:
         c[w[1]] = 0
     return tuple(c)
@@ -89,7 +110,46 @@ def form(y):
 NONE = 10 ** 6  # (the least price of a shape that has no machine at all)
 ROUND = 180  # seconds a round may take once some machine answers everything heard (the shapes not looked at go on later)
 SHORT = 4  # the beginnings of at most so many symbols are in the formulas from the start (the rest when answered wrongly)
+STEP = 6  # a shape searched by guessing is asked for a machine at most so much above what it is shown to cost at least
 PER = 15  # seconds the search of one shape is given in a round (it goes on in the next)
+ROOM = 2500  # megabytes the solvers kept may hold: past that, those used longest ago go (what they showed is kept)
+SHARE = 0.25  # the most of the search time the moves of the second kind may take (they cost 2 more: 2 ** -2 of it)
+CLAUSES = 20 * 10 ** 6  # the most clauses the formulas of one shape may have: a shape that needs more is too big to keep
+# in mind (a pour is written for every value of the two numbers at every beginning: long stories make it big)
+
+
+class TooBig(Exception):
+    pass
+
+
+def held():
+    """Megabytes this process holds now."""
+    try:
+        return int(open("/proc/self/statm").read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 2 ** 20
+    except (OSError, ValueError):
+        return 0
+
+
+def room(H, key, log):
+    """Past ROOM, the solvers of the shapes used longest ago go (their least prices and machines found stay); if the
+    shape looked at now holds that much by itself, it goes too, and is not looked at again (too big to keep in mind)."""
+    if held() <= ROOM:
+        return
+    for k in sorted((k for k in H.spaces if k != key), key=lambda k: H.used.get(k, 0)):
+        H.spaces.pop(k).delete()
+        gc.collect()
+        try:
+            ctypes.CDLL("libc.so.6").malloc_trim(0)
+        except (OSError, AttributeError):
+            pass
+        if held() <= ROOM:
+            return
+    if key in H.spaces and held() > ROOM:
+        H.spaces.pop(key).delete()
+        H.low[key] = NONE
+        log(f"    {key}: too big to keep ({held():.0f} MB)")
+
+
 NEED = 14  # sure after so many long stories asked in a row answered rightly (as parts.py: SURE plain, then MORE)
 NAMES = "abcd"
 
@@ -109,7 +169,7 @@ class Machine:
         self.K, self.kinds = n + z, [COUNT] * n + [DIFF] * z
         self.eff, self.out, self.num = eff, out, num
         self.reads, self.oreads, self.cost = reads, oreads, cost
-        self.total, self.sure = cost + base(shape), False
+        self.total, self.sure, self.proved = cost + base(shape), False, True
 
     def cell(self, q, c):
         x = q
@@ -163,6 +223,7 @@ class Machine:
         m = ([] if w is None else [(f"pour {NAMES[w[1]]} into {NAMES[w[2]]}" if w[3] > 0 else
                                     f"take all of {NAMES[w[1]]} from {NAMES[w[2]]}") if w[0] == "pour" else
                                    f"take {NAMES[w[1]]} and {NAMES[w[2]]} from each other" if w[0] == "even" else
+                                   f"{NAMES[w[1]]} as {NAMES[w[2]]}" if w[0] == "copy" else
                                    f"empty {NAMES[w[1]]}"]) + [f"{NAMES[i]}{'+1' if x > 0 else '-1'}" for i, x in enumerate(d) if x] + ([f"to state {go}"] if go is not None else [])
         return ", ".join(m) or "nothing"
 
@@ -226,13 +287,13 @@ class Space:
     beginnings heard are added to it as they come, and what the solver found (its cores, Ignatiev et al. 2019) stays
     true when more is added, so a search stopped by the time goes on from where it stopped in the next round."""
 
-    def __init__(self, H, shape, numeric, nodes, avoid=None):
-        self.H, self.shape, self.numeric = H, shape, numeric
+    def __init__(self, H, shape, numeric, nodes, avoid=None, guess=False, low=0):
+        self.H, self.shape, self.numeric, self.guess = H, shape, numeric, guess
         A = self.A = len(H.syms)
         n_, z_, Q, w_ = shape
         K, kinds = n_ + z_, [COUNT] * n_ + [DIFF] * z_
         self.K, self.Q, self.kinds = K, Q, kinds
-        W = self.W = wholes(n_, K) if w_ else []
+        W = self.W = wholes(n_, K, w_) if w_ else []
         C = self.C = list(itertools.product(range(Q), *kinds))
         at = {c: i for i, c in enumerate(C)}
         tests = self.tests = ([0] if Q > 1 else []) + list(range(1, K + 1))
@@ -267,8 +328,8 @@ class Space:
                 for ci, c in enumerate(C):
                     f.one(M[a][ci])
                     for k, w in enumerate(W):
-                        for i in moved(w):  # (a number moved as a whole is not moved by one in the same row)
-                            f.add([-M[a][ci][k + 1], D[a][ci][i][1]])
+                        for i in moved(w) if w[0] != "copy" else ():  # (a number moved as a whole is not moved
+                            f.add([-M[a][ci][k + 1], D[a][ci][i][1]])  # by one in the same row, but for a copy)
         # (a label, or words, not heard yet can be shown by no machine: one heard later starts the space anew)
         self.O = [[f.var() for _ in self.labels] for _ in C]
         self.OR = {t: f.var() for t in tests}
@@ -330,17 +391,22 @@ class Space:
         for v0 in self.V0:  # (a count that does not start at 0 is paid for, START by what it starts with)
             if v0 is not None:
                 cost += [-v0[0]] * START
-        self.G, self.S, self.was, self.dep, self.solver = {}, {}, [False] * K, {0: 0}, None
+        self.G, self.S, self.was, self.dep, self.solver, self.n = {}, {}, [False] * K, {0: 0}, None, len(f.cl)
         self.add(nodes)
-        w = WCNF()
-        for c in f.cl:
-            w.append(c)
-        weight = {}
-        for x in cost:
-            weight[x] = weight.get(x, 0) + 1
-        for x, k in weight.items():
-            w.append([-x], weight=k)
-        self.solver = RC2(w, solver=ENGINE)  # (a variable added later is given one of its own by the solver)
+        self.lits = [x for x in cost]  # (the price: how many of these are true; a literal twice costs twice)
+        self.tot, self.low = None, low  # (no machine of this shape is cheaper than low: the solver said so)
+        if guess:
+            self.solver = Solver(name=ENGINE, bootstrap_with=f.cl)
+        else:
+            w = WCNF()
+            for c in f.cl:
+                w.append(c)
+            weight = {}
+            for x in cost:
+                weight[x] = weight.get(x, 0) + 1
+            for x, k in weight.items():
+                w.append([-x], weight=k)
+            self.solver = RC2(w, solver=ENGINE)  # (a variable added later is given one of its own by the solver)
         f.cl = None
 
     def clause(self, lits):
@@ -350,10 +416,27 @@ class Space:
                 return
             if x is not False:
                 out.append(x)
+        self.n += 1
         if self.solver is None:
             self.f.cl.append(out)
         else:
             self.solver.add_clause(out)
+
+    def size(self, nodes):
+        """About how many clauses the beginnings in nodes not in the formulas yet would add."""
+        K, C, W, V, out, dep = self.K, len(self.C), self.W, self.V, 0, dict(self.dep)
+        span = lambda d, i: d + V + 1 if self.kinds[i] is COUNT else 2 * d + 1
+        for n in sorted(x for x in nodes if x not in self.S):
+            d = dep[n] = 0 if n == 0 else dep[self.H.parent[n]] + 1
+            out += C * (3 * K + self.Q + len(W) + 2) + 6 * K * (2 * d + 2)
+            for w in W:
+                if w[0] == "pour":
+                    out += 2 * span(d - 1, w[1]) * span(d, w[2])
+                elif w[0] == "even":
+                    out += 4 * span(d, w[1]) * span(d - 1, w[2])
+                elif w[0] == "copy":
+                    out += 6 * span(d, w[1])
+        return out
 
     def hi(self, n, i):  # (the most number i can be at beginning n: one a symbol, from what a count may start with)
         return self.dep[n] + (self.V if self.kinds[i] is COUNT else 0)
@@ -370,7 +453,10 @@ class Space:
         return out
 
     def add(self, nodes):
-        """The beginnings in nodes not in the formulas yet (their beginnings before are in them, or among nodes)."""
+        """The beginnings in nodes not in the formulas yet (their beginnings before are in them, or among nodes); TooBig
+        if that would make the formulas bigger than CLAUSES (nothing is added then)."""
+        if self.n + self.size(nodes) > CLAUSES:
+            raise TooBig
         H, f, K, Q, C, ge, add = self.H, self.f, self.K, self.Q, self.C, self.ge, self.clause
         for n in sorted(x for x in nodes if x not in self.S):
             d = self.dep[n] = 0 if n == 0 else self.dep[H.parent[n]] + 1
@@ -400,6 +486,15 @@ class Space:
                         add([-x, -y])
                 for i in range(K):
                     by = [Y[k + 1] for k, w in enumerate(W) if i in moved(w)]  # (a number moved as a whole here)
+                    for k, w in enumerate(W):  # (made what number j was, and moved by one)
+                        if w[0] == "copy" and w[1] == i:
+                            for j, delta in enumerate(DIFF):
+                                for kk in range(0 if self.kinds[i] is COUNT else -d, self.hi(n, i) + 1):
+                                    u, v = ge(n, i, kk), ge(p, w[2], kk - delta)
+                                    if kk <= 0 and self.kinds[i] is COUNT:
+                                        continue
+                                    add([-Y[k + 1], -X[i][j], no(u), v])
+                                    add([-Y[k + 1], -X[i][j], u, no(v)])
                     for x, y in itertools.combinations(X[i], 2):
                         add([-x, -y])
                     for j, delta in enumerate(DIFF):
@@ -410,6 +505,8 @@ class Space:
                 for k, w in enumerate(W):
                     y, dp = Y[k + 1], self.dep[p]
                     i = w[1]
+                    if w[0] == "copy":
+                        continue
                     if w[0] != "even":  # (number i is 0 after it is poured or emptied)
                         add([-y, no(ge(n, i, 1))])
                         if self.kinds[i] is DIFF:
@@ -417,9 +514,7 @@ class Space:
                     if w[0] == "pour":  # (j after = j before + g times i before; i is t when i >= t and not i >= t + 1)
                         j, g = w[2], w[3]
                         lo_i, lo_j = (0 if self.kinds[i] is COUNT else -dp), (1 if self.kinds[j] is COUNT else -d + 1)
-                        for t in range(lo_i, self.hi(p, i) + 1):
-                            if self.kinds[j] is COUNT:  # (a count is not taken below 0: there must be as much)
-                                add([-y, no(ge(p, i, t)), ge(p, i, t + 1), ge(p, j, -g * t)])
+                        # (a count taken from by more than it holds is left at 0: its order literals say so)
                         for kk in range(lo_j, self.hi(n, j) + 1):
                             for t in range(lo_i, self.hi(p, i) + 1):
                                 add([-y, no(ge(p, i, t)), ge(p, i, t + 1), no(ge(p, j, kk - g * t)), ge(n, j, kk)])
@@ -479,8 +574,69 @@ class Space:
                 if True not in pr:
                     add(pr + [self.O[ci][l]])
 
-    def solve(self, deadline):
-        """The cheapest machine; "none" if there is none; None if time ran out first (the search goes on next time)."""
+    def solve(self, deadline, below=None, step=STEP):
+        """The cheapest machine found by the deadline (m.proved when none is cheaper), of price below below if given;
+        "none" if there is none at all, "above" if none is below below; None if time ran out before any was found.
+        By cores (RC2) the cheapest is found by raising what the price is shown to be at least until a machine is
+        there; it does well when that is soon. Else (guess) a machine is found first, then one cheaper than it, and
+        so on (linear search, sat to unsat). Either way the solver keeps what it learned from round to round, and a
+        price shown not to be reached stays not reached when more is heard (self.low)."""
+        if not self.guess:
+            return self.cores(deadline)
+        r = self.solver
+
+        def run(ass):
+            left = deadline - time.time()
+            if left <= 0:
+                return None
+            tm = threading.Timer(left, r.interrupt)
+            tm.start()
+            try:
+                ok = r.solve_limited(assumptions=ass, expect_interrupt=True)
+            finally:
+                tm.cancel()
+            r.clear_interrupt()
+            return ok
+
+        def most(k):  # (the literal that says "the price is at most k")
+            if self.tot is None:
+                self.tot = ITotalizer(lits=self.lits, ubound=k + 1, top_id=self.f.top)
+                r.append_formula(self.tot.cnf.clauses)
+            elif len(self.tot.rhs) <= k:
+                self.tot.increase(ubound=k + 1, top_id=self.f.top)
+                r.append_formula(self.tot.cnf.clauses[-self.tot.nof_new:])
+            self.f.top = max(self.f.top, self.tot.top_id)
+            return -self.tot.rhs[k]
+
+        price = self.price
+        if step is not None:  # (a little above what it is shown to cost at least: if there is none there, that is
+            below = self.low + step if below is None else min(below, self.low + step)  # shown to be more, by step)
+        if below is not None and below <= self.low:
+            return "above"
+        ok = run([] if below is None else [most(below - 1)])
+        if ok is None:
+            return None
+        if ok is False:
+            if below is None:
+                return "none"
+            self.low = max(self.low, below)
+            return "above"
+        model = r.get_model()
+        p = price(model)
+        while p > self.low:
+            ok = run([most(p - 1)])
+            if ok is None:
+                break
+            if ok is False:
+                self.low = p
+                break
+            model = r.get_model()
+            p = price(model)
+        m = self.read(model, p)
+        m.proved = p <= self.low
+        return m
+
+    def cores(self, deadline):
         if deadline <= time.time():
             return None
         r = self.solver
@@ -493,13 +649,23 @@ class Space:
             tm.cancel()
         if stopped:
             r.clear_interrupt()
+            self.low = max(self.low, r.cost)
             return None
         if model is None:
             return "none"
+        m = self.read(model, self.price(model))
+        self.low = max(self.low, m.cost)
+        m.proved = True
+        return m
+
+    def price(self, model):
+        true = set(model)
+        return sum(x in true for x in self.lits)
+
+    def read(self, model, price):
         best = set(x for x in model if x > 0)
         A, K, Q, C = self.A, self.K, self.Q, self.C
         E, D, R = self.E, self.D, self.R
-        price = sum(x in best for x in self.cost)
         W, M = self.W, self.M
         eff = [[(None if Q == 1 or E[a][ci][0] in best else next(q for q in range(Q) if E[a][ci][q + 1] in best),
                  tuple(DIFF[next(j for j in range(3) if D[a][ci][i][j] in best)] for i in range(K)),
@@ -550,7 +716,8 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
     machine answers everything heard, a round takes at most ROUND seconds."""
     dep = depths(H)
     if not hasattr(H, "active"):
-        H.active, H.low, H.kept, H.spaces, H.t0, H.slow = set(), {}, {}, {}, time.time(), {}
+        H.active, H.low, H.kept, H.spaces, H.t0, H.slow, H.used = set(), {}, {}, {}, time.time(), {}, {}
+        H.spent = [0.0, 0.0]  # (seconds of search: all shapes, shapes with moves of the second kind)
     nodes = H.active
     nodes |= {n for n in range(len(H.parent)) if dep[n] <= short}
     wordy = any(SLOT.search(y) for y in H.shown)  # (numbers among the answers: words with places for numbers too)
@@ -565,23 +732,49 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
             continue
         if not left:
             break
+        if H.spent[1] > SHARE * H.spent[0] and any(k[3] < 2 for k in left):
+            left = [k for k in left if k[3] < 2]  # (the second kind has had its share of the time: the first goes on)
         key = min(left, key=lambda k: (bound(k), cells(k)))  # (of equal bounds, the smaller table first: it is solved sooner)
         shape, mode = key[:4], key[4]
         say = f"{shape}, {'number' if mode else 'table'}"
         m = H.kept.get(key)
-        if m is None or wrong(m, H):
+        if m is None or not m.proved or wrong(m, H):
             sp = H.spaces.get(key)
             if sp is not None and not set(form(y)[0] if mode else y for y in H.shown) <= set(sp.labels):
                 sp.delete()  # (a label not heard before: the space is made anew)
                 sp = None
-            if sp is None:
-                sp = H.spaces[key] = Space(H, shape, mode, nodes)
-            sp.add(nodes)
+            guess = H.slow.get(key, 0) > 0  # (a shape whose search by cores ran out of time is searched by guessing)
+            if sp is not None and sp.guess != guess:
+                sp.delete()
+                sp = None
+            t = time.time()
+            try:
+                if sp is None:
+                    sp = Space(H, shape, mode, nodes, guess=guess, low=H.low.get(key, 0))
+                    H.spaces[key] = sp
+                sp.add(nodes)
+            except TooBig:
+                if key in H.spaces:
+                    H.spaces.pop(key).delete()
+                H.low[key] = NONE
+                H.spent[0] += time.time() - t
+                H.spent[1] += (time.time() - t) * (shape[3] == 2)
+                log(f"    {say}: too big to keep in mind ({time.time() - H.t0:.0f} s)")
+                continue
+            H.used[key] = time.time()
+            room(H, key, log)
+            if key not in H.spaces:  # (too big: dropped)
+                continue
             slice_ = None if per is None else min(per * 2 ** H.slow.get(key, 0), 8 * per)
-            m = sp.solve(deadline if per is None else min(deadline, time.time() + slice_))
+            m = sp.solve(deadline if per is None else min(deadline, time.time() + slice_),
+                         None if best is None else best.total - base(shape))  # (only a machine cheaper than best matters)
+            H.low[key] = max(H.low.get(key, 0), sp.low)
+            H.used[key] = time.time()
+            H.spent[0] += H.used[key] - t
+            H.spent[1] += (H.used[key] - t) * (shape[3] == 2)
+            room(H, key, log)
             if m is None:
                 H.slow[key] = H.slow.get(key, 0) + 1  # (the next time it is given twice as long, up to 8 per)
-                H.low[key] = max(H.low.get(key, 0), sp.solver.cost)
                 later.add(key)
                 log(f"    {say}: out of time, at least {H.low[key]} + {base(shape)} ({time.time() - H.t0:.0f} s)")
                 continue
@@ -589,9 +782,18 @@ def explain(H, deadline, log=lambda *a: None, short=4, per=None):
                 H.low[key] = NONE
                 log(f"    {say}: no machine ({time.time() - H.t0:.0f} s)")
                 continue
-        H.low[key], H.kept[key] = m.cost, m
+            if m == "above":
+                log(f"    {say}: none cheaper than {H.low[key] + base(shape)} ({time.time() - H.t0:.0f} s)")
+                continue
+        H.kept[key] = m
+        if m.proved:
+            H.low[key] = max(H.low.get(key, 0), m.cost)
         bad = wrong(m, H)
-        log(f"    {say}: price {m.cost} + {base(shape)}, {len(nodes)} beginnings, {len(bad)} wrong ({time.time() - H.t0:.0f} s)")
+        log(f"    {say}: price {m.cost}{'' if m.proved else ' (or less)'} + {base(shape)}, {len(nodes)} beginnings, "
+            f"{getattr(H.spaces.get(key), 'n', 0) // 1000}k clauses, {len(bad)} wrong ({time.time() - H.t0:.0f} s)")
+        if not m.proved and not bad:  # (the search was cut: it goes on in the next round)
+            H.slow[key] = H.slow.get(key, 0) + 1
+            later.add(key)
         if not bad:
             if best is None or m.total < best.total:
                 best = m
@@ -632,10 +834,16 @@ def rivals(m, H, deadline, slack=6, per=30):
     out = [r for r in H.kept.values() if r is not m and r.total <= m.total + slack and not wrong(r, H)]
     if out:  # (the cheapest of m's own shape reading other tests is looked for only when there is no other rival)
         return sorted(out, key=lambda r: r.total)
-    sp = Space(H, m.shape, m.num is not None, H.active, avoid=m)
-    r = sp.solve(min(deadline, time.time() + per))
+    guess = H.slow.get(m.shape + (m.num is not None,), 0) > 0  # (as explain searched m's shape)
+    if held() > ROOM:  # (no room for a second copy of the formulas)
+        return out
+    try:
+        sp = Space(H, m.shape, m.num is not None, H.active, avoid=m, guess=guess)
+    except TooBig:
+        return out
+    r = sp.solve(min(deadline, time.time() + per), m.total + slack + 1 - base(m.shape), step=None)
     sp.delete()
-    if r is not None and r != "none" and r.total <= m.total + slack and not wrong(r, H):
+    if r not in (None, "none", "above") and r.total <= m.total + slack and not wrong(r, H):
         out.append(r)
     return sorted(out, key=lambda r: r.total)
 

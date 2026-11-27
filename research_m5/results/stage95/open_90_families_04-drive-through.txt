@@ -1,0 +1,100 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), table: price 21 + 7, 203 beginnings, 18k clauses, 0 wrong (0 s)
+    (1, 1, 1, 0), table: price 21 + 7, 203 beginnings, 23k clauses, 0 wrong (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), table: price 18 + 8, 203 beginnings, 32k clauses, 0 wrong (0 s)
+    (2, 0, 2, 0), table: price 21 + 9, 203 beginnings, 27k clauses, 0 wrong (1 s)
+    (3, 0, 1, 0), table: price 22 + 9, 203 beginnings, 32k clauses, 0 wrong (1 s)
+    (1, 0, 2, 2), table: no machine (1 s)
+    (2, 0, 1, 2), table: no machine (1 s)
+    (1, 1, 2, 0), table: price 18 + 10, 203 beginnings, 40k clauses, 0 wrong (1 s)
+    (2, 1, 1, 0), table: price 18 + 10, 203 beginnings, 45k clauses, 0 wrong (1 s)
+    (1, 1, 1, 2), table: price 20 + 11, 203 beginnings, 52k clauses, 0 wrong (2 s)
+    (2, 0, 2, 1), table: price 21 + 11, 203 beginnings, 55k clauses, 0 wrong (2 s)
+    (3, 0, 1, 1), table: price 21 + 11, 203 beginnings, 114k clauses, 0 wrong (3 s)
+    (0, 2, 2, 0), table: price 17 + 11, 203 beginnings, 58k clauses, 0 wrong (4 s)
+    (1, 2, 1, 0), table: price 17 + 11, 203 beginnings, 62k clauses, 0 wrong (4 s)
+    (2, 1, 1, 1), table: price 18 + 12, 203 beginnings, 78k clauses, 0 wrong (4 s)
+    (3, 0, 2, 0), table: price 20 + 12, 203 beginnings, 60k clauses, 0 wrong (6 s)
+    (4, 0, 1, 0), table: price 20 + 12, 203 beginnings, 65k clauses, 0 wrong (7 s)
+    (2, 0, 2, 2), table: price 21 + 13, 203 beginnings, 82k clauses, 0 wrong (8 s)
+    (3, 0, 1, 2), table: price 20 + 13, 203 beginnings, 225k clauses, 0 wrong (10 s)
+    (2, 1, 2, 0), table: price 18 + 13, 203 beginnings, 87k clauses, 0 wrong (11 s)
+    (3, 1, 1, 0), table: price 18 + 13, 203 beginnings, 92k clauses, 0 wrong (12 s)
+    (3, 0, 2, 1), table: price 19 + 14, 203 beginnings, 168k clauses, 0 wrong (16 s)
+    (1, 1, 2, 2), table: price 17 + 14, 203 beginnings, 76k clauses, 0 wrong (17 s)
+    (2, 1, 1, 2), table: price 16 + 14, 203 beginnings, 184k clauses, 0 wrong (17 s)
+    (1, 2, 2, 0), table: price 17 + 14, 203 beginnings, 126k clauses, 0 wrong (19 s)
+    (2, 2, 1, 0), table: price 17 + 14, 203 beginnings, 131k clauses, 0 wrong (20 s)
+    (1, 2, 1, 2), table: price 16 + 15, 203 beginnings, 167k clauses, 0 wrong (21 s)
+    (2, 1, 2, 1), table: price 18 + 15, 203 beginnings, 137k clauses, 0 wrong (26 s)
+    (4, 0, 2, 0), table: price 20 + 15, 203 beginnings, 133k clauses, 0 wrong (33 s)
+    (3, 0, 2, 2), table: price 19 + 16, 203 beginnings, 309k clauses, 0 wrong (39 s)
+    (3, 1, 2, 0), table: price 18 + 16, 203 beginnings, 194k clauses, 0 wrong (48 s)
+    (2, 1, 2, 2), table: price 16 + 17, 203 beginnings, 275k clauses, 0 wrong (50 s)
+  kept 0 counts, 2 differences (ab) (price 26): car: if a<0: a+1; if a=0: a+1 | fry: a-1 | hand: nothing | honk: if a>0: b+1 | toss: if a<0: b-1 | shown by b
+    (0, 2, 1, 0), table: price 18 + 8, 204 beginnings, 32k clauses, 1 wrong (50 s)
+    (0, 2, 1, 0), table: price 26 + 8, 209 beginnings, 33k clauses, 0 wrong (51 s)
+    (0, 1, 2, 0), table: price 33 + 7, 209 beginnings, 19k clauses, 1 wrong (51 s)
+    (1, 1, 1, 0), table: price 34 + 7, 223 beginnings, 29k clauses, 0 wrong (51 s)
+    (1, 1, 2, 0), table: price 19 + 10, 223 beginnings, 48k clauses, 0 wrong (51 s)
+    (2, 1, 1, 0), table: price 19 + 10, 223 beginnings, 55k clauses, 0 wrong (51 s)
+    (0, 2, 2, 0), table: price 17 + 11, 223 beginnings, 69k clauses, 0 wrong (51 s)
+  asked 1 (21 rivals): answered wrongly; kept 0 counts, 2 differences (ab), 2 states (price 28): car: a+1 | fry: a-1, to state 1 | hand: nothing | honk: if state 0 and a>0: b+1 | toss: if a<0: b-1 | shown by b
+    (0, 2, 2, 0), table: price 19 + 11, 224 beginnings, 69k clauses, 0 wrong (52 s)
+    (1, 2, 1, 0), table: price 19 + 11, 224 beginnings, 76k clauses, 0 wrong (53 s)
+    (1, 1, 2, 0), table: price 19 + 10, 224 beginnings, 48k clauses, 0 wrong (53 s)
+  asked 2 (6 rivals): answered wrongly; kept 1 count (a), 1 difference (b), 2 states (price 29): car: if b=0: b+1, to state 1 | fry: a+1 | hand: nothing | honk: if a=0: to state 0 | toss: if a>0: b-1 | shown by state, b
+    (1, 1, 2, 0), table: price 19 + 10, 224 beginnings, 48k clauses, 1 wrong (53 s)
+    (1, 1, 2, 0), table: price 19 + 10, 225 beginnings, 49k clauses, 1 wrong (53 s)
+    (1, 1, 2, 0), table: price 22 + 10, 232 beginnings, 51k clauses, 1 wrong (55 s)
+    (2, 1, 1, 0), table: price 26 + 10, 240 beginnings, 63k clauses, 1 wrong (65 s)
+    (2, 0, 2, 0), table: out of time, at least 33 + 9 (80 s)
+    (2, 1, 1, 1), table: out of time, at least 24 + 12 (96 s)
+    (2, 1, 1, 2), table: out of time, at least 22 + 14 (122 s)
+    (0, 2, 2, 0), table: out of time, at least 23 + 11 (137 s)
+    (1, 2, 1, 0), table: out of time, at least 24 + 11 (160 s)
+    (3, 0, 1, 0), table: out of time, at least 35 + 9 (175 s)
+    (1, 1, 1, 2), table: price 48 + 11, 253 beginnings, 136k clauses, 1 wrong (180 s)
+    (2, 1, 2, 0), table: out of time, at least 20 + 13 (195 s)
+    (1, 1, 2, 2), table: out of time, at least 22 + 14 (210 s)
+    (3, 1, 1, 0), table: out of time, at least 22 + 13 (226 s)
+    (1, 2, 2, 0), table: out of time, at least 19 + 14 (241 s)
+    (2, 2, 1, 0), table: out of time, at least 20 + 14 (256 s)
+    (1, 2, 1, 2), table: out of time, at least 19 + 15 (271 s)
+    (2, 0, 2, 1), table: out of time, at least 29 + 11 (287 s)
+    (3, 0, 1, 1), table: out of time, at least 27 + 11 (303 s)
+    (1, 1, 2, 0), table: out of time, at least 25 + 10 (318 s)
+    (3, 0, 2, 0), table: out of time, at least 23 + 12 (333 s)
+    (4, 0, 1, 0), table: out of time, at least 26 + 12 (350 s)
+    (3, 0, 1, 2), table: out of time, at least 24 + 13 (366 s)
+    (3, 0, 2, 1), table: out of time, at least 21 + 14 (383 s)
+    (2, 1, 2, 1), table: out of time, at least 20 + 15 (399 s)
+    (2, 1, 2, 2), table: out of time, at least 19 + 17 (426 s)
+    (0, 2, 1, 0), table: price 32 + 8, 255 beginnings, 54k clauses, 1 wrong (428 s)
+    (3, 1, 2, 0), table: out of time, at least 19 + 16 (443 s)
+    (4, 0, 2, 0), table: out of time, at least 22 + 15 (459 s)
+    (2, 1, 1, 0), table: price 27 + 10, 256 beginnings, 70k clauses, 0 wrong (470 s)
+  asked 3 (6 rivals): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 37): car: a+1 | fry: b+1 | hand: if a>0 and b>0: a-1, b-1 | honk: if a>0 and b=0: a-1, c+1 | toss: if a=0 and b>0: b-1, c-1 | shown by c
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (plain): answered rightly
+  asked 7 (again): answered rightly
+  asked 8 (alive): answered rightly
+  asked 9 (pumped): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (alive): answered rightly
+  asked 15 (pumped): answered rightly
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+2 counts (ab), 1 difference (c) (price 37): car: a+1 | fry: b+1 | hand: if a>0 and b>0: a-1, b-1 | honk: if a>0 and b=0: a-1, c+1 | toss: if a=0 and b>0: b-1, c-1 | shown by c; asked 17; 875 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

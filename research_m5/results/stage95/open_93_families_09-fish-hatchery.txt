@@ -1,0 +1,84 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), table: price 22 + 7, 139 beginnings, 12k clauses, 0 wrong (0 s)
+    (1, 1, 1, 0), table: price 22 + 7, 139 beginnings, 16k clauses, 0 wrong (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), table: price 22 + 8, 139 beginnings, 22k clauses, 0 wrong (0 s)
+    (2, 0, 2, 0), table: price 17 + 9, 139 beginnings, 19k clauses, 0 wrong (0 s)
+    (3, 0, 1, 0), table: price 19 + 9, 139 beginnings, 22k clauses, 0 wrong (1 s)
+    (1, 0, 2, 2), table: no machine (1 s)
+    (2, 0, 1, 2), table: no machine (1 s)
+    (1, 1, 2, 0), table: price 16 + 10, 139 beginnings, 28k clauses, 0 wrong (1 s)
+    (2, 1, 1, 0), table: price 16 + 10, 139 beginnings, 31k clauses, 0 wrong (1 s)
+    (1, 1, 1, 2), table: price 19 + 11, 139 beginnings, 36k clauses, 0 wrong (2 s)
+    (2, 0, 2, 1), table: price 16 + 11, 139 beginnings, 38k clauses, 0 wrong (2 s)
+    (3, 0, 1, 1), table: price 16 + 11, 139 beginnings, 79k clauses, 0 wrong (2 s)
+    (0, 2, 2, 0), table: price 16 + 11, 139 beginnings, 40k clauses, 0 wrong (3 s)
+    (1, 2, 1, 0), table: price 16 + 11, 139 beginnings, 43k clauses, 0 wrong (4 s)
+    (2, 1, 1, 1), table: price 15 + 12, 139 beginnings, 54k clauses, 0 wrong (4 s)
+    (3, 0, 2, 0), table: price 17 + 12, 139 beginnings, 42k clauses, 0 wrong (5 s)
+    (4, 0, 1, 0), table: price 18 + 12, 139 beginnings, 45k clauses, 0 wrong (7 s)
+    (2, 0, 2, 2), table: price 16 + 13, 139 beginnings, 57k clauses, 0 wrong (7 s)
+    (3, 0, 1, 2), table: price 15 + 13, 139 beginnings, 158k clauses, 0 wrong (7 s)
+    (2, 1, 2, 0), table: price 16 + 13, 139 beginnings, 60k clauses, 0 wrong (10 s)
+    (3, 1, 1, 0), table: price 16 + 13, 139 beginnings, 64k clauses, 0 wrong (11 s)
+    (1, 1, 2, 2), table: price 14 + 14, 139 beginnings, 53k clauses, 0 wrong (12 s)
+    (2, 1, 1, 2), table: price 13 + 14, 139 beginnings, 128k clauses, 0 wrong (12 s)
+    (3, 0, 2, 1), table: price 16 + 14, 139 beginnings, 117k clauses, 0 wrong (14 s)
+    (1, 2, 2, 0), table: price 16 + 14, 139 beginnings, 87k clauses, 0 wrong (17 s)
+    (2, 2, 1, 0), table: price 16 + 14, 139 beginnings, 91k clauses, 0 wrong (21 s)
+    (1, 2, 1, 2), table: price 14 + 15, 139 beginnings, 116k clauses, 0 wrong (22 s)
+    (2, 1, 2, 1), table: price 15 + 15, 139 beginnings, 95k clauses, 0 wrong (24 s)
+    (4, 0, 2, 0), table: price 17 + 15, 139 beginnings, 92k clauses, 0 wrong (31 s)
+    (3, 0, 2, 2), table: price 15 + 16, 139 beginnings, 217k clauses, 0 wrong (33 s)
+    (3, 1, 2, 0), table: price 16 + 16, 139 beginnings, 134k clauses, 0 wrong (45 s)
+    (2, 1, 2, 2), table: price 13 + 17, 139 beginnings, 192k clauses, 0 wrong (47 s)
+  kept 2 counts (ab), 2 states (price 26): egg: a+1 | hatch: if a>0: b+1, to state 1 | net: if b>0: b-1 | heron: to state 0 | shown by state, b
+    (2, 0, 2, 0), table: price 18 + 9, 140 beginnings, 19k clauses, 1 wrong (47 s)
+    (1, 1, 2, 0), table: price 17 + 10, 141 beginnings, 28k clauses, 1 wrong (47 s)
+    (2, 1, 1, 0), table: price 18 + 10, 145 beginnings, 33k clauses, 1 wrong (47 s)
+    (2, 0, 2, 0), table: price 23 + 9, 148 beginnings, 20k clauses, 0 wrong (48 s)
+    (2, 0, 2, 1), table: price 19 + 11, 148 beginnings, 44k clauses, 0 wrong (49 s)
+    (3, 0, 1, 1), table: price 19 + 11, 148 beginnings, 95k clauses, 0 wrong (50 s)
+    (1, 1, 2, 0), table: price 18 + 10, 148 beginnings, 30k clauses, 1 wrong (50 s)
+    (2, 1, 1, 1), table: price 17 + 12, 150 beginnings, 65k clauses, 0 wrong (51 s)
+    (2, 1, 1, 2), table: price 13 + 14, 150 beginnings, 162k clauses, 0 wrong (51 s)
+  asked 1 (27 rivals): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 27): egg: a+1 | hatch: pour a into b | net: pour b into c | heron: take all of b from c | shown by c
+    (2, 1, 1, 2), table: price 13 + 14, 152 beginnings, 163k clauses, 1 wrong (51 s)
+    (2, 1, 1, 2), table: price 14 + 14, 156 beginnings, 170k clauses, 1 wrong (51 s)
+    (0, 2, 2, 0), table: price 19 + 11, 165 beginnings, 53k clauses, 1 wrong (54 s)
+    (1, 2, 1, 0), table: price 19 + 11, 166 beginnings, 59k clauses, 0 wrong (56 s)
+    (3, 0, 1, 0), table: price 25 + 9, 166 beginnings, 31k clauses, 1 wrong (56 s)
+    (3, 0, 1, 2), table: price 21 + 13, 172 beginnings, 347k clauses, 0 wrong (61 s)
+    (1, 1, 2, 0), table: price 19 + 10, 172 beginnings, 40k clauses, 0 wrong (62 s)
+    (2, 1, 1, 0), table: price 19 + 10, 172 beginnings, 46k clauses, 0 wrong (62 s)
+    (1, 1, 2, 2), table: price 15 + 14, 172 beginnings, 109k clauses, 0 wrong (62 s)
+    (2, 1, 1, 2), table: price 15 + 14, 172 beginnings, 291k clauses, 0 wrong (63 s)
+  asked 2 (4 rivals): answered wrongly; kept 1 count (a), 1 difference (b), 2 states (price 29): egg: a+1 | hatch: if a>0: a-1, to state 1 | net: if state 1: b+1, to state 0 | heron: if state 1: b-1, to state 0 | shown by b
+    (0, 1, 2, 0), table: price 31 + 7, 173 beginnings, 19k clauses, 1 wrong (63 s)
+    (1, 1, 1, 0), table: no machine (63 s)
+    (2, 0, 2, 2), table: out of time, at least 24 + 13 (78 s)
+    (1, 1, 2, 0), table: out of time, at least 24 + 10 (93 s)
+    (2, 1, 1, 0), table: price 19 + 10, 175 beginnings, 46k clauses, 0 wrong (93 s)
+  asked 3 (5 rivals): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 29): egg: a+1 | hatch: if a>0: a-1, b+1 | net: if b>0: b-1, c+1 | heron: if b>0: b-1, c-1 | shown by c
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (plain): answered rightly
+  asked 7 (again): answered rightly
+  asked 8 (alive): answered rightly
+  asked 9 (pumped): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (alive): answered rightly
+  asked 15 (pumped): answered rightly
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+2 counts (ab), 1 difference (c) (price 29): egg: a+1 | hatch: if a>0: a-1, b+1 | net: if b>0: b-1, c+1 | heron: if b>0: b-1, c-1 | shown by c; asked 17; 94 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

@@ -1,0 +1,107 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: price 18 + 6, 139 beginnings, 7k clauses, 0 wrong (0 s)
+    (2, 0, 1, 0), table: price 18 + 6, 139 beginnings, 11k clauses, 0 wrong (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), table: price 13 + 7, 139 beginnings, 12k clauses, 0 wrong (0 s)
+    (1, 1, 1, 0), table: price 13 + 7, 139 beginnings, 16k clauses, 0 wrong (0 s)
+    (2, 0, 1, 1), table: price 16 + 8, 139 beginnings, 26k clauses, 0 wrong (0 s)
+    (0, 2, 1, 0), table: price 13 + 8, 139 beginnings, 22k clauses, 0 wrong (0 s)
+    (2, 0, 2, 0), table: price 15 + 9, 139 beginnings, 19k clauses, 0 wrong (0 s)
+    (3, 0, 1, 0), table: price 15 + 9, 139 beginnings, 22k clauses, 0 wrong (0 s)
+    (1, 0, 2, 2), table: price 18 + 10, 139 beginnings, 9k clauses, 0 wrong (0 s)
+    (2, 0, 1, 2), table: price 16 + 10, 139 beginnings, 42k clauses, 0 wrong (0 s)
+    (1, 1, 2, 0), table: price 13 + 10, 139 beginnings, 28k clauses, 0 wrong (0 s)
+    (2, 1, 1, 0), table: price 13 + 10, 139 beginnings, 31k clauses, 0 wrong (1 s)
+    (1, 1, 1, 2), table: price 12 + 11, 139 beginnings, 36k clauses, 0 wrong (1 s)
+    (2, 0, 2, 1), table: price 15 + 11, 139 beginnings, 38k clauses, 0 wrong (1 s)
+    (3, 0, 1, 1), table: price 14 + 11, 139 beginnings, 79k clauses, 0 wrong (1 s)
+    (0, 2, 2, 0), table: price 13 + 11, 139 beginnings, 40k clauses, 0 wrong (1 s)
+    (1, 2, 1, 0), table: price 13 + 11, 139 beginnings, 43k clauses, 0 wrong (1 s)
+    (2, 1, 1, 1), table: price 13 + 12, 139 beginnings, 54k clauses, 0 wrong (1 s)
+    (3, 0, 2, 0), table: price 15 + 12, 139 beginnings, 42k clauses, 0 wrong (2 s)
+    (4, 0, 1, 0), table: price 15 + 12, 139 beginnings, 45k clauses, 0 wrong (2 s)
+    (2, 0, 2, 2), table: price 15 + 13, 139 beginnings, 57k clauses, 0 wrong (2 s)
+    (3, 0, 1, 2), table: price 14 + 13, 139 beginnings, 158k clauses, 0 wrong (2 s)
+    (2, 1, 2, 0), table: price 13 + 13, 139 beginnings, 60k clauses, 0 wrong (3 s)
+    (3, 1, 1, 0), table: price 13 + 13, 139 beginnings, 64k clauses, 0 wrong (3 s)
+    (1, 1, 2, 2), table: price 12 + 14, 139 beginnings, 53k clauses, 0 wrong (3 s)
+    (3, 0, 2, 1), table: price 14 + 14, 139 beginnings, 117k clauses, 0 wrong (4 s)
+    (2, 1, 1, 2), table: price 12 + 14, 139 beginnings, 128k clauses, 0 wrong (4 s)
+    (1, 2, 2, 0), table: price 13 + 14, 139 beginnings, 87k clauses, 0 wrong (5 s)
+    (2, 2, 1, 0), table: price 13 + 14, 139 beginnings, 91k clauses, 0 wrong (5 s)
+    (1, 2, 1, 2), table: price 12 + 15, 139 beginnings, 116k clauses, 0 wrong (5 s)
+    (2, 1, 2, 1), table: price 13 + 15, 139 beginnings, 95k clauses, 0 wrong (6 s)
+    (4, 0, 2, 0), table: price 15 + 15, 139 beginnings, 92k clauses, 0 wrong (8 s)
+    (3, 0, 2, 2), table: price 14 + 16, 139 beginnings, 217k clauses, 0 wrong (8 s)
+    (3, 1, 2, 0), table: price 13 + 16, 139 beginnings, 134k clauses, 0 wrong (9 s)
+    (2, 1, 2, 2), table: price 12 + 17, 139 beginnings, 192k clauses, 0 wrong (10 s)
+  kept 0 counts, 1 difference (a), 2 states (price 20): pax: a+1 | call: if a>0: a-1, to state 1 | bag: if state 1: a-1 | load: nothing | shown by a
+    (0, 1, 2, 0), table: price 13 + 7, 141 beginnings, 13k clauses, 1 wrong (10 s)
+    (0, 1, 2, 0), table: price 17 + 7, 143 beginnings, 13k clauses, 1 wrong (10 s)
+    (1, 1, 1, 0), table: price 19 + 7, 148 beginnings, 17k clauses, 1 wrong (10 s)
+    (0, 2, 1, 0), table: price 23 + 8, 152 beginnings, 26k clauses, 1 wrong (10 s)
+    (1, 1, 2, 0), table: price 20 + 10, 154 beginnings, 33k clauses, 1 wrong (11 s)
+    (2, 1, 1, 0), table: price 27 + 10, 157 beginnings, 39k clauses, 1 wrong (22 s)
+    (1, 1, 1, 2), table: price 35 + 11, 158 beginnings, 67k clauses, 0 wrong (23 s)
+    (1, 0, 2, 0), table: no machine (23 s)
+    (2, 0, 1, 0), table: no machine (23 s)
+    (2, 0, 1, 1), table: no machine (23 s)
+    (0, 1, 2, 0), table: no machine (23 s)
+    (2, 0, 2, 0), table: price 33 + 9, 158 beginnings, 24k clauses, 0 wrong (34 s)
+    (3, 0, 1, 0), table: price 33 + 9, 158 beginnings, 28k clauses, 0 wrong (44 s)
+    (0, 2, 2, 0), table: out of time, at least 22 + 11 (59 s)
+    (1, 2, 1, 0), table: out of time, at least 24 + 11 (74 s)
+    (3, 0, 1, 1), table: out of time, at least 25 + 11 (90 s)
+    (2, 1, 1, 1), table: out of time, at least 24 + 12 (106 s)
+    (2, 0, 1, 2), table: no machine (106 s)
+    (1, 1, 1, 0), table: no machine (106 s)
+    (2, 0, 2, 1), table: out of time, at least 29 + 11 (121 s)
+    (1, 1, 2, 2), table: out of time, at least 23 + 14 (136 s)
+    (2, 1, 1, 2), table: out of time, at least 21 + 14 (152 s)
+    (2, 1, 2, 0), table: out of time, at least 20 + 13 (167 s)
+    (3, 1, 1, 0), table: out of time, at least 21 + 13 (186 s)
+    (3, 0, 1, 2), table: out of time, at least 24 + 13 (201 s)
+  asked 1 (11 rivals): answered wrongly; kept 2 counts (ab), 2 states (price 42): pax: a+1 | call: if a=0 and b>0: to state 0; if a>0 and b=0: a-1, to state 1; if a>0 and b>0: a-1, b+1, to state 1 | bag: if state 1 and a=0: b+1; if state 1 and a>0: a-1 | load: if b>0: b-1 | shown by state, a, b
+    (3, 0, 2, 0), table: out of time, at least 23 + 12 (216 s)
+    (4, 0, 1, 0), table: out of time, at least 25 + 12 (234 s)
+    (1, 2, 1, 2), table: out of time, at least 20 + 15 (252 s)
+    (1, 2, 2, 0), table: out of time, at least 19 + 14 (267 s)
+    (2, 2, 1, 0), table: out of time, at least 20 + 14 (283 s)
+    (1, 0, 2, 2), table: no machine (283 s)
+    (2, 0, 2, 2), table: out of time, at least 27 + 13 (298 s)
+    (3, 0, 2, 1), table: out of time, at least 21 + 14 (314 s)
+    (2, 1, 2, 1), table: out of time, at least 19 + 15 (332 s)
+    (3, 1, 2, 0), table: out of time, at least 17 + 16 (348 s)
+    (2, 1, 2, 2), table: out of time, at least 19 + 17 (373 s)
+    (1, 1, 2, 0), table: price 24 + 10, 159 beginnings, 35k clauses, 0 wrong (380 s)
+    (4, 0, 2, 0), table: out of time, at least 19 + 15 (398 s)
+  asked 2 (2 rivals): answered wrongly; kept 1 count (a), 1 difference (b), 2 states (price 34): pax: b+1 | call: if b<0: b-1, to state 0; if b>0: b-1, to state 1 | bag: if state 1: a+1, b-1 | load: if a>0: a-1, b+1 | shown by a, b
+    (0, 2, 1, 0), table: price 29 + 8, 160 beginnings, 30k clauses, 2 wrong (408 s)
+    (0, 2, 2, 0), table: price 24 + 11, 179 beginnings, 59k clauses, 1 wrong (436 s)
+    (2, 1, 2, 0), table: price 25 (or less) + 13, 194 beginnings, 98k clauses, 0 wrong (467 s)
+    (3, 0, 2, 2), table: out of time, at least 19 + 16 (483 s)
+    (1, 2, 2, 0), table: price 23 (or less) + 14, 194 beginnings, 138k clauses, 0 wrong (513 s)
+    (3, 1, 2, 0), table: none cheaper than 37 (540 s)
+    (1, 1, 2, 0), table: out of time, at least 27 + 10 (556 s)
+    (3, 1, 1, 0), table: none cheaper than 37 (573 s)
+    (2, 1, 2, 1), table: none cheaper than 37 (588 s)
+  asked 3 (plain): answered wrongly; kept 1 count (a), 2 differences (bc), 2 states (price 37): pax: b+1, c+1 | call: if c=0: to state 0; if c>0: b-1, c-1, to state 1 | bag: if state 1: a+1, b-1 | load: if a>0: a-1, b+1 | shown by b
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (plain): answered rightly
+  asked 7 (again): answered rightly
+  asked 8 (alive): answered rightly
+  asked 9 (pumped): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (alive): answered rightly
+  asked 15 (pumped): answered rightly
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+1 count (a), 2 differences (bc), 2 states (price 37): pax: b+1, c+1 | call: if c=0: to state 0; if c>0: b-1, c-1, to state 1 | bag: if state 1: a+1, b-1 | load: if a>0: a-1, b+1 | shown by b; asked 17; 588 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

@@ -1,0 +1,70 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), table: price 32 + 7, 139 beginnings, 12k clauses, 0 wrong (0 s)
+    (1, 1, 1, 0), table: price 32 + 7, 139 beginnings, 16k clauses, 0 wrong (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), table: price 32 + 8, 139 beginnings, 22k clauses, 0 wrong (0 s)
+    (2, 0, 2, 0), table: price 22 + 9, 139 beginnings, 19k clauses, 0 wrong (1 s)
+    (3, 0, 1, 0), table: price 24 + 9, 139 beginnings, 22k clauses, 0 wrong (1 s)
+    (1, 0, 2, 2), table: no machine (1 s)
+    (2, 0, 1, 2), table: no machine (1 s)
+    (1, 1, 2, 0), table: price 21 + 10, 139 beginnings, 28k clauses, 0 wrong (2 s)
+    (2, 1, 1, 0), table: price 23 + 10, 139 beginnings, 31k clauses, 0 wrong (3 s)
+    (1, 1, 1, 2), table: price 30 + 11, 139 beginnings, 36k clauses, 0 wrong (3 s)
+    (2, 0, 2, 1), table: price 22 + 11, 139 beginnings, 38k clauses, 0 wrong (4 s)
+    (3, 0, 1, 1), table: price 23 + 11, 139 beginnings, 79k clauses, 0 wrong (5 s)
+    (0, 2, 2, 0), table: price 21 + 11, 139 beginnings, 40k clauses, 0 wrong (8 s)
+    (1, 2, 1, 0), table: price 23 + 11, 139 beginnings, 43k clauses, 0 wrong (10 s)
+    (2, 1, 1, 1), table: price 22 + 12, 139 beginnings, 54k clauses, 0 wrong (12 s)
+    (3, 0, 2, 0), table: price 22 + 12, 139 beginnings, 42k clauses, 0 wrong (15 s)
+    (4, 0, 1, 0), table: price 24 + 12, 139 beginnings, 45k clauses, 0 wrong (18 s)
+    (2, 0, 2, 2), table: price 22 + 13, 139 beginnings, 57k clauses, 0 wrong (18 s)
+    (3, 0, 1, 2), table: price 21 + 13, 139 beginnings, 158k clauses, 0 wrong (20 s)
+    (2, 1, 2, 0), table: price 21 + 13, 139 beginnings, 60k clauses, 0 wrong (24 s)
+    (3, 1, 1, 0), table: price 23 + 13, 139 beginnings, 64k clauses, 0 wrong (31 s)
+    (1, 1, 2, 2), table: price 21 + 14, 139 beginnings, 53k clauses, 0 wrong (33 s)
+    (2, 1, 1, 2), table: price 21 + 14, 139 beginnings, 128k clauses, 0 wrong (34 s)
+    (3, 0, 2, 1), table: price 22 + 14, 139 beginnings, 117k clauses, 0 wrong (40 s)
+    (1, 2, 2, 0), table: out of time, at least 19 + 14 (56 s)
+    (2, 2, 1, 0), table: out of time, at least 21 + 14 (74 s)
+    (1, 2, 1, 2), table: price 21 + 15, 139 beginnings, 117k clauses, 0 wrong (81 s)
+    (2, 1, 2, 1), table: out of time, at least 21 + 15 (96 s)
+    (4, 0, 2, 0), table: out of time, at least 22 + 15 (112 s)
+    (3, 0, 2, 2), table: price 21 + 16, 139 beginnings, 217k clauses, 0 wrong (115 s)
+    (3, 1, 2, 0), table: out of time, at least 18 + 16 (130 s)
+    (2, 1, 2, 2), table: out of time, at least 20 + 17 (146 s)
+  kept 2 counts (ab), 2 states (price 31): board: a+1 | leave: if a>0: a-1 | leak: if state 0: to state 1; if state 1: b+1 | patch: if a>0: to state 0 | shown by state, a, b
+    (2, 0, 2, 0), table: price 32 + 9, 140 beginnings, 19k clauses, 1 wrong (148 s)
+    (1, 1, 2, 0), table: price 22 + 10, 141 beginnings, 28k clauses, 1 wrong (148 s)
+    (1, 1, 2, 0), table: price 22 + 10, 143 beginnings, 29k clauses, 1 wrong (148 s)
+    (1, 1, 2, 0), table: price 22 + 10, 153 beginnings, 32k clauses, 0 wrong (148 s)
+  asked 1 (19 rivals): answered wrongly; kept 1 count (a), 1 difference (b), 2 states (price 32): board: a+1, b+1 | leave: if a>0: a-1, b-1 | leak: b-1, to state 1 | patch: if a>0: b+1, to state 0 | shown by state, a, b
+    (1, 1, 2, 0), table: price 24 + 10, 154 beginnings, 33k clauses, 1 wrong (152 s)
+    (0, 2, 2, 0), table: price 26 + 11, 159 beginnings, 49k clauses, 1 wrong (166 s)
+    (3, 0, 1, 0), table: price 36 + 9, 163 beginnings, 29k clauses, 0 wrong (169 s)
+    (2, 0, 2, 1), table: out of time, at least 40 + 11 (184 s)
+    (2, 1, 1, 0), table: price 24 + 10, 163 beginnings, 40k clauses, 0 wrong (184 s)
+    (1, 2, 2, 0), table: none cheaper than 34 (186 s)
+  asked 2 (1 rival): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 34): board: a+1, c+1 | leave: if a>0: a-1, c-1 | leak: b+1, c-1 | patch: if a>0 and b>0: b-1, c+1 | shown by a, b, c
+  asked 3 (1 rival): answered rightly
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (plain): answered rightly
+  asked 7 (again): answered rightly
+  asked 8 (alive): answered rightly
+  asked 9 (pumped): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (plain): answered rightly
+  asked 13 (again): answered rightly
+  asked 14 (alive): answered rightly
+  asked 15 (pumped): answered rightly
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+2 counts (ab), 1 difference (c) (price 34): board: a+1, c+1 | leave: if a>0: a-1, c-1 | leak: b+1, c-1 | patch: if a>0 and b>0: b-1, c+1 | shown by a, b, c; asked 17; 252 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

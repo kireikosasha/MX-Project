@@ -1,0 +1,59 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), table: price 40 + 7, 203 beginnings, 23k clauses, 0 wrong (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), table: price 36 + 8, 203 beginnings, 32k clauses, 0 wrong (1 s)
+    (2, 0, 2, 0), table: out of time, at least 35 + 9 (16 s)
+    (3, 0, 1, 0), table: price 37 + 9, 203 beginnings, 32k clauses, 0 wrong (26 s)
+    (1, 0, 2, 2), table: no machine (26 s)
+    (2, 0, 1, 2), table: no machine (26 s)
+    (1, 1, 2, 0), table: out of time, at least 28 + 10 (41 s)
+    (2, 1, 1, 0), table: price 29 + 10, 203 beginnings, 45k clauses, 0 wrong (48 s)
+    (1, 1, 1, 2), table: price 18 + 11, 203 beginnings, 52k clauses, 0 wrong (48 s)
+    (2, 0, 2, 1), table: price 23 + 11, 203 beginnings, 55k clauses, 0 wrong (49 s)
+    (3, 0, 1, 1), table: price 20 + 11, 203 beginnings, 114k clauses, 0 wrong (50 s)
+    (0, 2, 2, 0), table: price 27 + 11, 203 beginnings, 58k clauses, 0 wrong (63 s)
+    (1, 2, 1, 0), table: out of time, at least 28 + 11 (79 s)
+    (2, 1, 1, 1), table: price 23 + 12, 203 beginnings, 78k clauses, 0 wrong (81 s)
+    (3, 0, 2, 0), table: out of time, at least 26 + 12 (96 s)
+    (4, 0, 1, 0), table: out of time, at least 29 + 12 (111 s)
+    (2, 0, 2, 2), table: price 23 + 13, 203 beginnings, 82k clauses, 0 wrong (113 s)
+    (3, 0, 1, 2), table: price 20 + 13, 203 beginnings, 225k clauses, 0 wrong (114 s)
+    (2, 1, 2, 0), table: out of time, at least 23 + 13 (129 s)
+    (3, 1, 1, 0), table: out of time, at least 25 + 13 (144 s)
+    (1, 1, 2, 2), table: price 18 + 14, 203 beginnings, 76k clauses, 0 wrong (145 s)
+    (2, 1, 1, 2), table: price 18 + 14, 203 beginnings, 184k clauses, 0 wrong (146 s)
+    (3, 0, 2, 1), table: price 20 + 14, 203 beginnings, 168k clauses, 0 wrong (149 s)
+    (1, 2, 2, 0), table: out of time, at least 22 + 14 (164 s)
+    (2, 2, 1, 0), table: out of time, at least 23 + 14 (179 s)
+    (1, 2, 1, 2), table: price 18 + 15, 203 beginnings, 167k clauses, 0 wrong (181 s)
+  kept 1 count (a), 1 difference (b) (price 29): ring: a+1 | pickup: take all of a from b | hangup: if a>0: a-1, b+1 | rush: take all of a from b | outage: pour a into b | shown by b
+    (2, 1, 2, 1), table: out of time, at least 23 + 15 (198 s)
+    (4, 0, 2, 0), table: out of time, at least 23 + 15 (213 s)
+    (3, 0, 2, 2), table: price 20 + 16, 204 beginnings, 311k clauses, 1 wrong (217 s)
+    (3, 1, 2, 0), table: out of time, at least 19 + 16 (232 s)
+    (2, 1, 2, 2), table: price 20 + 17, 207 beginnings, 282k clauses, 0 wrong (238 s)
+    (1, 1, 1, 2), table: price 20 + 11, 207 beginnings, 54k clauses, 0 wrong (238 s)
+  asked 1 (5 rivals): answered wrongly; kept 1 count (a), 1 difference (b) (price 31): ring: a+1 | pickup: if a>0: a-1, b-1 | hangup: if a>0: a-1, b+1 | rush: take all of a from b | outage: pour a into b | shown by b
+  asked 2 (plain): answered rightly
+  asked 3 (again): answered rightly
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (alive): answered rightly
+  asked 7 (pumped): answered rightly
+  asked 8 (plain): answered rightly
+  asked 9 (again): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (alive): answered rightly
+  asked 13 (pumped): answered rightly
+  asked 14 (plain): answered rightly
+  asked 15 (again): answered rightly
+1 count (a), 1 difference (b) (price 31): ring: a+1 | pickup: if a>0: a-1, b-1 | hangup: if a>0: a-1, b+1 | rush: take all of a from b | outage: pour a into b | shown by b; asked 15; 238 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

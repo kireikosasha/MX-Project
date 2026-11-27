@@ -1,0 +1,82 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), table: price 30 + 7, 139 beginnings, 12k clauses, 0 wrong (0 s)
+    (1, 1, 1, 0), table: price 25 + 7, 139 beginnings, 16k clauses, 0 wrong (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), table: price 25 + 8, 139 beginnings, 22k clauses, 0 wrong (0 s)
+    (2, 0, 2, 0), table: price 40 + 9, 139 beginnings, 19k clauses, 0 wrong (8 s)
+    (3, 0, 1, 0), table: price 42 + 9, 139 beginnings, 22k clauses, 0 wrong (15 s)
+    (1, 0, 2, 2), table: no machine (15 s)
+    (2, 0, 1, 2), table: no machine (15 s)
+    (1, 1, 2, 0), table: price 25 + 10, 139 beginnings, 28k clauses, 0 wrong (17 s)
+    (2, 1, 1, 0), table: price 25 + 10, 139 beginnings, 31k clauses, 0 wrong (18 s)
+    (1, 1, 1, 2), table: price 25 + 11, 139 beginnings, 36k clauses, 0 wrong (18 s)
+    (2, 0, 2, 1), table: out of time, at least 36 + 11 (33 s)
+    (3, 0, 1, 1), table: out of time, at least 35 + 11 (49 s)
+    (0, 2, 2, 0), table: price 25 + 11, 139 beginnings, 40k clauses, 0 wrong (55 s)
+    (1, 2, 1, 0), table: price 25 + 11, 139 beginnings, 43k clauses, 0 wrong (60 s)
+    (2, 1, 1, 1), table: price 25 + 12, 139 beginnings, 54k clauses, 0 wrong (64 s)
+    (3, 0, 2, 0), table: out of time, at least 28 + 12 (79 s)
+    (4, 0, 1, 0), table: out of time, at least 31 + 12 (94 s)
+    (2, 0, 2, 2), table: out of time, at least 34 + 13 (109 s)
+    (3, 0, 1, 2), table: out of time, at least 32 + 13 (124 s)
+    (2, 1, 2, 0), table: out of time, at least 24 + 13 (139 s)
+    (3, 1, 1, 0), table: price 25 + 13, 139 beginnings, 64k clauses, 0 wrong (152 s)
+    (1, 1, 2, 2), table: price 25 + 14, 139 beginnings, 53k clauses, 0 wrong (159 s)
+    (2, 1, 1, 2), table: price 24 + 14, 139 beginnings, 128k clauses, 0 wrong (166 s)
+    (3, 0, 2, 1), table: out of time, at least 25 + 14 (182 s)
+  kept 1 count (a), 1 difference (b) (price 32): urgent: b+1 | minor: a+1, b-1 | doctor: if a=0 and b>0: b-1; if a>0 and b<0: a-1, b+1; if a>0 and b=0: b-1 | nurse: if a>0: a-1, b+1 | shown by a, b
+    (1, 2, 2, 0), table: out of time, at least 22 + 14 (199 s)
+    (2, 2, 1, 0), table: out of time, at least 23 + 14 (215 s)
+    (1, 2, 1, 2), table: out of time, at least 23 + 15 (231 s)
+    (2, 1, 2, 1), table: out of time, at least 23 + 15 (247 s)
+    (4, 0, 2, 0), table: out of time, at least 24 + 15 (262 s)
+    (3, 0, 2, 2), table: out of time, at least 24 + 16 (277 s)
+    (3, 1, 2, 0), table: out of time, at least 21 + 16 (295 s)
+    (1, 1, 1, 0), table: price 27 + 7, 141 beginnings, 16k clauses, 1 wrong (295 s)
+    (0, 2, 1, 0), table: price 30 + 8, 155 beginnings, 28k clauses, 1 wrong (295 s)
+    (1, 1, 1, 0), table: price 32 + 7, 156 beginnings, 20k clauses, 1 wrong (295 s)
+    (1, 1, 2, 0), table: price 27 + 10, 157 beginnings, 34k clauses, 0 wrong (297 s)
+    (2, 1, 1, 0), table: price 27 + 10, 157 beginnings, 39k clauses, 0 wrong (299 s)
+    (0, 2, 2, 0), table: price 27 + 11, 157 beginnings, 49k clauses, 0 wrong (310 s)
+    (2, 1, 2, 2), table: out of time, at least 21 + 17 (326 s)
+    (1, 2, 1, 0), table: price 27 + 11, 157 beginnings, 54k clauses, 0 wrong (331 s)
+    (1, 1, 1, 2), table: price 26 + 11, 157 beginnings, 64k clauses, 0 wrong (331 s)
+  asked 1 (7 rivals): answered wrongly; kept 1 count (a), 1 difference (b), 2 states (price 37): urgent: b+1, to state 1 | minor: a+1, b-1 | doctor: if state 0 and a>0: a-1, b+1; if state 1 and a=0: b-1, to state 0; if state 1 and a>0: b-1 | nurse: if a>0: a-1, b+1 | shown by a, b
+    (1, 2, 2, 0), table: price 27 (or less) + 14, 158 beginnings, 104k clauses, 0 wrong (362 s)
+    (0, 1, 2, 0), table: price 44 + 7, 158 beginnings, 16k clauses, 1 wrong (362 s)
+    (1, 1, 2, 0), table: price 31 + 10, 165 beginnings, 36k clauses, 0 wrong (376 s)
+    (1, 1, 1, 2), table: price 26 + 11, 165 beginnings, 64k clauses, 0 wrong (376 s)
+  asked 2 (3 rivals): answered wrongly; kept 1 count (a), 1 difference (b) (price 37): urgent: a+1, b+1 | minor: if b<0: b-1; if b=0: b-1; if b>0: b as a, b-1 | doctor: if a=0: b+1; if a>0: a-1, b-1 | nurse: b+1 | shown by a, b
+    (1, 2, 2, 0), table: price 27 + 14, 166 beginnings, 110k clauses, 0 wrong (421 s)
+    (1, 1, 1, 2), table: price 33 + 11, 166 beginnings, 70k clauses, 0 wrong (421 s)
+    (2, 1, 1, 0), table: price 27 + 10, 166 beginnings, 39k clauses, 0 wrong (421 s)
+  asked 3 (4 rivals): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 37): urgent: a+1, c+1 | minor: b+1, c-1 | doctor: if a=0 and b>0: c+1; if a>0 and b=0: a-1, c-1; if a>0 and b>0: a-1, c-1 | nurse: if b>0: b-1, c+1 | shown by a, c
+    (2, 1, 1, 0), table: price 27 + 10, 167 beginnings, 42k clauses, 1 wrong (421 s)
+    (2, 1, 1, 0), table: price 28 + 10, 169 beginnings, 43k clauses, 0 wrong (422 s)
+    (2, 1, 1, 1), table: price 28 + 12, 169 beginnings, 89k clauses, 0 wrong (432 s)
+    (2, 1, 2, 0), table: none cheaper than 38 (438 s)
+    (2, 2, 1, 0), table: none cheaper than 38 (445 s)
+    (3, 1, 2, 0), table: none cheaper than 38 (454 s)
+  asked 4 (plain): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 38): urgent: a+1, c+1 | minor: b+1, c-1 | doctor: if a=0 and b>0: b-1, c+1; if a>0 and b=0: a-1, c-1; if a>0 and b>0: a-1, c-1 | nurse: if b>0: b-1, c+1 | shown by b, c
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (plain): answered rightly
+  asked 8 (again): answered rightly
+  asked 9 (alive): answered rightly
+  asked 10 (pumped): answered rightly
+  asked 11 (plain): answered rightly
+  asked 12 (again): answered rightly
+  asked 13 (plain): answered rightly
+  asked 14 (again): answered rightly
+  asked 15 (alive): answered rightly
+  asked 16 (pumped): answered rightly
+  asked 17 (plain): answered rightly
+  asked 18 (again): answered rightly
+2 counts (ab), 1 difference (c) (price 38): urgent: a+1, c+1 | minor: b+1, c-1 | doctor: if a=0 and b>0: b-1, c+1; if a>0 and b=0: a-1, c-1; if a>0 and b>0: a-1, c-1 | nurse: if b>0: b-1, c+1 | shown by b, c; asked 18; 455 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

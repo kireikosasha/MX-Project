@@ -1,0 +1,47 @@
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), table: price 58 + 8, 139 beginnings, 22k clauses, 0 wrong (1 s)
+    (2, 0, 2, 0), table: out of time, at least 44 + 9 (16 s)
+    (3, 0, 1, 0), table: out of time, at least 47 + 9 (31 s)
+    (1, 0, 2, 2), table: no machine (31 s)
+    (2, 0, 1, 2), table: no machine (31 s)
+    (1, 1, 2, 0), table: price 24 + 10, 139 beginnings, 28k clauses, 0 wrong (33 s)
+    (2, 1, 1, 0), table: price 27 + 10, 139 beginnings, 31k clauses, 0 wrong (35 s)
+    (1, 1, 1, 2), table: price 55 + 11, 139 beginnings, 36k clauses, 0 wrong (36 s)
+    (2, 0, 2, 1), table: out of time, at least 35 + 11 (51 s)
+    (3, 0, 1, 1), table: out of time, at least 32 + 11 (66 s)
+    (0, 2, 2, 0), table: price 24 + 11, 139 beginnings, 40k clauses, 0 wrong (71 s)
+    (1, 2, 1, 0), table: out of time, at least 26 + 11 (86 s)
+    (2, 1, 1, 1), table: price 25 + 12, 139 beginnings, 54k clauses, 0 wrong (93 s)
+    (3, 0, 2, 0), table: out of time, at least 25 + 12 (109 s)
+    (4, 0, 1, 0), table: out of time, at least 24 + 12 (124 s)
+    (2, 0, 2, 2), table: out of time, at least 32 + 13 (139 s)
+    (3, 0, 1, 2), table: out of time, at least 28 + 13 (154 s)
+    (2, 1, 2, 0), table: out of time, at least 22 + 13 (169 s)
+    (3, 1, 1, 0), table: out of time, at least 24 + 13 (185 s)
+  kept 1 count (a), 1 difference (b), 2 states (price 34): drama: a+1, to state 1 | comedy: a+1, to state 0 | cheer: if state 0 and a>0: b-1; if state 1 and a>0: b+1 | boo: if state 0 and a>0: b+1; if state 1 and a>0: b-1 | shown by b
+  asked 1 (1 rival): answered rightly
+  asked 2 (plain): answered rightly
+  asked 3 (again): answered rightly
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+  asked 6 (alive): answered rightly
+  asked 7 (pumped): answered rightly
+  asked 8 (plain): answered rightly
+  asked 9 (again): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (alive): answered rightly
+  asked 13 (pumped): answered rightly
+  asked 14 (plain): answered rightly
+  asked 15 (again): answered rightly
+1 count (a), 1 difference (b), 2 states (price 34): drama: a+1, to state 1 | comedy: a+1, to state 0 | cheer: if state 0 and a>0: b-1; if state 1 and a>0: b+1 | boo: if state 0 and a>0: b+1; if state 1 and a>0: b-1 | shown by b; asked 15; 185 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

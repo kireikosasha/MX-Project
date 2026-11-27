@@ -1,0 +1,125 @@
+    (1, 0, 1, 0), number: no machine (0 s)
+    (1, 0, 1, 0), table: no machine (0 s)
+    (0, 1, 1, 0), number: no machine (0 s)
+    (0, 1, 1, 0), table: no machine (0 s)
+    (1, 0, 2, 0), number: no machine (0 s)
+    (1, 0, 2, 0), table: no machine (0 s)
+    (2, 0, 1, 0), number: no machine (0 s)
+    (2, 0, 1, 0), table: no machine (0 s)
+    (1, 0, 1, 2), number: no machine (0 s)
+    (1, 0, 1, 2), table: no machine (0 s)
+    (0, 1, 2, 0), number: no machine (0 s)
+    (0, 1, 2, 0), table: no machine (0 s)
+    (1, 1, 1, 0), number: price 27 + 7, 139 beginnings, 16k clauses, 0 wrong (0 s)
+    (1, 1, 1, 0), table: no machine (0 s)
+    (2, 0, 1, 1), number: no machine (0 s)
+    (2, 0, 1, 1), table: no machine (0 s)
+    (0, 2, 1, 0), number: price 26 + 8, 139 beginnings, 23k clauses, 0 wrong (0 s)
+    (0, 2, 1, 0), table: price 43 + 8, 139 beginnings, 22k clauses, 0 wrong (1 s)
+    (2, 0, 2, 0), number: price 18 + 9, 139 beginnings, 19k clauses, 0 wrong (1 s)
+    (2, 0, 2, 0), table: price 45 + 9, 139 beginnings, 19k clauses, 0 wrong (8 s)
+    (3, 0, 1, 0), number: price 18 + 9, 139 beginnings, 23k clauses, 0 wrong (8 s)
+    (3, 0, 1, 0), table: price 46 + 9, 139 beginnings, 22k clauses, 0 wrong (14 s)
+    (1, 0, 2, 2), number: no machine (14 s)
+    (1, 0, 2, 2), table: no machine (14 s)
+    (2, 0, 1, 2), number: no machine (15 s)
+    (2, 0, 1, 2), table: no machine (15 s)
+    (1, 1, 2, 0), number: price 18 + 10, 139 beginnings, 28k clauses, 0 wrong (15 s)
+    (1, 1, 2, 0), table: out of time, at least 32 + 10 (30 s)
+    (2, 1, 1, 0), number: price 18 + 10, 139 beginnings, 32k clauses, 0 wrong (30 s)
+    (2, 1, 1, 0), table: out of time, at least 34 + 10 (45 s)
+    (1, 1, 1, 2), number: price 19 + 11, 139 beginnings, 37k clauses, 0 wrong (45 s)
+    (1, 1, 1, 2), table: no machine (45 s)
+    (2, 0, 2, 1), number: price 15 + 11, 139 beginnings, 39k clauses, 0 wrong (46 s)
+    (2, 0, 2, 1), table: out of time, at least 40 + 11 (61 s)
+    (3, 0, 1, 1), number: price 15 + 11, 139 beginnings, 80k clauses, 0 wrong (62 s)
+    (3, 0, 1, 1), table: out of time, at least 32 + 11 (77 s)
+    (0, 2, 2, 0), number: price 18 + 11, 139 beginnings, 41k clauses, 0 wrong (77 s)
+    (0, 2, 2, 0), table: out of time, at least 29 + 11 (92 s)
+    (1, 2, 1, 0), number: price 18 + 11, 139 beginnings, 44k clauses, 0 wrong (92 s)
+    (1, 2, 1, 0), table: out of time, at least 29 + 11 (107 s)
+    (2, 1, 1, 1), number: price 15 + 12, 139 beginnings, 55k clauses, 0 wrong (108 s)
+    (2, 1, 1, 1), table: out of time, at least 30 + 12 (123 s)
+    (3, 0, 2, 0), number: price 18 + 12, 139 beginnings, 43k clauses, 0 wrong (123 s)
+    (3, 0, 2, 0), table: out of time, at least 28 + 12 (140 s)
+    (4, 0, 1, 0), number: price 18 + 12, 139 beginnings, 46k clauses, 0 wrong (140 s)
+    (4, 0, 1, 0), table: out of time, at least 28 + 12 (155 s)
+    (2, 0, 2, 2), number: price 15 + 13, 139 beginnings, 57k clauses, 0 wrong (156 s)
+    (2, 0, 2, 2), table: out of time, at least 31 + 13 (171 s)
+    (3, 0, 1, 2), number: price 15 + 13, 139 beginnings, 159k clauses, 0 wrong (172 s)
+    (3, 0, 1, 2), table: out of time, at least 29 + 13 (187 s)
+  kept 2 counts (ab), 2 states (price 26): guest: a+1 | tube: if state 0 and a>0: a-1; if state 1 and a=0: b+1 | storm: to state 1 | sun: take a and b from each other | shown by nothing; '{}' with a
+    (2, 1, 2, 0), number: price 18 + 13, 140 beginnings, 62k clauses, 1 wrong (188 s)
+    (2, 1, 2, 0), table: out of time, at least 25 + 13 (203 s)
+    (3, 1, 1, 0), number: price 19 + 13, 142 beginnings, 67k clauses, 1 wrong (204 s)
+    (3, 1, 1, 0), table: out of time, at least 25 + 13 (220 s)
+    (1, 1, 2, 2), number: price 19 + 14, 147 beginnings, 60k clauses, 1 wrong (221 s)
+    (1, 1, 2, 2), table: out of time, at least 27 + 14 (236 s)
+    (2, 1, 1, 2), number: price 17 + 14, 149 beginnings, 157k clauses, 0 wrong (238 s)
+    (2, 1, 1, 2), table: out of time, at least 25 + 14 (254 s)
+    (3, 0, 2, 1), number: price 18 + 14, 149 beginnings, 140k clauses, 0 wrong (261 s)
+    (3, 0, 2, 1), table: out of time, at least 24 + 14 (276 s)
+    (1, 2, 2, 0), number: price 21 + 14, 149 beginnings, 96k clauses, 0 wrong (280 s)
+    (1, 2, 2, 0), table: out of time, at least 23 + 14 (300 s)
+    (2, 2, 1, 0), number: price 23 + 14, 149 beginnings, 101k clauses, 1 wrong (311 s)
+    (2, 2, 1, 0), table: out of time, at least 24 + 14 (327 s)
+    (1, 2, 1, 2), number: price 20 + 15, 153 beginnings, 159k clauses, 0 wrong (332 s)
+    (1, 2, 1, 2), table: out of time, at least 23 + 15 (348 s)
+    (2, 1, 2, 1), number: price 18 + 15, 153 beginnings, 118k clauses, 0 wrong (352 s)
+    (2, 1, 2, 1), table: out of time, at least 23 + 15 (367 s)
+    (4, 0, 2, 0), number: price 21 + 15, 153 beginnings, 105k clauses, 0 wrong (370 s)
+  asked 1 (9 rivals): answered wrongly; kept 2 counts (ab), 1 difference (c) (price 31): guest: a+1 | tube: if a=0 and b>0: c+1; if a>0 and b=0: a-1 | storm: b+1 | sun: if c>0: take all of b from a | shown by nothing; '{}' with a
+    (4, 0, 2, 0), table: out of time, at least 22 + 15 (385 s)
+    (3, 0, 2, 2), number: price 17 + 16, 154 beginnings, 288k clauses, 0 wrong (391 s)
+    (3, 0, 2, 2), table: out of time, at least 25 + 16 (411 s)
+    (3, 1, 2, 0), number: out of time, at least 21 + 16 (426 s)
+    (3, 1, 2, 0), table: out of time, at least 22 + 16 (450 s)
+    (2, 0, 2, 1), number: price 18 + 11, 154 beginnings, 54k clauses, 0 wrong (450 s)
+    (3, 0, 1, 1), number: price 21 + 11, 154 beginnings, 120k clauses, 1 wrong (453 s)
+    (2, 1, 2, 2), number: out of time, at least 18 + 17 (471 s)
+    (2, 0, 2, 0), number: price 22 + 9, 165 beginnings, 25k clauses, 0 wrong (471 s)
+    (3, 0, 1, 0), number: price 26 + 9, 165 beginnings, 31k clauses, 0 wrong (471 s)
+    (2, 1, 1, 1), number: price 22 + 12, 165 beginnings, 86k clauses, 0 wrong (472 s)
+    (1, 1, 2, 0), number: price 22 + 10, 165 beginnings, 37k clauses, 0 wrong (472 s)
+    (2, 1, 1, 0), number: price 24 + 10, 165 beginnings, 43k clauses, 0 wrong (473 s)
+    (2, 1, 2, 2), table: out of time, at least 21 + 17 (490 s)
+    (2, 0, 2, 2), number: price 18 + 13, 165 beginnings, 96k clauses, 0 wrong (490 s)
+    (3, 0, 1, 2), number: price 20 + 13, 165 beginnings, 269k clauses, 0 wrong (497 s)
+  asked 2 (3 rivals): answered wrongly; kept 2 counts (ab), 2 states (price 29): guest: a+1 | tube: if state 0 and a>0: a-1; if state 1 and a=0: b+1; if state 1 and a>0: b+1 | storm: to state 1 | sun: take a and b from each other, to state 0 | shown by nothing; '{}' with a
+  asked 3 (8 rivals): answered rightly
+  asked 4 (plain): answered rightly
+    (2, 0, 2, 1), number: price 18 + 11, 167 beginnings, 65k clauses, 1 wrong (497 s)
+    (2, 0, 2, 1), number: price 20 + 11, 209 beginnings, 288k clauses, 1 wrong (498 s)
+    (0, 2, 2, 0), number: no machine (499 s)
+    (1, 2, 1, 0), number: no machine (503 s)
+    (3, 0, 2, 0), number: no machine (505 s)
+    (4, 0, 1, 0), number: no machine (510 s)
+    (2, 0, 2, 0), number: no machine (510 s)
+    (2, 0, 2, 1), number: price 20 + 11, 229 beginnings, 694k clauses, 2 wrong (511 s)
+    (2, 0, 2, 1), number: price 20 + 11, 252 beginnings, 723k clauses, 0 wrong (511 s)
+    (1, 1, 1, 2), number: no machine (514 s)
+  asked 5 (again): answered wrongly; kept 2 counts (ab), 2 states (price 31): guest: a+1 | tube: if state 0 and a>0: empty b, a-1; if state 1 and a=0: b+1; if state 1 and a>0: b+1 | storm: to state 1 | sun: take a and b from each other, to state 0 | shown by nothing; '{}' with a
+    (2, 0, 2, 1), number: price 20 + 11, 253 beginnings, 723k clauses, 1 wrong (518 s)
+    (2, 0, 2, 1), number: price 21 + 11, 326 beginnings, 1707k clauses, 0 wrong (521 s)
+    (2, 1, 2, 0), number: no machine (529 s)
+    (2, 0, 2, 2), number: price 18 + 13, 326 beginnings, 2579k clauses, 0 wrong (537 s)
+  asked 6 (plain): answered wrongly; kept 2 counts (ab), 2 states (price 31): guest: a+1 | tube: if state 0 and a>0: a-1; if state 1 and a=0: b+1; if state 1 and a>0: b+1 | storm: to state 1 | sun: take all of b from a, to state 0 | shown by nothing; '{}' with a
+  asked 7 (1 rival): answered rightly
+  asked 8 (plain): answered rightly
+  asked 9 (again): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (alive): answered rightly
+  asked 13 (pumped): answered rightly
+  asked 14 (plain): answered rightly
+  asked 15 (again): answered rightly
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+  asked 18 (alive): answered rightly
+  asked 19 (pumped): answered rightly
+  asked 20 (plain): answered rightly
+  asked 21 (again): answered rightly
+2 counts (ab), 2 states (price 31): guest: a+1 | tube: if state 0 and a>0: a-1; if state 1 and a=0: b+1; if state 1 and a>0: b+1 | storm: to state 1 | sun: take all of b from a, to state 0 | shown by nothing; '{}' with a; asked 21; 818 s
+20 100.0 %
+100 100.0 %
+500 100.0 %
