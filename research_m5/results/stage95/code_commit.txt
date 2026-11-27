@@ -1,0 +1,5 @@
+blind_results.txt: the blind pool 95 (sealed/stage95_families, committed in fa863b3 before any run), one run of the code 1701c98
+(cells.py, parts.py, guarded.py, sealed_run.py) with the flags of stage 93 (--minutes 30 --workers 1 --seconds 3 --shorten --reserve 21
+--explore --frugal --slack 16 --guards --build 12 --flags --cascades --keep --deadline --watch --warm --patience 30 --part 100000
+--tour 24 --anchor 65 --far 100 --sum --parts --guarded 0.7 --keep-asks 10 --cap 60), as named in README (1701c98). Four groups
+of three families on four cores, nothing else on the machine.
