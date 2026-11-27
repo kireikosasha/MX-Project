@@ -1,0 +1,78 @@
+    parts 2, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (3, 2), table: none cheaper than 6 (0 s)
+    parts 4, (3, 2), table: none cheaper than 6 (1 s)
+    parts 2, (2,), whole, table: none cheaper than 10 (1 s)
+    parts 2, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (3, 2), table: none cheaper than 12 (1 s)
+    parts 4, (3, 2), table: none cheaper than 12 (1 s)
+    parts 2, (2,), table: none cheaper than 18 (1 s)
+    parts 3, (2,), whole, table: none cheaper than 10 (2 s)
+    parts 3, (2,), table: none cheaper than 18 (2 s)
+    parts 3, (3, 2), table: none cheaper than 18 (2 s)
+    parts 4, (3, 2), table: none cheaper than 18 (2 s)
+    parts 2, (2,), table: none cheaper than 24 (2 s)
+    parts 3, (2,), table: none cheaper than 24 (2 s)
+    parts 3, (3, 2), table: none cheaper than 24 (3 s)
+    parts 4, (3, 2), table: none cheaper than 24 (3 s)
+    parts 2, (2,), table: none cheaper than 30 (3 s)
+    parts 3, (3, 2), whole, table: none cheaper than 10 (4 s)
+    parts 3, (2,), table: none cheaper than 30 (5 s)
+    parts 3, (3, 2), table: none cheaper than 30 (6 s)
+    parts 2, (2,), whole, table: none cheaper than 16 (6 s)
+    parts 3, (2,), whole, table: none cheaper than 16 (7 s)
+    parts 3, (3, 2), whole, table: none cheaper than 16 (7 s)
+    parts 4, (3, 2), table: none cheaper than 30 (8 s)
+    parts 2, (2,), whole, table: none cheaper than 22 (8 s)
+    parts 3, (2,), whole, table: none cheaper than 22 (8 s)
+    parts 3, (3, 2), whole, table: none cheaper than 22 (9 s)
+    parts 2, (2,), table: none cheaper than 36 (11 s)
+    parts 2, (2,), whole, table: none cheaper than 28 (12 s)
+    parts 3, (2,), whole, table: none cheaper than 28 (12 s)
+    parts 3, (3, 2), whole, table: none cheaper than 28 (12 s)
+    parts 3, (2,), table: none cheaper than 36 (17 s)
+    parts 2, (2,), whole, table: none cheaper than 34 (18 s)
+    parts 3, (2,), whole, table: none cheaper than 34 (20 s)
+    parts 3, (3, 2), table: none cheaper than 36 (31 s)
+    parts 3, (3, 2), whole, table: none cheaper than 34 (34 s)
+    parts 4, (3, 2), table: none cheaper than 36 (40 s)
+    parts 2, (2,), table: price 37 + 0, 139 beginnings, 48k clauses, 0 wrong (46 s)
+    parts 2, (2,), whole, table: none cheaper than 37 (49 s)
+    parts 3, (2,), table: none cheaper than 37 (57 s)
+    parts 3, (2,), whole, table: none cheaper than 37 (64 s)
+    parts 3, (3, 2), table: out of time, at least 36 + 0 (79 s)
+    parts 4, (3, 2), table: none cheaper than 37 (86 s)
+    parts 3, (3, 2), whole, table: none cheaper than 37 (93 s)
+  kept 2 differences (ab), switch x of 2 (price 37): bay: a-1, b+1, x=1 | grey: a-1, b-1 | ride: if x=1: a+1, b-1, x on; else if b<0: a+1, b+1 | hay: a+1 | shown: if a<0 and b<0 and x=0: 'grey-short'; if a<0 and b<0 and x=1: 'grey-short'; if a<0 and b=0 and x=0: 'empty'; if a<0 and b=0 and x=1: 'even-short'; if a=0 and b<0 and x=0: 'grey-fed'; if a=0 and b<0 and x=1: 'grey-fed'; if a=0 and b=0 and x=0: 'empty'; if a=0 and b=0 and x=1: 'even-fed'; if a=0 and b>0 and x=0: 'bay-fed'; if a=0 and b>0 and x=1: 'bay-fed'; if a>0 and b<0 and x=0: 'grey-fed'; if a>0 and b<0 and x=1: 'grey-fed'; if a>0 and b=0 and x=0: 'empty'; if a>0 and b=0 and x=1: 'empty'; if a>0 and b>0 and x=0: 'empty'; if a>0 and b>0 and x=1: 'bay-fed'; else 'bay-short'
+    parts 2, (2,), table: price 37 + 0, 157 beginnings, 58k clauses, 0 wrong (116 s)
+  asked 1 (1 rival): answered wrongly; kept 2 differences (ab), switch x of 2 (price 37): bay: a-1, b+1, x=1 | grey: a-1, b-1 | ride: if b<0: a+1, b+1; else if x=1: a+1, b-1, x on | hay: a+1 | shown: if a<0 and b<0 and x=0: 'grey-short'; if a<0 and b<0 and x=1: 'grey-short'; if a<0 and b=0 and x=0: 'even-short'; if a<0 and b=0 and x=1: 'even-short'; if a<0 and b>0 and x=0: 'bay-short'; if a<0 and b>0 and x=1: 'bay-short'; if a=0 and b<0 and x=0: 'grey-fed'; if a=0 and b<0 and x=1: 'grey-fed'; if a=0 and b=0 and x=0: 'empty'; if a=0 and b=0 and x=1: 'even-fed'; if a=0 and b>0 and x=2: 'empty'; if a>0 and b<0 and x=0: 'grey-fed'; if a>0 and b<0 and x=1: 'grey-fed'; if a>0 and b=0 and x=0: 'empty'; if a>0 and b=0 and x=1: 'even-fed'; if a>0 and b>0 and x=0: 'empty'; else 'bay-fed'
+    parts 2, (2,), table: out of time, at least 37 + 0 (145 s)
+    parts 3, (2,), table: out of time, at least 37 + 0 (160 s)
+    parts 4, (3, 2), table: out of time, at least 37 + 0 (175 s)
+    parts 2, (2,), whole, table: out of time, at least 33 + 4 (190 s)
+    parts 3, (3, 2), table: out of time, at least 36 + 0 (220 s)
+    parts 3, (2,), whole, table: out of time, at least 33 + 4 (235 s)
+    parts 3, (3, 2), whole, table: out of time, at least 33 + 4 (251 s)
+    parts 2, (2,), table: out of time, at least 37 + 0 (281 s)
+    parts 3, (2,), table: out of time, at least 37 + 0 (311 s)
+    parts 4, (3, 2), table: price 40 (or less) + 0, 179 beginnings, 138k clauses, 0 wrong (341 s)
+  asked 2 (1 rival): answered wrongly; kept 2 counts (cd), 2 differences (ab) (price 40): bay: a-1, b+1, c+1 | grey: a-1, b-1 | ride: if b<0: a+1, b+1; else if c>0: a+1, b-1, c-1 | hay: a+1 | shown: if a<0 and b<0 and c=0: 'grey-short'; if a<0 and b<0 and c>0: 'grey-short'; if a<0 and b=0 and c=0: 'even-short'; if a<0 and b=0 and c>0: 'even-short'; if a<0 and b>0 and c=0: 'bay-short'; if a<0 and b>0 and c>0: 'bay-short'; if a=0 and b<0 and c=0: 'grey-fed'; if a=0 and b<0 and c>0: 'grey-fed'; if a=0 and b=0 and c=0: 'empty'; if a=0 and b=0 and c>0: 'even-fed'; if a>0 and b<0 and c=0: 'grey-fed'; if a>0 and b<0 and c>0: 'grey-fed'; if a>0 and b=0 and c=0: 'empty'; if a>0 and b=0 and c>0: 'even-fed'; else 'bay-fed'
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (alive): answered rightly
+  asked 8 (pumped): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (plain): answered rightly
+  asked 12 (again): answered rightly
+  asked 13 (alive): answered rightly
+  asked 14 (pumped): answered rightly
+  asked 15 (plain): answered rightly
+  asked 16 (again): answered rightly
+2 counts (cd), 2 differences (ab) (price 40): bay: a-1, b+1, c+1 | grey: a-1, b-1 | ride: if b<0: a+1, b+1; else if c>0: a+1, b-1, c-1 | hay: a+1 | shown: if a<0 and b<0 and c=0: 'grey-short'; if a<0 and b<0 and c>0: 'grey-short'; if a<0 and b=0 and c=0: 'even-short'; if a<0 and b=0 and c>0: 'even-short'; if a<0 and b>0 and c=0: 'bay-short'; if a<0 and b>0 and c>0: 'bay-short'; if a=0 and b<0 and c=0: 'grey-fed'; if a=0 and b<0 and c>0: 'grey-fed'; if a=0 and b=0 and c=0: 'empty'; if a=0 and b=0 and c>0: 'even-fed'; if a>0 and b<0 and c=0: 'grey-fed'; if a>0 and b<0 and c>0: 'grey-fed'; if a>0 and b=0 and c=0: 'empty'; if a>0 and b=0 and c>0: 'even-fed'; else 'bay-fed'; asked 16; 462 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

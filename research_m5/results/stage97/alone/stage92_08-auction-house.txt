@@ -1,0 +1,76 @@
+    parts 2, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (3, 2), table: none cheaper than 6 (0 s)
+    parts 4, (3, 2), table: none cheaper than 6 (0 s)
+    parts 2, (2,), whole, table: none cheaper than 10 (0 s)
+    parts 2, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (3, 2), table: none cheaper than 12 (1 s)
+    parts 4, (3, 2), table: none cheaper than 12 (1 s)
+    parts 3, (2,), whole, table: none cheaper than 10 (1 s)
+    parts 2, (2,), table: none cheaper than 18 (1 s)
+    parts 3, (2,), table: none cheaper than 18 (1 s)
+    parts 3, (3, 2), table: none cheaper than 18 (1 s)
+    parts 4, (3, 2), table: none cheaper than 18 (1 s)
+    parts 2, (2,), table: none cheaper than 24 (2 s)
+    parts 3, (3, 2), whole, table: none cheaper than 10 (2 s)
+    parts 3, (2,), table: none cheaper than 24 (2 s)
+    parts 3, (3, 2), table: none cheaper than 24 (3 s)
+    parts 2, (2,), whole, table: none cheaper than 16 (3 s)
+    parts 4, (3, 2), table: none cheaper than 24 (4 s)
+    parts 3, (2,), whole, table: none cheaper than 16 (4 s)
+    parts 2, (2,), table: price 25 + 0, 89 beginnings, 30k clauses, 0 wrong (4 s)
+    parts 3, (3, 2), whole, table: none cheaper than 16 (5 s)
+    parts 2, (2,), whole, table: none cheaper than 22 (5 s)
+    parts 3, (2,), table: none cheaper than 25 (5 s)
+    parts 3, (2,), whole, table: none cheaper than 22 (5 s)
+    parts 3, (3, 2), table: price 24 + 0, 89 beginnings, 49k clauses, 0 wrong (6 s)
+    parts 3, (3, 2), whole, table: none cheaper than 22 (6 s)
+    parts 2, (2,), whole, table: none cheaper than 24 (7 s)
+    parts 3, (2,), whole, table: none cheaper than 24 (7 s)
+    parts 3, (3, 2), whole, table: none cheaper than 24 (7 s)
+  kept 1 difference (a), switch x of 3 (price 24): ann: x=1 | bob: x=2 | gavel: if x=2: a+1; else if x=1: a-1 | shown: if a=0: 'even'; if a>0: 'bob'; else 'ann'
+    parts 3, (3, 2), table: out of time, at least 24 + 0 (22 s)
+    parts 4, (3, 2), table: none cheaper than 30 (25 s)
+    parts 2, (2,), whole, table: none cheaper than 30 (27 s)
+    parts 3, (2,), whole, table: none cheaper than 30 (34 s)
+    parts 2, (2,), table: none cheaper than 31 (37 s)
+    parts 3, (2,), table: none cheaper than 31 (40 s)
+    parts 4, (3, 2), table: price 35 (or less) + 0, 111 beginnings, 87k clauses, 0 wrong (55 s)
+    parts 3, (3, 2), whole, table: none cheaper than 30 (60 s)
+    parts 2, (2,), table: price 31 + 0, 111 beginnings, 45k clauses, 0 wrong (63 s)
+    parts 2, (2,), whole, table: price 26 + 4, 111 beginnings, 192k clauses, 0 wrong (65 s)
+  asked 1 (plain): answered wrongly; kept 1 count (a), 1 difference (b), switch x of 2 (price 30): ann: x=1 | bob: a+1, x=0 | gavel: if b=0 and x=1: b-1; else pour a into b | shown: if b=0: 'even'; if b>0: 'bob'; else 'ann'
+    parts 3, (3, 2), table: price 34 (or less) + 0, 160 beginnings, 156k clauses, 0 wrong (95 s)
+    parts 4, (3, 2), table: none cheaper than 34 (116 s)
+    parts 2, (2,), whole, table: price 26 + 4, 160 beginnings, 1362k clauses, 0 wrong (118 s)
+  asked 2 (2 rivals): answered wrongly; kept 1 count (a), 1 difference (b), switch x of 2 (price 30): ann: a+1, x=1 | bob: a+1, x=0 | gavel: if x=1: take all of a from b; else pour a into b | shown: if b=0: 'even'; if b>0: 'bob'; else 'ann'
+  asked 3 (1 rival): answered rightly
+    parts 3, (3, 2), table: out of time, at least 24 + 0 (201 s)
+    parts 2, (2,), whole, table: out of time, at least 26 + 4 (217 s)
+    parts 3, (2,), whole, table: out of time, at least 26 + 4 (238 s)
+    parts 2, (2,), table: out of time, at least 31 + 0 (253 s)
+    parts 3, (2,), table: out of time, at least 31 + 0 (269 s)
+    parts 3, (3, 2), whole, table: out of time, at least 26 + 4 (290 s)
+    parts 4, (3, 2), table: out of time, at least 34 + 0 (320 s)
+    parts 2, (2,), table: out of time, at least 31 + 0 (350 s)
+    parts 2, (2,), whole, table: price 34 (or less) + 4, 230 beginnings, 2451k clauses, 0 wrong (380 s)
+  asked 4 (plain): answered wrongly; kept 1 count (a), 1 difference (b), switch x of 2 (price 38): ann: if x=0: a+1, x=1 | bob: if a>0 and x=0: nothing; else a+1, x=0 | gavel: if x=1: take all of a from b, x=0; else pour a into b | shown: if b=0: 'even'; if b>0: 'bob'; else 'ann'
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (plain): answered rightly
+  asked 8 (again): answered rightly
+  asked 9 (alive): answered rightly
+  asked 10 (pumped): answered rightly
+  asked 11 (plain): answered rightly
+  asked 12 (again): answered rightly
+  asked 13 (plain): answered rightly
+  asked 14 (again): answered rightly
+  asked 15 (alive): answered rightly
+  asked 16 (pumped): answered rightly
+  asked 17 (plain): answered rightly
+  asked 18 (again): answered rightly
+1 count (a), 1 difference (b), switch x of 2 (price 38): ann: if x=0: a+1, x=1 | bob: if a>0 and x=0: nothing; else a+1, x=0 | gavel: if x=1: take all of a from b, x=0; else pour a into b | shown: if b=0: 'even'; if b>0: 'bob'; else 'ann'; asked 18; 875 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

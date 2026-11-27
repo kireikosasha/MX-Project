@@ -1,0 +1,72 @@
+    parts 2, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (3, 2), table: none cheaper than 6 (0 s)
+    parts 4, (3, 2), table: none cheaper than 6 (0 s)
+    parts 2, (2,), whole, table: none cheaper than 10 (1 s)
+    parts 2, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (2,), whole, table: none cheaper than 10 (1 s)
+    parts 3, (3, 2), table: none cheaper than 12 (1 s)
+    parts 4, (3, 2), table: none cheaper than 12 (1 s)
+    parts 2, (2,), table: none cheaper than 18 (1 s)
+    parts 3, (2,), table: none cheaper than 18 (1 s)
+    parts 3, (3, 2), table: none cheaper than 18 (2 s)
+    parts 4, (3, 2), table: none cheaper than 18 (2 s)
+    parts 2, (2,), table: none cheaper than 24 (2 s)
+    parts 3, (2,), table: none cheaper than 24 (2 s)
+    parts 3, (3, 2), table: none cheaper than 24 (2 s)
+    parts 4, (3, 2), table: none cheaper than 24 (3 s)
+    parts 3, (3, 2), whole, table: none cheaper than 10 (3 s)
+    parts 2, (2,), table: none cheaper than 30 (4 s)
+    parts 3, (2,), table: none cheaper than 30 (5 s)
+    parts 2, (2,), whole, table: none cheaper than 16 (5 s)
+    parts 3, (2,), whole, table: none cheaper than 16 (6 s)
+    parts 3, (3, 2), whole, table: none cheaper than 16 (6 s)
+    parts 3, (3, 2), table: none cheaper than 30 (9 s)
+    parts 2, (2,), whole, table: none cheaper than 22 (9 s)
+    parts 3, (2,), whole, table: none cheaper than 22 (9 s)
+    parts 3, (3, 2), whole, table: none cheaper than 22 (9 s)
+    parts 2, (2,), whole, table: none cheaper than 28 (10 s)
+    parts 3, (2,), whole, table: none cheaper than 28 (10 s)
+    parts 4, (3, 2), table: none cheaper than 30 (12 s)
+    parts 3, (3, 2), whole, table: none cheaper than 28 (12 s)
+    parts 2, (2,), table: none cheaper than 36 (19 s)
+    parts 2, (2,), whole, table: none cheaper than 34 (22 s)
+    parts 3, (2,), table: none cheaper than 36 (35 s)
+    parts 3, (2,), whole, table: none cheaper than 34 (44 s)
+    parts 3, (3, 2), table: out of time, at least 30 + 0 (59 s)
+    parts 4, (3, 2), table: none cheaper than 36 (69 s)
+    parts 3, (3, 2), whole, table: none cheaper than 34 (77 s)
+    parts 2, (2,), table: price 37 (or less) + 0, 139 beginnings, 47k clauses, 0 wrong (92 s)
+    parts 3, (2,), table: out of time, at least 36 + 0 (107 s)
+    parts 2, (2,), whole, table: price 31 + 4, 139 beginnings, 96k clauses, 0 wrong (114 s)
+    parts 3, (2,), whole, table: none cheaper than 35 (129 s)
+    parts 3, (3, 2), whole, table: none cheaper than 35 (138 s)
+  kept 1 count (a), 1 difference (b), switch x of 2 (price 35): rye: a+1, b+1 | flax: b-1 | ask: if x=1: b as a; else if a>0: a-1, b-1 | turn: x on | shown: if a=0 and b<0: 'flax'; if a=0 and b=0: 'empty'; if a>0 and b<0: 'flax'; if a>0 and b=0: 'even'; else 'rye'
+  asked 1 (1 rival): answered rightly
+    parts 2, (2,), table: out of time, at least 36 + 0 (198 s)
+    parts 3, (3, 2), table: out of time, at least 30 + 0 (228 s)
+    parts 4, (3, 2), table: out of time, at least 36 + 0 (244 s)
+    parts 3, (2,), table: price 44 (or less) + 0, 182 beginnings, 112k clauses, 0 wrong (274 s)
+    parts 2, (2,), whole, table: out of time, at least 31 + 4 (289 s)
+    parts 3, (2,), whole, table: out of time, at least 31 + 4 (307 s)
+    parts 3, (3, 2), whole, table: out of time, at least 31 + 4 (324 s)
+  asked 2 (plain): answered wrongly; kept 2 counts (ac), 1 difference (b), switch x of 2 (price 44): rye: b+1, c+1 | flax: b-1, x=1 | ask: if a>0 and x=1: b+1, x=0; else if a=0 and c>0: b-1, c-1 | turn: if a>0: a-1, x=1; else a+1 | shown: if b<0 and c=0: 'flax'; if b<0 and c>0: 'flax'; if b=0 and c=0: 'empty'; if b=0 and c>0: 'even'; else 'rye'
+    parts 3, (2,), table: price 48 (or less) + 0, 279 beginnings, 325k clauses, 0 wrong (414 s)
+    parts 3, (3, 2), table: out of time, at least 30 + 0 (474 s)
+    parts 4, (3, 2), table: out of time, at least 36 + 0 (505 s)
+    parts 2, (2,), whole, table: price 37 (or less) + 4, 279 beginnings, 5314k clauses, 0 wrong (542 s)
+  asked 3 (plain): answered wrongly; kept 1 count (a), 1 difference (b), switch x of 2 (price 41): rye: a+1, b+1 | flax: b-1 | ask: if b<0 and x=1: b+1; else if x=1: b as a; else if a>0: a-1, b-1 | turn: x on | shown: if a=0 and b=0: 'empty'; if a=0 and b>0: 'even'; if a>0 and b=0: 'even'; if a>0 and b>0: 'rye'; else 'flax'
+    parts 3, (2,), table: price 38 (or less) + 0, 279 beginnings, 325k clauses, 0 wrong (704 s)
+  asked 4 (plain): answered wrongly; kept 2 counts (ac), 1 difference (b), switch x of 2 (price 38): rye: a+1, b+1 | flax: b-1, c+1 | ask: if a>0 and x=0: b-1; else if c>0 and x=1: b+1, c-1 | turn: x on | shown: if b<0 and c=0: 'empty'; if b<0 and c>0: 'flax'; if b=0 and c=0: 'empty'; if b=0 and c>0: 'even'; else 'rye'
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+    parts 2, (2,), whole, table: out of time, at least 31 + 4 (818 s)
+    parts 3, (2,), table: price 39 (or less) + 0, 392 beginnings, 546k clauses, 0 wrong (900 s)
+  asked 7 (plain): answered wrongly; kept 2 counts (ac), 1 difference (b), switch x of 2 (price 39): rye: a+1, b+1 | flax: b-1, c+1 | ask: if c>0 and x=1: b+1, c-1; else if a>0 and x=0: a-1, b-1 | turn: x on | shown: if a=0 and b=0: 'empty'; if a=0 and b>0: 'empty'; if a>0 and b=0: 'even'; if a>0 and b>0: 'rye'; else 'flax'
+NOT SURE: 2 counts (ac), 1 difference (b), switch x of 2 (price 39): rye: a+1, b+1 | flax: b-1, c+1 | ask: if c>0 and x=1: b+1, c-1; else if a>0 and x=0: a-1, b-1 | turn: x on | shown: if a=0 and b=0: 'empty'; if a=0 and b>0: 'empty'; if a>0 and b=0: 'even'; if a>0 and b>0: 'rye'; else 'flax'; asked 7; 900 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

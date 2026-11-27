@@ -9,8 +9,9 @@ tested for 0; or a difference, any whole number, tested for its sign) and switch
 start). Every symbol has a short list of guarded commands (Dijkstra 1975), tried in order: the first whose guard holds
 is done, and when none holds nothing is done. A guard reads at most LITS tests; a command adds -1, 0 or +1 to every
 number, sets every switch, moves it on by one (round: from the last value back to the first) or leaves it, and may make
-one whole move of guarded.py. What is shown is said the same way: a list of guards, each with what it shows, and what
-is shown when none holds.
+one whole move of guarded.py. What is shown is read as in guarded.py: the display reads at most three tests and has a
+table over what they say (a list of guards could not say seven answers over three parts, as the horse stable shows
+them), so its formulas too do not grow with the parts.
 
 The shape is not looked over one by one. Within an envelope (so many numbers, switches of at most so many values) the
 solver chooses which numbers are counts, which differences and which are not kept at all, and how many values every

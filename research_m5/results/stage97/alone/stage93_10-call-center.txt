@@ -1,0 +1,63 @@
+    parts 2, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (3, 2), table: none cheaper than 6 (0 s)
+    parts 4, (3, 2), table: none cheaper than 6 (1 s)
+    parts 2, (2,), whole, table: none cheaper than 10 (1 s)
+    parts 2, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (3, 2), table: none cheaper than 12 (1 s)
+    parts 3, (2,), whole, table: none cheaper than 10 (2 s)
+    parts 4, (3, 2), table: none cheaper than 12 (2 s)
+    parts 2, (2,), table: none cheaper than 18 (2 s)
+    parts 3, (2,), table: none cheaper than 18 (2 s)
+    parts 3, (3, 2), table: none cheaper than 18 (2 s)
+    parts 4, (3, 2), table: none cheaper than 18 (2 s)
+    parts 2, (2,), table: none cheaper than 24 (3 s)
+    parts 3, (2,), table: none cheaper than 24 (3 s)
+    parts 3, (3, 2), table: none cheaper than 24 (3 s)
+    parts 4, (3, 2), table: none cheaper than 24 (4 s)
+    parts 2, (2,), table: none cheaper than 30 (5 s)
+    parts 3, (3, 2), whole, table: none cheaper than 10 (5 s)
+    parts 3, (2,), table: none cheaper than 30 (7 s)
+    parts 2, (2,), whole, table: none cheaper than 16 (7 s)
+    parts 3, (3, 2), table: none cheaper than 30 (9 s)
+    parts 3, (2,), whole, table: none cheaper than 16 (10 s)
+    parts 3, (3, 2), whole, table: none cheaper than 16 (10 s)
+    parts 2, (2,), whole, table: none cheaper than 22 (10 s)
+    parts 3, (2,), whole, table: none cheaper than 22 (10 s)
+    parts 4, (3, 2), table: none cheaper than 30 (12 s)
+    parts 3, (3, 2), whole, table: none cheaper than 22 (12 s)
+    parts 2, (2,), whole, table: none cheaper than 28 (13 s)
+    parts 2, (2,), table: none cheaper than 36 (19 s)
+    parts 3, (2,), whole, table: none cheaper than 28 (19 s)
+    parts 3, (3, 2), whole, table: none cheaper than 28 (20 s)
+    parts 3, (2,), table: none cheaper than 36 (26 s)
+    parts 2, (2,), whole, table: price 25 + 4, 203 beginnings, 138k clauses, 0 wrong (29 s)
+    parts 3, (2,), whole, table: none cheaper than 29 (30 s)
+    parts 3, (3, 2), whole, table: none cheaper than 29 (31 s)
+  kept 1 count (a), 1 difference (b) (price 29): ring: a+1 | pickup: take all of a from b | hangup: if a>0: a-1, b+1 | rush: take all of a from b | outage: pour a into b | shown: if b<0: 'served'; if b=0: 'even'; else 'abandoned'
+    parts 3, (3, 2), table: out of time, at least 30 + 0 (49 s)
+    parts 2, (2,), whole, table: price 27 + 4, 204 beginnings, 139k clauses, 0 wrong (51 s)
+    parts 3, (2,), whole, table: none cheaper than 31 (53 s)
+    parts 4, (3, 2), table: none cheaper than 31 (56 s)
+    parts 3, (3, 2), whole, table: none cheaper than 31 (57 s)
+  asked 1 (1 rival): answered wrongly; kept 1 count (a), 1 difference (b) (price 31): ring: a+1 | pickup: if a>0: a-1, b-1 | hangup: if a>0: a-1, b+1 | rush: take all of a from b | outage: pour a into b | shown: if b<0: 'served'; if b=0: 'even'; else 'abandoned'
+  asked 2 (1 rival): answered rightly
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (alive): answered rightly
+  asked 8 (pumped): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (plain): answered rightly
+  asked 12 (again): answered rightly
+  asked 13 (alive): answered rightly
+  asked 14 (pumped): answered rightly
+  asked 15 (plain): answered rightly
+  asked 16 (again): answered rightly
+1 count (a), 1 difference (b) (price 31): ring: a+1 | pickup: if a>0: a-1, b-1 | hangup: if a>0: a-1, b+1 | rush: take all of a from b | outage: pour a into b | shown: if b<0: 'served'; if b=0: 'even'; else 'abandoned'; asked 16; 65 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

@@ -1,0 +1,53 @@
+    parts 2, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (3, 2), table: none cheaper than 6 (0 s)
+    parts 4, (3, 2), table: none cheaper than 6 (1 s)
+    parts 2, (2,), whole, table: none cheaper than 10 (1 s)
+    parts 3, (2,), whole, table: none cheaper than 10 (1 s)
+    parts 2, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (2,), table: none cheaper than 12 (2 s)
+    parts 3, (3, 2), table: none cheaper than 12 (2 s)
+    parts 4, (3, 2), table: none cheaper than 12 (2 s)
+    parts 2, (2,), table: none cheaper than 18 (2 s)
+    parts 3, (2,), table: none cheaper than 18 (2 s)
+    parts 3, (3, 2), table: none cheaper than 18 (2 s)
+    parts 4, (3, 2), table: none cheaper than 18 (2 s)
+    parts 2, (2,), table: none cheaper than 24 (3 s)
+    parts 3, (2,), table: none cheaper than 24 (3 s)
+    parts 3, (3, 2), whole, table: none cheaper than 10 (3 s)
+    parts 3, (3, 2), table: none cheaper than 24 (4 s)
+    parts 4, (3, 2), table: none cheaper than 24 (4 s)
+    parts 2, (2,), table: price 25 + 0, 139 beginnings, 47k clauses, 0 wrong (5 s)
+    parts 2, (2,), whole, table: none cheaper than 16 (6 s)
+    parts 3, (2,), whole, table: none cheaper than 16 (6 s)
+    parts 3, (2,), table: none cheaper than 25 (6 s)
+    parts 3, (3, 2), whole, table: none cheaper than 16 (6 s)
+    parts 3, (3, 2), table: none cheaper than 25 (8 s)
+    parts 2, (2,), whole, table: none cheaper than 22 (8 s)
+    parts 3, (2,), whole, table: none cheaper than 22 (8 s)
+    parts 3, (3, 2), whole, table: none cheaper than 22 (8 s)
+    parts 4, (3, 2), table: none cheaper than 25 (9 s)
+    parts 2, (2,), whole, table: none cheaper than 25 (9 s)
+    parts 3, (2,), whole, table: none cheaper than 25 (9 s)
+    parts 3, (3, 2), whole, table: none cheaper than 25 (10 s)
+  kept 1 count (a), 1 difference (b) (price 25): voter: a+1 | red: if a>0: a-1, b-1 | blue: if a>0: a-1, b+1 | spoil: if a>0: a-1 | shown: if b<0: 'red'; if b>0: 'blue'; else 'tie'
+  asked 1 (1 rival): answered rightly
+  asked 2 (1 rival): answered rightly
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (alive): answered rightly
+  asked 8 (pumped): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (plain): answered rightly
+  asked 12 (again): answered rightly
+  asked 13 (alive): answered rightly
+  asked 14 (pumped): answered rightly
+  asked 15 (plain): answered rightly
+  asked 16 (again): answered rightly
+1 count (a), 1 difference (b) (price 25): voter: a+1 | red: if a>0: a-1, b-1 | blue: if a>0: a-1, b+1 | spoil: if a>0: a-1 | shown: if b<0: 'red'; if b>0: 'blue'; else 'tie'; asked 16; 22 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

@@ -1,0 +1,72 @@
+    parts 2, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (3, 2), table: none cheaper than 6 (0 s)
+    parts 4, (3, 2), table: none cheaper than 6 (0 s)
+    parts 2, (2,), whole, table: none cheaper than 10 (1 s)
+    parts 2, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (2,), table: none cheaper than 12 (1 s)
+    parts 3, (2,), whole, table: none cheaper than 10 (1 s)
+    parts 3, (3, 2), table: none cheaper than 12 (1 s)
+    parts 4, (3, 2), table: none cheaper than 12 (1 s)
+    parts 2, (2,), table: none cheaper than 18 (1 s)
+    parts 3, (2,), table: none cheaper than 18 (2 s)
+    parts 3, (3, 2), table: none cheaper than 18 (2 s)
+    parts 4, (3, 2), table: none cheaper than 18 (2 s)
+    parts 2, (2,), table: none cheaper than 24 (2 s)
+    parts 3, (2,), table: none cheaper than 24 (3 s)
+    parts 3, (3, 2), whole, table: none cheaper than 10 (3 s)
+    parts 3, (3, 2), table: none cheaper than 24 (3 s)
+    parts 4, (3, 2), table: none cheaper than 24 (4 s)
+    parts 2, (2,), table: none cheaper than 30 (8 s)
+    parts 2, (2,), whole, table: none cheaper than 16 (8 s)
+    parts 3, (2,), whole, table: none cheaper than 16 (8 s)
+    parts 3, (3, 2), whole, table: none cheaper than 16 (8 s)
+    parts 2, (2,), whole, table: none cheaper than 22 (8 s)
+    parts 3, (2,), whole, table: none cheaper than 22 (8 s)
+    parts 3, (3, 2), whole, table: none cheaper than 22 (8 s)
+    parts 2, (2,), whole, table: none cheaper than 28 (10 s)
+    parts 3, (2,), table: none cheaper than 30 (13 s)
+    parts 3, (2,), whole, table: none cheaper than 28 (14 s)
+    parts 3, (3, 2), table: none cheaper than 30 (19 s)
+    parts 3, (3, 2), whole, table: none cheaper than 28 (20 s)
+    parts 4, (3, 2), table: none cheaper than 30 (22 s)
+    parts 2, (2,), whole, table: none cheaper than 34 (31 s)
+    parts 2, (2,), table: price 35 (or less) + 0, 139 beginnings, 47k clauses, 0 wrong (46 s)
+    parts 3, (2,), table: out of time, at least 30 + 0 (61 s)
+    parts 3, (2,), whole, table: out of time, at least 24 + 4 (76 s)
+    parts 3, (3, 2), table: out of time, at least 30 + 0 (91 s)
+    parts 4, (3, 2), table: out of time, at least 30 + 0 (106 s)
+    parts 3, (3, 2), whole, table: none cheaper than 34 (117 s)
+    parts 2, (2,), whole, table: none cheaper than 35 (129 s)
+    parts 3, (3, 2), whole, table: out of time, at least 30 + 4 (144 s)
+  kept 1 count (a), 1 difference (b), switch x of 2 (price 35): salmon: b+1 | tuna: b-1, x on | grab: if b>0: b-1; else if x=0: nothing; else if a=0 and b=0: b-1; else b+1, x=0 | switch: a+1 | shown: if b<0: 'tuna'; if b>0: 'salmon'; else 'even'
+    parts 2, (2,), table: price 36 + 0, 152 beginnings, 54k clauses, 0 wrong (186 s)
+    parts 3, (2,), whole, table: out of time, at least 24 + 4 (216 s)
+    parts 2, (2,), whole, table: out of time, at least 31 + 4 (231 s)
+  asked 1 (1 rival): answered wrongly; kept 1 count (b), 1 difference (a), switch x of 2 (price 36): salmon: a+1, b+1 | tuna: a-1 | grab: if a=0 and b>0 and x=1: a+1; else if b>0: a-1, b-1; else if a<0: a+1 | switch: x on | shown: if a<0: 'tuna'; if a>0: 'salmon'; else 'even'
+    parts 2, (2,), table: out of time, at least 36 + 0 (290 s)
+    parts 3, (2,), table: price 39 (or less) + 0, 172 beginnings, 89k clauses, 0 wrong (320 s)
+    parts 3, (3, 2), table: out of time, at least 30 + 0 (350 s)
+    parts 4, (3, 2), table: out of time, at least 30 + 0 (380 s)
+  asked 2 (1 rival): answered wrongly; kept 2 counts (bc), 1 difference (a), switch x of 2 (price 39): salmon: a+1, b+1 | tuna: a-1, c+1 | grab: if b>0 and x=0: a-1, b-1; else if c>0: a+1, c-1; else if b>0: a-1 | switch: x on | shown: if a<0: 'tuna'; if a>0: 'salmon'; else 'even'
+  asked 3 (1 rival): answered rightly
+  asked 4 (plain): answered rightly
+  asked 5 (again): answered rightly
+    parts 3, (2,), table: price 40 (or less) + 0, 273 beginnings, 200k clauses, 0 wrong (561 s)
+  asked 6 (plain): answered wrongly; kept 2 counts (bc), 1 difference (a), switch x of 2 (price 40): salmon: a+1, b+1 | tuna: a-1, c+1 | grab: if b>0 and x=0: a-1, b-1; else if c>0: a+1, c-1; else if b>0: a-1, b-1 | switch: x on | shown: if a<0: 'tuna'; if a>0: 'salmon'; else 'even'
+  asked 7 (plain): answered rightly
+  asked 8 (again): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (alive): answered rightly
+  asked 12 (pumped): answered rightly
+  asked 13 (plain): answered rightly
+  asked 14 (again): answered rightly
+  asked 15 (plain): answered rightly
+  asked 16 (again): answered rightly
+  asked 17 (alive): answered rightly
+  asked 18 (pumped): answered rightly
+NOT SURE: 2 counts (bc), 1 difference (a), switch x of 2 (price 40): salmon: a+1, b+1 | tuna: a-1, c+1 | grab: if b>0 and x=0: a-1, b-1; else if c>0: a+1, c-1; else if b>0: a-1, b-1 | switch: x on | shown: if a<0: 'tuna'; if a>0: 'salmon'; else 'even'; asked 18; 900 s
+20 100.0 %
+100 100.0 %
+500 100.0 %
