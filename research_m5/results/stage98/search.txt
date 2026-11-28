@@ -1,0 +1,49 @@
+lists.py alone, 15 minutes a rule, on 12 opened rules (one core each, two or three at a time)
+cur:  the layers of stage 98 as committed (13 layers; twice as many keys where the answers hold numbers)
+env3: three envelopes only, [(4,(3,2),0,0), (3,(3,2),2,0), (3,(3,2),0,1)]
+hint: the layers as committed, the solver of the search by guessing begins at the machine its shape found last (CaDiCaL phases); not in the frozen code
+
+rule                     cur                                  | env3                                 | hint                                
+01-ambulance-depot       100.0% SURE      147 s, asked 17     | 100.0% SURE      108 s, asked 18     | 100.0% SURE      134 s, asked 21    
+02-seed-bank             100.0% SURE      118 s, asked 14     | 100.0% SURE      121 s, asked 14     | 100.0% SURE      111 s, asked 14    
+03-cannery               100.0% SURE        5 s, asked 14     | 100.0% SURE       11 s, asked 15     | 100.0% SURE        5 s, asked 14    
+04-dry-dock               78.7% not sure  900 s, asked 4      | nothing (900 s)                      |  46.3% not sure  900 s, asked 8     
+05-signal-box            100.0% SURE       94 s, asked 16     | 100.0% SURE      214 s, asked 15     | 100.0% SURE      105 s, asked 16    
+07-horse-stable          100.0% SURE      451 s, asked 16     | 100.0% SURE      671 s, asked 15     | 100.0% not sure  900 s, asked 15    
+08-falconry              100.0% SURE       18 s, asked 15     | 100.0% SURE       33 s, asked 15     | 100.0% SURE       17 s, asked 15    
+08-space-station         100.0% SURE       29 s, asked 15     | 100.0% SURE       82 s, asked 15     | 100.0% SURE       29 s, asked 15    
+09-typewriter-repair       9.7% not sure  900 s, asked 6      | nothing (900 s)                      |  10.3% not sure  921 s, asked 6     
+10-sushi-conveyor        100.0% SURE      243 s, asked 17     | 100.0% SURE      296 s, asked 17     | 100.0% SURE      240 s, asked 17    
+12-tannery               nothing (900 s)                      | nothing (900 s)                      | nothing (900 s)                     
+12-water-park            100.0% SURE      810 s, asked 24     |  91.0% not sure  900 s, asked 5      | 100.0% SURE      693 s, asked 22    
+
+the formulas of the tannery that ran out of their 30 s in the search (lists.py alone, the committed layers), solved again without a limit:
+f1.pkl given 30 s; solved: True in 51 s; assumptions [-14557]
+f4.pkl given 30 s; solved: True in 115 s; assumptions [-24400]
+f3.pkl given 30 s; solved: True in 212 s; assumptions [-22767]
+f2.pkl given 30 s; solved: True in 539 s; assumptions [-22031]
+f5.pkl given 30 s; solved: True in 864 s; assumptions [-29751]
+the same formulas without the ceiling on the price (any machine that answers everything heard):
+f1.pkl given 30 s; solved: True in 1 s; assumptions []
+f2.pkl given 30 s; solved: True in 0 s; assumptions []
+f3.pkl given 30 s; solved: True in 1 s; assumptions []
+f4.pkl given 30 s; solved: True in 0 s; assumptions []
+f5.pkl given 30 s; solved: True in 4 s; assumptions []
+with the phases of the machine the shape had last (another run, its first two formulas that ran out of time):
+g1.pkl hint 1 given 30 s; solved: True in 3 s
+g2.pkl hint 1 given 59 s; solved: True in 36 s
+g2.pkl hint 0 given 59 s; solved: True in 321 s
+descent from any machine, 'cheaper than the last' again and again, 30 s a step (hint 1: phases of the last model):
+[hint 1] g1.pkl probe 42 low 30; free: price 122 at 1 s
+[hint 1]   cheaper than 39: out of 30 s (at 138 s)
+[hint 0] g1.pkl probe 42 low 30; free: price 122 at 1 s
+[hint 0]   cheaper than 63: out of 30 s (at 177 s)
+[hint 1] g2.pkl probe 48 low 30; free: price 103 at 3 s
+[hint 1]   cheaper than 98: out of 30 s (at 61 s)
+[hint 0] g2.pkl probe 48 low 30; free: price 103 at 3 s
+[hint 0]   cheaper than 62: out of 30 s (at 244 s)
+the phases of any machine (found without the ceiling) instead of the last one:
+g1.pkl free price 122 1.2 s
+g1.pkl capped with the free machine as hint: price 41 51.8 s
+g2.pkl free price 103 2.9 s
+g2.pkl capped with the free machine as hint: out of time 600.1 s
