@@ -1,3 +1,12 @@
 code: commit 81f6969 (lists.py with comparisons of two counts, bc9be6d, and the display said as a list, dc4700a; sealed_run.py --foretold off)
 flags: --minutes 30 --workers 1 --seconds 3 --shorten --reserve 21 --explore --frugal --slack 16 --guards --build 12 --flags --cascades --keep --deadline --watch --warm --patience 30 --part 100000 --tour 24 --anchor 65 --far 100 --sum --parts --guarded 0.7 --keep-asks 10 --cap 60 --lists
 rules: the 36 opened rules of pools 93, 95 and 97, four groups of nine on four cores
+
+blind_results.txt: the blind pool 98 (sealed/stage98_families, committed in 868d10c before any run), one run of the code
+81f6969 with the flags above (stage 93 and --cap 60 --lists, no --share, --foretold off), as named in README (129cab9).
+Four groups of three rules on four cores, nothing else on the machine; no process was killed for memory (one solver child
+of guarded.py in the group of 03, 07, 11 died of std::bad_alloc, the learner went on). blind_results_asks.txt: what each
+learner asked (stderr of that run; 04 and 09 were taken by parts.py alone).
+blind_results_code_edcb7ff.txt: the same pool, groups and flags of stage 93 with --cap 60 (no --lists), the code edcb7ff
+(stage 96), run after it.
+blind_strict.txt: worlds/strict.py on the machines kept by each of the two runs.
