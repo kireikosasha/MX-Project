@@ -1,0 +1,27 @@
+layers [(3, (2,), 0, 0, 2)] keep None from the code of draft B
+    parts 3, (2,), steps by k, number: none cheaper than 8 (0 s)
+    parts 3, (2,), steps by k, table: none cheaper than 8 (1 s)
+    parts 3, (2,), steps by k, number: none cheaper than 14 (2 s)
+    parts 3, (2,), steps by k, table: none cheaper than 14 (2 s)
+    parts 3, (2,), steps by k, number: none cheaper than 20 (3 s)
+    parts 3, (2,), steps by k, table: none cheaper than 20 (6 s)
+    parts 3, (2,), steps by k, number: price 18 + 2, 139 beginnings, 284k clauses, 0 wrong (9 s)
+  kept 2 counts (ab) (price 20): rain: a+1 | open: if a<2: a+2 | shut: nothing | hour: if a>=3: b+1 | shown: '{b}'
+    parts 3, (2,), steps by k, number: none cheaper than 26 (18 s)
+    parts 3, (2,), steps by k, table: out of time, at least 18 + 2 (34 s)
+    parts 3, (2,), steps by k, number: price 28 (or less) + 2, 159 beginnings, 418k clauses, 0 wrong (49 s)
+  asked 1 (1 rival): answered wrongly; kept 2 counts (ab) (price 30): rain: if a<2: a+2 | open: if b=0: a+1 | shut: nothing | hour: if b>0 and a>=2: a-2, b+2; else if a>=3: b+1 | shown: '{b}'
+    parts 3, (2,), steps by k, number: price 29 + 2, 170 beginnings, 469k clauses, 0 wrong (97 s)
+    parts 3, (2,), steps by k, table: out of time, at least 18 + 2 (127 s)
+  asked 2 (1 rival): answered wrongly; kept 2 counts (ab), switch x of 2 (price 31): rain: a+1 | open: x=1 | shut: nothing | hour: if b>0 and a>=2: a-2, b+2, x=0; else if a>0 and x=1: a-1, b+1 | shown: '{b}'
+    parts 3, (2,), steps by k, number: price 32 (or less) + 2, 185 beginnings, 545k clauses, 0 wrong (187 s)
+    parts 3, (2,), steps by k, table: out of time, at least 18 + 2 (248 s)
+  asked 3 (1 rival): answered wrongly; kept 2 counts (ab), switch x of 2 (price 34): rain: a+1 | open: x=1 | shut: nothing | hour: if b>0 and a>=2 and a<4: a-2, b+2, x=0; else if a>0 and x=1: a-1, b+1 | shown: '{b}'
+    parts 3, (2,), steps by k, number: out of time, at least 29 + 2 (339 s)
+    parts 3, (2,), steps by k, table: out of time, at least 18 + 2 (460 s)
+    parts 3, (2,), steps by k, number: out of time, at least 29 + 2 (580 s)
+    parts 3, (2,), steps by k, table: out of time, at least 18 + 2 (700 s)
+    parts 3, (2,), steps by k, number: out of time, at least 29 + 2 (821 s)
+    parts 3, (2,), steps by k, table: out of time, at least 18 + 2 (900 s)
+  asked 4 (plain): answered wrongly; kept None
+nothing found; asked 4; 900 s

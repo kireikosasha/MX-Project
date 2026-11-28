@@ -1,0 +1,40 @@
+layers [(3, (2,), 1, 0, 0)] keep None from the code of draft A
+    parts 3, (2,), whole of the first kind, number: none cheaper than 9 (0 s)
+    parts 3, (2,), whole of the first kind, table: none cheaper than 9 (1 s)
+    parts 3, (2,), whole of the first kind, number: none cheaper than 15 (1 s)
+    parts 3, (2,), whole of the first kind, table: none cheaper than 15 (1 s)
+    parts 3, (2,), whole of the first kind, number: none cheaper than 21 (1 s)
+    parts 3, (2,), whole of the first kind, table: none cheaper than 21 (2 s)
+    parts 3, (2,), whole of the first kind, number: price 18 + 3, 139 beginnings, 130k clauses, 0 wrong (2 s)
+  kept 2 counts (ab), switch x of 2 (price 21): hatch: a+1 | leaf: x=1 | spin: if x=1: pour a into b | storm: nothing | shown: '{b}'
+    parts 3, (2,), whole of the first kind, number: price 20 + 3, 155 beginnings, 206k clauses, 0 wrong (5 s)
+    parts 3, (2,), whole of the first kind, table: none cheaper than 23 (6 s)
+  asked 1 (1 rival): answered wrongly; kept 2 counts (ab), switch x of 2 (price 23): hatch: x=1 | leaf: if a=0: a+1 | spin: if x=1: pour a into b | storm: nothing | shown: '{b}'
+    parts 3, (2,), whole of the first kind, number: price 23 (or less) + 3, 206 beginnings, 1993k clauses, 0 wrong (25 s)
+    parts 3, (2,), whole of the first kind, table: none cheaper than 26 (38 s)
+  asked 2 (plain): answered wrongly; kept 2 counts (ab), switch x of 2 (price 26): hatch: x=1 | leaf: a+1 | spin: if a>0 and x=1: a-1, b+1 | storm: empty a | shown: '{b}'
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+    parts 3, (2,), whole of the first kind, number: price 24 (or less) + 3, 305 beginnings, 4086k clauses, 0 wrong (90 s)
+    parts 3, (2,), whole of the first kind, table: out of time, at least 23 + 3 (114 s)
+  asked 6 (again): answered wrongly; kept 3 counts (abc) (price 27): hatch: a+1 | leaf: b+1 | spin: if a>0 and b>0: a-1, b-1, c+1 | storm: empty b | shown: '{c}'
+  asked 7 (1 rival): answered rightly
+  asked 8 (plain): answered rightly
+  asked 9 (again): answered rightly
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+  asked 12 (alive): answered rightly
+  asked 13 (pumped): answered rightly
+  asked 14 (plain): answered rightly
+  asked 15 (again): answered rightly
+  asked 16 (plain): answered rightly
+  asked 17 (again): answered rightly
+  asked 18 (alive): answered rightly
+  asked 19 (pumped): answered rightly
+  asked 20 (plain): answered rightly
+  asked 21 (again): answered rightly
+3 counts (abc) (price 27): hatch: a+1 | leaf: b+1 | spin: if a>0 and b>0: a-1, b-1, c+1 | storm: empty b | shown: '{c}'; asked 21; 191 s
+20 100.0 %
+100 100.0 %
+500 100.0 %

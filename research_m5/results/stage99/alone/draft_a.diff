@@ -1,0 +1,70 @@
+--- lists.py@1004ef4
++++ lists.py@draftA
+@@ -21,13 +21,6 @@
+ said (minimum description length, Rissanen 1978). The envelopes are disjoint layers (a machine of a layer does not fit
+ in any layer before it), searched by guarded.explain in the order of their bounds as the shapes are there.
+ 
+-Stage 99: small numbers. A person says 'if at least two rowers wait, two leave', 'the cart holds two', 'four rowers
+-and a cox'. In a layer with small numbers a guard (or the display) may test a count against 2, 3 or 4, and a command
+-may move a number by up to 4, but only by a number a guard of its list has said ('if a>=2: a-2';
+-not 'rain: a+4'), and a count is taken from by k only when the guard says it holds at least k. The number is paid for
+-once, where it is said (CONST). With three numbers, whole moves are of the first kind only (among counts): their
+-formulas are half as big, and the silk farm, too big to keep in mind with all the moves, is found at once.
+-
+     python lists.py FAMILY/family.py [--asks 40] [--seed 0] [--minutes 10]
+ """
+ import argparse, importlib.util, itertools, random, time
+@@ -51,21 +44,19 @@
+ CMP = 1  # what reading a comparison of two counts costs beyond reading a test of one part
+ SWITCH = "xy"
+ QS = (2, 3, 4)  # stage 99: the small numbers a count may be tested against ('at least 2 rowers waiting')
+-STEPS = (-1, 0, 1, -2, 2, -3, 3, -4, 4)  # what a command may add to a number in a layer with steps (by one first;
+-# a step by k only where a guard of the list has said k)
+-CONST = 1  # what saying a small number costs beyond a test of a part (once, in the test: a step by it is a move)
++STEPS = (-1, 0, 1, -2, 2, -3, 3, -4, 4)  # what a command may add to a number in a layer with steps (by one first)
++CONST = 1  # what saying a small number costs beyond a test of a part or a move by one
+ SMALL = (0, 1, 2)  # the base of a layer without small numbers, with tests against them, with steps by them too
+ # the layers: so many numbers, switches of at most so many values (largest first), whole moves or not, comparisons
+ # of two counts or not (stage 98: 'more fish on the table than open cans'; a layer with them uses one at least),
+ # (stage 99: with three numbers, whole moves of the first kind only, 1; their formulas are half as big, and no machine
+ # taken before needed the second kind with three numbers)
+-# small numbers or not (stage 99: 2, a count tested against 2, 3 or 4, 'if the cart holds fewer than 2', and a number
+-# moved by them, 'four rowers and a cox leave'; a layer with them says one at least; 1, tests only, is not searched:
+-# alone on the open rules it found none that the layer with steps does not, and its search costs time)
++# small numbers or not (stage 99: 1, a count tested against 2, 3 or 4: 'if the cart holds fewer than 2'; 2, and a
++# number moved by them too: 'four rowers and a cox leave'; a layer with them says one at least, with steps a step)
+ LAYERS = [(2, (2,), 0, 0, 0), (3, (2,), 0, 0, 0), (3, (3, 2), 0, 0, 0), (4, (3, 2), 0, 0, 0),
+           (2, (2,), 2, 0, 0), (3, (2,), 1, 0, 0), (3, (3, 2), 1, 0, 0),
+           (2, (2,), 0, 1, 0), (3, (2,), 0, 1, 0), (3, (3, 2), 0, 1, 0),
+-          (3, (2,), 0, 0, 2)]
++          (3, (2,), 0, 0, 1), (3, (2,), 2, 0, 1), (3, (2,), 0, 0, 2)]
+ 
+ 
+ def pairs(N, c):
+@@ -335,10 +326,8 @@
+                     for j, delta in enumerate(DV):
+                         if delta < -1:
+                             f.add([-D[a][r][i][j], -KD[i][1]] + at(-delta))
+-                        if abs(delta) > 1:  # (a step by k is said where k is: a guard of this row or of one before
+-                            # it in the list reads a test against k; 'if at least 2 wait, 2 go', not 'rain: +4')
+-                            f.add([-D[a][r][i][j]] + [x for rr in range(r + 1) for z, (_, y) in enumerate(QT)
+-                                                      if y == abs(delta) for x in L[a][rr][R + z]])
++                        if abs(delta) > 1:
++                            cost.extend([D[a][r][i][j]] * CONST)
+                     cost.append(-D[a][r][i][1])
+                 for s, k in enumerate(S):
+                     e = E[a][r][s]
+@@ -396,10 +385,11 @@
+         if P:  # (a layer with comparisons reads one at least, in a guard or on the display)
+             f.add([x for a in range(A) for r in range(ROWS) for t in range(Q, R) for x in L[a][r][t]] +
+                   [SL[k][t] for k in range(see) for t in range(Q, R)])
+-        if q:  # (a layer with small numbers says one at least, in a guard or on the display: a step by one is said
+-            # where a guard says it)
++        if q == 1:  # (a layer with small numbers says one at least: a test against one, or with steps, a step by one)
+             f.add([x for a in range(A) for r in range(ROWS) for t in range(R, T) for x in L[a][r][t]] +
+                   [SL[k][t] for k in range(see) for t in range(R, T)])
++        elif q == 2:
++            f.add([D[a][r][i][j] for a in range(A) for r in range(ROWS) for i in range(N) for j in range(3, len(DV))])
+         for ci, cc in enumerate(self.combos):
+             f.one(TB[ci])
+             for k in range(see):

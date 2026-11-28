@@ -1,0 +1,20 @@
+layers [(3, (2,), 0, 0, 2)] keep None from the code of draft A
+    parts 3, (2,), steps by k, number: none cheaper than 8 (1 s)
+    parts 3, (2,), steps by k, table: none cheaper than 8 (1 s)
+    parts 3, (2,), steps by k, number: none cheaper than 14 (2 s)
+    parts 3, (2,), steps by k, table: none cheaper than 14 (2 s)
+    parts 3, (2,), steps by k, number: none cheaper than 20 (3 s)
+    parts 3, (2,), steps by k, table: none cheaper than 20 (7 s)
+    parts 3, (2,), steps by k, number: price 19 + 2, 139 beginnings, 284k clauses, 0 wrong (11 s)
+    parts 3, (2,), steps by k, table: none cheaper than 21 (15 s)
+  kept 2 counts (ab) (price 21): rain: if a<2: a+3 | open: a+1 | shut: nothing | hour: if a>=4: b+1 | shown: '{b}'
+    parts 3, (2,), steps by k, number: price 20 + 2, 159 beginnings, 418k clauses, 0 wrong (33 s)
+    parts 3, (2,), steps by k, table: none cheaper than 22 (41 s)
+  asked 1 (1 rival): answered wrongly; kept 2 counts (ab) (price 22): rain: a+1 | open: if a<2: a+2 | shut: nothing | hour: if a>=3: a-1, b+1 | shown: '{b}'
+    parts 3, (2,), steps by k, number: price 24 (or less) + 2, 170 beginnings, 468k clauses, 0 wrong (68 s)
+    parts 3, (2,), steps by k, table: out of time, at least 20 + 2 (83 s)
+  asked 2 (1 rival): answered wrongly; kept 3 counts (abc) (price 26): rain: a+4 | open: b+1 | shut: nothing | hour: if b>0 and a>=4: a-3, b-1, c+1 | shown: '{c}'
+    parts 3, (2,), steps by k, number: price 23 + 2, 191 beginnings, 600k clauses, 0 wrong (122 s)
+  asked 3 (1 rival): answered wrongly; kept 2 counts (ab), switch x of 2 (price 25): rain: x=1 | open: a+4 | shut: nothing | hour: if x=1 and a>=4: a-1, b+1, x=0 | shown: '{b}'
+    parts 3, (2,), steps by k, number: out of time, at least 23 + 2 (178 s)
+    parts 3, (2,), steps by k, table: out of time, at least 20 + 2 (209 s)

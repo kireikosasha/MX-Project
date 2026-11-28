@@ -1,0 +1,31 @@
+layers [(3, (2,), 0, 0, 1)] keep None from the code of draft B
+    parts 3, (2,), at least k, table: none cheaper than 7 (0 s)
+    parts 3, (2,), at least k, table: none cheaper than 13 (0 s)
+    parts 3, (2,), at least k, table: none cheaper than 19 (1 s)
+    parts 3, (2,), at least k, table: none cheaper than 25 (3 s)
+    parts 3, (2,), at least k, table: price 24 + 1, 139 beginnings, 91k clauses, 0 wrong (6 s)
+  kept 1 count (a), 1 difference (b) (price 25): walkin: a+1 | stencil: nothing | tattoo: if a>0 and a<4: a-1, b+1 | leave: if a>0: a-1, b-1 | shown: if b<0: 'lost'; if b=0: 'even'; else 'inked'
+    parts 3, (2,), at least k, table: price 29 + 1, 145 beginnings, 96k clauses, 0 wrong (22 s)
+  asked 1 (1 rival): answered wrongly; kept 1 count (a), 1 difference (b) (price 30): walkin: a+1 | stencil: nothing | tattoo: if a>0 and a<3: a-1, b+1; else if a>=4: b+1 | leave: if a>0: a-1, b-1 | shown: if b<0: 'lost'; if b=0: 'even'; else 'inked'
+    parts 3, (2,), at least k, table: out of time, at least 29 + 1 (67 s)
+    parts 3, (2,), at least k, table: price 35 (or less) + 1, 166 beginnings, 119k clauses, 0 wrong (97 s)
+  asked 2 (1 rival): answered wrongly; kept 2 counts (ac), 1 difference (b) (price 36): walkin: a+1 | stencil: nothing | tattoo: if c>=2: b+1; else if b=0 and c>0: nothing; else if a>0: a-1, b+1, c+1 | leave: if a>0: a-1, b-1 | shown: if b<0: 'lost'; if b=0: 'even'; else 'inked'
+    parts 3, (2,), at least k, table: price 36 (or less) + 1, 178 beginnings, 130k clauses, 0 wrong (187 s)
+  asked 3 (1 rival): answered wrongly; kept 2 counts (ac), 1 difference (b) (price 37): walkin: a+1 | stencil: nothing | tattoo: if c>=2: b+1; else if c>0 and a<3: nothing; else if a>0: a-1, b+1, c+1 | leave: if a>0: a-1, b-1 | shown: if b<0: 'lost'; if b=0: 'even'; else 'inked'
+    parts 3, (2,), at least k, table: price 40 (or less) + 1, 225 beginnings, 209k clauses, 0 wrong (338 s)
+  asked 4 (plain): answered wrongly; kept 2 counts (ac), 1 difference (b) (price 41): walkin: a+1 | stencil: if c>0: c+1 | tattoo: if a>0 and c=0: a-1, b+1, c+1; else if a>0 and c>=2: a-1, b+1, c-1 | leave: if a>0: a-1, b-1 | shown: if b<0: 'lost'; if b=0: 'even'; else 'inked'
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (plain): answered rightly
+  asked 8 (again): answered rightly
+    parts 3, (2,), at least k, table: out of time, at least 29 + 1 (609 s)
+    parts 3, (2,), at least k, table: price 46 (or less) + 1, 334 beginnings, 435k clauses, 0 wrong (730 s)
+  asked 9 (alive): answered wrongly; kept 2 counts (ac), 1 difference (b) (price 47): walkin: a+1 | stencil: if c>0: c+1 | tattoo: if a>0 and c=0: a-1, b+1, c+1; else if a>0 and c>=2: a-1, b+1, c-1 | leave: if b<0 and c=0: c+1; else if a>0: a-1, b-1 | shown: if b<0: 'lost'; if b=0: 'even'; else 'inked'
+  asked 10 (plain): answered rightly
+  asked 11 (again): answered rightly
+    parts 3, (2,), at least k, table: price 46 (or less) + 1, 345 beginnings, 445k clauses, 0 wrong (900 s)
+  asked 12 (plain): answered wrongly; kept 2 counts (ac), 1 difference (b) (price 47): walkin: a+1 | stencil: if c>0: c+1 | tattoo: if a>0 and c=0: a-1, b+1, c+1; else if a>0 and c>=2: a-1, b+1, c-1 | leave: if a>0: a-1, b-1; else if b<0 and c=0: c+1 | shown: if b<0: 'lost'; if b=0: 'even'; else 'inked'
+NOT SURE: 2 counts (ac), 1 difference (b) (price 47): walkin: a+1 | stencil: if c>0: c+1 | tattoo: if a>0 and c=0: a-1, b+1, c+1; else if a>0 and c>=2: a-1, b+1, c-1 | leave: if a>0: a-1, b-1; else if b<0 and c=0: c+1 | shown: if b<0: 'lost'; if b=0: 'even'; else 'inked'; asked 12; 900 s
+20 85.33333333333333 %
+100 89.66666666666667 %
+500 79.0 %

@@ -1,0 +1,34 @@
+layers [(3, (2,), 0, 0, 2)] keep None from the code of draft A
+    parts 3, (2,), steps by k, number: none cheaper than 8 (1 s)
+    parts 3, (2,), steps by k, table: none cheaper than 8 (1 s)
+    parts 3, (2,), steps by k, number: none cheaper than 14 (1 s)
+    parts 3, (2,), steps by k, table: none cheaper than 14 (1 s)
+    parts 3, (2,), steps by k, number: price 16 + 2, 139 beginnings, 286k clauses, 0 wrong (2 s)
+    parts 3, (2,), steps by k, table: none cheaper than 18 (2 s)
+  kept 2 counts (ab) (price 18): rower: a+1 | cox: b+1 | pair: if a>=2: a-2 | four: nothing | shown: '{a} rowers {b} coxes'
+    parts 3, (2,), steps by k, number: none cheaper than 24 (5 s)
+    parts 3, (2,), steps by k, table: none cheaper than 24 (14 s)
+    parts 3, (2,), steps by k, number: price 24 + 2, 186 beginnings, 889k clauses, 0 wrong (16 s)
+    parts 3, (2,), steps by k, table: none cheaper than 26 (25 s)
+  asked 1 (plain): answered wrongly; kept 1 count (a), 1 difference (b) (price 26): rower: a+1 | cox: b+1 | pair: if a>=2: a-2 | four: if a>=4: a-4, b-1 | shown: '{a} rowers {b} coxes'
+    parts 3, (2,), steps by k, number: price 25 + 2, 187 beginnings, 892k clauses, 0 wrong (31 s)
+    parts 3, (2,), steps by k, table: none cheaper than 27 (44 s)
+  asked 2 (1 rival): answered wrongly; kept 2 counts (ab) (price 27): rower: a+1 | cox: b+1 | pair: if a>=2: a-2 | four: if b>0 and a>=4: a-4, b-1 | shown: '{a} rowers {b} coxes'
+  asked 3 (plain): answered rightly
+  asked 4 (again): answered rightly
+  asked 5 (plain): answered rightly
+  asked 6 (again): answered rightly
+  asked 7 (alive): answered rightly
+  asked 8 (pumped): answered rightly
+  asked 9 (plain): answered rightly
+  asked 10 (again): answered rightly
+  asked 11 (plain): answered rightly
+  asked 12 (again): answered rightly
+  asked 13 (alive): answered rightly
+  asked 14 (pumped): answered rightly
+  asked 15 (plain): answered rightly
+  asked 16 (again): answered rightly
+2 counts (ab) (price 27): rower: a+1 | cox: b+1 | pair: if a>=2: a-2 | four: if b>0 and a>=4: a-4, b-1 | shown: '{a} rowers {b} coxes'; asked 16; 51 s
+20 100.0 %
+100 100.0 %
+500 100.0 %
