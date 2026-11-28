@@ -84,6 +84,7 @@ def one(path, out, a):
     oracle = plain
     if begin is not None and m is not None:
         m = cells.Summed(m, begin)
+    asked_later, stood = [], False
     if taken is None and H is not None and (m is None or not m.sure):
         # neither learner is sure. The machine of parts was kept before the second learner asked anything: if it answers
         # every story the second learner went on to ask (five at least), it has passed a check it was not fitted to, and
@@ -110,10 +111,14 @@ def one(path, out, a):
                 m.sure = False
     if taken is None and second is not None and (m is None or not m.sure):
         # the machine of quantities found together, not sure, is told when it answers everything heard by all the
-        # learners and what is told otherwise does not
+        # learners and what is told otherwise does not; and (--foretold, stage 98) when it answered rightly the stories
+        # the table went on to ask after it (five at least) and what is told otherwise was fitted to them: of two
+        # machines that answer everything, the one that foretold what it had not heard (Dawid 1984, the prequential
+        # principle), not the one looked for again on it
         heard = known + [w for w in later if w]
         ok = lambda x: x is not None and all(x.run(list(w[:i])) == oracle(list(w[:i])) for w in heard for i in range(1, len(w) + 1))
-        if ok(second) and not ok(m):
+        foretold = a.foretold and len(asked_later) >= 5 and not stood
+        if ok(second) and (not ok(m) or foretold):
             m = second
     if a.save and m is not None and hasattr(m, "table"):  # (the rule in words)
         os.makedirs(a.save, exist_ok=True)
@@ -165,6 +170,9 @@ def main():
     ap.add_argument("--lazy", action="store_true", help="with --parts and --far: the stories the first learner asked are not put into the formulas of the second; its machine is checked on them, and the shortest beginning it answers wrongly is taught on")
     ap.add_argument("--guarded", type=float, default=0, help="with --parts: when the parts are not sure, the quantities that wait on each other are looked for together (guarded.py), until this share of the minutes has gone")
     ap.add_argument("--keep-asks", type=int, default=10, help="with --guarded: so many questions are left to the table")
+    ap.add_argument("--foretold", action="store_true", help="with --guarded: of the machines that answer everything heard, "
+                    "none sure, the one of guarded.py is told when it answered rightly the five stories or more the table "
+                    "asked after it, unless the machine of parts stood the same check")
     ap.add_argument("--share", type=int, default=0, help="with --guarded: so many questions parts.py leaves to guarded.py "
                     "(besides --keep-asks): one learner does not spend the questions of the next")
     ap.add_argument("--lists", action="store_true", help="with --guarded: the machine of parts is said as lists of guarded commands (lists.py), not as one table")
