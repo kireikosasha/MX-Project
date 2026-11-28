@@ -35,14 +35,23 @@ KINDS = ("none", "count", "diff")
 VALS = (-1, 0, 1)  # what a number's test says: below 0, 0, above 0
 ROWS = 4  # commands a symbol has at most
 SEE = 3  # tests the display reads at most (what is shown is a table over what they say)
+SEE2 = 4  # in a layer with comparisons (the largest of three piles, or none: three comparisons and one test for 0)
 LITS = 3  # tests a guard reads at most
 KEEP = (0, 3, 4)  # the price of a number not kept, a count, a difference
 VALUE = 3  # the price of every value of a switch beyond the first
 WHOLE = 4  # the price of a layer with whole moves (as the second kind in guarded.py)
+CMP = 1  # what reading a comparison of two counts costs beyond reading a test of one part
 SWITCH = "xy"
-# the layers: so many numbers, switches of at most so many values (largest first), whole moves or not
-LAYERS = [(2, (2,), 0), (3, (2,), 0), (3, (3, 2), 0), (4, (3, 2), 0),
-          (2, (2,), 2), (3, (2,), 2), (3, (3, 2), 2)]
+# the layers: so many numbers, switches of at most so many values (largest first), whole moves or not, comparisons
+# of two counts or not (stage 98: 'more fish on the table than open cans'; a layer with them uses one at least)
+LAYERS = [(2, (2,), 0, 0), (3, (2,), 0, 0), (3, (3, 2), 0, 0), (4, (3, 2), 0, 0),
+          (2, (2,), 2, 0), (3, (2,), 2, 0), (3, (3, 2), 2, 0),
+          (2, (2,), 0, 1), (3, (2,), 0, 1), (3, (3, 2), 0, 1)]
+
+
+def pairs(N, c):
+    """The comparisons a layer may read: every two numbers, the first before the second (both counts)."""
+    return list(itertools.combinations(range(N), 2)) if c else []
 
 
 def within(N, S, M, Z):
@@ -60,17 +69,25 @@ class ListMachine:
         self.syms, self.key, self.kinds, self.sizes = list(syms), key, kinds, sizes
         self.rows, self.oread, self.otab, self.num, self.init = rows, oread, otab, num, init
         self.N, self.cost = len(kinds), cost
+        self.P = pairs(self.N, key[3])
+        self.see = SEE2 if key[3] else SEE
         self.total, self.sure, self.proved = cost + (WHOLE if key[2] else 0), False, True
         self.reads = [sorted({t for g, _, _, _ in rows[a] for t, _ in g}) for a in range(len(self.syms))]
         self.oreads = sorted(oread)
         self.shape = (tuple(kinds), tuple(sizes))
 
+    def signed(self, t):  # (a test of a number or a comparison: it says -1, 0 or 1)
+        return t < self.N or t >= self.N + len(self.sizes)
+
     def value(self, st, t):
+        if t >= self.N + len(self.sizes):
+            i, j = self.P[t - self.N - len(self.sizes)]
+            return sign(st[1][i] - st[1][j])
         return sign(st[1][t]) if t < self.N else st[0][t - self.N]
 
     def seen(self, st):  # (what the tests the display reads say, as the index of the table)
-        v = [(VALS.index(self.value(st, t)) if t < self.N else self.value(st, t)) for t in self.oread]
-        return tuple(v + [0] * (SEE - len(v)))
+        v = [(VALS.index(self.value(st, t)) if self.signed(t) else self.value(st, t)) for t in self.oread]
+        return tuple(v + [0] * (self.see - len(v)))
 
     def holds(self, g, st):
         return all(self.value(st, t) == v for t, v in g)
@@ -112,6 +129,9 @@ class ListMachine:
     def test(self, t, v):
         if t < self.N:
             return f"{NAMES[t]}{'<0' if v < 0 else '=0' if v == 0 else '>0'}"
+        if t >= self.N + len(self.sizes):
+            i, j = self.P[t - self.N - len(self.sizes)]
+            return f"{NAMES[i]}{'<' if v < 0 else '=' if v == 0 else '>'}{NAMES[j]}"
         return f"{SWITCH[t - self.N]}={v}"
 
     def say(self, d, e, w):
@@ -146,7 +166,7 @@ class ListMachine:
             shown = "shown: " + fill(cells[0][1] if cells else "")
         else:
             most = max(set(l for _, l in cells), key=lambda l: sum(x == l for _, x in cells))
-            g = lambda c: [(t, VALS[v] if t < self.N else v) for t, v in zip(self.oread, c)]
+            g = lambda c: [(t, VALS[v] if self.signed(t) else v) for t, v in zip(self.oread, c)]
             shown = "shown: " + "; ".join(f"if {self.guard(g(c))}: {fill(l)}" for c, l in cells if l != most) + \
                 f"; else {fill(most)}"
         n = [NAMES[i] for i, k in enumerate(self.kinds) if k == "count"]
@@ -165,12 +185,15 @@ class ListSpace(guarded.Space):
     by cores or by guessing, is guarded.Space's)."""
 
     def __init__(self, H, key, nodes, avoid=None, guess=False, low=0):
-        N, S, w, numeric = key
+        N, S, w, c, numeric = key
         self.H, self.key, self.numeric, self.guess = H, key, numeric, guess
         A = self.A = len(H.syms)
         self.N, self.S, self.K = N, S, N
-        T = self.T = N + len(S)
-        self.tv = [list(range(3)) for _ in range(N)] + [list(range(k)) for k in S]  # (the values of every test)
+        P = self.P = pairs(N, c)
+        T = self.T = N + len(S) + len(P)
+        Q = self.Q = N + len(S)  # (the comparisons are the tests from Q on)
+        see = self.see = SEE2 if c else SEE
+        self.tv = [list(range(3)) for _ in range(N)] + [list(range(k)) for k in S] + [list(range(3)) for _ in P]
         W = self.W = guarded.wholes(N, N, 2) if w else []
         self.labels = sorted(set(form(y)[0] if numeric else y for y in H.shown))
         self.off = {y: [0] * y.count("\0") for y in self.labels} if numeric else None
@@ -194,10 +217,10 @@ class ListSpace(guarded.Space):
                 for k in ZS[s + 1]:
                     f.add([-ZS[s + 1][k], ZS[s][k]] if k in ZS[s] else [-ZS[s + 1][k]])
         self.ge_size = lambda s, k: True if k <= 1 else ZS[s][k] if k in ZS[s] else False
-        for M_, Z_, w_ in LAYERS:  # (a machine of this layer does not fit in a layer before it)
-            if (M_, Z_, w_) == (N, S, w):
+        for M_, Z_, w_, c_ in LAYERS:  # (a machine of this layer does not fit in a layer before it)
+            if (M_, Z_, w_, c_) == (N, S, w, c):
                 break
-            if w_ == w and within(M_, Z_, N, S):
+            if w_ == w and c_ == c and within(M_, Z_, N, S):
                 f.add(([-KD[M_][0]] if N > M_ else []) +
                       [self.ge_size(s, Z_[s] + 1) for s in range(min(len(S), len(Z_)))] +
                       [self.ge_size(s, 2) for s in range(len(Z_), len(S))])
@@ -221,13 +244,16 @@ class ListSpace(guarded.Space):
                     f.add([-x, used])
                     if t < N:
                         f.add([-x, -KD[t][0]])
+                    elif t >= Q:  # (a comparison of two counts)
+                        f.add([-x, KD[P[t - Q][0]][1]])
+                        f.add([-x, KD[P[t - Q][1]][1]])
                     else:
                         f.add([-x, self.ge_size(t - N, max(2, vi + 1))])
             enc = CardEnc.atmost(lits=[x for y in Lr for x in y], bound=LITS, top_id=f.top, encoding=EncType.seqcounter)
             f.top = max(f.top, enc.nv)
             f.cl += enc.clauses
-            for y in Lr:
-                cost.extend([x for x in y] * READ)
+            for t, y in enumerate(Lr):
+                cost.extend([x for x in y] * (READ + (CMP if t >= Q else 0)))
 
         for a in range(A):
             for r in range(ROWS):
@@ -272,23 +298,33 @@ class ListSpace(guarded.Space):
             f.add([-Mv[a][r][0] for a in range(A) for r in range(ROWS)])
         # (the display reads at most SEE tests, in order, the slots not used last, and shows a label for every
         # reading of them: a table of 3 ** SEE cells whatever the parts)
-        SL = self.SL = [[var() for _ in range(T + 1)] for _ in range(SEE)]  # (slot k reads test t; T: none)
-        self.combos = list(itertools.product(range(3), repeat=SEE))
+        SL = self.SL = [[var() for _ in range(T + 1)] for _ in range(see)]  # (slot k reads test t; T: none)
+        self.combos = list(itertools.product(range(3), repeat=see))
         TB = self.TB = [[var() for _ in self.labels] for _ in self.combos]
-        for k in range(SEE):
+        for k in range(see):
             f.one(SL[k])
             cost.append(-SL[k][T])
             cost.extend([-SL[k][T]] * (READ - 1))
             for t in range(T):
-                f.add([-SL[k][t], -KD[t][0]] if t < N else [-SL[k][t], self.ge_size(t - N, 2)])
-            if k + 1 < SEE:
+                if t < N:
+                    f.add([-SL[k][t], -KD[t][0]])
+                elif t >= Q:
+                    f.add([-SL[k][t], KD[P[t - Q][0]][1]])
+                    f.add([-SL[k][t], KD[P[t - Q][1]][1]])
+                    cost.extend([SL[k][t]] * CMP)
+                else:
+                    f.add([-SL[k][t], self.ge_size(t - N, 2)])
+            if k + 1 < see:
                 f.add([-SL[k][T], SL[k + 1][T]])
                 for t in range(T):  # (read in the order of the tests)
                     f.add([-SL[k + 1][t]] + [SL[k][u] for u in range(t)])
-        for ci, c in enumerate(self.combos):
+        if P:  # (a layer with comparisons reads one at least, in a guard or on the display)
+            f.add([x for a in range(A) for r in range(ROWS) for t in range(Q, T) for x in L[a][r][t]] +
+                  [SL[k][t] for k in range(see) for t in range(Q, T)])
+        for ci, cc in enumerate(self.combos):
             f.one(TB[ci])
-            for k in range(SEE):
-                if c[k]:  # (a slot not used says 0: the other cells are never seen)
+            for k in range(see):
+                if cc[k]:  # (a slot not used says 0: the other cells are never seen)
                     f.add([-SL[k][T], TB[ci][0]])
         if numeric:  # (NV[l][s][j, g]: place s of the words l shows g times number j)
             self.NV = [[[var() for _ in range(2 * N)] for _ in range(y.count("\0"))] for y in self.labels]
@@ -312,13 +348,14 @@ class ListSpace(guarded.Space):
                     f.add([-R[a][t]] + xs)
                     for x in xs:
                         f.add([-x, R[a][t]])
-                xs = [SL[k][t] for k in range(SEE)]
+                xs = [SL[k][t] for k in range(see)]
                 f.add([-OR[t]] + xs)
                 for x in xs:
                     f.add([-x, OR[t]])
             f.add([-R[a][t] if t in avoid.reads[a] else R[a][t] for a in range(A) for t in range(T)] +
                   [-OR[t] if t in avoid.oreads else OR[t] for t in range(T)])
         self.SW, self.G, self.dep, self.was, self.solver, self.inc, self.n = {}, {}, {0: 0}, [False] * N, None, None, len(f.cl)
+        self.CM = {}  # (CM[n][p]: what comparison p says at beginning n, below / level / above)
         self.add(nodes)
         self.lits = list(cost)
         self.tot, self.low = None, low
@@ -355,6 +392,8 @@ class ListSpace(guarded.Space):
 
     def conj(self, n, t, vi):
         """Test t says its value vi at beginning n: a list of literals that all hold."""
+        if t >= self.Q:
+            return [self.CM[n][t - self.Q][vi]]
         if t < self.N:
             ge = self.ge
             return [no(ge(n, t, 0))] if vi == 0 else [ge(n, t, 0), no(ge(n, t, 1))] if vi == 1 else [ge(n, t, 1)]
@@ -365,8 +404,8 @@ class ListSpace(guarded.Space):
         per = sum(len(v) for v in self.tv)
         for n in sorted(x for x in nodes if x not in self.SW):
             d = dep[n] = 0 if n == 0 else dep[self.H.parent[n]] + 1
-            out += ROWS * (3 * per + 3 * T + 4) + ROWS * (2 * N + 3 * sum(self.S) + len(W) + 2) + 6 * per + 3 ** SEE
-            out += 8 * N * (2 * d + V + 2)
+            out += ROWS * (3 * per + 3 * T + 4) + ROWS * (2 * N + 3 * sum(self.S) + len(W) + 2) + 6 * per + 3 ** self.see
+            out += 8 * N * (2 * d + V + 2) + len(self.P) * (6 * (d + V) + 4)
             for w in W:
                 out += (2 * (2 * d + V) * (d + V) if w[0] == "pour" else 4 * (d + V) * (d + V) if w[0] == "even" else
                         6 * (2 * d + V + 1) if w[0] == "copy" else 2)
@@ -420,6 +459,22 @@ class ListSpace(guarded.Space):
                     add([no(ge(n, i, k + 1)), ge(n, i, k)])
                 add([KD[i][2], ge(n, i, 0)])  # (a count, or a number not kept, is never below 0)
                 add([-KD[i][0], no(ge(n, i, 1))])  # (a number not kept stays 0)
+            self.CM[n] = []
+            for i, j in self.P:  # (i above j: i is at least k and j is not, for some k; the counts are never below 0)
+                lt, eq, gt = c3 = [f.var() for _ in range(3)]
+                add(list(c3))
+                for x, y in itertools.combinations(c3, 2):
+                    add([-x, -y])
+                for big, small, out_ in ((i, j, gt), (j, i, lt)):
+                    zs = []
+                    for k in range(1, d + self.V + 1):
+                        add([out_, no(ge(n, big, k)), ge(n, small, k)])
+                        z = f.var()
+                        add([-z, ge(n, big, k)])
+                        add([-z, no(ge(n, small, k))])
+                        zs.append(z)
+                    add([-out_] + zs)
+                self.CM[n].append(c3)
             if n == 0:
                 self.SW[n] = [[v == 0 for v in range(k)] for k in S]
                 for i in range(N):
@@ -529,8 +584,8 @@ class ListSpace(guarded.Space):
                             add([-x, ge(n, j, u)])
                             add([-x, no(ge(n, j, u + 1))])
             l = self.labels.index(y)
-            sv = [[f.var() for _ in range(3)] for _ in range(SEE)]  # (what slot k reads says here)
-            for k in range(SEE):
+            sv = [[f.var() for _ in range(3)] for _ in range(self.see)]  # (what slot k reads says here)
+            for k in range(self.see):
                 add(list(sv[k]))
                 for x, y in itertools.combinations(sv[k], 2):
                     add([-x, -y])
@@ -539,7 +594,7 @@ class ListSpace(guarded.Space):
                     for vi in range(len(self.tv[t])):
                         add([-self.SL[k][t]] + [no(y) for y in self.conj(n, t, vi)] + [sv[k][vi]])
             for ci, c in enumerate(self.combos):
-                add([-sv[k][c[k]] for k in range(SEE)] + [self.TB[ci][l]])
+                add([-sv[k][c[k]] for k in range(self.see)] + [self.TB[ci][l]])
 
     def read(self, model, price):
         best = set(x for x in model if x > 0)
@@ -553,7 +608,7 @@ class ListSpace(guarded.Space):
             for t in range(T):
                 for vi, x in enumerate(Lr[t]):
                     if x in best:
-                        g.append((t, VALS[vi] if t < N else vi))
+                        g.append((t, VALS[vi] if t < N or t >= self.Q else vi))
             return g
         rows = []
         for a in range(self.A):
@@ -569,7 +624,7 @@ class ListSpace(guarded.Space):
                 w = None if not self.W or self.M[a][r][0] in best else self.W[one(self.M[a][r]) - 1]
                 rs.append((guard(self.L[a][r]), d, tuple(e), w))
             rows.append(rs)
-        oread = [t for k in range(SEE) for t in [one(self.SL[k])] if t < T]
+        oread = [t for k in range(self.see) for t in [one(self.SL[k])] if t < T]
         otab = {c: self.labels[one(self.TB[ci])] for ci, c in enumerate(self.combos)}
         num = None
         if self.numeric:
@@ -589,7 +644,7 @@ class Lists:
         return WHOLE if key[2] else 0
 
     def cells(self, key):  # (the order among equal bounds: the smaller formulas first)
-        return 3 * key[0] + sum(key[1]) + (12 if key[2] else 0)
+        return 3 * key[0] + sum(key[1]) + (12 if key[2] else 0) + 3 * len(pairs(key[0], key[3]))
 
     def second(self, key):
         return bool(key[2])
@@ -598,10 +653,11 @@ class Lists:
         return True
 
     def numeric(self, key):
-        return key[3]
+        return key[4]
 
     def say(self, key):
-        return f"parts {key[0]}, {key[1]}{', whole' if key[2] else ''}, {'number' if key[3] else 'table'}"
+        return (f"parts {key[0]}, {key[1]}{', whole' if key[2] else ''}{', compared' if key[3] else ''}, "
+                f"{'number' if key[4] else 'table'}")
 
     def key(self, m):
         return m.key
