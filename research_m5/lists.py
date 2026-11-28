@@ -160,15 +160,32 @@ class ListMachine:
             bits = y.split("\0")
             names = ["{" + f"{'-' if g < 0 else ''}{NAMES[j]}{'+' + str(o) if o else ''}" + "}" for j, g, o in self.num[y]]
             return repr("".join(x + v for x, v in zip(bits, names + [""])))
-        cells = [(c, l) for c, l in sorted(self.otab.items()) if all(x == 0 for x in c[len(self.oread):]) and
-                 not any(t < self.N and self.kinds[t] == "count" and v == 0 for t, v in zip(self.oread, c))]
+        span = [range(1) if k == "none" else range(4) if k == "count" else range(-3, 4) for k in self.kinds]
+        can = {self.seen((sw, c)) for c in itertools.product(*span)  # (the readings that can be: a count is not
+               for sw in itertools.product(*[range(k) for k in self.sizes])}  # below 0, a<b and b<c give a<c)
+        cells = [(c, l) for c, l in sorted(self.otab.items()) if c in can]
         if len(set(l for _, l in cells)) <= 1:
             shown = "shown: " + fill(cells[0][1] if cells else "")
-        else:
-            most = max(set(l for _, l in cells), key=lambda l: sum(x == l for _, x in cells))
-            g = lambda c: [(t, VALS[v] if self.signed(t) else v) for t, v in zip(self.oread, c)]
-            shown = "shown: " + "; ".join(f"if {self.guard(g(c))}: {fill(l)}" for c, l in cells if l != most) + \
-                f"; else {fill(most)}"
+        else:  # (said as a short list: each time the guard of one or two tests that tells the most readings left)
+            lits = [(k, v) for k in range(len(self.oread)) for v in sorted({c[k] for c, _ in cells})]
+            conjs = [(x,) for x in lits] + [(x, y) for x, y in itertools.combinations(lits, 2) if x[0] != y[0]]
+            left, said = list(cells), []
+            while len({l for _, l in left}) > 1:
+                best = None
+                for cj in conjs:
+                    hit = [l for c, l in left if all(c[k] == v for k, v in cj)]
+                    if hit and len(set(hit)) == 1 and (best is None or len(hit) > best[0] or
+                                                       len(hit) == best[0] and len(cj) < len(best[1])):
+                        best = (len(hit), cj, hit[0])
+                if best is None:  # (no guard of two tests is enough: the whole reading)
+                    c, l = left[0]
+                    best = (1, tuple(enumerate(c[:len(self.oread)])), l)
+                _, cj, l = best
+                said.append((cj, l))
+                left = [(c, x) for c, x in left if not all(c[k] == v for k, v in cj)]
+            tv = lambda k, v: (self.oread[k], VALS[v] if self.signed(self.oread[k]) else v)
+            shown = "shown: " + "; ".join(f"if {self.guard([tv(k, v) for k, v in cj])}: {fill(l)}" for cj, l in said) + \
+                f"; else {fill(left[0][1])}"
         n = [NAMES[i] for i, k in enumerate(self.kinds) if k == "count"]
         z = [NAMES[i] for i, k in enumerate(self.kinds) if k == "diff"]
         sw = [f"{SWITCH[s]} of {k}" for s, k in enumerate(self.sizes) if k > 1]
