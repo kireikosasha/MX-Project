@@ -1,0 +1,29 @@
+layers [(3, (3, 2), 0, 0)] keep None from the code of 81f6969
+    parts 3, (3, 2), table: none cheaper than 6 (0 s)
+    parts 3, (3, 2), table: none cheaper than 12 (0 s)
+    parts 3, (3, 2), table: none cheaper than 18 (0 s)
+    parts 3, (3, 2), table: none cheaper than 24 (2 s)
+    parts 3, (3, 2), table: price 26 + 0, 139 beginnings, 75k clauses, 0 wrong (7 s)
+  kept 1 difference (a), switch x of 3 (price 26): cut: x=1 | load: if x=1: x on | haul: if x=2: a-1 | crack: if x=1: a+1 | shown: if a<0: 'shipped'; if a=0: 'even'; else 'lost'
+    parts 3, (3, 2), table: out of time, at least 26 + 0 (28 s)
+    parts 3, (3, 2), table: out of time, at least 26 + 0 (58 s)
+    parts 3, (3, 2), table: price 38 (or less) + 0, 219 beginnings, 253k clauses, 0 wrong (118 s)
+  asked 1 (plain): answered wrongly; kept 2 counts (ac), 1 difference (b), switches x of 2, y of 2 (price 38): cut: x=1, y=1 | load: if x=1: c+1, y=0 | haul: if c>0: b-1, c-1 | crack: if y=1: a+1, b+1, x=0, y on | shown: if b<0: 'shipped'; if b=0: 'even'; else 'lost'
+  asked 2 (1 rival): answered rightly
+    parts 3, (3, 2), table: out of time, at least 26 + 0 (299 s)
+    parts 3, (3, 2), table: price 29 + 0, 261 beginnings, 297k clauses, 0 wrong (411 s)
+  asked 3 (plain): answered wrongly; kept 2 counts (ac), 1 difference (b) (price 29): cut: a+1 | load: if a>0: a-1, c+1 | haul: if c>0: b-1, c-1 | crack: if a>0: a-1, b+1 | shown: if b<0: 'shipped'; if b=0: 'even'; else 'lost'
+  asked 4 (plain): answered rightly
+    parts 3, (3, 2), table: out of time, at least 29 + 0 (592 s)
+    parts 3, (3, 2), table: out of time, at least 29 + 0 (712 s)
+    parts 3, (3, 2), table: out of time, at least 29 + 0 (832 s)
+    parts 3, (3, 2), table: price 45 (or less) + 0, 423 beginnings, 675k clauses, 0 wrong (952 s)
+  asked 5 (again): answered wrongly; kept 2 counts (ac), 1 difference (b), switch x of 2 (price 45): cut: a+1, x=0 | load: if a>0 and b>0 and c>0: a-1, b-1, x on; else if a>0: a-1, c+1 | haul: if c>0: b-1, c-1 | crack: if a>0: a-1, b+1 | shown: if b<0: 'shipped'; if b>0: 'lost'; if x=0: 'even'; else 'lost'
+    parts 3, (3, 2), table: out of time, at least 29 + 0 (1103 s)
+    parts 3, (3, 2), table: out of time, at least 29 + 0 (1224 s)
+    parts 3, (3, 2), table: price 48 (or less) + 0, 514 beginnings, 902k clauses, 0 wrong (1260 s)
+  asked 6 (plain): answered wrongly; kept 2 counts (ac), 1 difference (b), switch x of 2 (price 48): cut: a+1 | load: if x=1: nothing; else if a>0 and b>0 and c>0: a-1, b-1, x=1; else if a>0: a-1, c+1 | haul: if c>0: b-1, c-1, x=0 | crack: if a>0: a-1, b+1 | shown: if b>0: 'lost'; if b<0 and x=0: 'shipped'; if b<0: 'even'; if x=0: 'even'; else 'lost'
+NOT SURE: 2 counts (ac), 1 difference (b), switch x of 2 (price 48): cut: a+1 | load: if x=1: nothing; else if a>0 and b>0 and c>0: a-1, b-1, x=1; else if a>0: a-1, c+1 | haul: if c>0: b-1, c-1, x=0 | crack: if a>0: a-1, b+1 | shown: if b>0: 'lost'; if b<0 and x=0: 'shipped'; if b<0: 'even'; if x=0: 'even'; else 'lost'; asked 6; 1260 s
+20 98.0 %
+100 91.66666666666667 %
+500 86.33333333333333 %

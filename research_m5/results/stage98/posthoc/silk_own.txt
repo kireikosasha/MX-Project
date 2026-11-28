@@ -1,0 +1,37 @@
+layers [(3, (2,), 0, 0)] keep None from the code of 81f6969
+    parts 3, (2,), number: none cheaper than 6 (0 s)
+    parts 3, (2,), table: none cheaper than 6 (0 s)
+    parts 3, (2,), number: none cheaper than 12 (0 s)
+    parts 3, (2,), table: none cheaper than 12 (0 s)
+    parts 3, (2,), number: none cheaper than 18 (1 s)
+    parts 3, (2,), table: none cheaper than 18 (1 s)
+    parts 3, (2,), number: price 19 + 0, 139 beginnings, 64k clauses, 0 wrong (1 s)
+    parts 3, (2,), table: none cheaper than 19 (2 s)
+  kept 2 counts (ab), switch x of 2 (price 19): hatch: a+1 | leaf: x=1 | spin: if a>0 and x=1: b+1 | storm: nothing | shown: '{b}'
+    parts 3, (2,), number: none cheaper than 25 (9 s)
+    parts 3, (2,), table: none cheaper than 25 (15 s)
+    parts 3, (2,), number: price 25 + 0, 220 beginnings, 239k clauses, 0 wrong (28 s)
+  asked 1 (plain): answered wrongly; kept 2 counts (ab), switch x of 2 (price 25): hatch: x=1 | leaf: a+1 | spin: if a>0 and x=1: a-1, b+1 | storm: if a>0: a-1, x on | shown: '{b}'
+    parts 3, (2,), number: price 25 + 0, 221 beginnings, 239k clauses, 0 wrong (54 s)
+  asked 2 (1 rival): answered wrongly; kept 2 counts (ab), switch x of 2 (price 25): hatch: x=1 | leaf: a+1 | spin: if a>0 and x=1: a-1, b+1 | storm: if a>0: a-1, x=0 | shown: '{b}'
+    parts 3, (2,), number: out of time, at least 25 + 0 (92 s)
+    parts 3, (2,), table: out of time, at least 25 + 0 (108 s)
+    parts 3, (2,), number: price 32 (or less) + 0, 307 beginnings, 435k clauses, 0 wrong (138 s)
+    parts 3, (2,), table: out of time, at least 25 + 0 (168 s)
+  asked 3 (plain): answered wrongly; kept 2 counts (ab), switch x of 2 (price 32): hatch: if b=0: x on | leaf: if b>0: a+1, x=1; else a+1 | spin: if a>0 and x=1: a-1, b+1 | storm: if a>0: a-1, x=0 | shown: '{b}'
+    parts 3, (2,), number: price 33 (or less) + 0, 317 beginnings, 441k clauses, 0 wrong (258 s)
+  asked 4 (plain): answered wrongly; kept 2 counts (ab), switch x of 2 (price 33): hatch: x on | leaf: if a=0: a+1 | spin: if a>0 and x=1: b+1; else if a>0 and b>0: a-1, b+1 | storm: if a>0: a-1, x=0 | shown: '{b}'
+    parts 3, (2,), number: price 34 (or less) + 0, 366 beginnings, 514k clauses, 0 wrong (409 s)
+  asked 5 (plain): answered wrongly; kept 2 counts (ab), switch x of 2 (price 34): hatch: if b=0: x=1 | leaf: if b>0: a+1, x=1; else if a=0: a+1 | spin: if a>0 and x=1: a-1, b+1 | storm: if a>0: a-1, x=0 | shown: '{b}'
+    parts 3, (2,), number: price 36 (or less) + 0, 480 beginnings, 745k clauses, 0 wrong (560 s)
+  asked 6 (plain): answered wrongly; kept 2 counts (ab), switch x of 2 (price 36): hatch: x=1 | leaf: if a=0: a+1; else if b>0: x=0 | spin: if a>0 and x=1: a-1, b+1; else if a>0 and b>0: b+1 | storm: if a>0: a-1 | shown: '{b}'
+    parts 3, (2,), number: out of time, at least 25 + 0 (711 s)
+    parts 3, (2,), table: out of time, at least 25 + 0 (773 s)
+    parts 3, (2,), number: price 47 (or less) + 0, 492 beginnings, 753k clauses, 0 wrong (893 s)
+  asked 7 (plain): answered wrongly; kept 2 counts (ab), switch x of 2 (price 47): hatch: if b=0: a+1 | leaf: if b=0: x=1; else if a=0: a+1, x=1; else if x=1: a+1; else x on | spin: if x=0: nothing; else if a>0: a-1, b+1 | storm: if b=0 and x=1: x on; else if a>0: a-1, x=0 | shown: '{b}'
+  asked 8 (plain): answered rightly
+    parts 3, (2,), number: out of time, at least 25 + 0 (1075 s)
+    parts 3, (2,), table: out of time, at least 25 + 0 (1197 s)
+    parts 3, (2,), table: out of time, at least 25 + 0 (1260 s)
+  asked 9 (again): answered wrongly; kept None
+nothing found; asked 9; 1260 s
