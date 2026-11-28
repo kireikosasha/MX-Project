@@ -9,3 +9,11 @@ open_pipeline_share10.txt: the same run with the code of 8f2ff3f and --share 10 
 of the 40 questions); open_pipeline_share10_asks.txt: what each learner asked (stderr of that run).
 The blind run of pool 97 uses 8f2ff3f with --lists --share 10 (the rule named before: --share 10 if it takes no fewer of
 the 24 opened rules than without it; it takes 17, as without).
+
+blind_results.txt: the blind pool 97 (sealed/stage97_families, committed in 1be3e26 before any run), one run of the code
+8f2ff3f (cells.py, parts.py, guarded.py, lists.py, sealed_run.py) with the flags of stage 93 and --cap 60 --lists --share 10,
+as named in README (fdfa4e2, 9f0bf59). Four groups of three rules on four cores, nothing else on the machine; no process
+was killed for memory. blind_results_asks.txt: what each learner asked (stderr of that run).
+blind_results_code_edcb7ff.txt: the same pool, groups and flags of stage 93 with --cap 60 (no --lists, no --share), the
+code edcb7ff (stage 96), run after it.
+blind_strict.txt: worlds/strict.py on the machines kept by each of the two runs.
