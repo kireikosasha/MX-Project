@@ -21,6 +21,13 @@ The formulas grow with the parts and the commands, not with their product, and t
 said (minimum description length, Rissanen 1978). The envelopes are disjoint layers (a machine of a layer does not fit
 in any layer before it), searched by guarded.explain in the order of their bounds as the shapes are there.
 
+Stage 99: small numbers. A person says 'if at least two rowers wait, two leave', 'the cart holds two', 'four rowers
+and a cox'. In a layer with small numbers a guard (or the display) may test a count against 2, 3 or 4, and a command
+may move a number by up to 4, but only by a number a guard of its list has said ('if a>=2: a-2';
+not 'rain: a+4'), and a count is taken from by k only when the guard says it holds at least k. The number is paid for
+once, where it is said (CONST). With three numbers, whole moves are of the first kind only (among counts): their
+formulas are half as big, and the silk farm, too big to keep in mind with all the moves, is found at once.
+
     python lists.py FAMILY/family.py [--asks 40] [--seed 0] [--minutes 10]
 """
 import argparse, importlib.util, itertools, random, time
@@ -40,18 +47,40 @@ LITS = 3  # tests a guard reads at most
 KEEP = (0, 3, 4)  # the price of a number not kept, a count, a difference
 VALUE = 3  # the price of every value of a switch beyond the first
 WHOLE = 4  # the price of a layer with whole moves (as the second kind in guarded.py)
+WHOLE1 = 3  # of a layer with whole moves of the first kind only (among counts: pour, take from each other, empty)
 CMP = 1  # what reading a comparison of two counts costs beyond reading a test of one part
 SWITCH = "xy"
+QS = (2, 3, 4)  # stage 99: the small numbers a count may be tested against ('at least 2 rowers waiting')
+STEPS = (-1, 0, 1, -2, 2, -3, 3, -4, 4)  # what a command may add to a number in a layer with steps (by one first;
+# a step by k only where a guard of the list has said k)
+CONST = 1  # what saying a small number costs beyond a test of a part (once, in the test: a step by it is a move)
+SMALL = (0, 1, 2)  # the base of a layer without small numbers, with tests against them, with steps by them too
 # the layers: so many numbers, switches of at most so many values (largest first), whole moves or not, comparisons
-# of two counts or not (stage 98: 'more fish on the table than open cans'; a layer with them uses one at least)
-LAYERS = [(2, (2,), 0, 0), (3, (2,), 0, 0), (3, (3, 2), 0, 0), (4, (3, 2), 0, 0),
-          (2, (2,), 2, 0), (3, (2,), 2, 0), (3, (3, 2), 2, 0),
-          (2, (2,), 0, 1), (3, (2,), 0, 1), (3, (3, 2), 0, 1)]
+# of two counts or not (stage 98: 'more fish on the table than open cans'; a layer with them uses one at least),
+# (stage 99: with three numbers, whole moves of the first kind only, 1; their formulas are half as big, and no machine
+# taken before needed the second kind with three numbers)
+# small numbers or not (stage 99: 2, a count tested against 2, 3 or 4, 'if the cart holds fewer than 2', and a number
+# moved by them, 'four rowers and a cox leave'; a layer with them says one at least; 1, tests only, is not searched:
+# alone on the open rules it found none that the layer with steps does not, and its search costs time)
+LAYERS = [(2, (2,), 0, 0, 0), (3, (2,), 0, 0, 0), (3, (3, 2), 0, 0, 0), (4, (3, 2), 0, 0, 0),
+          (2, (2,), 2, 0, 0), (3, (2,), 1, 0, 0), (3, (3, 2), 1, 0, 0),
+          (2, (2,), 0, 1, 0), (3, (2,), 0, 1, 0), (3, (3, 2), 0, 1, 0),
+          (3, (2,), 0, 0, 2)]
 
 
 def pairs(N, c):
     """The comparisons a layer may read: every two numbers, the first before the second (both counts)."""
     return list(itertools.combinations(range(N), 2)) if c else []
+
+
+def thresholds(N, q):
+    """The tests of a count against a small number a layer may read: (number, at least what)."""
+    return [(i, k) for i in range(N) for k in QS] if q else []
+
+
+def lbase(key):
+    """What a layer costs before any of its machines is said: whole moves, small numbers."""
+    return (0, WHOLE1, WHOLE)[key[2]] + SMALL[key[4]]
 
 
 def within(N, S, M, Z):
@@ -70,16 +99,21 @@ class ListMachine:
         self.rows, self.oread, self.otab, self.num, self.init = rows, oread, otab, num, init
         self.N, self.cost = len(kinds), cost
         self.P = pairs(self.N, key[3])
+        self.QT = thresholds(self.N, key[4])
+        self.R = self.N + len(sizes) + len(self.P)  # (the tests against small numbers are from R on)
         self.see = SEE2 if key[3] else SEE
-        self.total, self.sure, self.proved = cost + (WHOLE if key[2] else 0), False, True
+        self.total, self.sure, self.proved = cost + lbase(key), False, True
         self.reads = [sorted({t for g, _, _, _ in rows[a] for t, _ in g}) for a in range(len(self.syms))]
         self.oreads = sorted(oread)
         self.shape = (tuple(kinds), tuple(sizes))
 
     def signed(self, t):  # (a test of a number or a comparison: it says -1, 0 or 1)
-        return t < self.N or t >= self.N + len(self.sizes)
+        return t < self.N or self.N + len(self.sizes) <= t < self.R
 
     def value(self, st, t):
+        if t >= self.R:  # (a count against a small number: 1 when at least it)
+            i, k = self.QT[t - self.R]
+            return int(st[1][i] >= k)
         if t >= self.N + len(self.sizes):
             i, j = self.P[t - self.N - len(self.sizes)]
             return sign(st[1][i] - st[1][j])
@@ -127,6 +161,9 @@ class ListMachine:
         return st[1]
 
     def test(self, t, v):
+        if t >= self.R:
+            i, k = self.QT[t - self.R]
+            return f"{NAMES[i]}{'>=' if v else '<'}{k}"
         if t < self.N:
             return f"{NAMES[t]}{'<0' if v < 0 else '=0' if v == 0 else '>0'}"
         if t >= self.N + len(self.sizes):
@@ -136,7 +173,7 @@ class ListMachine:
 
     def say(self, d, e, w):
         m = ([] if w is None else [guarded.Machine.say(None, None, (0,) * self.N, w)]) + \
-            [f"{NAMES[i]}{'+1' if x > 0 else '-1'}" for i, x in enumerate(d) if x] + \
+            [f"{NAMES[i]}{x:+d}" for i, x in enumerate(d) if x] + \
             [f"{SWITCH[s]} on" if x == "next" else f"{SWITCH[s]}={x}" for s, x in enumerate(e) if x is not None]
         return ", ".join(m) or "nothing"
 
@@ -160,7 +197,8 @@ class ListMachine:
             bits = y.split("\0")
             names = ["{" + f"{'-' if g < 0 else ''}{NAMES[j]}{'+' + str(o) if o else ''}" + "}" for j, g, o in self.num[y]]
             return repr("".join(x + v for x, v in zip(bits, names + [""])))
-        span = [range(1) if k == "none" else range(4) if k == "count" else range(-3, 4) for k in self.kinds]
+        span = [range(1) if k == "none" else range(6 if self.QT else 4) if k == "count" else range(-3, 4)
+                for k in self.kinds]
         can = {self.seen((sw, c)) for c in itertools.product(*span)  # (the readings that can be: a count is not
                for sw in itertools.product(*[range(k) for k in self.sizes])}  # below 0, a<b and b<c give a<c)
         cells = [(c, l) for c, l in sorted(self.otab.items()) if c in can]
@@ -202,16 +240,22 @@ class ListSpace(guarded.Space):
     by cores or by guessing, is guarded.Space's)."""
 
     def __init__(self, H, key, nodes, avoid=None, guess=False, low=0):
-        N, S, w, c, numeric = key
+        N, S, w, c, q, numeric = key
         self.H, self.key, self.numeric, self.guess = H, key, numeric, guess
         A = self.A = len(H.syms)
         self.N, self.S, self.K = N, S, N
         P = self.P = pairs(N, c)
-        T = self.T = N + len(S) + len(P)
+        QT = self.QT = thresholds(N, q)
         Q = self.Q = N + len(S)  # (the comparisons are the tests from Q on)
+        R = self.R = Q + len(P)  # (and the tests of a count against a small number from R on)
+        T = self.T = R + len(QT)
+        DV = self.DV = STEPS if q == 2 else VALS  # (what a command may add to a number)
+        self.MAG = max(abs(x) for x in DV)  # (so much a number may move at a symbol: its values at depth d are
+        # within MAG * d of where it started)
         see = self.see = SEE2 if c else SEE
-        self.tv = [list(range(3)) for _ in range(N)] + [list(range(k)) for k in S] + [list(range(3)) for _ in P]
-        W = self.W = guarded.wholes(N, N, 2) if w else []
+        self.tv = [list(range(3)) for _ in range(N)] + [list(range(k)) for k in S] + [list(range(3)) for _ in P] + \
+            [[0, 1] for _ in QT]
+        W = self.W = guarded.wholes(N, N, w) if w else []  # (w = 1: of the first kind only)
         self.labels = sorted(set(form(y)[0] if numeric else y for y in H.shown))
         self.off = {y: [0] * y.count("\0") for y in self.labels} if numeric else None
         self.V = min(9, max([0] + [abs(v) for v in form(H.shown[0])[1]])) if numeric else 0
@@ -234,16 +278,16 @@ class ListSpace(guarded.Space):
                 for k in ZS[s + 1]:
                     f.add([-ZS[s + 1][k], ZS[s][k]] if k in ZS[s] else [-ZS[s + 1][k]])
         self.ge_size = lambda s, k: True if k <= 1 else ZS[s][k] if k in ZS[s] else False
-        for M_, Z_, w_, c_ in LAYERS:  # (a machine of this layer does not fit in a layer before it)
-            if (M_, Z_, w_, c_) == (N, S, w, c):
+        for M_, Z_, w_, c_, q_ in LAYERS:  # (a machine of this layer does not fit in a layer before it)
+            if (M_, Z_, w_, c_, q_) == (N, S, w, c, q):
                 break
-            if w_ == w and c_ == c and within(M_, Z_, N, S):
+            if w_ == w and c_ == c and q_ == q and within(M_, Z_, N, S):
                 f.add(([-KD[M_][0]] if N > M_ else []) +
                       [self.ge_size(s, Z_[s] + 1) for s in range(min(len(S), len(Z_)))] +
                       [self.ge_size(s, 2) for s in range(len(Z_), len(S))])
         U = self.U = [[var() for _ in range(ROWS)] for _ in range(A)]
         L = self.L = [[[[var() for _ in self.tv[t]] for t in range(T)] for _ in range(ROWS)] for _ in range(A)]
-        D = self.D = [[[[var() for _ in VALS] for _ in range(N)] for _ in range(ROWS)] for _ in range(A)]
+        D = self.D = [[[[var() for _ in DV] for _ in range(N)] for _ in range(ROWS)] for _ in range(A)]
         E = self.E = [[[[var() for _ in range(k + 2)] for k in S] for _ in range(ROWS)] for _ in range(A)]
         Mv = self.M = [[[var() for _ in range(len(W) + 1)] for _ in range(ROWS)] for _ in range(A)] if W else None
         cost = self.cost = []
@@ -261,6 +305,8 @@ class ListSpace(guarded.Space):
                     f.add([-x, used])
                     if t < N:
                         f.add([-x, -KD[t][0]])
+                    elif t >= R:  # (a count against a small number)
+                        f.add([-x, KD[QT[t - R][0]][1]])
                     elif t >= Q:  # (a comparison of two counts)
                         f.add([-x, KD[P[t - Q][0]][1]])
                         f.add([-x, KD[P[t - Q][1]][1]])
@@ -270,7 +316,7 @@ class ListSpace(guarded.Space):
             f.top = max(f.top, enc.nv)
             f.cl += enc.clauses
             for t, y in enumerate(Lr):
-                cost.extend([x for x in y] * (READ + (CMP if t >= Q else 0)))
+                cost.extend([x for x in y] * (READ + (CONST if t >= R else CMP if t >= Q else 0)))
 
         for a in range(A):
             for r in range(ROWS):
@@ -283,7 +329,16 @@ class ListSpace(guarded.Space):
                     f.one(D[a][r][i])
                     f.add([u, D[a][r][i][1]])
                     f.add([-KD[i][0], D[a][r][i][1]])
-                    f.add([-D[a][r][i][0], -KD[i][1], L[a][r][i][2]])  # (a count is taken from only when above 0)
+                    at = lambda k: [L[a][r][R + z][1] for z, (j, y) in enumerate(QT) if j == i and y >= k]
+                    f.add([-D[a][r][i][0], -KD[i][1], L[a][r][i][2]] + at(1))  # (a count is taken from only
+                    # when above 0; by k, only when the guard says it holds at least k)
+                    for j, delta in enumerate(DV):
+                        if delta < -1:
+                            f.add([-D[a][r][i][j], -KD[i][1]] + at(-delta))
+                        if abs(delta) > 1:  # (a step by k is said where k is: a guard of this row or of one before
+                            # it in the list reads a test against k; 'if at least 2 wait, 2 go', not 'rain: +4')
+                            f.add([-D[a][r][i][j]] + [x for rr in range(r + 1) for z, (_, y) in enumerate(QT)
+                                                      if y == abs(delta) for x in L[a][rr][R + z]])
                     cost.append(-D[a][r][i][1])
                 for s, k in enumerate(S):
                     e = E[a][r][s]
@@ -306,7 +361,7 @@ class ListSpace(guarded.Space):
                                 f.add([-m[k + 1], KD[i][1]])
                         elif x[0] == "pour":  # (from a count into a number kept; of the first kind, among counts)
                             f.add([-m[k + 1], KD[x[1]][1]])
-                            f.add([-m[k + 1], -KD[x[2]][0]])
+                            f.add([-m[k + 1], KD[x[2]][1]] if w == 1 else [-m[k + 1], -KD[x[2]][0]])
                         else:  # (copy: a count from a count, a difference from a number kept)
                             f.add([-m[k + 1], -KD[x[1]][0]])
                             f.add([-m[k + 1], -KD[x[2]][0]])
@@ -325,6 +380,9 @@ class ListSpace(guarded.Space):
             for t in range(T):
                 if t < N:
                     f.add([-SL[k][t], -KD[t][0]])
+                elif t >= R:
+                    f.add([-SL[k][t], KD[QT[t - R][0]][1]])
+                    cost.extend([SL[k][t]] * CONST)
                 elif t >= Q:
                     f.add([-SL[k][t], KD[P[t - Q][0]][1]])
                     f.add([-SL[k][t], KD[P[t - Q][1]][1]])
@@ -336,8 +394,12 @@ class ListSpace(guarded.Space):
                 for t in range(T):  # (read in the order of the tests)
                     f.add([-SL[k + 1][t]] + [SL[k][u] for u in range(t)])
         if P:  # (a layer with comparisons reads one at least, in a guard or on the display)
-            f.add([x for a in range(A) for r in range(ROWS) for t in range(Q, T) for x in L[a][r][t]] +
-                  [SL[k][t] for k in range(see) for t in range(Q, T)])
+            f.add([x for a in range(A) for r in range(ROWS) for t in range(Q, R) for x in L[a][r][t]] +
+                  [SL[k][t] for k in range(see) for t in range(Q, R)])
+        if q:  # (a layer with small numbers says one at least, in a guard or on the display: a step by one is said
+            # where a guard says it)
+            f.add([x for a in range(A) for r in range(ROWS) for t in range(R, T) for x in L[a][r][t]] +
+                  [SL[k][t] for k in range(see) for t in range(R, T)])
         for ci, cc in enumerate(self.combos):
             f.one(TB[ci])
             for k in range(see):
@@ -401,14 +463,17 @@ class ListSpace(guarded.Space):
         f.cl = None
 
     def hi(self, n, i):
-        return self.dep[n] + self.V
+        return self.MAG * self.dep[n] + self.V
 
     def ge(self, n, i, k):
-        d = self.dep[n]
+        d = self.MAG * self.dep[n]
         return True if k <= -d else False if k > d + self.V else self.G[n][i][k]
 
     def conj(self, n, t, vi):
         """Test t says its value vi at beginning n: a list of literals that all hold."""
+        if t >= self.R:
+            i, k = self.QT[t - self.R]
+            return [no(self.ge(n, i, k))] if vi == 0 else [self.ge(n, i, k)]
         if t >= self.Q:
             return [self.CM[n][t - self.Q][vi]]
         if t < self.N:
@@ -420,9 +485,10 @@ class ListSpace(guarded.Space):
         N, T, V, W, out, dep = self.N, self.T, self.V, self.W, 0, dict(self.dep)
         per = sum(len(v) for v in self.tv)
         for n in sorted(x for x in nodes if x not in self.SW):
-            d = dep[n] = 0 if n == 0 else dep[self.H.parent[n]] + 1
+            dep[n] = 0 if n == 0 else dep[self.H.parent[n]] + 1
+            d = self.MAG * dep[n]
             out += ROWS * (3 * per + 3 * T + 4) + ROWS * (2 * N + 3 * sum(self.S) + len(W) + 2) + 6 * per + 3 ** self.see
-            out += 8 * N * (2 * d + V + 2) + len(self.P) * (6 * (d + V) + 4)
+            out += (2 * len(self.DV) + 2) * N * (2 * d + V + 2) + len(self.P) * (6 * (d + V) + 4)
             for w in W:
                 out += (2 * (2 * d + V) * (d + V) if w[0] == "pour" else 4 * (d + V) * (d + V) if w[0] == "even" else
                         6 * (2 * d + V + 1) if w[0] == "copy" else 2)
@@ -469,7 +535,8 @@ class ListSpace(guarded.Space):
         H, f, N, S, ge, add, W = self.H, self.f, self.N, self.S, self.ge, self.clause, self.W
         KD = self.KD
         for n in sorted(x for x in nodes if x not in self.SW):
-            d = self.dep[n] = 0 if n == 0 else self.dep[H.parent[n]] + 1
+            self.dep[n] = 0 if n == 0 else self.dep[H.parent[n]] + 1
+            d = self.MAG * self.dep[n]  # (as far as a number may have moved, either way)
             self.G[n] = [{k: f.var() for k in range(-d + 1, d + self.V + 1)} for _ in range(N)]
             for i in range(N):
                 for k in self.G[n][i]:
@@ -505,7 +572,7 @@ class ListSpace(guarded.Space):
                     for x, y in itertools.combinations(self.SW[n][s], 2):
                         add([-x, -y])
                 p, a = H.parent[n], H.sym[n]
-                X = [[f.var() for _ in VALS] for _ in range(N)]
+                X = [[f.var() for _ in self.DV] for _ in range(N)]
                 Y = [f.var() for _ in range(len(W) + 1)] if W else None
                 if W:
                     add(list(Y))
@@ -518,18 +585,18 @@ class ListSpace(guarded.Space):
                     by = [Y[k + 1] for k, w in enumerate(W) if i in moved(w)]
                     for k, w in enumerate(W):  # (made what number j was, and moved by one)
                         if w[0] == "copy" and w[1] == i:
-                            for j, delta in enumerate(VALS):
+                            for j, delta in enumerate(self.DV):
                                 for kk in range(-d, d + self.V + 1):
                                     u, v = ge(n, i, kk), ge(p, w[2], kk - delta)
                                     add([-Y[k + 1], -X[i][j], no(u), v])
                                     add([-Y[k + 1], -X[i][j], u, no(v)])
-                    for j, delta in enumerate(VALS):
+                    for j, delta in enumerate(self.DV):
                         for k in range(-d, d + self.V + 1):
                             u, v = ge(n, i, k), ge(p, i, k - delta)
                             add(by + [-X[i][j], no(u), v])
                             add(by + [-X[i][j], u, no(v)])
                 for k, w in enumerate(W):
-                    y, dp, i = Y[k + 1], self.dep[p], w[1]
+                    y, dp, i = Y[k + 1], self.MAG * self.dep[p], w[1]
                     if w[0] == "copy":
                         continue
                     if w[0] != "even":  # (number i is 0 after it is poured or emptied)
@@ -552,7 +619,7 @@ class ListSpace(guarded.Space):
                 idle = self.guarded_list(n, p, self.U[a], self.L[a], fire)
                 for r in range(ROWS):
                     for i in range(N):
-                        for j in range(3):
+                        for j in range(len(self.DV)):
                             add([-fire[r], -self.D[a][r][i][j], X[i][j]])
                     if W:
                         for k in range(len(W) + 1):
@@ -625,7 +692,7 @@ class ListSpace(guarded.Space):
             for t in range(T):
                 for vi, x in enumerate(Lr[t]):
                     if x in best:
-                        g.append((t, VALS[vi] if t < N or t >= self.Q else vi))
+                        g.append((t, VALS[vi] if t < N or self.Q <= t < self.R else vi))
             return g
         rows = []
         for a in range(self.A):
@@ -633,7 +700,7 @@ class ListSpace(guarded.Space):
             for r in range(ROWS):
                 if self.U[a][r] not in best:
                     break
-                d = tuple(VALS[one(self.D[a][r][i])] for i in range(N))
+                d = tuple(self.DV[one(self.D[a][r][i])] for i in range(N))
                 e = []
                 for s in range(len(S)):
                     x = one(self.E[a][r][s])
@@ -658,10 +725,11 @@ class Lists:
         return [layer + (mode,) for layer in LAYERS for mode in ((True, False) if wordy else (False,))]
 
     def base(self, key):
-        return WHOLE if key[2] else 0
+        return lbase(key)
 
     def cells(self, key):  # (the order among equal bounds: the smaller formulas first)
-        return 3 * key[0] + sum(key[1]) + (12 if key[2] else 0) + 3 * len(pairs(key[0], key[3]))
+        return 3 * key[0] + sum(key[1]) + (0, 6, 12)[key[2]] + 3 * len(pairs(key[0], key[3])) + \
+            len(thresholds(key[0], key[4])) + (12 if key[4] == 2 else 0)
 
     def second(self, key):
         return bool(key[2])
@@ -670,11 +738,12 @@ class Lists:
         return True
 
     def numeric(self, key):
-        return key[4]
+        return key[5]
 
     def say(self, key):
-        return (f"parts {key[0]}, {key[1]}{', whole' if key[2] else ''}{', compared' if key[3] else ''}, "
-                f"{'number' if key[4] else 'table'}")
+        whole_ = ('', ', whole of the first kind', ', whole')[key[2]]
+        return (f"parts {key[0]}, {key[1]}{whole_}{', compared' if key[3] else ''}"
+                f"{('', ', at least k', ', steps by k')[key[4]]}, {'number' if key[5] else 'table'}")
 
     def key(self, m):
         return m.key
