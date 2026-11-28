@@ -1,0 +1,10 @@
+code: commit 1004ef4 (lists.py of stage 99: a layer with small numbers, tests 'at least 2, 3 or 4' and steps by the k a
+guard has said; whole moves of the first kind only in the layers of three numbers; guarded.py, cells.py, parts.py and
+sealed_run.py as in 81f6969)
+flags: --minutes 30 --workers 1 --seconds 3 --shorten --reserve 21 --explore --frugal --slack 16 --guards --build 12 --flags --cascades --keep --deadline --watch --warm --patience 30 --part 100000 --tour 24 --anchor 65 --far 100 --sum --parts --guarded 0.7 --keep-asks 10 --cap 60 --lists
+rules: the 48 opened rules of pools 93, 95, 97 and 98, four groups of twelve on four cores (open_pipeline.txt); the
+container restarted after 15 rules, and the run went on with --after open_pipeline.txt (the rules done were not run
+again). open_pipeline_asks.txt: what each learner asked (stderr of the run, sorted).
+Rope walk, orchid nursery and quarry had finished learning but not the final check when the container restarted, so
+they were run again from the start; their first stderr line stays in open_pipeline_asks.txt, the result is the second
+run. Three solver children of guarded.py (groups 0 and 3) died of std::bad_alloc; the learners went on.
